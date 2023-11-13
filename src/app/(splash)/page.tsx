@@ -20,7 +20,11 @@ export default function Home() {
             fill
           />
         </div>
-        <Button className="cursor-pointer" variant={"secondary"} asChild>
+        <Button
+          className="cursor-pointer font-semibold"
+          variant={"secondary"}
+          asChild
+        >
           <Link href={"/connect"}>
             <LinkIcon className="text-muted-foreground mr-3" size={20} />
             Start a connection
