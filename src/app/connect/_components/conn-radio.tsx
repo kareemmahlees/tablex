@@ -5,10 +5,10 @@ import ConnectionParams from "./conn-params";
 import ConnectionString from "./conn-string";
 
 interface ConnectionParamsProps {
-  type: "mysql" | "psql";
+  driver: "mysql" | "psql";
 }
 
-const ConnectionRadio: FC<ConnectionParamsProps> = ({ type }) => {
+const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
   const [visibleComp, setVisibleComp] = useState(<ConnectionParams />);
   return (
     <>

@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import ConnectionRadio from "./_components/connection-radio";
+import ConnectionRadio from "./_components/conn-radio";
 import SqliteConnectionDetails from "./_components/sqlite-connection";
 
 const frameworks = [
@@ -38,7 +38,7 @@ interface ConnectionParamsProps {
 
 const ConnectionPage = () => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [driver, setDriver] = useState("");
   return (
     <main className="h-full bg-primary text-white flex items-center justify-center bg-[url(/texture.svg)] bg-contain ">
       <section className="flex flex-col items-center gap-y-10">
@@ -50,8 +50,8 @@ const ConnectionPage = () => {
               aria-expanded={open}
               className="w-[200px] justify-between"
             >
-              {value
-                ? frameworks.find((framework) => framework.value === value)
+              {driver
+                ? frameworks.find((framework) => framework.value === driver)
                     ?.label
                 : "Select a Database..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -67,14 +67,14 @@ const ConnectionPage = () => {
                     key={framework.value}
                     value={framework.value}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      setDriver(currentValue === driver ? "" : currentValue);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === framework.value ? "opacity-100" : "opacity-0"
+                        driver === framework.value ? "opacity-100" : "opacity-0"
                       )}
                     />
                     {framework.label}
@@ -84,9 +84,9 @@ const ConnectionPage = () => {
             </Command>
           </PopoverContent>
         </Popover>
-        {value === "sqlite" && <SqliteConnectionDetails />}
-        {(value === "psql" || value === "mysql") && (
-          <ConnectionRadio type={value} />
+        {driver === "sqlite" && <SqliteConnectionDetails />}
+        {(driver === "psql" || driver === "mysql") && (
+          <ConnectionRadio driver={driver} />
         )}
       </section>
     </main>
