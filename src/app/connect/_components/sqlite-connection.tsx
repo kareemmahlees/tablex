@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { open } from "@tauri-apps/api/dialog";
 import { useState } from "react";
-import { connectSqlite, testSQLiteConnection } from "../actions/sqlite";
+import { connectSqlite, testSQLiteConnection } from "../actions";
 
 const SqliteConnectionDetails = () => {
   const [selectedPath, setSelectedPath] = useState("");

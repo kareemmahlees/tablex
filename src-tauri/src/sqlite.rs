@@ -1,7 +1,7 @@
 use sqlx::{Connection, SqliteConnection};
 use tauri::Runtime;
 
-use crate::lib::{write_into_connections_file, Drivers};
+use crate::utils::{write_into_connections_file, Drivers};
 
 #[tauri::command]
 pub async fn test_sqlite_conn(conn_string: String) -> Result<String, String> {
@@ -19,7 +19,7 @@ pub async fn test_sqlite_conn(conn_string: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub async fn connect_sqlite_db<R: Runtime>(
+pub fn connect_sqlite_db<R: Runtime>(
     app: tauri::AppHandle<R>,
     conn_string: String,
 ) -> Result<(), String> {

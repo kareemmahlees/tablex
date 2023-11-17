@@ -1,9 +1,22 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import { LinkIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { check_cons_exist } from "./_actions/actions";
 
 export default function Home() {
+  const router = useRouter();
+  useQuery({
+    queryKey: [""],
+    queryFn: async () => {
+      if (await check_cons_exist()) {
+        router.push("/connections");
+      }
+    },
+  });
   return (
     <main
       className="flex items-center justify-center h-full bg-black before:bg-[url(/bg-2.svg)] before:content-[''] before:absolute
