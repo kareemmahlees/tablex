@@ -13,7 +13,7 @@ export const testSQLiteConnection = async (selectedPath: string) => {
 };
 
 export const connectSqlite = async (selectedPath: string) => {
-  await invoke("connect_sqlite_db", {
+  await invoke("create_sqlite_connection", {
     connString: `sqlite://${selectedPath}`,
   });
 };

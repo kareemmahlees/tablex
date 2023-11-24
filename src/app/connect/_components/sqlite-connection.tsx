@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { open } from "@tauri-apps/api/dialog";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { connectSqlite, testSQLiteConnection } from "../actions";
 
 const SqliteConnectionDetails = () => {
+  const router = useRouter();
   const [selectedPath, setSelectedPath] = useState("");
 
   return (
@@ -31,7 +33,10 @@ const SqliteConnectionDetails = () => {
           <Button
             variant={"secondary"}
             className="w-[100px]"
-            onClick={() => connectSqlite(selectedPath)}
+            onClick={() => {
+              connectSqlite(selectedPath);
+              router.push("/connections");
+            }}
           >
             Connect
           </Button>

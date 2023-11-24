@@ -4,15 +4,16 @@
 mod common;
 mod sqlite;
 mod utils;
-use common::connections_exist;
-use sqlite::{connect_sqlite_db, test_sqlite_conn};
+use common::{connections_exist, get_connections};
+use sqlite::{create_sqlite_connection, test_sqlite_conn};
 
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             test_sqlite_conn,
-            connect_sqlite_db,
-            connections_exist
+            create_sqlite_connection,
+            connections_exist,
+            get_connections
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

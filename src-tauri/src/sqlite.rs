@@ -19,7 +19,7 @@ pub async fn test_sqlite_conn(conn_string: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn connect_sqlite_db<R: Runtime>(
+pub fn create_sqlite_connection<R: Runtime>(
     app: tauri::AppHandle<R>,
     conn_string: String,
 ) -> Result<(), String> {
