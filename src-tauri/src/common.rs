@@ -6,7 +6,7 @@ pub fn connections_exist<R: Runtime>(app: tauri::AppHandle<R>) -> Result<bool, S
     let (_, connections) = utils::read_from_connections_file(app.path_resolver().app_config_dir());
     match connections {
         Ok(connections) => {
-            if connections.as_array().unwrap().len() > 0 {
+            if connections.as_object().unwrap().len() > 0 {
                 Ok(true)
             } else {
                 Ok(false)
@@ -24,3 +24,11 @@ pub fn get_connections<R: Runtime>(app: tauri::AppHandle<R>) -> Result<serde_jso
         Err(err) => Err(err.to_string()),
     }
 }
+
+// #[tauri::command]
+// async fn get_connection_details<R: Runtime>(app: tauri::AppHandle<R>,conn_id:String) -> Result<(), String> {
+//     let (_, connections) = utils::read_from_connections_file(app.path_resolver().app_config_dir());
+//     match connections {
+//         Ok(conns)
+//     }
+// }

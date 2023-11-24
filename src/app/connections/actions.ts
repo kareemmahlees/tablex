@@ -7,5 +7,5 @@ export interface ConnectionConfig {
 }
 
 export const getConnections = async () => {
-  return await invoke<ConnectionConfig[]>("get_connections");
+  return await invoke<Record<string, ConnectionConfig>>("get_connections");
 };
