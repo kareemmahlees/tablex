@@ -1,6 +1,5 @@
-import { invoke } from "@tauri-apps/api";
-
-interface ConnectionConfig {
+import { invoke } from "@tauri-apps/api/tauri";
+export interface ConnectionConfig {
   conn_string: string;
   driver: "sqlite" | "psql" | "mysql";
 }

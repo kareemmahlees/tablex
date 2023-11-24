@@ -4,22 +4,21 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { check_cons_exist } from "./_actions/actions";
+import { checkConsExist } from "./actions";
 
 export default function Home() {
   const router = useRouter();
   const { isLoading } = useQuery({
-    queryKey: [""],
+    queryKey: [],
     queryFn: async () => {
-      if (await check_cons_exist()) {
-        router.push("/connections");
-      }
+      (await checkConsExist()) ? router.push("/connections") : null;
     },
   });
 
   if (isLoading) {
-    return <Loader2 className="h-16 w-16 animate-spin" />;
+    return <Loader2 className="w-16 h-16 animate-spin" />;
   }
+
   return (
     <main
       className="flex items-center justify-center h-full bg-black before:bg-[url(/bg-2.svg)] before:content-[''] before:absolute

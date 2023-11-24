@@ -5,16 +5,17 @@ import Image from "next/image";
 import { getConnections } from "./actions";
 
 const ConnectionsPage = () => {
-  const { data } = useQuery({
-    queryKey: ["connections"],
+  const { data: connections } = useQuery({
+    queryKey: [],
     queryFn: async () => {
       return await getConnections();
     },
   });
+
   return (
     <main className="text-background p-5 md:p-7 lg:p-10 flex items-start h-full">
       <ul className="flex flex-col justify-start gap-y-5 flex-[0.5]">
-        {data?.map((connection, index) => {
+        {connections?.map((connection, index) => {
           return (
             <>
               <li key={index} role="button" className="text-sm">
