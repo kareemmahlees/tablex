@@ -22,11 +22,13 @@ pub async fn test_sqlite_conn(conn_string: String) -> Result<String, String> {
 pub fn create_sqlite_connection<R: Runtime>(
     app: tauri::AppHandle<R>,
     conn_string: String,
+    conn_name: String,
 ) -> Result<(), String> {
     write_into_connections_file(
         app.path_resolver().app_config_dir(),
         Drivers::SQLITE,
         conn_string,
+        conn_name,
     );
     Ok(())
 }

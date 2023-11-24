@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{BufReader, BufWriter, Write};
 use std::path::PathBuf;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
 pub enum Drivers {
@@ -12,20 +13,25 @@ pub enum Drivers {
 
 #[derive(Serialize, Deserialize)]
 pub struct ConnConfig {
+    id: String,
     driver: Drivers,
     conn_string: String,
+    conn_name: String,
 }
 
 pub fn write_into_connections_file(
     config_dir: Option<PathBuf>,
     driver: Drivers,
     conn_string: String,
+    conn_name: String,
 ) {
     let (config_file_path, content) = read_from_connections_file(config_dir);
 
     let connection = ConnConfig {
+        id: Uuid::new_v4().to_string(),
         driver,
         conn_string,
+        conn_name,
     };
 
     match content.unwrap().as_array_mut() {

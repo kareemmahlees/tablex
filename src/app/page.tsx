@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <main
-      className="flex items-center justify-center h-full bg-black before:bg-[url(/bg-2.svg)] before:content-[''] before:absolute
+      className="flex items-center justify-center h-full bg-black before:bg-[url(/bg-1.svg)] before:content-[''] before:absolute
     before:top-0 before:left-0 before:right-0 before:bottom-0 before:opacity-20
     "
     >

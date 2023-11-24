@@ -13,15 +13,15 @@ const ConnectionsPage = () => {
   });
 
   return (
-    <main className="text-background p-5 md:p-7 lg:p-10 flex items-start h-full">
-      <ul className="flex flex-col justify-start gap-y-5 flex-[0.5]">
+    <main className="text-background  flex items-start h-full">
+      <ul className="flex flex-col justify-start gap-y-5 flex-[0.5] p-5 lg:p-10">
         {connections?.map((connection, index) => {
           return (
             <>
-              <li key={index} role="button" className="text-sm">
-                <p>{connection.driver}</p>
-                <p className="text-muted-foreground">
-                  {connection.conn_string}
+              <li key={index} role="button">
+                <p className="lg:text-xl font-medium">{connection.conn_name}</p>
+                <p className="text-muted-foreground text-sm lg:text-lg">
+                  {connection.driver}
                 </p>
               </li>
               <div className="w-full h-[1px] bg-gray-800" aria-label="hidden" />
@@ -29,7 +29,7 @@ const ConnectionsPage = () => {
           );
         })}
       </ul>
-      <aside className="flex flex-col items-center gap-y-4 md:gap-y-6 lg:gap-y-10 justify-center h-full flex-[0.5]">
+      <aside className="relative flex flex-col items-center gap-y-10 lg:gap-y-20 justify-center h-full flex-[0.5]">
         <div className="relative w-[100px] h-[100px] lg:w-[150px] lg:h-[150px]">
           <Image
             src={"/icons/planet.svg"}
@@ -39,6 +39,15 @@ const ConnectionsPage = () => {
           />
         </div>
         <CreateConnectionBtn />
+        <div className="absolute h-full w-full -z-10 overflow-hidden opacity-10">
+          <Image
+            src={"/bg-2.svg"}
+            alt="background"
+            fill
+            className="object-cover object-center"
+            aria-label="hidden"
+          />
+        </div>
       </aside>
     </main>
   );

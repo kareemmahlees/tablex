@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/tauri";
 import toast from "react-hot-toast";
 
 export const testSQLiteConnection = async (selectedPath: string) => {
@@ -12,8 +12,9 @@ export const testSQLiteConnection = async (selectedPath: string) => {
   });
 };
 
-export const connectSqlite = async (selectedPath: string) => {
+export const connectSQLite = async (connName: string, selectedPath: string) => {
   await invoke("create_sqlite_connection", {
     connString: `sqlite://${selectedPath}`,
+    connName,
   });
 };
