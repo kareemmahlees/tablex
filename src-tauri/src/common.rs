@@ -25,10 +25,14 @@ pub fn get_connections<R: Runtime>(app: tauri::AppHandle<R>) -> Result<serde_jso
     }
 }
 
-// #[tauri::command]
-// async fn get_connection_details<R: Runtime>(app: tauri::AppHandle<R>,conn_id:String) -> Result<(), String> {
-//     let (_, connections) = utils::read_from_connections_file(app.path_resolver().app_config_dir());
-//     match connections {
-//         Ok(conns)
-//     }
-// }
+#[tauri::command]
+pub fn get_connection_details<R: Runtime>(
+    app: tauri::AppHandle<R>,
+    conn_id: String,
+) -> Result<serde_json::Value, String> {
+    let (_, connections) = utils::read_from_connections_file(app.path_resolver().app_config_dir());
+    match connections {
+        Ok(conns) => Ok(conns.get(conn_id).unwrap().clone()),
+        Err(err) => Err(err.to_string()),
+    }
+}

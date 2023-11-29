@@ -70,6 +70,7 @@ const SqliteConnectionDetails = () => {
               Connect
             </Button>
             <Button
+              type="button"
               className="bg-green-500 hover:bg-green-700 w-[100px]"
               onClick={() => testSQLiteConnection(selectedPath)}
             >

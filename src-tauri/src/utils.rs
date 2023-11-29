@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{BufReader, BufWriter, Write};
 use std::path::PathBuf;

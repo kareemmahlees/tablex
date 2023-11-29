@@ -26,7 +26,7 @@ const ConnectionsPage = () => {
                 <li
                   key={id}
                   role="button"
-                  onClick={() => router.push(`/connections/details?id=${id}`)}
+                  onClick={() => router.push(`/dashboard?id=${id}`)}
                 >
                   <p className="lg:text-xl font-medium">{config.conn_name}</p>
                   <p className="text-muted-foreground text-sm lg:text-lg">
