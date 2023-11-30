@@ -67,8 +67,19 @@ pub async fn get_tables(connection: State<'_, DbConnection>) -> Result<Option<Ve
         ()
     }
     let mut result: Vec<String> = vec![];
-    for (idx, row) in rows.iter().enumerate() {
+    for (_, row) in rows.iter().enumerate() {
         result.push(row.get::<String, &str>("name"))
     }
     Ok(Some(result))
+}
+
+#[tauri::command]
+async fn get_rows(connection: State<'_, DbConnection>, table_name: String) -> Result<(), String> {
+    let mut long_lived = connection.db.lock().await;
+    let conn = long_lived.as_mut().unwrap();
+    let rows = sqlx::query(format!("SELECT * FROM {table_name}").as_str())
+        .fetch_all(conn)
+        .await
+        .unwrap();
+    Ok(())
 }

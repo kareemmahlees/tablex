@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Table } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { KeyboardEvent, PropsWithChildren, useState } from "react";
 import {
   establishConnection,
@@ -11,6 +11,7 @@ import {
 } from "./actions";
 
 const TablesLayout = ({ children }: PropsWithChildren) => {
+  const router = useRouter();
   const params = useSearchParams();
   const [tables, setTables] = useState<string[]>([]);
   const connectionId = params.get("id")!;
@@ -55,37 +56,41 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
       <nav className="w-full bg-amber-600 h-6 fixed top-0 text-white font-semibold text-center z-20">
         {data?.connName} • Connected
       </nav>
-      <aside className="text-white z-10 w-48 lg:w-60 h-full flex flex-col items-start p-2 gap-y-5 bg-zinc-800 fixed top-[1.5rem]">
-        <input
-          type="text"
-          className="mt-2 bg-foreground w-full h-6 placeholder:text-xs text-white/60 text-xs  focus-visible:ring-gray-800 outline-none rounded-md p-1 flex items-center placeholder:opacity-50"
-          placeholder="type to search"
-          onKeyUp={handleKeyUp}
-        />
-        <ul>
-          {tables.map((table, index) => {
-            return (
-              <li
-                key={index}
-                className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
-              >
-                <Table size={16} className="fill-amber-600 text-black" />
-                {table}
-              </li>
-            );
-          })}
-        </ul>
-      </aside>
-      <section className="w-full h-full flex items-center justify-center fixed left-[6rem] lg:left-[7.5rem] top-[1.5rem] overflow-y-scroll">
+      <div className="flex h-screen">
+        <aside className="text-white z-10 flex flex-col items-start w-48 lg:w-56 p-3 gap-y-5 bg-zinc-800  mt-[1.5rem]">
+          <input
+            type="text"
+            className="mt-2 bg-foreground w-full h-6 lg:h-8 placeholder:text-xs lg:placeholder:text-base text-white/60 text-xs lg:text-base  focus-visible:ring-gray-800 outline-none rounded-md p-1 flex items-center placeholder:opacity-50"
+            placeholder="type to search"
+            onKeyUp={handleKeyUp}
+          />
+          <ul className="flex flex-col items-start gap-y-1">
+            {tables.map((table, index) => {
+              return (
+                <li
+                  key={index}
+                  className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
+                  role="button"
+                  onClick={() =>
+                    router.push(`/dashboard/details?tableName=${table}`)
+                  }
+                >
+                  <Table size={16} className="fill-amber-600 text-black" />
+                  {table}
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
         {tables.length == 0 ? (
           <div className="flex flex-col items-center text-muted-foreground text-sm font-semibold gap-y-3 opacity-50 lg:text-base">
             <Image src={"/empty.svg"} alt="empty" width={100} height={100} />
             <p>Breity empty around here</p>
           </div>
         ) : (
-          children
+          <div className="mt-[1.5rem] overflow-auto w-full">{children}</div>
         )}
-      </section>
+      </div>
     </>
   );
 };
