@@ -1,6 +1,6 @@
-use crate::{utils, DbConnection};
+use crate::{utils, DbInstance};
 use serde_json::Value as JsonValue;
-use sqlx::{AnyConnection, Column, Connection, Row};
+use sqlx::{AnyConnection, Column, Connection, Pool, Row};
 use std::collections::HashMap;
 use std::result::Result::Ok;
 use std::vec;
@@ -68,22 +68,18 @@ pub fn create_sqlite_connection<R: Runtime>(
 
 #[tauri::command]
 pub async fn connect_sqlite(
-    connection: State<'_, DbConnection>,
+    connection: State<'_, DbInstance>,
     conn_string: String,
 ) -> Result<(), String> {
     sqlx::any::install_default_drivers();
-    let con = AnyConnection::connect(conn_string.as_str())
-        .await
-        .map_err(|err| format!("Couldn't connect to db \nerr:{err}\nconn_string:{conn_string}"))
-        .unwrap();
-    *connection.db.lock().await = Some(con);
+    *connection.pool.lock().await = Some(sqlx::AnyPool::connect(&conn_string).await.unwrap());
     Ok(())
 }
 
 #[tauri::command]
-pub async fn get_tables(connection: State<'_, DbConnection>) -> Result<Option<Vec<String>>, ()> {
-    let mut long_lived = connection.db.lock().await;
-    let conn = long_lived.as_mut().unwrap();
+pub async fn get_tables(connection: State<'_, DbInstance>) -> Result<Option<Vec<String>>, ()> {
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
     let rows = sqlx::query(
         "SELECT name
          FROM sqlite_schema
@@ -105,11 +101,11 @@ pub async fn get_tables(connection: State<'_, DbConnection>) -> Result<Option<Ve
 
 #[tauri::command]
 pub async fn get_rows(
-    connection: State<'_, DbConnection>,
+    connection: State<'_, DbInstance>,
     table_name: String,
 ) -> Result<Vec<HashMap<String, JsonValue>>, String> {
-    let mut long_lived = connection.db.lock().await;
-    let conn = long_lived.as_mut().unwrap();
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
     let rows = sqlx::query(format!("SELECT * FROM {};", table_name).as_str())
         .fetch_all(conn)
         .await
@@ -132,11 +128,11 @@ pub async fn get_rows(
 
 #[tauri::command]
 pub async fn get_columns(
-    connection: State<'_, DbConnection>,
+    connection: State<'_, DbInstance>,
     table_name: String,
 ) -> Result<Vec<String>, String> {
-    let mut long_lived = connection.db.lock().await;
-    let conn = long_lived.as_mut().unwrap();
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
     let rows = sqlx::query(format!("SELECT name FROM PRAGMA_TABLE_INFO('{table_name}')").as_str())
         .fetch_all(conn)
         .await
@@ -150,19 +146,31 @@ pub async fn get_columns(
 
 #[tauri::command]
 pub async fn delete_row(
-    connection: State<'_, DbConnection>,
+    connection: State<'_, DbInstance>,
     col: String,
-    values: Vec<String>,
+    pk_row_values: Vec<i32>,
     table_name: String,
 ) -> Result<u64, String> {
-    let mut long_lived = connection.db.lock().await;
-    let conn = long_lived.as_mut().unwrap();
-    let params = format!("?{}", ",?".repeat(values.len() - 1));
-    let query_str = format!("DELETE FROM {table_name} WHERE {col} in ({params});",);
-    let mut query = sqlx::query(&query_str);
-    for val in values.iter() {
-        query = query.bind(val);
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
+
+    // check that table has primary key
+    let res = sqlx::query(
+        format!("select name from pragma_table_info('{table_name}') where pk;").as_str(),
+    )
+    .fetch_all(conn)
+    .await
+    .map_err(|err| err.to_string())?;
+    if res.len() == 0 {
+        Err("Table doesn't have a primary key".to_string())
+    } else {
+        let params = format!("?{}", ",?".repeat(pk_row_values.len() - 1));
+        let query_str = format!("DELETE FROM {table_name} WHERE {col} in ({params});",);
+        let mut query = sqlx::query(&query_str);
+        for val in pk_row_values.iter() {
+            query = query.bind(val);
+        }
+        let result = query.execute(conn).await.unwrap();
+        Ok(result.rows_affected())
     }
-    let result = query.execute(conn).await.unwrap();
-    Ok(result.rows_affected())
 }

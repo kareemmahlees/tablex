@@ -59,17 +59,24 @@ export function DataTable<TData, TValue>({
           .rows.map((row) => row.getValue(column));
 
         if (rows.length > 0) {
-          toast.promise(deleteRows(column, rows, tableName), {
-            loading: "Operating...",
-            success: (rowsAffected) => {
-              queryClient.invalidateQueries({ queryKey: ["table_rows"] });
-              return `Successfully deleted ${
-                rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-              }`;
+          toast.promise(
+            deleteRows(column, rows, tableName),
+            {
+              loading: "Operating...",
+              success: (rowsAffected) => {
+                queryClient.invalidateQueries({ queryKey: ["table_rows"] });
+                return `Successfully deleted ${
+                  rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
+                }`;
+              },
+              error: (err) => err,
             },
-            error: "Something went wrong",
-          });
+            {
+              position: "top-right",
+            }
+          );
         }
+        table.toggleAllRowsSelected(false);
       });
     });
   });

@@ -10,8 +10,8 @@ export const getColumns = async (tableName: string) => {
 
 export const deleteRows = async (
   col: string,
-  values: any[],
+  pkRowValues: any[],
   tableName: string
 ) => {
-  return await invoke<number>("delete_row", { col, values, tableName });
+  return await invoke<number>("delete_row", { col, pkRowValues, tableName });
 };

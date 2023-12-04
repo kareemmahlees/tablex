@@ -10,17 +10,19 @@ use sqlite::{
     connect_sqlite, create_sqlite_connection, delete_row, get_columns, get_rows, get_tables,
     test_sqlite_conn,
 };
-use sqlx::AnyConnection;
+use sqlx::Pool;
 use tokio::sync::Mutex;
 
-pub struct DbConnection {
-    pub db: Mutex<Option<AnyConnection>>,
+#[derive(Default, Debug)]
+// pub struct DbInstance(Mutex<Option<Pool<sqlx::any::Any>>>);
+pub struct DbInstance {
+    pool: Mutex<Option<Pool<sqlx::any::Any>>>,
 }
 
 fn main() {
     tauri::Builder::default()
-        .manage(DbConnection {
-            db: Default::default(),
+        .manage(DbInstance {
+            pool: Default::default(),
         })
         .invoke_handler(tauri::generate_handler![
             test_sqlite_conn,
