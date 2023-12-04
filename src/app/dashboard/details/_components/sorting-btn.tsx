@@ -1,9 +1,8 @@
-import { Column } from "@tanstack/react-table";
+import type { Column } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { tableExmaple } from "./columns";
 
 interface SortingButtonProps {
-  column: Column<tableExmaple>;
+  column: Column<any>;
   title: string;
 }
 
@@ -14,7 +13,7 @@ const SortingButton = ({ column, title }: SortingButtonProps) => {
       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     >
       {title}
-      <ArrowUpDown className="h-4 w-4 ml-2 group-hover:translate-x-1 group-hover:opacity-100 opacity-0 transition-all" />
+      <ArrowUpDown className="h-3 w-3 lg:h-4 lg:w-4 group-hover:translate-x-1 group-hover:opacity-100 opacity-0 transition-all" />
     </button>
   );
 };

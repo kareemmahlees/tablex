@@ -1,8 +1,9 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Table } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import { KeyboardEvent, PropsWithChildren, useState } from "react";
 import {
   establishConnection,
@@ -13,6 +14,7 @@ import {
 const TablesLayout = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const params = useSearchParams();
+  const queryClient = useQueryClient();
   const [tables, setTables] = useState<string[]>([]);
   const connectionId = params.get("id")!;
 
@@ -71,9 +73,11 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
                   key={index}
                   className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
                   role="button"
-                  onClick={() =>
-                    router.push(`/dashboard/details?tableName=${table}`)
-                  }
+                  onClick={() => {
+                    router.push(
+                      `/dashboard/details?tableName=${table}&id=${connectionId}`
+                    );
+                  }}
                 >
                   <Table size={16} className="fill-amber-600 text-black" />
                   {table}
@@ -83,7 +87,7 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
           </ul>
         </aside>
         {tables.length == 0 ? (
-          <div className="flex flex-col items-center text-muted-foreground text-sm font-semibold gap-y-3 opacity-50 lg:text-base">
+          <div className="flex flex-col w-full h-full items-center justify-center text-muted-foreground text-sm font-semibold gap-y-3 opacity-50 lg:text-base">
             <Image src={"/empty.svg"} alt="empty" width={100} height={100} />
             <p>Breity empty around here</p>
           </div>

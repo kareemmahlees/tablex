@@ -6,7 +6,10 @@ mod sqlite;
 mod utils;
 
 use common::{connections_exist, get_connection_details, get_connections};
-use sqlite::{connect_sqlite, create_sqlite_connection, get_tables, test_sqlite_conn};
+use sqlite::{
+    connect_sqlite, create_sqlite_connection, delete_row, get_columns, get_rows, get_tables,
+    test_sqlite_conn,
+};
 use sqlx::AnyConnection;
 use tokio::sync::Mutex;
 
@@ -26,7 +29,10 @@ fn main() {
             get_connections,
             get_connection_details,
             connect_sqlite,
-            get_tables
+            get_tables,
+            get_rows,
+            get_columns,
+            delete_row
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

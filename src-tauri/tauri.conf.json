@@ -20,6 +20,9 @@
         "message": false,
         "open": true,
         "save": false
+      },
+      "globalShortcut": {
+        "all": true
       }
     },
     "bundle": {
