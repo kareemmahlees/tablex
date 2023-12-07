@@ -17,6 +17,7 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
   const params = useSearchParams();
   const [tables, setTables] = useState<string[]>([]);
   const connectionId = params.get("id")!;
+  const tableName = params.get("tableName");
 
   const { data, isLoading } = useQuery({
     queryKey: [],
@@ -87,7 +88,7 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
               })}
             </ul>
           </div>
-          <CreateNewRowBtn />
+          {tableName && <CreateNewRowBtn />}
         </aside>
         {tables.length == 0 ? (
           <div className="flex flex-col w-full h-full items-center justify-center text-muted-foreground text-sm font-semibold gap-y-3 opacity-50 lg:text-base">
