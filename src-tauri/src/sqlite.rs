@@ -1,39 +1,14 @@
 use crate::{utils, DbInstance};
+use serde_json::Map;
 use serde_json::Value as JsonValue;
-use sqlx::{AnyConnection, Column, Connection, Pool, Row};
+use sqlx::{AnyConnection, Column, Connection, Row};
 use std::collections::HashMap;
+use std::iter::Iterator;
 use std::result::Result::Ok;
 use std::vec;
 use tauri::{Runtime, State};
 
 use crate::utils::{write_into_connections_file, Drivers};
-
-// pub struct SerializedAnyRow(AnyRow);
-
-// impl Serialize for SerializedAnyRow {
-//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-//     where
-//         S: serde::Serializer,
-//     {
-//         let mut map = serializer.serialize_map(Some(self.0.len()))?;
-//         let mut columns: Vec<String> = vec![];
-
-//         self.0
-//             .columns()
-//             .iter()
-//             .enumerate()
-//             .for_each(|(_, col)| columns.push(col.name().to_string()));
-//         for i in 0..columns.len() {
-//             let row_value = self.0.try_get::<String, usize>(i);
-//             let res = match row_value {
-//                 Ok(r) => Ok(r),
-//                 Err(_) => Err(""),
-//             };
-//             map.serialize_entry(&columns[i], &res.unwrap()).unwrap();
-//         }
-//         map.end()
-//     }
-// }
 
 #[tauri::command]
 pub async fn test_sqlite_conn(conn_string: String) -> Result<String, String> {
@@ -173,4 +148,58 @@ pub async fn delete_row(
         let result = query.execute(conn).await.unwrap();
         Ok(result.rows_affected())
     }
+}
+
+#[tauri::command]
+pub async fn create_row(
+    connection: State<'_, DbInstance>,
+    table_name: String,
+    data: Map<String, JsonValue>,
+) -> Result<u64, String> {
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
+
+    let columns = format!(
+        "{}",
+        data.keys()
+            .map(|key| key.as_str())
+            .collect::<Vec<&str>>()
+            .join(",")
+    );
+    let values = format!(
+        "{}",
+        data.values()
+            .map(|value| value.to_string())
+            .collect::<Vec<String>>()
+            .join(",")
+    );
+
+    let res =
+        sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
+            .execute(conn)
+            .await
+            .map_err(|_| "Failed to create row".to_string())?;
+    Ok(res.rows_affected())
+}
+
+#[tauri::command]
+pub async fn get_columns_definition(
+    connection: State<'_, DbInstance>,
+    table_name: String,
+) -> Result<HashMap<String, String>, String> {
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
+
+    let rows =
+        sqlx::query(format!("select name,type from pragma_table_info('{table_name}') ;").as_str())
+            .fetch_all(conn)
+            .await
+            .map_err(|err| err.to_string())?;
+
+    let mut result = HashMap::<String, String>::new();
+
+    rows.iter().for_each(|row| {
+        result.insert(row.get(0), row.get(1));
+    });
+    Ok(result)
 }

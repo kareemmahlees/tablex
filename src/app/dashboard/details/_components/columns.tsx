@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, Row, Table } from "@tanstack/react-table";
 import { getColumns } from "../actions";
 import SortingButton from "./sorting-btn";
 
@@ -19,26 +19,33 @@ export const generateColumns = async (
     // @ts-ignore
     id: "select",
     // @ts-ignore
-    header: ({ table }) => (
+    header: ({ table }: { table: Table<any> }) => (
       <Checkbox
         className="invert"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => {
+          if (table.getIsSomeRowsSelected()) {
+            table.toggleAllRowsSelected(false);
+          } else {
+            table.toggleAllPageRowsSelected(!!value);
+          }
+        }}
         aria-label="Select all"
       />
     ),
-    // @ts-ignore
-    cell: ({ row }) => (
-      <Checkbox
-        className="invert"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }: { row: Row<any> }) => {
+      return (
+        <Checkbox
+          className="invert"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   });

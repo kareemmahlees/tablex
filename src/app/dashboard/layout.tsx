@@ -1,10 +1,11 @@
 "use client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2, Table } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { KeyboardEvent, PropsWithChildren, useState } from "react";
+import CreateNewRowBtn from "./_components/create-row";
 import {
   establishConnection,
   getConnectionDetails,
@@ -14,7 +15,6 @@ import {
 const TablesLayout = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const params = useSearchParams();
-  const queryClient = useQueryClient();
   const [tables, setTables] = useState<string[]>([]);
   const connectionId = params.get("id")!;
 
@@ -59,32 +59,35 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
         {data?.connName} • Connected
       </nav>
       <div className="flex h-screen">
-        <aside className="text-white z-10 flex flex-col items-start w-48 lg:w-56 p-3 gap-y-5 bg-zinc-800  mt-[1.5rem]">
-          <input
-            type="text"
-            className="mt-2 bg-foreground w-full h-6 lg:h-8 placeholder:text-xs lg:placeholder:text-base text-white/60 text-xs lg:text-base  focus-visible:ring-gray-800 outline-none rounded-md p-1 flex items-center placeholder:opacity-50"
-            placeholder="type to search"
-            onKeyUp={handleKeyUp}
-          />
-          <ul className="flex flex-col items-start gap-y-1">
-            {tables.map((table, index) => {
-              return (
-                <li
-                  key={index}
-                  className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
-                  role="button"
-                  onClick={() => {
-                    router.push(
-                      `/dashboard/details?tableName=${table}&id=${connectionId}`
-                    );
-                  }}
-                >
-                  <Table size={16} className="fill-amber-600 text-black" />
-                  {table}
-                </li>
-              );
-            })}
-          </ul>
+        <aside className="text-white z-10 flex flex-col items-start justify-between w-48 lg:w-56 p-3  bg-zinc-800  mt-[1.5rem]">
+          <div className="flex flex-col items-start gap-y-5">
+            <input
+              type="text"
+              className="mt-2 bg-foreground w-full h-6 lg:h-8 placeholder:text-xs lg:placeholder:text-base text-white/60 text-xs lg:text-base  focus-visible:ring-gray-800 outline-none rounded-md p-1 flex items-center placeholder:opacity-50"
+              placeholder="type to search"
+              onKeyUp={handleKeyUp}
+            />
+            <ul className="flex flex-col items-start gap-y-1">
+              {tables.map((table, index) => {
+                return (
+                  <li
+                    key={index}
+                    className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
+                    role="button"
+                    onClick={() => {
+                      router.push(
+                        `/dashboard/details?tableName=${table}&id=${connectionId}`
+                      );
+                    }}
+                  >
+                    <Table size={16} className="fill-amber-600 text-black" />
+                    {table}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <CreateNewRowBtn />
         </aside>
         {tables.length == 0 ? (
           <div className="flex flex-col w-full h-full items-center justify-center text-muted-foreground text-sm font-semibold gap-y-3 opacity-50 lg:text-base">

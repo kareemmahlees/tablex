@@ -7,14 +7,13 @@ mod utils;
 
 use common::{connections_exist, get_connection_details, get_connections};
 use sqlite::{
-    connect_sqlite, create_sqlite_connection, delete_row, get_columns, get_rows, get_tables,
-    test_sqlite_conn,
+    connect_sqlite, create_row, create_sqlite_connection, delete_row, get_columns,
+    get_columns_definition, get_rows, get_tables, test_sqlite_conn,
 };
 use sqlx::Pool;
 use tokio::sync::Mutex;
 
 #[derive(Default, Debug)]
-// pub struct DbInstance(Mutex<Option<Pool<sqlx::any::Any>>>);
 pub struct DbInstance {
     pool: Mutex<Option<Pool<sqlx::any::Any>>>,
 }
@@ -34,7 +33,9 @@ fn main() {
             get_tables,
             get_rows,
             get_columns,
-            delete_row
+            delete_row,
+            get_columns_definition,
+            create_row
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

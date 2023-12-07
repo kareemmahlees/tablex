@@ -2,6 +2,7 @@
 
 import {
   ColumnDef,
+  RowPinningState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -38,6 +39,10 @@ export function DataTable<TData, TValue>({
   const queryClient = useQueryClient();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
+  const [rowPinning, setRowPinning] = useState<RowPinningState>({
+    top: [],
+    bottom: [],
+  });
   const table = useReactTable({
     data,
     columns,
@@ -45,9 +50,11 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
+    onRowPinningChange: setRowPinning,
     state: {
       sorting,
       rowSelection,
+      rowPinning,
     },
   });
   useEffect(() => {
@@ -85,7 +92,7 @@ export function DataTable<TData, TValue>({
     <Table className="text-xs lg:text-sm inline-block">
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
+          <TableRow key={headerGroup.id} className="text-center">
             {headerGroup.headers.map((header) => {
               return (
                 <TableHead
@@ -110,6 +117,7 @@ export function DataTable<TData, TValue>({
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
+              onClick={() => row.toggleSelected(!row.getIsSelected())}
               className="hover:bg-muted/10 data-[state=selected]:bg-muted/10 transition-colors"
             >
               {row.getVisibleCells().map((cell) => (
