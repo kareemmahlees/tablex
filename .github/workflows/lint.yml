@@ -1,0 +1,38 @@
+name: Lint Commits & Code
+
+on: [push, pull_request]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - name: Install commitlint
+        run: |
+          yarn add conventional-changelog-conventionalcommits
+          yarn add commitlint@latest
+      - name: Validate PR commits
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - name: Install Deps
+        run: yarn add next eslint eslint-config-next
+      - name: Run Eslint
+        run: yarn lint
