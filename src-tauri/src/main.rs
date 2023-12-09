@@ -35,7 +35,8 @@ fn main() {
             get_columns,
             delete_row,
             get_columns_definition,
-            create_row
+            create_row,
+            update_row,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

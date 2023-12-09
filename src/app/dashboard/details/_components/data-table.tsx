@@ -2,7 +2,7 @@
 
 import {
   ColumnDef,
-  RowPinningState,
+  Row,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -20,11 +20,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { Sheet } from "@/components/ui/sheet";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { deleteRows } from "../actions";
+import EditRowSheet from "./edit-row-sheet";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,12 +46,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const tableName = useSearchParams().get("tableName")!;
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [rowPinning, setRowPinning] = useState<RowPinningState>({
-    top: [],
-    bottom: [],
-  });
+  const [contextMenuRow, setContextMenuRow] = useState<Row<any>>();
   const table = useReactTable({
     data,
     columns,
@@ -50,11 +57,9 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
-    onRowPinningChange: setRowPinning,
     state: {
       sorting,
       rowSelection,
-      rowPinning,
     },
   });
   useEffect(() => {
@@ -89,55 +94,85 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <Table className="text-xs lg:text-sm inline-block">
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id} className="text-center">
-            {headerGroup.headers.map((header) => {
-              return (
-                <TableHead
-                  key={header.id}
-                  className="font-bold text-sm lg:text-base"
+    <Sheet open={open} onOpenChange={setOpen}>
+      <ContextMenu>
+        <Table className="text-xs lg:text-sm inline-block">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="text-center">
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className="font-bold text-sm lg:text-base"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <ContextMenuTrigger asChild>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row, idx) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={() => row.toggleSelected(!row.getIsSelected())}
+                    className="hover:bg-muted/10 data-[state=selected]:bg-muted/10 transition-colors"
+                    onContextMenu={(e) => setContextMenuRow(row)}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="text-white">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-white"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+              <ContextMenuContent>
+                <ContextMenuItem
+                  onSelect={async (e) => {
+                    const column = table.getAllColumns()[1].id;
+                    const row = contextMenuRow?.getValue<number>(column)!;
+                    await deleteRows(column, row, tableName);
+                    queryClient.invalidateQueries({ queryKey: ["table_rows"] });
+                  }}
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              );
-            })}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row, idx) => (
-            <TableRow
-              key={row.id}
-              data-state={row.getIsSelected() && "selected"}
-              onClick={() => row.toggleSelected(!row.getIsSelected())}
-              className="hover:bg-muted/10 data-[state=selected]:bg-muted/10 transition-colors"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="text-white">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell
-              colSpan={columns.length}
-              className="h-24 text-center text-white"
-            >
-              No results.
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+                  Delete
+                  <ContextMenuShortcut>Delete</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuItem onClick={() => setOpen(true)}>
+                  Edit
+                  <ContextMenuShortcut>F2</ContextMenuShortcut>
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </TableBody>
+          </ContextMenuTrigger>
+        </Table>
+      </ContextMenu>
+      {contextMenuRow && (
+        <EditRowSheet setOpenSheet={setOpen} row={contextMenuRow!} />
+      )}
+    </Sheet>
   );
 }

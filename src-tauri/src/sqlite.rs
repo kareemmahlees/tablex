@@ -183,6 +183,34 @@ pub async fn create_row(
 }
 
 #[tauri::command]
+pub async fn update_row(
+    connection: State<'_, DbInstance>,
+    table_name: String,
+    pk_value: i32,
+    data: Map<String, JsonValue>,
+) -> Result<u64, String> {
+    let long_lived = connection.pool.lock().await;
+    let conn = long_lived.as_ref().unwrap();
+
+    if data.len() == 0 {
+        return Ok(0);
+    }
+    let mut set_condition = String::new();
+    for (key, value) in data.iter() {
+        set_condition.push_str(format!("{key}={value},").as_str())
+    }
+    set_condition.pop();
+
+    let res = sqlx::query(
+        format!("UPDATE {table_name} SET {set_condition} WHERE id={pk_value}").as_str(),
+    )
+    .execute(conn)
+    .await
+    .map_err(|_| "Failed to update row".to_string())?;
+    Ok(res.rows_affected())
+}
+
+#[tauri::command]
 pub async fn get_columns_definition(
     connection: State<'_, DbInstance>,
     table_name: String,
