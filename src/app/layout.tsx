@@ -1,9 +1,8 @@
 import Providers from "@/lib/providers";
+import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
-import "./globals.css";
 
-const inter = DM_Sans({ subsets: ["latin"] });
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "TableX",
@@ -17,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={GeistSans.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
