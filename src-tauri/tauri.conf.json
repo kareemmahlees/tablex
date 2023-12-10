@@ -65,7 +65,6 @@
         "resizable": true,
         "title": "TableX",
         "width": 800,
-        "visible": false,
         "center": true
       }
     ]

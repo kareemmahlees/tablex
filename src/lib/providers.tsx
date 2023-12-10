@@ -9,12 +9,7 @@ const queryClient = new QueryClient()
 const Providers = ({ children }: PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         {children}
         <Toaster />
       </ThemeProvider>

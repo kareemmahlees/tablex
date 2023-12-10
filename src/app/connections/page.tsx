@@ -1,5 +1,5 @@
 "use client"
-import CreateConnectionBtn from "@/components/create_connection_btn"
+import CreateConnectionBtn from "@/components/create-connection-btn"
 import { useQuery } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
 import Image from "next/image"
