@@ -1,9 +1,9 @@
-"use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { invoke } from "@tauri-apps/api/tauri";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "../../../components/ui/button";
+"use client"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { invoke } from "@tauri-apps/api/tauri"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "../../../components/ui/button"
 import {
   Form,
   FormControl,
@@ -11,20 +11,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "../../../components/ui/form";
-import { Input } from "../../../components/ui/input";
+} from "../../../components/ui/form"
+import { Input } from "../../../components/ui/input"
 
 const formSchema = z.object({
   conn_string: z.string()
-});
+})
 
 const ConnectionString = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
-  });
+  })
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await invoke("test_conn");
-  };
+    await invoke("test_conn")
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
@@ -53,7 +53,7 @@ const ConnectionString = () => {
         </div>
       </form>
     </Form>
-  );
-};
+  )
+}
 
-export default ConnectionString;
+export default ConnectionString

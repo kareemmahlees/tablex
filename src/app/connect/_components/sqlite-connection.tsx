@@ -1,34 +1,34 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { open } from "@tauri-apps/api/dialog";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { connectSQLite, testSQLiteConnection } from "../actions";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { open } from "@tauri-apps/api/dialog"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { connectSQLite, testSQLiteConnection } from "../actions"
 
 const formSchema = z.object({
   connName: z.string().min(1, { message: "Connection name is required" })
-});
+})
 
 const SqliteConnectionDetails = () => {
-  const router = useRouter();
-  const [selectedPath, setSelectedPath] = useState("");
+  const router = useRouter()
+  const [selectedPath, setSelectedPath] = useState("")
   const {
     handleSubmit,
     register,
     formState: { errors }
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
-  });
+  })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    connectSQLite(values.connName, selectedPath);
-    router.push("/connections");
-  };
+    connectSQLite(values.connName, selectedPath)
+    router.push("/connections")
+  }
 
   return (
     <>
@@ -43,8 +43,8 @@ const SqliteConnectionDetails = () => {
                 extensions: ["db"]
               }
             ]
-          });
-          setSelectedPath((selected as string) ?? "");
+          })
+          setSelectedPath((selected as string) ?? "")
         }}
       >
         Select DB file
@@ -80,7 +80,7 @@ const SqliteConnectionDetails = () => {
         </form>
       )}
     </>
-  );
-};
+  )
+}
 
-export default SqliteConnectionDetails;
+export default SqliteConnectionDetails

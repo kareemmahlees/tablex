@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   ColumnDef,
@@ -8,8 +8,8 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable
-} from "@tanstack/react-table";
-import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
+} from "@tanstack/react-table"
+import { register, unregisterAll } from "@tauri-apps/api/globalShortcut"
 
 import {
   Table,
@@ -18,7 +18,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 
 import {
   ContextMenu,
@@ -26,30 +26,30 @@ import {
   ContextMenuItem,
   ContextMenuShortcut,
   ContextMenuTrigger
-} from "@/components/ui/context-menu";
-import { Sheet } from "@/components/ui/sheet";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { deleteRows } from "../actions";
-import EditRowSheet from "./edit-row-sheet";
+} from "@/components/ui/context-menu"
+import { Sheet } from "@/components/ui/sheet"
+import { useQueryClient } from "@tanstack/react-query"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { deleteRows } from "../actions"
+import EditRowSheet from "./edit-row-sheet"
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data
 }: DataTableProps<TData, TValue>) {
-  const tableName = useSearchParams().get("tableName")!;
-  const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [rowSelection, setRowSelection] = useState({});
-  const [contextMenuRow, setContextMenuRow] = useState<Row<any>>();
+  const tableName = useSearchParams().get("tableName")!
+  const queryClient = useQueryClient()
+  const [open, setOpen] = useState(false)
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
+  const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const table = useReactTable({
     data,
     columns,
@@ -61,14 +61,14 @@ export function DataTable<TData, TValue>({
       sorting,
       rowSelection
     }
-  });
+  })
   useEffect(() => {
     unregisterAll().then((_) => {
       register("Delete", () => {
-        const column = table.getAllColumns()[1].id;
+        const column = table.getAllColumns()[1].id
         const rows = table
           .getSelectedRowModel()
-          .rows.map((row) => row.getValue(column));
+          .rows.map((row) => row.getValue(column))
 
         if (rows.length > 0) {
           toast.promise(
@@ -76,22 +76,22 @@ export function DataTable<TData, TValue>({
             {
               loading: "Operating...",
               success: (rowsAffected) => {
-                queryClient.invalidateQueries({ queryKey: ["table_rows"] });
+                queryClient.invalidateQueries({ queryKey: ["table_rows"] })
                 return `Successfully deleted ${
                   rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-                }`;
+                }`
               },
               error: (err) => err
             },
             {
               position: "top-right"
             }
-          );
+          )
         }
-        table.toggleAllRowsSelected(false);
-      });
-    });
-  });
+        table.toggleAllRowsSelected(false)
+      })
+    })
+  })
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -113,7 +113,7 @@ export function DataTable<TData, TValue>({
                             header.getContext()
                           )}
                     </TableHead>
-                  );
+                  )
                 })}
               </TableRow>
             ))}
@@ -152,10 +152,10 @@ export function DataTable<TData, TValue>({
               <ContextMenuContent>
                 <ContextMenuItem
                   onSelect={async (e) => {
-                    const column = table.getAllColumns()[1].id;
-                    const row = contextMenuRow?.getValue<number>(column)!;
-                    await deleteRows(column, row, tableName);
-                    queryClient.invalidateQueries({ queryKey: ["table_rows"] });
+                    const column = table.getAllColumns()[1].id
+                    const row = contextMenuRow?.getValue<number>(column)!
+                    await deleteRows(column, row, tableName)
+                    queryClient.invalidateQueries({ queryKey: ["table_rows"] })
                   }}
                 >
                   Delete
@@ -174,5 +174,5 @@ export function DataTable<TData, TValue>({
         <EditRowSheet setOpenSheet={setOpen} row={contextMenuRow!} />
       )}
     </Sheet>
-  );
+  )
 }

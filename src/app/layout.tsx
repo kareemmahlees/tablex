@@ -1,18 +1,18 @@
-import Providers from "@/lib/providers";
-import { GeistSans } from "geist/font/sans";
-import type { Metadata } from "next";
+import Providers from "@/lib/providers"
+import { GeistSans } from "geist/font/sans"
+import type { Metadata } from "next"
 
-import "./globals.css";
+import "./globals.css"
 
 export const metadata: Metadata = {
   title: "TableX",
   description: "Table viewer for modern developers"
-};
+}
 
 export default function RootLayout({
   children
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -20,5 +20,5 @@ export default function RootLayout({
         <Providers>{children}</Providers>
       </body>
     </html>
-  );
+  )
 }

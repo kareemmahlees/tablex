@@ -1,19 +1,19 @@
-"use client";
-import CreateConnectionBtn from "@/components/create_connection_btn";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { getConnections } from "./actions";
+"use client"
+import CreateConnectionBtn from "@/components/create_connection_btn"
+import { useQuery } from "@tanstack/react-query"
+import { Loader2 } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { getConnections } from "./actions"
 
 const ConnectionsPage = () => {
-  const router = useRouter();
+  const router = useRouter()
   const { data: connections } = useQuery({
     queryKey: [],
     queryFn: async () => {
-      return await getConnections();
+      return await getConnections()
     }
-  });
+  })
 
   return (
     <main className="text-background  flex items-start h-full">
@@ -38,7 +38,7 @@ const ConnectionsPage = () => {
                   aria-label="hidden"
                 />
               </>
-            );
+            )
           })
         ) : (
           <div className="flex flex-col items-center justify-center w-full h-full">
@@ -67,7 +67,7 @@ const ConnectionsPage = () => {
         </div>
       </aside>
     </main>
-  );
-};
+  )
+}
 
-export default ConnectionsPage;
+export default ConnectionsPage

@@ -1,14 +1,14 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import { Dispatch, SetStateAction } from "react";
-import toast from "react-hot-toast";
+import { invoke } from "@tauri-apps/api/tauri"
+import { Dispatch, SetStateAction } from "react"
+import toast from "react-hot-toast"
 
 export const getRows = async (tableName: string) => {
-  return await invoke<Record<string, any>[]>("get_rows", { tableName });
-};
+  return await invoke<Record<string, any>[]>("get_rows", { tableName })
+}
 
 export const getColumns = async (tableName: string) => {
-  return await invoke<string[]>("get_columns", { tableName });
-};
+  return await invoke<string[]>("get_columns", { tableName })
+}
 
 export const deleteRows = async (
   col: string,
@@ -19,8 +19,8 @@ export const deleteRows = async (
     col,
     pkRowValues: typeof pkRowValues === "object" ? pkRowValues : [pkRowValues],
     tableName
-  });
-};
+  })
+}
 
 export const updateRow = async (
   tableName: string,
@@ -28,13 +28,13 @@ export const updateRow = async (
   data: Record<string, any>,
   setOpenSheet: Dispatch<SetStateAction<boolean>>
 ) => {
-  const command = invoke("update_row", { tableName, pkValue, data });
+  const command = invoke("update_row", { tableName, pkValue, data })
   toast.promise(command, {
     loading: "Updating...",
     success: (s) => {
-      setOpenSheet(false);
-      return `Successfully updated rows`;
+      setOpenSheet(false)
+      return `Successfully updated rows`
     },
     error: (e: string) => e
-  });
-};
+  })
+}

@@ -1,21 +1,21 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem
-} from "@/components/ui/command";
+} from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
-import ConnectionRadio from "./_components/conn-radio";
-import SqliteConnectionDetails from "./_components/sqlite-connection";
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { useState } from "react"
+import ConnectionRadio from "./_components/conn-radio"
+import SqliteConnectionDetails from "./_components/sqlite-connection"
 
 const frameworks = [
   {
@@ -30,15 +30,15 @@ const frameworks = [
     value: "sqlite",
     label: "SQLite"
   }
-];
+]
 
 interface ConnectionParamsProps {
-  type: "mysql" | "psql";
+  type: "mysql" | "psql"
 }
 
 const ConnectionPage = () => {
-  const [open, setOpen] = useState(false);
-  const [driver, setDriver] = useState("");
+  const [open, setOpen] = useState(false)
+  const [driver, setDriver] = useState("")
   return (
     <main className="h-full bg-primary text-white flex items-center justify-center bg-[url(/texture.svg)] bg-contain ">
       <section className="flex flex-col items-center gap-y-10">
@@ -67,8 +67,8 @@ const ConnectionPage = () => {
                     key={framework.value}
                     value={framework.value}
                     onSelect={(currentValue) => {
-                      setDriver(currentValue === driver ? "" : currentValue);
-                      setOpen(false);
+                      setDriver(currentValue === driver ? "" : currentValue)
+                      setOpen(false)
                     }}
                   >
                     <Check
@@ -90,7 +90,7 @@ const ConnectionPage = () => {
         )}
       </section>
     </main>
-  );
-};
+  )
+}
 
-export default ConnectionPage;
+export default ConnectionPage

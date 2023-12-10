@@ -1,58 +1,54 @@
-"use client";
-import { useQuery } from "@tanstack/react-query";
-import { Loader2, Table } from "lucide-react";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+"use client"
+import { useQuery } from "@tanstack/react-query"
+import { Loader2, Table } from "lucide-react"
+import Image from "next/image"
+import { useRouter, useSearchParams } from "next/navigation"
 
-import { KeyboardEvent, PropsWithChildren, useState } from "react";
-import CreateNewRowBtn from "./_components/create-row";
-import {
-  establishConnection,
-  getConnectionDetails,
-  getTables
-} from "./actions";
+import { KeyboardEvent, PropsWithChildren, useState } from "react"
+import CreateNewRowBtn from "./_components/create-row"
+import { establishConnection, getConnectionDetails, getTables } from "./actions"
 
 const TablesLayout = ({ children }: PropsWithChildren) => {
-  const router = useRouter();
-  const params = useSearchParams();
-  const [tables, setTables] = useState<string[]>([]);
-  const connectionId = params.get("id")!;
-  const tableName = params.get("tableName");
+  const router = useRouter()
+  const params = useSearchParams()
+  const [tables, setTables] = useState<string[]>([])
+  const connectionId = params.get("id")!
+  const tableName = params.get("tableName")
 
   const { data, isLoading } = useQuery({
     queryKey: [],
     queryFn: async () => {
-      const connDetails = await getConnectionDetails(connectionId);
-      await establishConnection(connDetails.conn_string);
-      const tables = await getTables();
-      setTables(tables);
-      return { connName: connDetails.conn_name, tables };
+      const connDetails = await getConnectionDetails(connectionId)
+      await establishConnection(connDetails.conn_string)
+      const tables = await getTables()
+      setTables(tables)
+      return { connName: connDetails.conn_name, tables }
     }
-  });
+  })
 
-  let timeout: NodeJS.Timeout;
+  let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    const searchPattern = e.currentTarget.value;
+    const searchPattern = e.currentTarget.value
     if (searchPattern === "") {
-      setTables(data?.tables!);
-      return;
+      setTables(data?.tables!)
+      return
     }
 
-    let regex = new RegExp(`.*${searchPattern}.*`);
-    clearTimeout(timeout);
+    let regex = new RegExp(`.*${searchPattern}.*`)
+    clearTimeout(timeout)
 
     timeout = setTimeout(() => {
-      const filteredTables = tables.filter((table) => regex.test(table));
-      setTables(filteredTables);
-    }, 500);
-  };
+      const filteredTables = tables.filter((table) => regex.test(table))
+      setTables(filteredTables)
+    }, 500)
+  }
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <Loader2 className="w-10 h-10 animate-spin" color="white" />
       </div>
-    );
+    )
   }
   return (
     <>
@@ -78,13 +74,13 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
                     onClick={() => {
                       router.push(
                         `/dashboard/details?tableName=${table}&id=${connectionId}`
-                      );
+                      )
                     }}
                   >
                     <Table size={16} className="fill-amber-600 text-black" />
                     {table}
                   </li>
-                );
+                )
               })}
             </ul>
           </div>
@@ -100,7 +96,7 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default TablesLayout;
+export default TablesLayout

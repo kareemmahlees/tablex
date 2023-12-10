@@ -1,15 +1,15 @@
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FC, useState } from "react";
-import ConnectionParams from "./conn-params";
-import ConnectionString from "./conn-string";
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { FC, useState } from "react"
+import ConnectionParams from "./conn-params"
+import ConnectionString from "./conn-string"
 
 interface ConnectionParamsProps {
-  driver: "mysql" | "psql";
+  driver: "mysql" | "psql"
 }
 
 const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
-  const [visibleComp, setVisibleComp] = useState(<ConnectionParams />);
+  const [visibleComp, setVisibleComp] = useState(<ConnectionParams />)
   return (
     <>
       <RadioGroup
@@ -18,7 +18,7 @@ const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
         onValueChange={(value) => {
           value === "conn_params"
             ? setVisibleComp(<ConnectionParams />)
-            : setVisibleComp(<ConnectionString />);
+            : setVisibleComp(<ConnectionString />)
         }}
       >
         <div className="flex items-center space-x-2">
@@ -32,7 +32,7 @@ const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
       </RadioGroup>
       {visibleComp}
     </>
-  );
-};
+  )
+}
 
-export default ConnectionRadio;
+export default ConnectionRadio

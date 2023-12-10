@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import Image from "next/image";
+import Image from "next/image"
 
 const ConnectionPage = () => {
   return (
@@ -16,7 +16,7 @@ const ConnectionPage = () => {
       <br />
       to get started
     </div>
-  );
-};
+  )
+}
 
-export default ConnectionPage;
+export default ConnectionPage

@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/tauri"
 
 export const checkConsExist = async () => {
-  return await invoke<boolean>("connections_exist");
-};
+  return await invoke<boolean>("connections_exist")
+}
