@@ -7,7 +7,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable
 } from "@tanstack/react-table";
 import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
 
@@ -17,7 +17,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 
 import {
@@ -25,7 +25,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuShortcut,
-  ContextMenuTrigger,
+  ContextMenuTrigger
 } from "@/components/ui/context-menu";
 import { Sheet } from "@/components/ui/sheet";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,7 +42,7 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  data
 }: DataTableProps<TData, TValue>) {
   const tableName = useSearchParams().get("tableName")!;
   const queryClient = useQueryClient();
@@ -59,8 +59,8 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
-      rowSelection,
-    },
+      rowSelection
+    }
   });
   useEffect(() => {
     unregisterAll().then((_) => {
@@ -81,10 +81,10 @@ export function DataTable<TData, TValue>({
                   rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
                 }`;
               },
-              error: (err) => err,
+              error: (err) => err
             },
             {
-              position: "top-right",
+              position: "top-right"
             }
           );
         }

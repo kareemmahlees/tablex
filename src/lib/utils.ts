@@ -17,7 +17,7 @@ export function dirtyValues(
     Object.keys(dirtyFields).map((key) => [
       key,
       // @ts-ignore
-      dirtyValues(dirtyFields[key], allValues[key]),
+      dirtyValues(dirtyFields[key], allValues[key])
     ])
   );
 }

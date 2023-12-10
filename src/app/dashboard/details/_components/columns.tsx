@@ -12,7 +12,7 @@ export const generateColumns = async (
       accessorKey: colName,
       header: ({ column }: { column: any }) => {
         return <SortingButton column={column} title={colName} />;
-      },
+      }
     };
   });
   columnsDefinition.unshift({
@@ -47,7 +47,7 @@ export const generateColumns = async (
       );
     },
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: false
   });
   return columnsDefinition;
 };

@@ -4,12 +4,12 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandItem,
+  CommandItem
 } from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -20,16 +20,16 @@ import SqliteConnectionDetails from "./_components/sqlite-connection";
 const frameworks = [
   {
     value: "mysql",
-    label: "MySQL",
+    label: "MySQL"
   },
   {
     value: "psql",
-    label: "PostgreSQL",
+    label: "PostgreSQL"
   },
   {
     value: "sqlite",
-    label: "SQLite",
-  },
+    label: "SQLite"
+  }
 ];
 
 interface ConnectionParamsProps {

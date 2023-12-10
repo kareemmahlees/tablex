@@ -24,7 +24,7 @@ jobs:
       - name: Validate PR commits
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
-  eslint:
+  eslint-prettier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,6 +36,8 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
       - name: Install Deps
-        run: yarn add next eslint eslint-config-next
+        run: yarn add next eslint eslint-config-next prettier
       - name: Run Eslint
         run: yarn lint
+      - name: Run Prettier
+        run: yarn check-format

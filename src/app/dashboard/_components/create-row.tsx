@@ -3,13 +3,13 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
+  SheetTrigger
 } from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
+  TooltipTrigger
 } from "@/components/ui/tooltip";
 import { useQuery } from "@tanstack/react-query";
 
@@ -60,7 +60,7 @@ const CreateNewRowBtn = () => {
 export default CreateNewRowBtn;
 
 const CreateNewRowForm = ({
-  setOpenSheet,
+  setOpenSheet
 }: {
   setOpenSheet: Dispatch<SetStateAction<boolean>>;
 }) => {
@@ -71,15 +71,15 @@ const CreateNewRowForm = ({
     queryFn: async () => {
       const result = await getZodSchemaFromCols(tableName);
       return result;
-    },
+    }
   });
 
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors }
   } = useForm<z.infer<NonNullable<typeof data>>>({
-    resolver: zodResolver(data!),
+    resolver: zodResolver(data!)
   });
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
     await createRow(tableName, values, setOpenSheet);

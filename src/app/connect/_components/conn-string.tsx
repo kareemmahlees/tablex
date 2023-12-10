@@ -10,17 +10,17 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../../../components/ui/form";
 import { Input } from "../../../components/ui/input";
 
 const formSchema = z.object({
-  conn_string: z.string(),
+  conn_string: z.string()
 });
 
 const ConnectionString = () => {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema)
   });
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     await invoke("test_conn");

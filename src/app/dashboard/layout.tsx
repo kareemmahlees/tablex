@@ -9,7 +9,7 @@ import CreateNewRowBtn from "./_components/create-row";
 import {
   establishConnection,
   getConnectionDetails,
-  getTables,
+  getTables
 } from "./actions";
 
 const TablesLayout = ({ children }: PropsWithChildren) => {
@@ -27,7 +27,7 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
       const tables = await getTables();
       setTables(tables);
       return { connName: connDetails.conn_name, tables };
-    },
+    }
   });
 
   let timeout: NodeJS.Timeout;

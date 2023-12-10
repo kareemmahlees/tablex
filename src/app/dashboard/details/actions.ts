@@ -18,7 +18,7 @@ export const deleteRows = async (
   return await invoke<number>("delete_row", {
     col,
     pkRowValues: typeof pkRowValues === "object" ? pkRowValues : [pkRowValues],
-    tableName,
+    tableName
   });
 };
 
@@ -35,6 +35,6 @@ export const updateRow = async (
       setOpenSheet(false);
       return `Successfully updated rows`;
     },
-    error: (e: string) => e,
+    error: (e: string) => e
   });
 };

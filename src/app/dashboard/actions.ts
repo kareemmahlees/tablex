@@ -6,13 +6,13 @@ import { z } from "zod";
 
 export const getConnectionDetails = async (connId: string) => {
   return await invoke<ConnectionDetails>("get_connection_details", {
-    connId,
+    connId
   });
 };
 
 export const establishConnection = async (connString: string) => {
   return await invoke<void>("connect_sqlite", {
-    connString,
+    connString
   });
 };
 
@@ -22,7 +22,7 @@ export const getTables = async () => {
 
 export const getColsDefinition = async (tableName: string) => {
   return await invoke<Record<string, string>>("get_columns_definition", {
-    tableName,
+    tableName
   });
 };
 
@@ -64,6 +64,6 @@ export const createRow = async (
       setOpenSheet(false);
       return `Successfully created ${s} rows`;
     },
-    error: (e: string) => e,
+    error: (e: string) => e
   });
 };

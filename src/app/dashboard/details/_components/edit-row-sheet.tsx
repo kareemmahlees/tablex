@@ -5,7 +5,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -23,7 +23,7 @@ import { updateRow } from "../actions";
 
 const EditRowSheet = ({
   setOpenSheet,
-  row,
+  row
 }: {
   setOpenSheet: Dispatch<SetStateAction<boolean>>;
   row: Row<any>;
@@ -33,11 +33,11 @@ const EditRowSheet = ({
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: [tableName],
-    queryFn: async () => (await getZodSchemaFromCols(tableName)).partial(),
+    queryFn: async () => (await getZodSchemaFromCols(tableName)).partial()
   });
 
   const form = useForm<z.infer<NonNullable<typeof data>>>({
-    resolver: zodResolver(data!),
+    resolver: zodResolver(data!)
   });
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
     await updateRow(

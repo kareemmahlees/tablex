@@ -11,7 +11,7 @@ import { z } from "zod";
 import { connectSQLite, testSQLiteConnection } from "../actions";
 
 const formSchema = z.object({
-  connName: z.string().min(1, { message: "Connection name is required" }),
+  connName: z.string().min(1, { message: "Connection name is required" })
 });
 
 const SqliteConnectionDetails = () => {
@@ -20,9 +20,9 @@ const SqliteConnectionDetails = () => {
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors }
   } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema)
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -40,9 +40,9 @@ const SqliteConnectionDetails = () => {
             filters: [
               {
                 name: "DB File",
-                extensions: ["db"],
-              },
-            ],
+                extensions: ["db"]
+              }
+            ]
           });
           setSelectedPath((selected as string) ?? "");
         }}
@@ -55,7 +55,7 @@ const SqliteConnectionDetails = () => {
             <Label htmlFor="connName">Connection Name</Label>
             <Input
               className={cn("placeholder:text-muted-foreground text-black ", {
-                "focus-visible:ring-red-500": errors.connName,
+                "focus-visible:ring-red-500": errors.connName
               })}
               {...register("connName")}
               placeholder="e.g awesome project dev"

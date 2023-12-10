@@ -12,7 +12,7 @@ const ConnectionsPage = () => {
     queryKey: [],
     queryFn: async () => {
       return await getConnections();
-    },
+    }
   });
 
   return (

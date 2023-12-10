@@ -9,7 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../../../components/ui/form";
 import { Input } from "../../../components/ui/input";
 
@@ -17,12 +17,12 @@ const formSchema = z.object({
   username: z.string(),
   password: z.string(),
   host: z.string().ip(),
-  port: z.string(),
+  port: z.string()
 });
 
 const ConnectionParams = () => {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema)
   });
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);

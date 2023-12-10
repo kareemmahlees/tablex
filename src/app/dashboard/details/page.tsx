@@ -16,7 +16,7 @@ const TableDataPage = () => {
       let rows = await getRows(tableName);
       let columns = await generateColumns(tableName);
       return { columns, rows };
-    },
+    }
   });
   if (isLoading) {
     return (
