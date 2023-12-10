@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation"
 import { useState, type FC } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { connectSQLite, testSQLiteConnection } from "../actions"
+import { createConnectionRecord, testConnection } from "../actions"
 
 const SqliteConnection = () => {
   const [selectedPath, setSelectedPath] = useState<string | null>(null)
@@ -59,7 +59,7 @@ const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
     resolver: zodResolver(formSchema)
   })
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    connectSQLite(values.connName, selectedPath as string)
+    createConnectionRecord(values.connName, `sqlite:${selectedPath}`)
     router.push("/connections")
   }
   return (
@@ -90,7 +90,7 @@ const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
           <Button
             type="button"
             className="bg-green-500 hover:bg-green-700 w-[100px]"
-            onClick={() => testSQLiteConnection(selectedPath as string)}
+            onClick={() => testConnection(`sqlite:${selectedPath}`)}
           >
             Test
           </Button>

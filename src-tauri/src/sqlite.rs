@@ -1,45 +1,12 @@
 use crate::{utils, DbInstance};
 use serde_json::Map;
 use serde_json::Value as JsonValue;
-use sqlx::{AnyConnection, Column, Connection, Row};
+use sqlx::{Column, Row};
 use std::collections::HashMap;
 use std::iter::Iterator;
 use std::result::Result::Ok;
 use std::vec;
-use tauri::{Runtime, State};
-
-use crate::utils::{write_into_connections_file, Drivers};
-
-#[tauri::command]
-pub async fn test_sqlite_conn(conn_string: String) -> Result<String, String> {
-    sqlx::any::install_default_drivers();
-    let mut con = AnyConnection::connect(conn_string.as_str())
-        .await
-        .map_err(|_| "Couldn't connect to DB".to_string())?;
-    let _ = con
-        .ping()
-        .await
-        .map_err(|_| "DB not responding to Pings".to_string())?;
-
-    let _ = con.close().await;
-
-    Ok("Connection is healthy".to_string())
-}
-
-#[tauri::command]
-pub fn create_sqlite_connection<R: Runtime>(
-    app: tauri::AppHandle<R>,
-    conn_string: String,
-    conn_name: String,
-) -> Result<(), String> {
-    write_into_connections_file(
-        app.path_resolver().app_config_dir(),
-        Drivers::SQLITE,
-        conn_string,
-        conn_name,
-    );
-    Ok(())
-}
+use tauri::State;
 
 #[tauri::command]
 pub async fn connect_sqlite(
