@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
+import { SupportedDrivers } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
@@ -29,15 +30,15 @@ const drivers = [
 ]
 
 const ConnectionPage = () => {
-  const [open, setOpen] = useState(false)
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null)
   return (
-    <main className="relative h-full flex flex-col items-center gap-y-10 justify-center">
-      <Popover open={open} onOpenChange={setOpen}>
+    <main className="relative h-full flex flex-col items-center gap-y-9 justify-center">
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             role="combobox"
-            aria-expanded={open}
+            aria-expanded={isPopoverOpen}
             className="w-[230px] justify-between"
           >
             {selectedDriver
@@ -57,7 +58,7 @@ const ConnectionPage = () => {
                     setSelectedDriver(
                       currentValue === selectedDriver ? null : currentValue
                     )
-                    setOpen(false)
+                    setIsPopoverOpen(false)
                   }}
                 >
                   <Check
@@ -75,8 +76,9 @@ const ConnectionPage = () => {
           </Command>
         </PopoverContent>
       </Popover>
-      {selectedDriver === "sqlite" && <SqliteConnection />}
-      {(selectedDriver === "psql" || selectedDriver === "mysql") && (
+      {selectedDriver === SupportedDrivers.SQLITE && <SqliteConnection />}
+      {(selectedDriver === SupportedDrivers.PSQL ||
+        selectedDriver === SupportedDrivers.MYSQL) && (
         <ConnectionRadio driver={selectedDriver} />
       )}
       <Image
@@ -84,7 +86,7 @@ const ConnectionPage = () => {
         fill
         alt="bg"
         aria-hidden
-        className="object-cover -z-10 opacity-20"
+        className="object-cover -z-10 opacity-20 object-center"
       />
     </main>
   )

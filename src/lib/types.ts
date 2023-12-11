@@ -6,3 +6,9 @@ export interface ConnectionDetails {
 }
 
 export type Connections = Record<string, ConnectionDetails>
+
+export enum SupportedDrivers {
+  SQLITE = "sqlite",
+  PSQL = "psql",
+  MYSQL = "mysql"
+}

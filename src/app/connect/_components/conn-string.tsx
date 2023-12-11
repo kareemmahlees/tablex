@@ -1,9 +1,5 @@
 "use client"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { invoke } from "@tauri-apps/api/tauri"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "../../../components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -11,33 +7,55 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "../../../components/ui/form"
-import { Input } from "../../../components/ui/input"
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { createConnectionRecord, testConnection } from "../actions"
 
 const formSchema = z.object({
-  conn_string: z.string()
+  connName: z.string(),
+  connString: z.string()
 })
 
-const ConnectionString = () => {
+const ConnectionStringForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await invoke("test_conn")
+    await createConnectionRecord(values.connName, values.connString)
+  }
+
+  const onTest = async (values: z.infer<typeof formSchema>) => {
+    await testConnection(values.connString)
   }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
         <FormField
           control={form.control}
-          name="conn_string"
+          name="connName"
+          render={({ field }) => (
+            <FormItem className="col-span-full">
+              <FormLabel>Connection Name</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g awesome project dev" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="connString"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Connection String</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="user:password@host:port"
-                  className="w-[300px] lg:w-[400px] text-muted-foreground ring-offset-cyan-700 border-blue-500"
+                  placeholder="user:password@host:port/dbName"
+                  className="w-[300px] lg:w-[400px]"
                   {...field}
                 />
               </FormControl>
@@ -49,11 +67,16 @@ const ConnectionString = () => {
           <Button variant={"secondary"} type="submit">
             Connect
           </Button>
-          <Button className="bg-green-500 hover:bg-green-700">Test</Button>
+          <Button
+            className="bg-green-500 hover:bg-green-700"
+            onClick={form.handleSubmit(onTest)}
+          >
+            Test
+          </Button>
         </div>
       </form>
     </Form>
   )
 }
 
-export default ConnectionString
+export default ConnectionStringForm

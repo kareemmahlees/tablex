@@ -8,6 +8,8 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { SupportedDrivers } from "@/lib/types"
+import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { open } from "@tauri-apps/api/dialog"
 import { useRouter } from "next/navigation"
@@ -58,13 +60,25 @@ const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createConnectionRecord(values.connName, `sqlite:${selectedPath}`)
+  const onClickConnect = (values: z.infer<typeof formSchema>) => {
+    const connString = constructConnectionString({
+      driver: SupportedDrivers.SQLITE,
+      filePath: selectedPath
+    })
+    createConnectionRecord(values.connName, connString)
     router.push("/connections")
+  }
+
+  const onClickTest = async () => {
+    const connString = constructConnectionString({
+      driver: SupportedDrivers.SQLITE,
+      filePath: selectedPath
+    })
+    await testConnection(connString)
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form className="space-y-8">
         <FormField
           control={form.control}
           name="connName"
@@ -72,11 +86,7 @@ const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
             <FormItem>
               <FormLabel>Connection Name</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="e.g awesome project dev"
-                  className="placeholder:text-muted-foreground placeholder:opacity-40 "
-                  {...field}
-                />
+                <Input placeholder="e.g awesome project dev" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,13 +94,17 @@ const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
         />
         <pre className="text-sm text-muted-foreground">{selectedPath}</pre>
         <div className="col-span-full flex justify-center items-center gap-x-4">
-          <Button variant={"secondary"} className="w-[100px]" type="submit">
+          <Button
+            variant={"secondary"}
+            className="w-[100px]"
+            onClick={form.handleSubmit(onClickConnect)}
+          >
             Connect
           </Button>
           <Button
             type="button"
             className="bg-green-500 hover:bg-green-700 w-[100px]"
-            onClick={() => testConnection(`sqlite:${selectedPath}`)}
+            onClick={onClickTest}
           >
             Test
           </Button>

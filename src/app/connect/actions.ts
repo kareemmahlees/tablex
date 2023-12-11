@@ -5,11 +5,17 @@ export const testConnection = async (connString: string) => {
   const command = invoke<string>("test_connection", {
     connString
   })
-  toast.promise(command, {
-    loading: "Loading",
-    success: (s) => s,
-    error: (e: string) => e
-  })
+  toast.promise(
+    command,
+    {
+      loading: "Loading",
+      success: (s) => s,
+      error: (e: string) => e
+    },
+    {
+      id: "connection"
+    }
+  )
 }
 
 export const createConnectionRecord = async (

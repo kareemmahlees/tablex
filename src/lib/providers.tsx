@@ -16,7 +16,7 @@ const Providers = ({ children }: PropsWithChildren) => {
         disableTransitionOnChange
       >
         {children}
-        <Toaster />
+        <Toaster position="top-right" />
       </ThemeProvider>
     </QueryClientProvider>
   )
