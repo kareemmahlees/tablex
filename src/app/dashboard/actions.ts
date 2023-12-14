@@ -1,6 +1,7 @@
 import { ConnectionDetails } from "@/lib/types"
+import { register } from "@tauri-apps/api/globalShortcut"
 import { invoke } from "@tauri-apps/api/tauri"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, RefObject, SetStateAction } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
 
@@ -65,5 +66,15 @@ export const createRow = async (
       return `Successfully created ${s} rows`
     },
     error: (e: string) => e
+  })
+}
+
+export const registerSearchShortcut = (
+  inputRef: RefObject<HTMLInputElement>
+) => {
+  register("CommandOrControl+S", () => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
   })
 }

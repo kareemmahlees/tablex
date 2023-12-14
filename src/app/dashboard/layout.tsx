@@ -1,19 +1,41 @@
 "use client"
 import { useQuery } from "@tanstack/react-query"
-import { Loader2, Table } from "lucide-react"
-import Image from "next/image"
+import { Search, Table } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-import { KeyboardEvent, PropsWithChildren, useState } from "react"
+import LoadingSpinner from "@/components/loading-spinner"
+import { Input } from "@/components/ui/input"
+import { unregisterAll } from "@tauri-apps/api/globalShortcut"
+import {
+  KeyboardEvent,
+  PropsWithChildren,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FC
+} from "react"
 import CreateNewRowBtn from "./_components/create-row"
-import { establishConnection, getConnectionDetails, getTables } from "./actions"
+import {
+  establishConnection,
+  getConnectionDetails,
+  getTables,
+  registerSearchShortcut
+} from "./actions"
 
-const TablesLayout = ({ children }: PropsWithChildren) => {
+const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter()
   const params = useSearchParams()
-  const [tables, setTables] = useState<string[]>([])
   const connectionId = params.get("id")!
-  const tableName = params.get("tableName")
+  const tableName = params.get("tableName")!
+  const [tables, setTables] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useLayoutEffect(() => {
+    // unregistering is useful to see changes made in shortcuts
+    unregisterAll().then(() => {
+      registerSearchShortcut(inputRef)
+    })
+  })
 
   const { data, isLoading } = useQuery({
     queryKey: [],
@@ -29,74 +51,64 @@ const TablesLayout = ({ children }: PropsWithChildren) => {
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const searchPattern = e.currentTarget.value
-    if (searchPattern === "") {
-      setTables(data?.tables!)
-      return
-    }
+    if (searchPattern === "") return setTables(data?.tables!)
 
-    let regex = new RegExp(`.*${searchPattern}.*`)
     clearTimeout(timeout)
 
     timeout = setTimeout(() => {
-      const filteredTables = tables.filter((table) => regex.test(table))
+      const filteredTables = tables.filter((table) =>
+        table.includes(searchPattern)
+      )
       setTables(filteredTables)
-    }, 500)
+    }, 100)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="w-10 h-10 animate-spin" color="white" />
-      </div>
-    )
-  }
+  if (isLoading) <LoadingSpinner />
+
   return (
-    <>
-      <nav className="w-full bg-amber-600 h-6 fixed top-0 text-white font-semibold text-center z-20">
-        {data?.connName} • Connected
-      </nav>
-      <div className="flex h-screen">
-        <aside className="text-white z-10 flex flex-col items-start justify-between w-48 lg:w-56 p-3  bg-zinc-800  mt-[1.5rem]">
-          <div className="flex flex-col items-start gap-y-5">
-            <input
-              type="text"
-              className="mt-2 bg-foreground w-full h-6 lg:h-8 placeholder:text-xs lg:placeholder:text-base text-white/60 text-xs lg:text-base  focus-visible:ring-gray-800 outline-none rounded-md p-1 flex items-center placeholder:opacity-50"
-              placeholder="type to search"
+    <main className="flex h-screen">
+      <aside className="bg-zinc-800 flex flex-col items-start justify-between w-56 lg:w-72 p-3 lg:p-5 overflow-y-auto">
+        <div className="flex flex-col items-start gap-y-4 lg:gap-y-5 mb-4">
+          <h1 className="font-bold text-lg">{data?.connName}</h1>
+          <div className="flex items-center bg-background rounded-sm px-1">
+            <Search className="h-3 lg:h-5" color="#4a506f" />
+            <Input
+              ref={inputRef}
               onKeyUp={handleKeyUp}
+              placeholder="Search..."
+              className="h-6 lg:h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-xs lg:placeholder:text-base text-sm"
             />
-            <ul className="flex flex-col items-start gap-y-1">
-              {tables.map((table, index) => {
-                return (
-                  <li
-                    key={index}
-                    className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
-                    role="button"
-                    onClick={() => {
-                      router.push(
-                        `/dashboard/details?tableName=${table}&id=${connectionId}`
-                      )
-                    }}
-                  >
-                    <Table size={16} className="fill-amber-600 text-black" />
-                    {table}
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="items-center text-xs gap-x-1 hidden lg:flex">
+              <p className="bg-muted rounded-sm px-1 py-[0.5px]">Ctrl</p>
+              <p>+</p>
+              <p className="bg-muted rounded-sm px-1 py-[0.5px]">S</p>
+            </div>
           </div>
-          {tableName && <CreateNewRowBtn />}
-        </aside>
-        {tables.length == 0 ? (
-          <div className="flex flex-col w-full h-full items-center justify-center text-muted-foreground text-sm font-semibold gap-y-3 opacity-50 lg:text-base">
-            <Image src={"/empty.svg"} alt="empty" width={100} height={100} />
-            <p>Breity empty around here</p>
-          </div>
-        ) : (
-          <div className="mt-[1.5rem] overflow-auto w-full">{children}</div>
-        )}
-      </div>
-    </>
+          <ul className="flex flex-col items-start gap-y-1 ">
+            {tables.map((table, index) => {
+              return (
+                <li
+                  key={index}
+                  className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
+                  role="button"
+                  onClick={() => {
+                    router.push(
+                      `/dashboard/details?tableName=${table}&id=${connectionId}`
+                    )
+                  }}
+                >
+                  <Table size={16} className="fill-amber-600 text-black" />
+                  {table}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+        {tableName && <CreateNewRowBtn />}
+      </aside>
+      <div className="overflow-auto w-full h-full">{children}</div>
+    </main>
   )
 }
 
-export default TablesLayout
+export default DashboardLayout
