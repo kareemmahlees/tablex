@@ -20,7 +20,7 @@ const ConnectionsPage = () => {
 
   return (
     <main className="flex items-start h-full">
-      <ul className="flex flex-col justify-start h-full gap-y-5 flex-[0.5] p-5 lg:p-10">
+      <ul className="flex flex-col justify-start h-full gap-y-5 flex-[0.5] p-5 lg:p-10 overflow-y-auto">
         {Object.entries(connections).map(([id, config]) => {
           return (
             <li
