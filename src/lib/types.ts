@@ -1,14 +1,26 @@
 export interface ConnectionDetails {
-  // naming is lower case because how they are stored in rust
-  conn_string: string
-  conn_name: string
-  driver: SupportedDrivers
+  connString: string
+  connName: string
+  driver: DriversValues
 }
 
 export type Connections = Record<string, ConnectionDetails>
 
-export enum SupportedDrivers {
-  SQLITE = "sqlite",
-  PSQL = "psql",
-  MYSQL = "mysql"
-}
+export const Drivers = {
+  SQLite: "sqlite",
+  PostgreSQL: "postgresql",
+  MySQL: "mysql"
+} as const
+
+/**
+ * This is only used in the combo box at the connect page
+ * to get a mapable object
+ */
+export const MappedDrivers = Object.entries(Drivers).map(([key, value]) => {
+  return {
+    label: key,
+    value
+  }
+})
+
+export type DriversValues = (typeof Drivers)[keyof typeof Drivers]

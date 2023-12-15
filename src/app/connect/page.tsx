@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { SupportedDrivers } from "@/lib/types"
+import { Drivers, MappedDrivers, type DriversValues } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
@@ -14,24 +14,11 @@ import { useState } from "react"
 import ConnectionRadio from "./_components/conn-radio"
 import SqliteConnection from "./_components/sqlite-connection"
 
-const drivers = [
-  {
-    value: "mysql",
-    label: "MySQL"
-  },
-  {
-    value: "psql",
-    label: "PostgreSQL"
-  },
-  {
-    value: "sqlite",
-    label: "SQLite"
-  }
-]
-
 const ConnectionPage = () => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [selectedDriver, setSelectedDriver] = useState<string | null>(null)
+  const [selectedDriver, setSelectedDriver] = useState<DriversValues | null>(
+    null
+  )
   return (
     <main className="relative h-full flex flex-col items-center gap-y-9 justify-center">
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -42,7 +29,8 @@ const ConnectionPage = () => {
             className="w-[230px] justify-between"
           >
             {selectedDriver
-              ? drivers.find((driver) => driver.value === selectedDriver)?.label
+              ? MappedDrivers.find((driver) => driver.value === selectedDriver)
+                  ?.label
               : "Select a Database Driver"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -50,13 +38,15 @@ const ConnectionPage = () => {
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandGroup>
-              {drivers.map((driver) => (
+              {MappedDrivers.map((driver) => (
                 <CommandItem
                   key={driver.value}
                   value={driver.value}
                   onSelect={(currentValue) => {
                     setSelectedDriver(
-                      currentValue === selectedDriver ? null : currentValue
+                      currentValue === selectedDriver
+                        ? null
+                        : (currentValue as DriversValues)
                     )
                     setIsPopoverOpen(false)
                   }}
@@ -76,10 +66,10 @@ const ConnectionPage = () => {
           </Command>
         </PopoverContent>
       </Popover>
-      {selectedDriver === SupportedDrivers.SQLITE && <SqliteConnection />}
-      {(selectedDriver === SupportedDrivers.PSQL ||
-        selectedDriver === SupportedDrivers.MYSQL) && (
-        <ConnectionRadio driver={selectedDriver} />
+      {selectedDriver === Drivers.SQLite ? (
+        <SqliteConnection />
+      ) : (
+        selectedDriver && <ConnectionRadio driver={selectedDriver} />
       )}
       <Image
         src={"/bg-2.svg"}

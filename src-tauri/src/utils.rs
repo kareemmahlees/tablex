@@ -6,17 +6,20 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::PathBuf;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
 pub enum Drivers {
-    SQLITE,
-    PSQL,
-    MYSQL,
+    SQLite,
+    PostgreSQL,
+    MySQL,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct ConnConfig {
     driver: Drivers,
+    #[serde(rename = "connString")]
     conn_string: String,
+    #[serde(rename = "connName")]
     conn_name: String,
 }
 

@@ -1,5 +1,11 @@
-use crate::utils::{read_from_connections_file, write_into_connections_file, Drivers};
-use sqlx::{AnyConnection, Connection};
+use std::time::Duration;
+
+use crate::{
+    utils::{read_from_connections_file, write_into_connections_file, Drivers},
+    DbInstance,
+};
+use sqlx::{any::AnyPoolOptions, AnyConnection, Connection};
+use tauri::State;
 
 #[tauri::command]
 pub async fn test_connection(conn_string: String) -> Result<String, String> {
@@ -22,13 +28,32 @@ pub fn create_connection_record(
     app: tauri::AppHandle,
     conn_string: String,
     conn_name: String,
+    driver: Drivers,
 ) -> Result<(), String> {
     write_into_connections_file(
         app.path_resolver().app_config_dir(),
-        Drivers::SQLITE,
+        driver,
         conn_string,
         conn_name,
     );
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn establish_connection(
+    connection: State<'_, DbInstance>,
+    conn_string: String,
+    driver: Drivers,
+) -> Result<(), String> {
+    sqlx::any::install_default_drivers();
+    let pool = AnyPoolOptions::new()
+        .acquire_timeout(Duration::new(5, 0))
+        .test_before_acquire(true)
+        .connect(&conn_string)
+        .await
+        .map_err(|_| "Couldn't establish connection to db".to_string())?;
+    *connection.pool.lock().await = Some(pool);
+    *connection.driver.lock().await = Some(driver);
     Ok(())
 }
 

@@ -3,36 +3,38 @@
 
 mod connection;
 mod sqlite;
+mod table;
 mod utils;
 
 use connection::{
-    connections_exist, create_connection_record, get_connection_details, get_connections,
-    test_connection,
+    connections_exist, create_connection_record, establish_connection, get_connection_details,
+    get_connections, test_connection,
 };
-use sqlite::{
-    connect_sqlite, create_row, delete_row, get_columns, get_columns_definition, get_rows,
-    get_tables, update_row,
-};
+use sqlite::{create_row, delete_row, get_columns, get_columns_definition, get_rows, update_row};
 use sqlx::Pool;
+use table::get_tables;
 use tokio::sync::Mutex;
+use utils::Drivers;
 
-#[derive(Default, Debug)]
+#[derive(Default)]
 pub struct DbInstance {
     pool: Mutex<Option<Pool<sqlx::any::Any>>>,
+    driver: Mutex<Option<Drivers>>,
 }
 
 fn main() {
     tauri::Builder::default()
         .manage(DbInstance {
             pool: Default::default(),
+            driver: Default::default(),
         })
         .invoke_handler(tauri::generate_handler![
             test_connection,
             create_connection_record,
+            establish_connection,
             connections_exist,
             get_connections,
             get_connection_details,
-            connect_sqlite,
             get_tables,
             get_rows,
             get_columns,

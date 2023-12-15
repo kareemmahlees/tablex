@@ -28,11 +28,11 @@ const ConnectionsPage = () => {
               role="button"
               onClick={() => router.push(`/dashboard?id=${id}`)}
             >
-              <p className="lg:text-xl font-medium">{config.conn_name}</p>
+              <p className="lg:text-lg font-medium">{config.connName}</p>
               <p className="text-muted-foreground text-sm lg:text-lg">
                 {config.driver}
               </p>
-              <Separator className="mt-4" />
+              <Separator className="mt-3" />
             </li>
           )
         })}

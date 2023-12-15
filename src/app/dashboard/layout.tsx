@@ -41,10 +41,15 @@ const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
     queryKey: [],
     queryFn: async () => {
       const connDetails = await getConnectionDetails(connectionId)
-      await establishConnection(connDetails.conn_string)
+      const error = await establishConnection(
+        connDetails.connString,
+        connDetails.driver,
+        router
+      )
+      if (error) return
       const tables = await getTables()
       setTables(tables)
-      return { connName: connDetails.conn_name, tables }
+      return { connName: connDetails.connName, tables }
     }
   })
 
@@ -63,7 +68,7 @@ const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
     }, 100)
   }
 
-  if (isLoading) <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />
 
   return (
     <main className="flex h-screen">

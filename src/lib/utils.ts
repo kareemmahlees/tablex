@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { SupportedDrivers } from "./types"
+import { Drivers } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -8,11 +8,11 @@ export function cn(...inputs: ClassValue[]) {
 
 type ConnectionStringParams =
   | {
-      driver: SupportedDrivers.SQLITE
+      driver: typeof Drivers.SQLite
       filePath: string
     }
   | {
-      driver: SupportedDrivers.PSQL | SupportedDrivers.MYSQL
+      driver: typeof Drivers.PostgreSQL | typeof Drivers.MySQL
       username: string
       password: string
       host: string
@@ -27,13 +27,13 @@ type ConnectionStringParams =
 export function constructConnectionString(params: ConnectionStringParams) {
   let connString = ""
   switch (params.driver) {
-    case SupportedDrivers.SQLITE:
+    case Drivers.SQLite:
       connString = `${params.driver}:${params.filePath}`
       break
-    case SupportedDrivers.PSQL:
+    case Drivers.PostgreSQL:
       connString = `${params.driver}://${params.username}:${params.password}@${params.host}:${params.port}/${params.db}`
       break
-    case SupportedDrivers.MYSQL:
+    case Drivers.MySQL:
       connString = `Server=${params.host};Port=${params.port};Database=${params.db};Uid=${params.username};Pwd=${params.password};`
       break
   }

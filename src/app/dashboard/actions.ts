@@ -1,6 +1,7 @@
-import { ConnectionDetails } from "@/lib/types"
+import { ConnectionDetails, type DriversValues } from "@/lib/types"
 import { register } from "@tauri-apps/api/globalShortcut"
 import { invoke } from "@tauri-apps/api/tauri"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
 import { Dispatch, RefObject, SetStateAction } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
@@ -11,10 +12,26 @@ export const getConnectionDetails = async (connId: string) => {
   })
 }
 
-export const establishConnection = async (connString: string) => {
-  return await invoke<void>("connect_sqlite", {
-    connString
-  })
+/**
+ * This function returns a boolean representing there is an error of connection
+ * because this is a crucial part of the process we have to abort on error
+ */
+export const establishConnection = async (
+  connString: string,
+  driver: DriversValues,
+  router: AppRouterInstance
+): Promise<boolean> => {
+  try {
+    await invoke<void>("establish_connection", {
+      connString,
+      driver
+    })
+    return false
+  } catch (error) {
+    toast.error(error as string, { id: "connection_error" })
+    router.back()
+    return true
+  }
 }
 
 export const getTables = async () => {

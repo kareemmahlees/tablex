@@ -9,9 +9,10 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { SupportedDrivers } from "@/lib/types"
+import { Drivers, DriversValues } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 import { type FC } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -27,10 +28,11 @@ const formSchema = z.object({
 })
 
 interface ConnectionParamsFormProps {
-  driver: SupportedDrivers.MYSQL | SupportedDrivers.PSQL
+  driver: Exclude<DriversValues, typeof Drivers.SQLite>
 }
 
 const ConnectionParamsForm: FC<ConnectionParamsFormProps> = ({ driver }) => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
@@ -50,7 +52,8 @@ const ConnectionParamsForm: FC<ConnectionParamsFormProps> = ({ driver }) => {
       port,
       db
     })
-    await createConnectionRecord(connName, connString)
+    await createConnectionRecord(connName, connString, driver)
+    router.push("/connections")
   }
 
   const onClickTest = async ({

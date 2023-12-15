@@ -1,12 +1,12 @@
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { SupportedDrivers } from "@/lib/types"
+import { Drivers, type DriversValues } from "@/lib/types"
 import { FC, useState } from "react"
 import ConnectionParamsForm from "./conn-params"
 import ConnectionStringForm from "./conn-string"
 
 interface ConnectionParamsProps {
-  driver: SupportedDrivers.PSQL | SupportedDrivers.MYSQL
+  driver: Exclude<DriversValues, typeof Drivers.SQLite>
 }
 
 const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
@@ -40,7 +40,7 @@ const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
         </div>
       </RadioGroup>
       {radioValue === "conn_params" && <ConnectionParamsForm driver={driver} />}
-      {radioValue === "conn_string" && <ConnectionStringForm />}
+      {radioValue === "conn_string" && <ConnectionStringForm driver={driver} />}
     </>
   )
 }

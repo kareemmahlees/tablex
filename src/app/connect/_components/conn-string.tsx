@@ -9,7 +9,10 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Drivers, DriversValues } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { FC } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { createConnectionRecord, testConnection } from "../actions"
@@ -19,20 +22,28 @@ const formSchema = z.object({
   connString: z.string()
 })
 
-const ConnectionStringForm = () => {
+interface ConnectionParamsFormProps {
+  driver: Exclude<DriversValues, typeof Drivers.SQLite>
+}
+
+const ConnectionStringForm: FC<ConnectionParamsFormProps> = ({ driver }) => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    await createConnectionRecord(values.connName, values.connString)
+
+  const onClickConnect = async (values: z.infer<typeof formSchema>) => {
+    await createConnectionRecord(values.connName, values.connString, driver)
+    router.push("/connections")
   }
 
-  const onTest = async (values: z.infer<typeof formSchema>) => {
+  const onClickTest = async (values: z.infer<typeof formSchema>) => {
     await testConnection(values.connString)
   }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+      <form className="space-y-10">
         <FormField
           control={form.control}
           name="connName"
@@ -64,12 +75,15 @@ const ConnectionStringForm = () => {
           )}
         />
         <div className="col-span-2 flex justify-center items-center gap-x-4">
-          <Button variant={"secondary"} type="submit">
+          <Button
+            variant={"secondary"}
+            onClick={form.handleSubmit(onClickConnect)}
+          >
             Connect
           </Button>
           <Button
             className="bg-green-500 hover:bg-green-700"
-            onClick={form.handleSubmit(onTest)}
+            onClick={form.handleSubmit(onClickTest)}
           >
             Test
           </Button>

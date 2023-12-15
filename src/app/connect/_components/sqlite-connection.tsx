@@ -8,7 +8,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { SupportedDrivers } from "@/lib/types"
+import { Drivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { open } from "@tauri-apps/api/dialog"
@@ -62,16 +62,16 @@ const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
   })
   const onClickConnect = (values: z.infer<typeof formSchema>) => {
     const connString = constructConnectionString({
-      driver: SupportedDrivers.SQLITE,
+      driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    createConnectionRecord(values.connName, connString)
+    createConnectionRecord(values.connName, connString, Drivers.SQLite)
     router.push("/connections")
   }
 
   const onClickTest = async () => {
     const connString = constructConnectionString({
-      driver: SupportedDrivers.SQLITE,
+      driver: Drivers.SQLite,
       filePath: selectedPath
     })
     await testConnection(connString)
