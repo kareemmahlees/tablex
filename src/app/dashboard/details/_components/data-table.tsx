@@ -1,15 +1,15 @@
 "use client"
 
 import {
-  ColumnDef,
-  Row,
   SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
+  type ColumnDef,
+  type Row,
+  type Table as TableType
 } from "@tanstack/react-table"
-import { register, unregisterAll } from "@tauri-apps/api/globalShortcut"
 
 import {
   Table,
@@ -28,25 +28,27 @@ import {
   ContextMenuTrigger
 } from "@/components/ui/context-menu"
 import { Sheet } from "@/components/ui/sheet"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
-import { deleteRows } from "../actions"
+import {
+  useLayoutEffect,
+  useState,
+  type Dispatch,
+  type FC,
+  type SetStateAction
+} from "react"
+import { deleteRows, registerDeleteShortcut } from "../actions"
 import EditRowSheet from "./edit-row-sheet"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+interface DataTableProps {
+  columns: ColumnDef<any>[]
+  data: any[]
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data
-}: DataTableProps<TData, TValue>) {
+const DataTable: FC<DataTableProps> = ({ columns, data }) => {
   const tableName = useSearchParams().get("tableName")!
   const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
@@ -62,49 +64,22 @@ export function DataTable<TData, TValue>({
       rowSelection
     }
   })
-  useEffect(() => {
-    unregisterAll().then((_) => {
-      register("Delete", () => {
-        const column = table.getAllColumns()[1].id
-        const rows = table
-          .getSelectedRowModel()
-          .rows.map((row) => row.getValue(column))
-
-        if (rows.length > 0) {
-          toast.promise(
-            deleteRows(column, rows, tableName),
-            {
-              loading: "Operating...",
-              success: (rowsAffected) => {
-                queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-                return `Successfully deleted ${
-                  rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-                }`
-              },
-              error: (err) => err
-            },
-            {
-              position: "top-right"
-            }
-          )
-        }
-        table.toggleAllRowsSelected(false)
-      })
-    })
+  useLayoutEffect(() => {
+    registerDeleteShortcut(table, tableName, queryClient)
   })
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <ContextMenu>
         <Table className="text-xs lg:text-sm inline-block">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="text-center">
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="font-bold text-sm lg:text-base"
+                      className="font-bold text-sm lg:text-base border-t"
                     >
                       {header.isPlaceholder
                         ? null
@@ -126,11 +101,11 @@ export function DataTable<TData, TValue>({
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => row.toggleSelected(!row.getIsSelected())}
-                    className="hover:bg-muted/10 data-[state=selected]:bg-muted/10 transition-colors"
+                    className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
                     onContextMenu={(e) => setContextMenuRow(row)}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-white">
+                      <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -143,36 +118,64 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center text-white"
+                    className="h-24 text-center"
                   >
                     No results.
                   </TableCell>
                 </TableRow>
               )}
-              <ContextMenuContent>
-                <ContextMenuItem
-                  onSelect={async (e) => {
-                    const column = table.getAllColumns()[1].id
-                    const row = contextMenuRow?.getValue<number>(column)!
-                    await deleteRows(column, row, tableName)
-                    queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-                  }}
-                >
-                  Delete
-                  <ContextMenuShortcut>Delete</ContextMenuShortcut>
-                </ContextMenuItem>
-                <ContextMenuItem onClick={() => setOpen(true)}>
-                  Edit
-                  <ContextMenuShortcut>F2</ContextMenuShortcut>
-                </ContextMenuItem>
-              </ContextMenuContent>
+              <TableContextMenuContent
+                tableName={tableName}
+                table={table}
+                setIsSheetOpen={setIsSheetOpen}
+                queryClient={queryClient}
+                contextMenuRow={contextMenuRow!}
+              />
             </TableBody>
           </ContextMenuTrigger>
         </Table>
       </ContextMenu>
-      {contextMenuRow && (
-        <EditRowSheet setOpenSheet={setOpen} row={contextMenuRow!} />
-      )}
+      <EditRowSheet setIsSheetOpen={setIsSheetOpen} row={contextMenuRow!} />
     </Sheet>
+  )
+}
+
+export default DataTable
+
+interface TableContextMenuContentProps {
+  table: TableType<any>
+  contextMenuRow: Row<any>
+  tableName: string
+  queryClient: QueryClient
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
+}
+
+const TableContextMenuContent: FC<TableContextMenuContentProps> = ({
+  table,
+  contextMenuRow,
+  tableName,
+  queryClient,
+  setIsSheetOpen
+}) => {
+  return (
+    <ContextMenuContent
+      className="bg-transparent backdrop-blur-md"
+      data-side="bottom"
+    >
+      <ContextMenuItem
+        onSelect={async (e) => {
+          const column = table.getAllColumns()[1].id
+          const row = contextMenuRow?.getValue<number>(column)!
+          await deleteRows(column, row, tableName)
+          queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+        }}
+      >
+        Delete
+        <ContextMenuShortcut>Delete</ContextMenuShortcut>
+      </ContextMenuItem>
+      <ContextMenuItem onClick={() => setIsSheetOpen(true)}>
+        Edit
+      </ContextMenuItem>
+    </ContextMenuContent>
   )
 }

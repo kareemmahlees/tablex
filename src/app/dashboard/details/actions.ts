@@ -1,5 +1,8 @@
+import { type QueryClient } from "@tanstack/react-query"
+import { Table } from "@tanstack/react-table"
+import { register } from "@tauri-apps/api/globalShortcut"
 import { invoke } from "@tauri-apps/api/tauri"
-import { Dispatch, SetStateAction } from "react"
+import { type Dispatch, type SetStateAction } from "react"
 import toast from "react-hot-toast"
 
 export const getRows = async (tableName: string) => {
@@ -36,5 +39,32 @@ export const updateRow = async (
       return `Successfully updated rows`
     },
     error: (e: string) => e
+  })
+}
+
+export const registerDeleteShortcut = (
+  table: Table<any>,
+  tableName: string,
+  queryClient: QueryClient
+) => {
+  register("Delete", () => {
+    const column = table.getAllColumns()[1].id
+    const rows = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.getValue(column))
+
+    if (rows.length > 0) {
+      toast.promise(deleteRows(column, rows, tableName), {
+        loading: "Deleting...",
+        success: (rowsAffected) => {
+          queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+          return `Successfully deleted ${
+            rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
+          }`
+        },
+        error: (err: string) => err
+      })
+    }
+    table.toggleAllRowsSelected(false)
   })
 }

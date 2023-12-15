@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -13,23 +14,20 @@ import { dirtyValues } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Row } from "@tanstack/react-table"
-import { Loader2 } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { Dispatch, SetStateAction } from "react"
+import type { Dispatch, FC, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { getZodSchemaFromCols } from "../../actions"
 import { updateRow } from "../actions"
 
-const EditRowSheet = ({
-  setOpenSheet,
-  row
-}: {
-  setOpenSheet: Dispatch<SetStateAction<boolean>>
+interface EditRowSheetProps {
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
   row: Row<any>
-}) => {
-  const params = useSearchParams()
-  const tableName = params.get("tableName")!
+}
+
+const EditRowSheet: FC<EditRowSheetProps> = ({ setIsSheetOpen, row }) => {
+  const tableName = useSearchParams().get("tableName")!
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: [tableName],
@@ -44,15 +42,12 @@ const EditRowSheet = ({
       tableName,
       values.id,
       dirtyValues(form.formState.dirtyFields, values),
-      setOpenSheet
+      setIsSheetOpen
     )
     queryClient.invalidateQueries({ queryKey: ["table_rows"] })
   }
 
-  if (isLoading)
-    <div className="w-full h-full flex items-center justify-center">
-      <Loader2 className="h-4 w-4 animate-spin" />
-    </div>
+  if (isLoading) return <LoadingSpinner />
   return (
     <SheetContent className="overflow-y-auto">
       <SheetHeader>
@@ -62,6 +57,7 @@ const EditRowSheet = ({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {row
             .getAllCells()
+            // to remove the first checkbox column
             .slice(1)
             .map((cell) => (
               <FormField

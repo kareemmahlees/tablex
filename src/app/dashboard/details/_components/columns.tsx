@@ -1,27 +1,25 @@
 import { Checkbox } from "@/components/ui/checkbox"
-import type { ColumnDef, Row, Table } from "@tanstack/react-table"
+import type { Column, ColumnDef, Row, Table } from "@tanstack/react-table"
 import { getColumns } from "../actions"
 import SortingButton from "./sorting-btn"
 
-export const generateColumns = async (
+export const generateColumnsDefs = async (
   tableName: string
 ): Promise<ColumnDef<any>[]> => {
   const columns = await getColumns(tableName)
-  const columnsDefinition = columns.map((colName) => {
+  let columnsDefinition: ColumnDef<any>[]
+  columnsDefinition = columns.map((colName) => {
     return {
       accessorKey: colName,
-      header: ({ column }: { column: any }) => {
+      header: ({ column }: { column: Column<any> }) => {
         return <SortingButton column={column} title={colName} />
       }
     }
   })
   columnsDefinition.unshift({
-    // @ts-ignore
     id: "select",
-    // @ts-ignore
     header: ({ table }: { table: Table<any> }) => (
       <Checkbox
-        className="invert"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -33,13 +31,12 @@ export const generateColumns = async (
             table.toggleAllPageRowsSelected(!!value)
           }
         }}
-        aria-label="Select all"
+        aria-label="Select or Deselect all"
       />
     ),
     cell: ({ row }: { row: Row<any> }) => {
       return (
         <Checkbox
-          className="invert"
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"

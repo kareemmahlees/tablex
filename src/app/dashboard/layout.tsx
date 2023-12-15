@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 
 import LoadingSpinner from "@/components/loading-spinner"
 import { Input } from "@/components/ui/input"
-import { unregisterAll } from "@tauri-apps/api/globalShortcut"
 import {
   KeyboardEvent,
   PropsWithChildren,
@@ -14,7 +13,7 @@ import {
   useState,
   type FC
 } from "react"
-import CreateNewRowBtn from "./_components/create-row"
+import CreateRowBtn from "./_components/create-row-sheet"
 import {
   establishConnection,
   getConnectionDetails,
@@ -31,10 +30,7 @@ const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useLayoutEffect(() => {
-    // unregistering is useful to see changes made in shortcuts
-    unregisterAll().then(() => {
-      registerSearchShortcut(inputRef)
-    })
+    registerSearchShortcut(inputRef)
   })
 
   const { data, isLoading } = useQuery({
@@ -109,9 +105,9 @@ const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
             })}
           </ul>
         </div>
-        {tableName && <CreateNewRowBtn />}
+        {tableName && <CreateRowBtn />}
       </aside>
-      <div className="overflow-auto w-full h-full">{children}</div>
+      <section className="w-full h-full">{children}</section>
     </main>
   )
 }

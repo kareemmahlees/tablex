@@ -13,19 +13,20 @@ import {
 } from "@/components/ui/tooltip"
 import { useQuery } from "@tanstack/react-query"
 
+import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Label } from "@radix-ui/react-label"
-import { Loader2, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { createRow, getZodSchemaFromCols } from "../actions"
 
-const CreateNewRowBtn = () => {
+const CreateRowBtn = () => {
   const [open, setOpen] = useState(false)
   return (
     <TooltipProvider>
@@ -43,7 +44,7 @@ const CreateNewRowBtn = () => {
             <SheetHeader>
               <SheetTitle>Add new row</SheetTitle>
             </SheetHeader>
-            <CreateNewRowForm setOpenSheet={setOpen} />
+            <CreateRowForm setOpenSheet={setOpen} />
           </SheetContent>
         </Sheet>
         <TooltipContent
@@ -57,9 +58,9 @@ const CreateNewRowBtn = () => {
   )
 }
 
-export default CreateNewRowBtn
+export default CreateRowBtn
 
-const CreateNewRowForm = ({
+const CreateRowForm = ({
   setOpenSheet
 }: {
   setOpenSheet: Dispatch<SetStateAction<boolean>>
@@ -68,10 +69,7 @@ const CreateNewRowForm = ({
   const tableName = params.get("tableName")!
   const { data, isLoading } = useQuery({
     queryKey: [tableName],
-    queryFn: async () => {
-      const result = await getZodSchemaFromCols(tableName)
-      return result
-    }
+    queryFn: async () => await getZodSchemaFromCols(tableName)
   })
 
   const {
@@ -85,30 +83,25 @@ const CreateNewRowForm = ({
     await createRow(tableName, values, setOpenSheet)
   }
 
-  if (isLoading)
-    <div className="w-full h-full flex items-center justify-center">
-      <Loader2 className="h-4 w-4 animate-spin" />
-    </div>
-  else {
-    return (
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {Object.entries(data!.shape).map(([key, _], idx) => (
-          <div key={idx}>
-            <Label htmlFor={key}>{key}</Label>
-            <Input
-              {...register(key)}
-              id={key}
-              className={cn({ "outline outline-red-500": errors[key] })}
-            />
-            {errors[key] && (
-              <p className="text-sm text-red-500">
-                {errors[key]?.message?.toString()}
-              </p>
-            )}
-          </div>
-        ))}
-        <Button type="submit">Save</Button>
-      </form>
-    )
-  }
+  if (isLoading) return <LoadingSpinner />
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {Object.entries(data!.shape).map(([key, _], idx) => (
+        <div key={idx}>
+          <Label htmlFor={key}>{key}</Label>
+          <Input
+            {...register(key)}
+            id={key}
+            className={cn({ "outline outline-red-500": errors[key] })}
+          />
+          {errors[key] && (
+            <p className="text-sm text-red-500">
+              {errors[key]?.message?.toString()}
+            </p>
+          )}
+        </div>
+      ))}
+      <Button type="submit">Save</Button>
+    </form>
+  )
 }
