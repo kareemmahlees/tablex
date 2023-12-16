@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "next:lint": "next lint",
-    "rust:lint": "cargo clippy --manifest-path src-tauri\\Cargo.toml",
+    "rust:lint": "cargo clippy --manifest-path ./src-tauri/Cargo.toml",
     "check-format": "npx prettier . --check",
     "format": "npx prettier . --write"
   },

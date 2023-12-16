@@ -11,7 +11,7 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: "latest"
+          node-version: "node16"
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
       - name: Install commitlint
@@ -32,7 +32,7 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: "latest"
+          node-version: "node16"
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
       - name: Install Deps
@@ -48,5 +48,7 @@ jobs:
         with:
           fetch-depth: 1
       - uses: moonrepo/setup-rust@v1
+        with:
+          components: clippy
       - name: Run Clippy
         run: yarn rust:lint
