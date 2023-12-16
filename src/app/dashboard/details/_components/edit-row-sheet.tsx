@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Row } from "@tanstack/react-table"
 import { useSearchParams } from "next/navigation"
-import type { Dispatch, FC, SetStateAction } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { getZodSchemaFromCols } from "../../actions"
@@ -26,7 +26,7 @@ interface EditRowSheetProps {
   row: Row<any>
 }
 
-const EditRowSheet: FC<EditRowSheetProps> = ({ setIsSheetOpen, row }) => {
+const EditRowSheet = ({ setIsSheetOpen, row }: EditRowSheetProps) => {
   const tableName = useSearchParams().get("tableName")!
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({

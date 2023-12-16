@@ -10,8 +10,7 @@ import {
   PropsWithChildren,
   useLayoutEffect,
   useRef,
-  useState,
-  type FC
+  useState
 } from "react"
 import CreateRowBtn from "./_components/create-row-sheet"
 import {
@@ -21,7 +20,7 @@ import {
   registerSearchShortcut
 } from "./actions"
 
-const DashboardLayout: FC<PropsWithChildren> = ({ children }) => {
+const DashboardLayout = ({ children }: PropsWithChildren) => {
   const router = useRouter()
   const params = useSearchParams()
   const connectionId = params.get("id")!

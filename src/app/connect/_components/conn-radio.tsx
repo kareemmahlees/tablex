@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Drivers, type DriversValues } from "@/lib/types"
-import { FC, useState } from "react"
+import { useState } from "react"
 import ConnectionParamsForm from "./conn-params"
 import ConnectionStringForm from "./conn-string"
 
@@ -9,7 +9,7 @@ interface ConnectionParamsProps {
   driver: Exclude<DriversValues, typeof Drivers.SQLite>
 }
 
-const ConnectionRadio: FC<ConnectionParamsProps> = ({ driver }) => {
+const ConnectionRadio = ({ driver }: ConnectionParamsProps) => {
   const [radioValue, setRadioValue] = useState("conn_params")
   return (
     <>

@@ -34,18 +34,20 @@ import {
   useLayoutEffect,
   useState,
   type Dispatch,
-  type FC,
   type SetStateAction
 } from "react"
 import { deleteRows, registerDeleteShortcut } from "../actions"
 import EditRowSheet from "./edit-row-sheet"
 
-interface DataTableProps {
-  columns: ColumnDef<any>[]
-  data: any[]
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
-const DataTable: FC<DataTableProps> = ({ columns, data }) => {
+const DataTable = <TData, TValue>({
+  columns,
+  data
+}: DataTableProps<TData, TValue>) => {
   const tableName = useSearchParams().get("tableName")!
   const queryClient = useQueryClient()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -155,12 +157,12 @@ interface TableContextMenuContentProps {
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
-const TableContextMenuContent: FC<TableContextMenuContentProps> = ({
+const TableContextMenuContent = ({
   table,
   tableName,
   queryClient,
   setIsSheetOpen
-}) => {
+}: TableContextMenuContentProps) => {
   return (
     <ContextMenuContent
       className="bg-transparent backdrop-blur-md"

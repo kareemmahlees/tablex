@@ -13,7 +13,6 @@ import { Drivers, DriversValues } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { type FC } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { createConnectionRecord, testConnection } from "../actions"
@@ -31,7 +30,7 @@ interface ConnectionParamsFormProps {
   driver: Exclude<DriversValues, typeof Drivers.SQLite>
 }
 
-const ConnectionParamsForm: FC<ConnectionParamsFormProps> = ({ driver }) => {
+const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)

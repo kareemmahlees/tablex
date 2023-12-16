@@ -13,7 +13,7 @@ import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { open } from "@tauri-apps/api/dialog"
 import { useRouter } from "next/navigation"
-import { useState, type FC } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { createConnectionRecord, testConnection } from "../actions"
@@ -55,7 +55,7 @@ const formSchema = z.object({
   connName: z.string().min(1, { message: "Connection name is required" })
 })
 
-const ConnectionForm: FC<ConnectionFormProps> = ({ selectedPath }) => {
+const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
