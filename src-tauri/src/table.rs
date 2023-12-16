@@ -19,8 +19,8 @@ pub async fn get_tables(connection: State<'_, DbInstance>) -> Result<Option<Vec<
     .fetch_all(conn)
     .await
     .unwrap();
-    if rows.len() == 0 {
-        ()
+    if rows.is_empty() {
+        return Ok(None);
     }
     let mut result: Vec<String> = vec![];
     for (_, row) in rows.iter().enumerate() {

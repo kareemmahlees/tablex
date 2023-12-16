@@ -68,20 +68,18 @@ pub async fn create_row(
     let long_lived = connection.pool.lock().await;
     let conn = long_lived.as_ref().unwrap();
 
-    let columns = format!(
-        "{}",
-        data.keys()
-            .map(|key| key.as_str())
-            .collect::<Vec<&str>>()
-            .join(",")
-    );
-    let values = format!(
-        "{}",
-        data.values()
-            .map(|value| value.to_string())
-            .collect::<Vec<String>>()
-            .join(",")
-    );
+    let columns = data
+        .keys()
+        .map(|key| key.as_str())
+        .collect::<Vec<&str>>()
+        .join(",")
+        .to_string();
+    let values = data
+        .values()
+        .map(|value| value.to_string())
+        .collect::<Vec<String>>()
+        .join(",")
+        .to_string();
 
     let res =
         sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
@@ -101,7 +99,7 @@ pub async fn update_row(
     let long_lived = connection.pool.lock().await;
     let conn = long_lived.as_ref().unwrap();
 
-    if data.len() == 0 {
+    if data.is_empty() {
         return Ok(0);
     }
     let mut set_condition = String::new();

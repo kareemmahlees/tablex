@@ -47,7 +47,7 @@ pub fn write_into_connections_file(
 
             let id = Uuid::new_v4().to_string();
 
-            v.insert(id, serde_json::to_value(&connection).unwrap());
+            v.insert(id, serde_json::to_value(connection).unwrap());
             serde_json::to_writer(&mut writer, &v).unwrap();
             writer.flush().unwrap();
         }

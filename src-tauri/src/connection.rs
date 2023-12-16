@@ -13,8 +13,7 @@ pub async fn test_connection(conn_string: String) -> Result<String, String> {
     let mut con = AnyConnection::connect(conn_string.as_str())
         .await
         .map_err(|_| "Couldn't connect to DB".to_string())?;
-    let _ = con
-        .ping()
+    con.ping()
         .await
         .map_err(|_| "DB not responding to Pings".to_string())?;
 
@@ -62,7 +61,7 @@ pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
     let (_, connections) = read_from_connections_file(app.path_resolver().app_config_dir());
     match connections {
         Ok(connections) => {
-            if connections.as_object().unwrap().len() > 0 {
+            if !connections.as_object().unwrap().is_empty() {
                 Ok(true)
             } else {
                 Ok(false)
