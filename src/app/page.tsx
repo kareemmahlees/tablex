@@ -2,8 +2,10 @@
 import CreateConnectionBtn from "@/components/create-connection-btn"
 import LoadingSpinner from "@/components/loading-spinner"
 import { useQuery } from "@tanstack/react-query"
+import { unregisterAll } from "@tauri-apps/api/globalShortcut"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { useLayoutEffect } from "react"
 import { checkConsExist } from "./actions"
 
 export default function Home() {
@@ -14,7 +16,15 @@ export default function Home() {
       (await checkConsExist()) ? router.push("/connections") : null
   })
 
-  if (isLoading) <LoadingSpinner />
+  useLayoutEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      // Unregistering so that changes in shortcut handlers can take effect.
+      // Only useful during development.
+      unregisterAll()
+    }
+  })
+
+  if (isLoading) return <LoadingSpinner />
 
   return (
     <main className="relative flex flex-col items-center justify-center gap-y-20 h-full">

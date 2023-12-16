@@ -135,7 +135,12 @@ const DataTable: FC<DataTableProps> = ({ columns, data }) => {
           </ContextMenuTrigger>
         </Table>
       </ContextMenu>
-      <EditRowSheet setIsSheetOpen={setIsSheetOpen} row={contextMenuRow!} />
+      {
+        // because initially, contextMenuRow is null and the component can't be rendered
+        contextMenuRow && (
+          <EditRowSheet setIsSheetOpen={setIsSheetOpen} row={contextMenuRow} />
+        )
+      }
     </Sheet>
   )
 }
@@ -152,7 +157,6 @@ interface TableContextMenuContentProps {
 
 const TableContextMenuContent: FC<TableContextMenuContentProps> = ({
   table,
-  contextMenuRow,
   tableName,
   queryClient,
   setIsSheetOpen
@@ -163,12 +167,7 @@ const TableContextMenuContent: FC<TableContextMenuContentProps> = ({
       data-side="bottom"
     >
       <ContextMenuItem
-        onSelect={async (e) => {
-          const column = table.getAllColumns()[1].id
-          const row = contextMenuRow?.getValue<number>(column)!
-          await deleteRows(column, row, tableName)
-          queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-        }}
+        onSelect={async () => await deleteRows(table, tableName, queryClient)}
       >
         Delete
         <ContextMenuShortcut>Delete</ContextMenuShortcut>

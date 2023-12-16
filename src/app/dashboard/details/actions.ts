@@ -14,15 +14,38 @@ export const getColumns = async (tableName: string) => {
 }
 
 export const deleteRows = async (
-  col: string,
-  pkRowValues: any[] | any,
-  tableName: string
+  table: Table<any>,
+  tableName: string,
+  queryClient: QueryClient
 ) => {
-  return await invoke<number>("delete_row", {
-    col,
-    pkRowValues: typeof pkRowValues === "object" ? pkRowValues : [pkRowValues],
+  const column = table.getColumn("pk")
+  if (!column)
+    return toast.error("Table Doesn't have a primary key", {
+      id: "table_pk_error"
+    })
+
+  const rows = table
+    .getSelectedRowModel()
+    .rows.map((row) => row.getValue(column.id))
+
+  if (rows.length <= 0) return
+
+  const command = invoke<number>("delete_row", {
+    pkColName: column.columnDef.meta?.name,
+    rowPkValues: rows,
     tableName
   })
+  toast.promise(command, {
+    loading: "Deleting...",
+    success: (rowsAffected) => {
+      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+      return `Successfully deleted ${
+        rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
+      }`
+    },
+    error: (err: string) => err
+  })
+  table.toggleAllRowsSelected(false)
 }
 
 export const updateRow = async (
@@ -47,24 +70,8 @@ export const registerDeleteShortcut = (
   tableName: string,
   queryClient: QueryClient
 ) => {
-  register("Delete", () => {
-    const column = table.getAllColumns()[1].id
-    const rows = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.getValue(column))
-
-    if (rows.length > 0) {
-      toast.promise(deleteRows(column, rows, tableName), {
-        loading: "Deleting...",
-        success: (rowsAffected) => {
-          queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-          return `Successfully deleted ${
-            rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-          }`
-        },
-        error: (err: string) => err
-      })
-    }
-    table.toggleAllRowsSelected(false)
-  })
+  register(
+    "Delete",
+    async () => await deleteRows(table, tableName, queryClient)
+  )
 }

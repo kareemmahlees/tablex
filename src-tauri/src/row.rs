@@ -5,7 +5,6 @@ use sqlx::{Column, Row};
 use std::collections::HashMap;
 use std::iter::Iterator;
 use std::result::Result::Ok;
-use std::vec;
 use tauri::State;
 
 #[tauri::command]
@@ -36,52 +35,28 @@ pub async fn get_rows(
 }
 
 #[tauri::command]
-pub async fn get_columns(
-    connection: State<'_, DbInstance>,
-    table_name: String,
-) -> Result<Vec<String>, String> {
-    let long_lived = connection.pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-    let rows = sqlx::query(format!("SELECT name FROM PRAGMA_TABLE_INFO('{table_name}')").as_str())
-        .fetch_all(conn)
-        .await
-        .unwrap();
-    let mut columns: Vec<String> = vec![];
-    rows.iter()
-        .enumerate()
-        .for_each(|(_, row)| columns.push(row.get(0)));
-    Ok(columns)
-}
-
-#[tauri::command]
 pub async fn delete_row(
     connection: State<'_, DbInstance>,
-    col: String,
-    pk_row_values: Vec<i32>,
+    pk_col_name: String,
+    row_pk_values: Vec<JsonValue>,
     table_name: String,
 ) -> Result<u64, String> {
     let long_lived = connection.pool.lock().await;
     let conn = long_lived.as_ref().unwrap();
 
-    // check that table has primary key
-    let res = sqlx::query(
-        format!("select name from pragma_table_info('{table_name}') where pk;").as_str(),
-    )
-    .fetch_all(conn)
-    .await
-    .map_err(|err| err.to_string())?;
-    if res.len() == 0 {
-        Err("Table doesn't have a primary key".to_string())
-    } else {
-        let params = format!("?{}", ",?".repeat(pk_row_values.len() - 1));
-        let query_str = format!("DELETE FROM {table_name} WHERE {col} in ({params});",);
-        let mut query = sqlx::query(&query_str);
-        for val in pk_row_values.iter() {
-            query = query.bind(val);
+    let params = format!("?{}", ",?".repeat(row_pk_values.len() - 1));
+    let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});",);
+    let mut query = sqlx::query(&query_str);
+    for val in row_pk_values.iter() {
+        // this should cover most cases of primary keys
+        if val.is_number() {
+            query = query.bind(val.as_i64().unwrap());
+        } else {
+            query = query.bind(val.as_str().unwrap());
         }
-        let result = query.execute(conn).await.unwrap();
-        Ok(result.rows_affected())
     }
+    let result = query.execute(conn).await.unwrap();
+    Ok(result.rows_affected())
 }
 
 #[tauri::command]
@@ -142,26 +117,4 @@ pub async fn update_row(
     .await
     .map_err(|_| "Failed to update row".to_string())?;
     Ok(res.rows_affected())
-}
-
-#[tauri::command]
-pub async fn get_columns_definition(
-    connection: State<'_, DbInstance>,
-    table_name: String,
-) -> Result<HashMap<String, String>, String> {
-    let long_lived = connection.pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-
-    let rows =
-        sqlx::query(format!("select name,type from pragma_table_info('{table_name}') ;").as_str())
-            .fetch_all(conn)
-            .await
-            .map_err(|err| err.to_string())?;
-
-    let mut result = HashMap::<String, String>::new();
-
-    rows.iter().for_each(|row| {
-        result.insert(row.get(0), row.get(1));
-    });
-    Ok(result)
 }

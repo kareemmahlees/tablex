@@ -16,7 +16,7 @@ const ConnectionsPage = () => {
     }
   })
 
-  if (isLoading) <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />
 
   return (
     <main className="flex items-start h-full">

@@ -24,3 +24,10 @@ export const MappedDrivers = Object.entries(Drivers).map(([key, value]) => {
 })
 
 export type DriversValues = (typeof Drivers)[keyof typeof Drivers]
+
+export interface ColumnProps {
+  type: string
+  notNull: boolean
+  defaultValue: any
+  pk: boolean
+}

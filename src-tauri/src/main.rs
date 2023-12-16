@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod connection;
-mod sqlite;
+mod row;
 mod table;
 mod utils;
 
@@ -10,9 +10,9 @@ use connection::{
     connections_exist, create_connection_record, establish_connection, get_connection_details,
     get_connections, test_connection,
 };
-use sqlite::{create_row, delete_row, get_columns, get_columns_definition, get_rows, update_row};
+use row::{create_row, delete_row, get_rows, update_row};
 use sqlx::Pool;
-use table::get_tables;
+use table::{get_columns_definition, get_tables};
 use tokio::sync::Mutex;
 use utils::Drivers;
 
@@ -37,7 +37,6 @@ fn main() {
             get_connection_details,
             get_tables,
             get_rows,
-            get_columns,
             delete_row,
             get_columns_definition,
             create_row,

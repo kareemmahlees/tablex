@@ -11,17 +11,23 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Label } from "@radix-ui/react-label"
 import { Plus } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import { Dispatch, SetStateAction, useState } from "react"
+import { useState, type Dispatch, type SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { createRow, getZodSchemaFromCols } from "../actions"
@@ -60,48 +66,48 @@ const CreateRowBtn = () => {
 
 export default CreateRowBtn
 
-const CreateRowForm = ({
-  setOpenSheet
-}: {
+interface CreateRowFormProps {
   setOpenSheet: Dispatch<SetStateAction<boolean>>
-}) => {
-  const params = useSearchParams()
-  const tableName = params.get("tableName")!
+}
+
+const CreateRowForm = ({ setOpenSheet }: CreateRowFormProps) => {
+  const queryClient = useQueryClient()
+  const tableName = useSearchParams().get("tableName")!
   const { data, isLoading } = useQuery({
     queryKey: [tableName],
     queryFn: async () => await getZodSchemaFromCols(tableName)
   })
 
-  const {
-    handleSubmit,
-    register,
-    formState: { errors }
-  } = useForm<z.infer<NonNullable<typeof data>>>({
+  const form = useForm<z.infer<NonNullable<typeof data>>>({
     resolver: zodResolver(data!)
   })
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
-    await createRow(tableName, values, setOpenSheet)
+    await createRow(tableName, values, setOpenSheet, queryClient)
   }
 
   if (isLoading) return <LoadingSpinner />
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      {Object.entries(data!.shape).map(([key, _], idx) => (
-        <div key={idx}>
-          <Label htmlFor={key}>{key}</Label>
-          <Input
-            {...register(key)}
-            id={key}
-            className={cn({ "outline outline-red-500": errors[key] })}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {Object.entries(data!.shape).map(([colName], idx) => (
+          <FormField
+            key={idx}
+            control={form.control}
+            name={colName}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{colName}</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors[key] && (
-            <p className="text-sm text-red-500">
-              {errors[key]?.message?.toString()}
-            </p>
-          )}
-        </div>
-      ))}
-      <Button type="submit">Save</Button>
-    </form>
+        ))}
+        <Button type="submit">Save</Button>
+      </form>
+    </Form>
   )
 }

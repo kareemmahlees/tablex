@@ -1,21 +1,30 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import type { Column, ColumnDef, Row, Table } from "@tanstack/react-table"
-import { getColumns } from "../actions"
+import { getColsDefinitions } from "../../actions"
 import SortingButton from "./sorting-btn"
 
 export const generateColumnsDefs = async (
   tableName: string
 ): Promise<ColumnDef<any>[]> => {
-  const columns = await getColumns(tableName)
+  const columns = await getColsDefinitions(tableName)
   let columnsDefinition: ColumnDef<any>[]
-  columnsDefinition = columns.map((colName) => {
-    return {
+
+  columnsDefinition = Object.entries(columns).map(([colName, colProps]) => {
+    const columnDefinition: ColumnDef<any> = {
       accessorKey: colName,
+      //types for `meta` come from env.d.ts
+      meta: {
+        name: colName
+      },
       header: ({ column }: { column: Column<any> }) => {
         return <SortingButton column={column} title={colName} />
       }
     }
+    if (colProps.pk) columnDefinition.id = "pk"
+    return columnDefinition
   })
+
+  // add the select box column in the beginning of columns
   columnsDefinition.unshift({
     id: "select",
     header: ({ table }: { table: Table<any> }) => (
