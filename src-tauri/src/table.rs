@@ -1,4 +1,6 @@
+use crate::drivers::sqlite::{get_columns_definition_sqlite, get_tables_sqlite};
 use crate::utils;
+use crate::utils::Drivers;
 use crate::DbInstance;
 use serde_json::Value as JsonValue;
 use serde_json::Value::{Bool as JsonBool, String as JsonString};
@@ -8,17 +10,17 @@ use tauri::State;
 
 #[tauri::command]
 pub async fn get_tables(connection: State<'_, DbInstance>) -> Result<Option<Vec<String>>, ()> {
-    let long_lived = connection.pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-    let rows = sqlx::query(
-        "SELECT name
-         FROM sqlite_schema
-         WHERE type ='table' 
-         AND name NOT LIKE 'sqlite_%';",
-    )
-    .fetch_all(conn)
-    .await
-    .unwrap();
+    let conn_long_lived = connection.pool.lock().await;
+    let conn = conn_long_lived.as_ref().unwrap();
+    let driver_long_lived = connection.driver.lock().await;
+    let driver = driver_long_lived.as_ref().unwrap();
+
+    let query_string = match driver {
+        Drivers::SQLite => get_tables_sqlite(),
+        Drivers::PostgreSQL => todo!(),
+        Drivers::MySQL => todo!(),
+    };
+    let rows = sqlx::query(query_string).fetch_all(conn).await.unwrap();
     if rows.is_empty() {
         return Ok(None);
     }
@@ -34,18 +36,21 @@ pub async fn get_columns_definition(
     connection: State<'_, DbInstance>,
     table_name: String,
 ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String> {
-    let long_lived = connection.pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
+    let conn_long_lived = connection.pool.lock().await;
+    let conn = conn_long_lived.as_ref().unwrap();
 
-    let rows = sqlx::query(
-        format!(
-            "select name,type,\"notnull\",dflt_value,pk from pragma_table_info('{table_name}');"
-        )
-        .as_str(),
-    )
-    .fetch_all(conn)
-    .await
-    .map_err(|err| err.to_string())?;
+    let driver_long_lived = connection.driver.lock().await;
+    let driver = driver_long_lived.as_ref().unwrap();
+
+    let query_string = match driver {
+        Drivers::SQLite => get_columns_definition_sqlite(table_name),
+        Drivers::PostgreSQL => todo!(),
+        Drivers::MySQL => todo!(),
+    };
+    let rows = sqlx::query(query_string.as_str())
+        .fetch_all(conn)
+        .await
+        .map_err(|err| err.to_string())?;
 
     let mut result = HashMap::<String, HashMap<String, JsonValue>>::new();
 

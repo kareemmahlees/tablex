@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod connection;
+mod drivers;
 mod row;
 mod table;
 mod utils;
@@ -10,7 +11,7 @@ use connection::{
     connections_exist, create_connection_record, establish_connection, get_connection_details,
     get_connections, test_connection,
 };
-use row::{create_row, delete_row, get_rows, update_row};
+use row::{create_row, delete_rows, get_rows, update_row};
 use sqlx::Pool;
 use table::{get_columns_definition, get_tables};
 use tokio::sync::Mutex;
@@ -37,7 +38,7 @@ fn main() {
             get_connection_details,
             get_tables,
             get_rows,
-            delete_row,
+            delete_rows,
             get_columns_definition,
             create_row,
             update_row,

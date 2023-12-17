@@ -35,7 +35,7 @@ pub async fn get_rows(
 }
 
 #[tauri::command]
-pub async fn delete_row(
+pub async fn delete_rows(
     connection: State<'_, DbInstance>,
     pk_col_name: String,
     row_pk_values: Vec<JsonValue>,
@@ -44,18 +44,22 @@ pub async fn delete_row(
     let long_lived = connection.pool.lock().await;
     let conn = long_lived.as_ref().unwrap();
 
-    let params = format!("?{}", ",?".repeat(row_pk_values.len() - 1));
-    let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});",);
-    let mut query = sqlx::query(&query_str);
+    let mut params: String = Default::default();
     for val in row_pk_values.iter() {
         // this should cover most cases of primary keys
         if val.is_number() {
-            query = query.bind(val.as_i64().unwrap());
+            params.push_str(format!("{},", val.as_i64().unwrap()).as_str());
         } else {
-            query = query.bind(val.as_str().unwrap());
+            params.push_str(format!("{},", val.as_str().unwrap()).as_str());
         }
     }
-    let result = query.execute(conn).await.unwrap();
+    params.pop(); // to remove the last trailing comma
+
+    let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});",);
+    let result = sqlx::query(&query_str)
+        .execute(conn)
+        .await
+        .map_err(|_| "Failed to delete rows".to_string())?;
     Ok(result.rows_affected())
 }
 

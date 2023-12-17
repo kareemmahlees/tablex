@@ -30,7 +30,7 @@ export const deleteRows = async (
 
   if (rows.length <= 0) return
 
-  const command = invoke<number>("delete_row", {
+  const command = invoke<number>("delete_rows", {
     pkColName: column.columnDef.meta?.name,
     rowPkValues: rows,
     tableName
