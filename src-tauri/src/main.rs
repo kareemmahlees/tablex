@@ -12,21 +12,26 @@ use connection::{
     get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_rows, update_row};
-use sqlx::Pool;
+use sqlx::sqlite::SqlitePool;
+use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
 use tokio::sync::Mutex;
 use utils::Drivers;
 
 #[derive(Default)]
 pub struct DbInstance {
-    pool: Mutex<Option<Pool<sqlx::any::Any>>>,
+    sqlite_pool: Mutex<Option<SqlitePool>>,
+    postgres_pool: Mutex<Option<PgPool>>,
+    _mysql_pool: Mutex<Option<MySqlPool>>,
     driver: Mutex<Option<Drivers>>,
 }
 
 fn main() {
     tauri::Builder::default()
         .manage(DbInstance {
-            pool: Default::default(),
+            sqlite_pool: Default::default(),
+            postgres_pool: Default::default(),
+            _mysql_pool: Default::default(),
             driver: Default::default(),
         })
         .invoke_handler(tauri::generate_handler![

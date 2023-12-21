@@ -1,13 +1,16 @@
 "use client"
 import LoadingSpinner from "@/components/loading-spinner"
 import { useQueries } from "@tanstack/react-query"
+import { unregister } from "@tauri-apps/api/globalShortcut"
 import { useSearchParams } from "next/navigation"
+import { useLayoutEffect, useRef } from "react"
 import { generateColumnsDefs } from "./_components/columns"
 import DataTable from "./_components/data-table"
-import { getRows } from "./actions"
+import { getRows, registerScrollUpShortcut } from "./actions"
 
 const TableDataPage = () => {
   const tableName = useSearchParams().get("tableName")!
+  const sectionRef = useRef<HTMLDivElement>(null)
 
   const {
     "0": { data: columns, isLoading: isColumnsLoading },
@@ -24,16 +27,19 @@ const TableDataPage = () => {
       }
     ]
   })
+  useLayoutEffect(() => {
+    unregister("CommandOrControl+Up").then(() => {
+      registerScrollUpShortcut(sectionRef)
+    })
+  })
 
   if (isColumnsLoading || isRowsLoading) return <LoadingSpinner />
 
   return (
-    <>
-      <h1 className="font-bold text-2xl p-4 w-full">{tableName}</h1>
-      <div className="overflow-auto">
-        <DataTable columns={columns!} data={rows!} />
-      </div>
-    </>
+    <section className="flex flex-col overflow-auto w-full" ref={sectionRef}>
+      <h1 className="font-bold text-2xl p-4 w-full ">{tableName}</h1>
+      <DataTable columns={columns!} data={rows!} />
+    </section>
   )
 }
 

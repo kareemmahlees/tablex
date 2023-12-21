@@ -27,7 +27,7 @@ export type DriversValues = (typeof Drivers)[keyof typeof Drivers]
 
 export interface ColumnProps {
   type: string
-  notNull: boolean
-  defaultValue: any
-  pk: boolean
+  isNullable: boolean
+  defaultValue?: any
+  isPK: boolean
 }

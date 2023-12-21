@@ -13,7 +13,7 @@ import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { dirtyValues } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { Row } from "@tanstack/react-table"
+import type { Row, Table } from "@tanstack/react-table"
 import { useSearchParams } from "next/navigation"
 import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
@@ -22,11 +22,12 @@ import { getZodSchemaFromCols } from "../../actions"
 import { updateRow } from "../actions"
 
 interface EditRowSheetProps {
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
+  table: Table<any>
   row: Row<any>
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
-const EditRowSheet = ({ setIsSheetOpen, row }: EditRowSheetProps) => {
+const EditRowSheet = ({ setIsSheetOpen, row, table }: EditRowSheetProps) => {
   const tableName = useSearchParams().get("tableName")!
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
@@ -40,7 +41,8 @@ const EditRowSheet = ({ setIsSheetOpen, row }: EditRowSheetProps) => {
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
     await updateRow(
       tableName,
-      values.id,
+      table.getColumn("pk")?.columnDef.meta?.name!,
+      row.getValue("pk"),
       dirtyValues(form.formState.dirtyFields, values),
       setIsSheetOpen
     )

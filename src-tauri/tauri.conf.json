@@ -14,14 +14,15 @@
     "allowlist": {
       "all": false,
       "dialog": {
-        "all": false,
-        "ask": false,
-        "confirm": false,
-        "message": false,
-        "open": true,
-        "save": false
+        "open": true
       },
       "globalShortcut": {
+        "all": true
+      },
+      "clipboard": {
+        "writeText": true
+      },
+      "os": {
         "all": true
       }
     },

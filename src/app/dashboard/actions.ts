@@ -51,22 +51,35 @@ export const getZodSchemaFromCols = async (tableName: string) => {
   Object.entries(cols).forEach(([colName, colProps]) => {
     let validationRule: z.ZodTypeAny
 
-    switch (colProps.type) {
-      case "INT":
+    switch (true) {
+      case ["integer", "INT", "REAL"].includes(colProps.type):
         validationRule = z.coerce.number({
           invalid_type_error: "Field must be number"
         })
         break
-      case "VARCHAR(20)":
-      case "VARCHAR(50)":
-      case "VARCHAR(255)":
+      case ["character varying", "TEXT"].includes(colProps.type) ||
+        new RegExp("VARCHAR\\(\\d+\\)").test(colProps.type):
         // this is done to overcome the fact that input values are always string
-        validationRule = z.string().refine((val) => isNaN(parseInt(val)), {
-          message: "Field must be a valid string"
-        })
+        validationRule = z.string().refine(
+          (val) => {
+            // this is done because IPs fall into the isNaN check
+            if (z.string().ip().safeParse(val).success) {
+              return true
+            }
+            return isNaN(parseInt(val))
+          },
+          {
+            message: "Field must be a valid string"
+          }
+        )
         break
+
       default:
         validationRule = z.any()
+    }
+
+    if (colProps.isNullable) {
+      validationRule = validationRule.optional()
     }
 
     schemaObject[colName] = validationRule

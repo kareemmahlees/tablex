@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 
 import LoadingSpinner from "@/components/loading-spinner"
 import { Input } from "@/components/ui/input"
+import { unregister } from "@tauri-apps/api/globalShortcut"
 import {
   KeyboardEvent,
   PropsWithChildren,
@@ -29,7 +30,9 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useLayoutEffect(() => {
-    registerSearchShortcut(inputRef)
+    unregister("CommandOrControl+S").then(() =>
+      registerSearchShortcut(inputRef)
+    )
   })
 
   const { data, isLoading } = useQuery({
@@ -106,7 +109,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
         </div>
         {tableName && <CreateRowBtn />}
       </aside>
-      <section className="w-full h-full">{children}</section>
+      {children}
     </main>
   )
 }

@@ -29,14 +29,23 @@ import {
 } from "@/components/ui/context-menu"
 import { Sheet } from "@/components/ui/sheet"
 import { useQueryClient, type QueryClient } from "@tanstack/react-query"
+import { unregister } from "@tauri-apps/api/globalShortcut"
+import { type as getOsType, type OsType } from "@tauri-apps/api/os"
 import { useSearchParams } from "next/navigation"
 import {
   useLayoutEffect,
+  useRef,
   useState,
   type Dispatch,
   type SetStateAction
 } from "react"
-import { deleteRows, registerDeleteShortcut } from "../actions"
+import {
+  copyRowIntoClipboard,
+  deleteRows,
+  registerCopyShortcut,
+  registerDeleteShortcut,
+  registerSelectAllShortcut
+} from "../actions"
 import EditRowSheet from "./edit-row-sheet"
 
 interface DataTableProps<TData, TValue> {
@@ -54,6 +63,7 @@ const DataTable = <TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
+  const tableRef = useRef<HTMLTableElement>(null)
   const table = useReactTable({
     data,
     columns,
@@ -67,21 +77,30 @@ const DataTable = <TData, TValue>({
     }
   })
   useLayoutEffect(() => {
-    registerDeleteShortcut(table, tableName, queryClient)
+    unregister("Delete").then(() => {
+      registerDeleteShortcut(table, tableName, queryClient)
+    })
+    unregister("CommandOrControl+A").then(() =>
+      registerSelectAllShortcut(table)
+    )
+    unregister("CommandOrControl+C").then(() => registerCopyShortcut(table))
   })
 
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <ContextMenu>
-        <Table className="text-xs lg:text-sm inline-block">
+        <Table className="text-xs lg:text-sm " ref={tableRef}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className="sticky top-0 backdrop-blur-md "
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="font-bold text-sm lg:text-base border-t"
+                      className="font-bold text-sm lg:text-base"
                     >
                       {header.isPlaceholder
                         ? null
@@ -98,13 +117,13 @@ const DataTable = <TData, TValue>({
           <ContextMenuTrigger asChild>
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row, idx) => (
+                table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     onClick={() => row.toggleSelected(!row.getIsSelected())}
                     className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
-                    onContextMenu={(e) => setContextMenuRow(row)}
+                    onContextMenu={() => setContextMenuRow(row)}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -140,7 +159,11 @@ const DataTable = <TData, TValue>({
       {
         // because initially, contextMenuRow is null and the component can't be rendered
         contextMenuRow && (
-          <EditRowSheet setIsSheetOpen={setIsSheetOpen} row={contextMenuRow} />
+          <EditRowSheet
+            setIsSheetOpen={setIsSheetOpen}
+            row={contextMenuRow}
+            table={table}
+          />
         )
       }
     </Sheet>
@@ -161,8 +184,13 @@ const TableContextMenuContent = ({
   table,
   tableName,
   queryClient,
-  setIsSheetOpen
+  setIsSheetOpen,
+  contextMenuRow
 }: TableContextMenuContentProps) => {
+  const [osType, setOsType] = useState<OsType>()
+  useLayoutEffect(() => {
+    getOsType().then((type) => setOsType(type))
+  })
   return (
     <ContextMenuContent
       className="bg-transparent backdrop-blur-md"
@@ -176,6 +204,14 @@ const TableContextMenuContent = ({
       </ContextMenuItem>
       <ContextMenuItem onClick={() => setIsSheetOpen(true)}>
         Edit
+      </ContextMenuItem>
+      <ContextMenuItem
+        onClick={async () => await copyRowIntoClipboard(contextMenuRow, table)}
+      >
+        Copy
+        <ContextMenuShortcut>
+          {osType === "Darwin" ? <p>Cmd+C</p> : <p>Ctrl+C</p>}
+        </ContextMenuShortcut>
       </ContextMenuItem>
     </ContextMenuContent>
   )

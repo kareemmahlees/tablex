@@ -1,10 +1,9 @@
-use std::time::Duration;
-
 use crate::{
+    drivers::{postgres, sqlite},
     utils::{read_from_connections_file, write_into_connections_file, Drivers},
     DbInstance,
 };
-use sqlx::{any::AnyPoolOptions, AnyConnection, Connection};
+use sqlx::{AnyConnection, Connection};
 use tauri::State;
 
 #[tauri::command]
@@ -40,20 +39,17 @@ pub fn create_connection_record(
 
 #[tauri::command]
 pub async fn establish_connection(
-    connection: State<'_, DbInstance>,
+    db: State<'_, DbInstance>,
     conn_string: String,
     driver: Drivers,
 ) -> Result<(), String> {
-    sqlx::any::install_default_drivers();
-    let pool = AnyPoolOptions::new()
-        .acquire_timeout(Duration::new(5, 0))
-        .test_before_acquire(true)
-        .connect(&conn_string)
-        .await
-        .map_err(|_| "Couldn't establish connection to db".to_string())?;
-    *connection.pool.lock().await = Some(pool);
-    *connection.driver.lock().await = Some(driver);
-    Ok(())
+    match driver {
+        Drivers::SQLite => sqlite::connection::establish_connection(&db, conn_string, driver).await,
+        Drivers::PostgreSQL => {
+            postgres::connection::establish_connection(&db, conn_string, driver).await
+        }
+        Drivers::MySQL => unimplemented!(),
+    }
 }
 
 #[tauri::command]

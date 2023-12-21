@@ -74,7 +74,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    await testConnection(connString)
+    await testConnection(connString, Drivers.SQLite)
   }
   return (
     <Form {...form}>

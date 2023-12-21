@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use sqlx::{any::AnyValueRef, TypeInfo, Value, ValueRef};
-use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{BufReader, BufWriter, Write};
 use std::path::PathBuf;
+use std::{
+    collections::HashMap,
+    fs::{create_dir_all, File, OpenOptions},
+};
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -14,7 +16,7 @@ pub enum Drivers {
     MySQL,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ConnConfig {
     driver: Drivers,
     #[serde(rename = "connString")]
@@ -79,73 +81,16 @@ pub fn read_from_connections_file(
     }
 }
 
-// this code was taken from here https://github.com/tauri-apps/tauri-plugin-sql/blob/cf80d013a6ea34ee3ca74e4968a1632e87ba0de2/src/decode/sqlite.rs
-// TODO refactor to include psql and mysql
-pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
-    if v.is_null() {
-        return Ok(JsonValue::Null);
-    }
-
-    let res = match v.type_info().name() {
-        "TEXT" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
-                JsonValue::String(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "REAL" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
-                JsonValue::from(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "INTEGER" | "NUMERIC" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
-                JsonValue::Number(v.into())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "BOOLEAN" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
-                JsonValue::Bool(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "DATE" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode::<String>() {
-                JsonValue::String(v.to_string())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "TIME" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode::<String>() {
-                JsonValue::String(v.to_string())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "DATETIME" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode::<String>() {
-                JsonValue::String(v.to_string())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "BLOB" => {
-            if let Ok(v) = ValueRef::to_owned(&v).try_decode::<Vec<u8>>() {
-                JsonValue::Array(v.into_iter().map(|n| JsonValue::Number(n.into())).collect())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "NULL" => JsonValue::Null,
-        _ => return Err("Unsupported Data type".to_string()),
-    };
-
-    Ok(res)
+pub fn create_column_definition_map(
+    data_type: JsonValue,
+    is_nullable: JsonValue,
+    default_value: JsonValue,
+    is_pk: JsonValue,
+) -> HashMap<String, JsonValue> {
+    let mut map = HashMap::<String, JsonValue>::new();
+    map.insert("type".to_string(), data_type);
+    map.insert("isNullable".to_string(), is_nullable);
+    map.insert("defaultValue".to_string(), default_value);
+    map.insert("isPK".to_string(), is_pk);
+    map
 }

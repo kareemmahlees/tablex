@@ -20,7 +20,7 @@ export const generateColumnsDefs = async (
         return <SortingButton column={column} title={colName} />
       }
     }
-    if (colProps.pk) columnDefinition.id = "pk"
+    if (colProps.isPK) columnDefinition.id = "pk"
     return columnDefinition
   })
 
