@@ -22,7 +22,7 @@ use utils::Drivers;
 pub struct DbInstance {
     sqlite_pool: Mutex<Option<SqlitePool>>,
     postgres_pool: Mutex<Option<PgPool>>,
-    _mysql_pool: Mutex<Option<MySqlPool>>,
+    mysql_pool: Mutex<Option<MySqlPool>>,
     driver: Mutex<Option<Drivers>>,
 }
 
@@ -31,7 +31,7 @@ fn main() {
         .manage(DbInstance {
             sqlite_pool: Default::default(),
             postgres_pool: Default::default(),
-            _mysql_pool: Default::default(),
+            mysql_pool: Default::default(),
             driver: Default::default(),
         })
         .invoke_handler(tauri::generate_handler![

@@ -36,7 +36,10 @@ const TableDataPage = () => {
   if (isColumnsLoading || isRowsLoading) return <LoadingSpinner />
 
   return (
-    <section className="flex flex-col overflow-auto w-full" ref={sectionRef}>
+    <section
+      className="flex flex-col overflow-auto w-full will-change-scroll"
+      ref={sectionRef}
+    >
       <h1 className="font-bold text-2xl p-4 w-full ">{tableName}</h1>
       <DataTable columns={columns!} data={rows!} />
     </section>

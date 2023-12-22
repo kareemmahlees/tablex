@@ -12,7 +12,7 @@ export const generateColumnsDefs = async (
   columnsDefinition = Object.entries(columns).map(([colName, colProps]) => {
     const columnDefinition: ColumnDef<any> = {
       accessorKey: colName,
-      //types for `meta` come from env.d.ts
+      // types for `meta` come from env.d.ts
       meta: {
         name: colName
       },
@@ -20,7 +20,9 @@ export const generateColumnsDefs = async (
         return <SortingButton column={column} title={colName} />
       }
     }
-    if (colProps.isPK) columnDefinition.id = "pk"
+    columnDefinition.id = colProps.isPK
+      ? "pk"
+      : (columnDefinition.accessorKey as string)
     return columnDefinition
   })
 

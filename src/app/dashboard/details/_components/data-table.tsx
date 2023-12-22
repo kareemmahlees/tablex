@@ -33,6 +33,7 @@ import { unregister } from "@tauri-apps/api/globalShortcut"
 import { type as getOsType, type OsType } from "@tauri-apps/api/os"
 import { useSearchParams } from "next/navigation"
 import {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -188,7 +189,7 @@ const TableContextMenuContent = ({
   contextMenuRow
 }: TableContextMenuContentProps) => {
   const [osType, setOsType] = useState<OsType>()
-  useLayoutEffect(() => {
+  useEffect(() => {
     getOsType().then((type) => setOsType(type))
   })
   return (

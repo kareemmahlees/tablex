@@ -1,5 +1,5 @@
 use crate::{
-    drivers::{postgres, sqlite},
+    drivers::{mysql, postgres, sqlite},
     utils::{read_from_connections_file, write_into_connections_file, Drivers},
     DbInstance,
 };
@@ -48,7 +48,7 @@ pub async fn establish_connection(
         Drivers::PostgreSQL => {
             postgres::connection::establish_connection(&db, conn_string, driver).await
         }
-        Drivers::MySQL => unimplemented!(),
+        Drivers::MySQL => mysql::connection::establish_connection(&db, conn_string, driver).await,
     }
 }
 

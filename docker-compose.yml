@@ -1,0 +1,11 @@
+version: "3"
+services:
+  tablex_mysql:
+    image: mysql
+    container_name: tablex_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: tablex
+      MYSQL_DATABASE: tablex
+    ports:
+      - 3306:3306

@@ -49,10 +49,11 @@ export const getZodSchemaFromCols = async (tableName: string) => {
   const cols = await getColsDefinitions(tableName)
   let schemaObject: z.ZodRawShape = {}
   Object.entries(cols).forEach(([colName, colProps]) => {
+    console.log(colProps)
     let validationRule: z.ZodTypeAny
 
     switch (true) {
-      case ["integer", "INT", "REAL"].includes(colProps.type):
+      case ["integer", "int", "INT", "REAL"].includes(colProps.type):
         validationRule = z.coerce.number({
           invalid_type_error: "Field must be number"
         })

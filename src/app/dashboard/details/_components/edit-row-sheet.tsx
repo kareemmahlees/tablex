@@ -69,7 +69,7 @@ const EditRowSheet = ({ setIsSheetOpen, row, table }: EditRowSheetProps) => {
                 defaultValue={cell.getValue()}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{cell.column.id}</FormLabel>
+                    <FormLabel>{cell.column.columnDef.meta?.name}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>

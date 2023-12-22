@@ -1,6 +1,8 @@
-use crate::drivers::postgres;
-use crate::utils::Drivers;
-use crate::{drivers::sqlite, DbInstance};
+use crate::{
+    drivers::{mysql, postgres, sqlite},
+    utils::Drivers,
+    DbInstance,
+};
 use serde_json::Map;
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
@@ -18,7 +20,7 @@ pub async fn get_rows(
     match driver {
         Drivers::SQLite => sqlite::row::get_rows(&db, table_name).await,
         Drivers::PostgreSQL => postgres::row::get_rows(&db, table_name).await,
-        Drivers::MySQL => todo!(),
+        Drivers::MySQL => mysql::row::get_rows(&db, table_name).await,
     }
 }
 
@@ -48,7 +50,7 @@ pub async fn delete_rows(
         Drivers::PostgreSQL => {
             postgres::row::delete_rows(&db, pk_col_name, table_name, params).await
         }
-        Drivers::MySQL => todo!(),
+        Drivers::MySQL => mysql::row::delete_rows(&db, pk_col_name, table_name, params).await,
     }
 }
 
@@ -79,7 +81,7 @@ pub async fn create_row(
     match driver {
         Drivers::SQLite => sqlite::row::create_row(&db, table_name, columns, values).await,
         Drivers::PostgreSQL => postgres::row::create_row(&db, table_name, columns, values).await,
-        Drivers::MySQL => todo!(),
+        Drivers::MySQL => mysql::row::create_row(&db, table_name, columns, values).await,
     }
 }
 
@@ -111,6 +113,8 @@ pub async fn update_row(
             postgres::row::update_row(&db, table_name, set_condition, pk_col_name, pk_col_value)
                 .await
         }
-        Drivers::MySQL => todo!(),
+        Drivers::MySQL => {
+            mysql::row::update_row(&db, table_name, set_condition, pk_col_name, pk_col_value).await
+        }
     }
 }
