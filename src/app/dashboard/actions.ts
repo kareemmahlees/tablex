@@ -1,3 +1,8 @@
+import {
+  date_data_types,
+  numeric_data_types,
+  string_data_types
+} from "@/lib/constants"
 import type { ColumnProps, ConnectionDetails, DriversValues } from "@/lib/types"
 import type { QueryClient } from "@tanstack/react-query"
 import { register } from "@tauri-apps/api/globalShortcut"
@@ -49,16 +54,16 @@ export const getZodSchemaFromCols = async (tableName: string) => {
   const cols = await getColsDefinitions(tableName)
   let schemaObject: z.ZodRawShape = {}
   Object.entries(cols).forEach(([colName, colProps]) => {
-    console.log(colProps)
     let validationRule: z.ZodTypeAny
 
     switch (true) {
-      case ["integer", "int", "INT", "REAL"].includes(colProps.type):
+      case numeric_data_types.includes(colProps.type) ||
+        new RegExp("float\\(\\d+.\\d+\\)").test(colProps.type):
         validationRule = z.coerce.number({
           invalid_type_error: "Field must be number"
         })
         break
-      case ["character varying", "TEXT"].includes(colProps.type) ||
+      case string_data_types.includes(colProps.type) ||
         new RegExp("VARCHAR\\(\\d+\\)").test(colProps.type):
         // this is done to overcome the fact that input values are always string
         validationRule = z.string().refine(
@@ -74,7 +79,13 @@ export const getZodSchemaFromCols = async (tableName: string) => {
           }
         )
         break
-
+      // only valid in postgres
+      case colProps.type == "uuid":
+        validationRule = z.string().uuid()
+      case colProps.type == "boolean":
+        validationRule = z.boolean()
+      case date_data_types.includes(colProps.type):
+        validationRule = z.date()
       default:
         validationRule = z.any()
     }
