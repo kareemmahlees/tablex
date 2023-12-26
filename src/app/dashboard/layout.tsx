@@ -13,6 +13,7 @@ import {
   useRef,
   useState
 } from "react"
+import CommandPalette from "./_components/command-palette"
 import CreateRowBtn from "./_components/create-row-sheet"
 import {
   establishConnection,
@@ -72,7 +73,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
     <main className="flex h-screen">
       <aside className="bg-zinc-800 flex flex-col items-start justify-between w-56 lg:w-72 p-3 lg:p-5 overflow-y-auto">
         <div className="flex flex-col items-start gap-y-4 lg:gap-y-5 mb-4">
-          <h1 className="font-bold text-lg">{data?.connName}</h1>
+          <h1 className="font-bold text-lg text-gray-500">{data?.connName}</h1>
           <div className="flex items-center bg-background rounded-sm px-1">
             <Search className="h-3 lg:h-5" color="#4a506f" />
             <Input
@@ -110,6 +111,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
         {tableName && <CreateRowBtn />}
       </aside>
       {children}
+      <CommandPalette />
     </main>
   )
 }

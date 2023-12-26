@@ -43,7 +43,7 @@ const CreateRowBtn = () => {
               role="button"
               className="bg-zinc-900 p-1 rounded-full"
             >
-              <Plus className="w-4 h-4 lg:w-6 lg:h-6" />
+              <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
             </TooltipTrigger>
           </SheetTrigger>
           <SheetContent className="overflow-y-auto">

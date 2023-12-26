@@ -1,15 +1,22 @@
 "use client"
 import CreateConnectionBtn from "@/components/create-connection-btn"
 import LoadingSpinner from "@/components/loading-spinner"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { useQuery } from "@tanstack/react-query"
+import { MoreHorizontal, Trash } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { getConnections } from "./actions"
 
 const ConnectionsPage = () => {
   const router = useRouter()
-  const { data: connections = [], isLoading } = useQuery({
+  const { data: connections, isLoading } = useQuery({
     queryKey: [],
     queryFn: async () => {
       return await getConnections()
@@ -20,18 +27,33 @@ const ConnectionsPage = () => {
 
   return (
     <main className="flex items-start h-full">
-      <ul className="flex flex-col justify-start h-full gap-y-5 flex-[0.5] p-5 lg:p-10 overflow-y-auto">
-        {Object.entries(connections).map(([id, config]) => {
+      <ul className="flex flex-col justify-start gap-y-5 p-5 lg:p-10 h-full flex-[0.5] overflow-y-auto">
+        {Object.entries(connections!).map(([id, config]) => {
           return (
             <li
               key={id}
               role="button"
               onClick={() => router.push(`/dashboard?id=${id}`)}
             >
-              <p className="lg:text-lg font-medium">{config.connName}</p>
-              <p className="text-muted-foreground text-sm lg:text-lg">
-                {config.driver}
-              </p>
+              <div className="flex justify-between">
+                <div>
+                  <p className="lg:text-lg font-medium">{config.connName}</p>
+                  <p className="text-muted-foreground text-sm lg:text-lg">
+                    {config.driver}
+                  </p>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <MoreHorizontal />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
               <Separator className="mt-3" />
             </li>
           )

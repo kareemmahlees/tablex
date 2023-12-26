@@ -30,10 +30,8 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { unregister } from "@tauri-apps/api/globalShortcut"
-import { type as getOsType, type OsType } from "@tauri-apps/api/os"
 import { useSearchParams } from "next/navigation"
 import {
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -90,7 +88,7 @@ const DataTable = <TData, TValue>({
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <ContextMenu>
-        <Table className="text-xs lg:text-sm " ref={tableRef}>
+        <Table className="text-xs lg:text-sm" ref={tableRef}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -188,10 +186,6 @@ const TableContextMenuContent = ({
   setIsSheetOpen,
   contextMenuRow
 }: TableContextMenuContentProps) => {
-  const [osType, setOsType] = useState<OsType>()
-  useEffect(() => {
-    getOsType().then((type) => setOsType(type))
-  })
   return (
     <ContextMenuContent
       className="bg-transparent backdrop-blur-md"
@@ -210,9 +204,7 @@ const TableContextMenuContent = ({
         onClick={async () => await copyRowIntoClipboard(contextMenuRow, table)}
       >
         Copy
-        <ContextMenuShortcut>
-          {osType === "Darwin" ? <p>Cmd+C</p> : <p>Ctrl+C</p>}
-        </ContextMenuShortcut>
+        <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>
       </ContextMenuItem>
     </ContextMenuContent>
   )

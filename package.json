@@ -8,6 +8,7 @@
     "start": "next start",
     "next:lint": "next lint",
     "rust:lint": "cargo clippy --manifest-path ./src-tauri/Cargo.toml",
+    "lint": "yarn next:lint && yarn rust:lint",
     "check-format": "npx prettier . --check",
     "format": "npx prettier . --write"
   },
@@ -31,14 +32,12 @@
     "cmdk": "^0.2.0",
     "geist": "^1.2.0",
     "lucide-react": "^0.292.0",
-    "net": "^1.0.2",
     "next": "14.0.2",
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
-    "react-hotkeys-hook": "^4.4.1",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
