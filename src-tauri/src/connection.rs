@@ -1,6 +1,8 @@
 use crate::{
     drivers::{mysql, postgres, sqlite},
-    utils::{read_from_connections_file, write_into_connections_file, Drivers},
+    utils::{
+        get_connections_file_path, read_from_connections_file, write_into_connections_file, Drivers,
+    },
     DbInstance,
 };
 use sqlx::{AnyConnection, Connection};
@@ -28,12 +30,8 @@ pub fn create_connection_record(
     conn_name: String,
     driver: Drivers,
 ) -> Result<(), String> {
-    write_into_connections_file(
-        app.path_resolver().app_config_dir(),
-        driver,
-        conn_string,
-        conn_name,
-    );
+    let mut connections_file_path = get_connections_file_path(&app)?;
+    write_into_connections_file(&mut connections_file_path, driver, conn_string, conn_name)?;
     Ok(())
 }
 
@@ -54,26 +52,20 @@ pub async fn establish_connection(
 
 #[tauri::command]
 pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
-    let (_, connections) = read_from_connections_file(app.path_resolver().app_config_dir());
-    match connections {
-        Ok(connections) => {
-            if !connections.as_object().unwrap().is_empty() {
-                Ok(true)
-            } else {
-                Ok(false)
-            }
-        }
-        Err(err) => Err(err.to_string()),
+    let connections_file_path = get_connections_file_path(&app)?;
+    let connections = read_from_connections_file(&connections_file_path)?;
+    if !connections.as_object().unwrap().is_empty() {
+        Ok(true)
+    } else {
+        Ok(false)
     }
 }
 
 #[tauri::command]
 pub fn get_connections(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
-    let (_, connections) = read_from_connections_file(app.path_resolver().app_config_dir());
-    match connections {
-        Ok(conns) => Ok(conns),
-        Err(err) => Err(err.to_string()),
-    }
+    let connections_file_path = get_connections_file_path(&app)?;
+    let connections = read_from_connections_file(&connections_file_path)?;
+    Ok(connections)
 }
 
 #[tauri::command]
@@ -81,9 +73,11 @@ pub fn get_connection_details(
     app: tauri::AppHandle,
     conn_id: String,
 ) -> Result<serde_json::Value, String> {
-    let (_, connections) = read_from_connections_file(app.path_resolver().app_config_dir());
-    match connections {
-        Ok(conns) => Ok(conns.get(conn_id).unwrap().to_owned()),
-        Err(err) => Err(err.to_string()),
-    }
+    let connections_file_path = get_connections_file_path(&app)?;
+    let connections = read_from_connections_file(&connections_file_path)?;
+    let connection_details = connections
+        .get(conn_id)
+        .ok_or("Couldn't find the specified connection".to_string())?
+        .to_owned();
+    Ok(connection_details)
 }

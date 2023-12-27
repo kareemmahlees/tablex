@@ -2,10 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::PathBuf;
-use std::{
-    collections::HashMap,
-    fs::{create_dir_all, File, OpenOptions},
-};
+use std::{collections::HashMap, fs::OpenOptions};
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,13 +22,23 @@ pub struct ConnConfig {
     conn_name: String,
 }
 
+pub fn get_connections_file_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    let mut config_dir = app
+        .path_resolver()
+        .app_config_dir()
+        .ok_or("Couldn't read config dir path".to_string())?;
+    config_dir.push("connections.json");
+    Ok(config_dir)
+}
+
 pub fn write_into_connections_file(
-    config_dir: Option<PathBuf>,
+    connections_file_path: &mut PathBuf,
     driver: Drivers,
     conn_string: String,
     conn_name: String,
-) {
-    let (config_file_path, content) = read_from_connections_file(config_dir);
+) -> Result<(), String> {
+    let mut contents = read_from_connections_file(connections_file_path)
+        .map_err(|_| "Couldn't read contents of connections file")?;
 
     let connection = ConnConfig {
         driver,
@@ -39,48 +46,47 @@ pub fn write_into_connections_file(
         conn_name,
     };
 
-    match content.unwrap().as_object_mut() {
+    match contents.as_object_mut() {
         Some(v) => {
             let file = OpenOptions::new()
                 .write(true)
-                .open(config_file_path)
-                .unwrap();
+                .open(connections_file_path)
+                .map_err(|e| e.to_string())?;
             let mut writer = BufWriter::new(file);
 
             let id = Uuid::new_v4().to_string();
 
             v.insert(id, serde_json::to_value(connection).unwrap());
-            serde_json::to_writer(&mut writer, &v).unwrap();
+            serde_json::to_writer(&mut writer, &v)
+                .map_err(|_| "Failed to write connection record".to_string())?;
             writer.flush().unwrap();
+            Ok(())
         }
-        None => todo!(),
-    };
-}
-
-pub fn read_from_connections_file(
-    config_dir: Option<PathBuf>,
-) -> (PathBuf, serde_json::Result<serde_json::Value>) {
-    match config_dir {
-        Some(mut path) => {
-            if !path.exists() {
-                create_dir_all(&path).unwrap();
-            }
-            path.push("connections.json");
-            let mut file: File;
-            if !path.exists() {
-                file = File::create(&path).unwrap();
-                write!(file, "{{}}").unwrap()
-            }
-            file = OpenOptions::new().read(true).open(&path).unwrap();
-            let reader = BufReader::new(file);
-
-            let content: serde_json::Result<serde_json::Value> = serde_json::from_reader(reader);
-            (path, content)
-        }
-        None => todo!(),
+        None => Err("Invalid JSON file format".to_string()),
     }
 }
 
+pub fn read_from_connections_file(
+    connections_file_path: &PathBuf,
+) -> Result<serde_json::Value, String> {
+    let mut file = OpenOptions::new()
+        .read(true)
+        .create(true)
+        .write(true)
+        .open(connections_file_path)
+        .map_err(|e| e.to_string())?;
+
+    if file.metadata().unwrap().len() == 0 {
+        write!(file, "{{}}")
+            .map_err(|_| "Couldn't write initial content into connections file".to_string())?;
+    }
+
+    let reader = BufReader::new(file);
+    let content: serde_json::Result<serde_json::Value> = serde_json::from_reader(reader);
+    content.map_err(|e| e.to_string())
+}
+
+/// shared between drivers::$::table.rs
 pub fn create_column_definition_map(
     data_type: JsonValue,
     is_nullable: JsonValue,
