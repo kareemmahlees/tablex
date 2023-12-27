@@ -42,11 +42,18 @@ jobs:
       - name: Run Prettier
         run: yarn check-format
   clippy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
+      - name: Tauri dependencies
+        run: >-
+          sudo apt-get update &&
+          sudo apt-get install -y
+          libgtk-3-dev
+          libayatana-appindicator3-dev
+          libwebkit2gtk-4.0-dev
       - uses: moonrepo/setup-rust@v1
         with:
           components: clippy
