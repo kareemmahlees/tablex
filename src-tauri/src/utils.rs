@@ -66,6 +66,33 @@ pub fn write_into_connections_file(
     }
 }
 
+pub fn delete_from_connections_file(
+    connections_file_path: &mut PathBuf,
+    conn_id: String,
+) -> Result<(), String> {
+    let mut contents = read_from_connections_file(connections_file_path)
+        .map_err(|_| "Couldn't read contents of connections file")?;
+
+    match contents.as_object_mut() {
+        Some(v) => {
+            let file = OpenOptions::new()
+                .write(true)
+                .truncate(true)
+                .open(connections_file_path)
+                .map_err(|e| e.to_string())?;
+            let mut writer = BufWriter::new(file);
+
+            v.remove(&conn_id)
+                .ok_or("Couldn't delete specified connection".to_string())?;
+            serde_json::to_writer(&mut writer, &v)
+                .map_err(|_| "Failed to delete connection record".to_string())?;
+            writer.flush().unwrap();
+            Ok(())
+        }
+        None => Err("Invalid JSON file format".to_string()),
+    }
+}
+
 pub fn read_from_connections_file(
     connections_file_path: &PathBuf,
 ) -> Result<serde_json::Value, String> {

@@ -1,7 +1,8 @@
 use crate::{
     drivers::{mysql, postgres, sqlite},
     utils::{
-        get_connections_file_path, read_from_connections_file, write_into_connections_file, Drivers,
+        delete_from_connections_file, get_connections_file_path, read_from_connections_file,
+        write_into_connections_file, Drivers,
     },
     DbInstance,
 };
@@ -32,6 +33,13 @@ pub fn create_connection_record(
 ) -> Result<(), String> {
     let mut connections_file_path = get_connections_file_path(&app)?;
     write_into_connections_file(&mut connections_file_path, driver, conn_string, conn_name)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<(), String> {
+    let mut connections_file_path = get_connections_file_path(&app)?;
+    delete_from_connections_file(&mut connections_file_path, conn_id)?;
     Ok(())
 }
 

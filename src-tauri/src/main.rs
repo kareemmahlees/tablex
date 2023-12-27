@@ -8,8 +8,8 @@ mod table;
 mod utils;
 
 use connection::{
-    connections_exist, create_connection_record, establish_connection, get_connection_details,
-    get_connections, test_connection,
+    connections_exist, create_connection_record, delete_connection_record, establish_connection,
+    get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_rows, update_row};
 use sqlx::sqlite::SqlitePool;
@@ -37,6 +37,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             test_connection,
             create_connection_record,
+            delete_connection_record,
             establish_connection,
             connections_exist,
             get_connections,
