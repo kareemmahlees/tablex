@@ -1,14 +1,11 @@
+import { customToast } from "@/lib/utils"
 import { type QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/api/clipboard"
 import { register } from "@tauri-apps/api/globalShortcut"
 import { invoke } from "@tauri-apps/api/tauri"
-import type { Dispatch, RefObject, SetStateAction } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
-
-export const getColumns = async (tableName: string) => {
-  return await invoke<string[]>("get_columns", { tableName })
-}
 
 export const getRows = async (tableName: string) => {
   return await invoke<Record<string, any>[]>("get_rows", { tableName })
@@ -36,8 +33,7 @@ export const deleteRows = async (
     rowPkValues: rows,
     tableName
   })
-  toast.promise(command, {
-    loading: "Deleting...",
+  customToast(command, {
     success: (rowsAffected) => {
       queryClient.invalidateQueries({ queryKey: ["table_rows"] })
       return `Successfully deleted ${
@@ -54,7 +50,7 @@ export const updateRow = async (
   pkColName: string,
   pkColValue: string | number,
   data: Record<string, any>,
-  setOpenSheet: Dispatch<SetStateAction<boolean>>
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 ) => {
   const command = invoke("update_row", {
     tableName,
@@ -62,10 +58,9 @@ export const updateRow = async (
     pkColValue,
     data
   })
-  toast.promise(command, {
-    loading: "Updating...",
+  customToast(command, {
     success: (s) => {
-      setOpenSheet(false)
+      setIsSheetOpen(false)
       return `Successfully updated rows`
     },
     error: (e: string) => e
@@ -73,32 +68,29 @@ export const updateRow = async (
 }
 
 export const copyRowIntoClipboard = async (
-  contextMenuRow: Row<any>,
-  table: Table<any>
+  table: Table<any>,
+  contextMenuRow?: Row<any>
 ) => {
-  if (table.getIsSomeRowsSelected()) {
-    writeText(
+  if (contextMenuRow) {
+    const row_values = contextMenuRow
+      .getAllCells()
+      .slice(1)
+      .map((cell) => cell.getValue())
+    return await writeText(row_values.join("|"))
+  } else if (table.getIsSomeRowsSelected()) {
+    return await writeText(
       table
         .getSelectedRowModel()
         .rows!.map((row) =>
           row
             .getAllCells()
-            // to remove the first select column
             .slice(1)
             .map((cell) => cell.getValue())
             .join("|")
         )
         .join("\n")
     )
-    return
   }
-
-  let row_values = contextMenuRow
-    .getAllCells()
-    // to remove the first select column
-    .slice(1)
-    .map((cell) => cell.getValue())
-  await writeText(row_values.join("|"))
 }
 
 export const registerDeleteShortcut = (
@@ -117,34 +109,12 @@ export const registerSelectAllShortcut = (table: Table<any>) => {
     table.toggleAllRowsSelected(!table.getIsAllRowsSelected())
   })
 }
-export const registerScrollUpShortcut = (
-  tableRef: RefObject<HTMLDivElement>
-) => {
-  register("CommandOrControl+Up", () => {
-    if (tableRef.current) {
-      tableRef.current.scroll({
-        top: 0
-      })
-    }
-  })
-}
 
-export const registerCopyShortcut = (table: Table<any>) => {
-  register("CommandOrControl+C", () => {
-    if (table.getIsSomeRowsSelected()) {
-      writeText(
-        table
-          .getSelectedRowModel()
-          .rows!.map((row) =>
-            row
-              .getAllCells()
-              // to remove the first select column
-              .slice(1)
-              .map((cell) => cell.getValue())
-              .join("|")
-          )
-          .join("\n")
-      )
-    }
-  })
+export const registerCopyShortcut = (
+  table: Table<any>,
+  contextMenuRow?: Row<any>
+) => {
+  register("CommandOrControl+C", () =>
+    copyRowIntoClipboard(table, contextMenuRow)
+  )
 }

@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
+import toast from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 import { Drivers } from "./types"
 
@@ -52,5 +53,23 @@ export function dirtyValues(
       // @ts-ignore
       dirtyValues(dirtyFields[key], allValues[key])
     ])
+  )
+}
+
+export function customToast<T>(
+  promise: Promise<T>,
+  callbacks: Omit<Parameters<typeof toast.promise<T>>["1"], "loading">,
+  id: string | undefined = undefined,
+  loadingMessage?: string
+) {
+  toast.promise(
+    promise,
+    {
+      loading: "Loading..",
+      ...callbacks
+    },
+    {
+      id
+    }
   )
 }

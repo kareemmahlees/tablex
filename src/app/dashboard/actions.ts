@@ -4,6 +4,7 @@ import {
   string_data_types
 } from "@/lib/constants"
 import type { ColumnProps, ConnectionDetails, DriversValues } from "@/lib/types"
+import { customToast } from "@/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
 import { register } from "@tauri-apps/api/globalShortcut"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -103,14 +104,14 @@ export const getZodSchemaFromCols = async (tableName: string) => {
 export const createRow = async (
   tableName: string,
   data: Record<string, any>,
-  setOpenSheet: Dispatch<SetStateAction<boolean>>,
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>,
   queryClient: QueryClient
 ) => {
   const command = invoke<number>("create_row", { tableName, data })
-  toast.promise(command, {
-    loading: "Creating...",
+
+  customToast(command, {
     success: (s) => {
-      setOpenSheet(false)
+      setIsSheetOpen(false)
       queryClient.invalidateQueries({ queryKey: ["table_rows"] })
       return `Successfully created ${s} row`
     },

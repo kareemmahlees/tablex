@@ -82,7 +82,9 @@ const DataTable = <TData, TValue>({
     unregister("CommandOrControl+A").then(() =>
       registerSelectAllShortcut(table)
     )
-    unregister("CommandOrControl+C").then(() => registerCopyShortcut(table))
+    unregister("CommandOrControl+C").then(() =>
+      registerCopyShortcut(table, contextMenuRow)
+    )
   })
 
   return (
@@ -201,7 +203,7 @@ const TableContextMenuContent = ({
         Edit
       </ContextMenuItem>
       <ContextMenuItem
-        onClick={async () => await copyRowIntoClipboard(contextMenuRow, table)}
+        onClick={async () => await copyRowIntoClipboard(table, contextMenuRow)}
       >
         Copy
         <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>

@@ -50,9 +50,10 @@ const EditRowSheet = ({ setIsSheetOpen, row, table }: EditRowSheetProps) => {
   }
 
   if (isLoading) return <LoadingSpinner />
+
   return (
     <SheetContent className="overflow-y-auto">
-      <SheetHeader>
+      <SheetHeader className="mb-4">
         <SheetTitle>Edit row</SheetTitle>
       </SheetHeader>
       <Form {...form}>

@@ -14,7 +14,7 @@ import {
   useState
 } from "react"
 import CommandPalette from "./_components/command-palette"
-import CreateRowBtn from "./_components/create-row-sheet"
+import AddRowBtn from "./_components/create-row-sheet"
 import {
   establishConnection,
   getConnectionDetails,
@@ -70,7 +70,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
   if (isLoading) return <LoadingSpinner />
 
   return (
-    <main className="flex h-screen">
+    <main className="flex h-full">
       <aside className="bg-zinc-800 flex flex-col items-start justify-between w-56 lg:w-72 p-3 lg:p-5 overflow-y-auto">
         <div className="flex flex-col items-start gap-y-4 lg:gap-y-5 mb-4">
           <h1 className="font-bold text-lg text-gray-500">{data?.connName}</h1>
@@ -108,7 +108,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
             })}
           </ul>
         </div>
-        {tableName && <CreateRowBtn />}
+        {tableName && <AddRowBtn />}
       </aside>
       {children}
       <CommandPalette />

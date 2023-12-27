@@ -19,7 +19,7 @@ import { z } from "zod"
 import { createConnectionRecord, testConnection } from "../actions"
 
 const SqliteConnection = () => {
-  const [selectedPath, setSelectedPath] = useState<string | null>(null)
+  const [selectedPath, setSelectedPath] = useState<string>()
 
   return (
     <>
@@ -35,7 +35,7 @@ const SqliteConnection = () => {
               }
             ]
           })
-          setSelectedPath((selected as string) ?? null)
+          setSelectedPath(selected as string)
         }}
       >
         Select DB file

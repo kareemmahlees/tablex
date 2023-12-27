@@ -37,7 +37,7 @@ const ConnectionStringForm = ({ driver }: ConnectionParamsFormProps) => {
   }
 
   const onClickTest = async (values: z.infer<typeof formSchema>) => {
-    await testConnection(values.connString)
+    await testConnection(values.connString, driver)
   }
 
   return (

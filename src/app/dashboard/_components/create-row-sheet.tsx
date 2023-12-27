@@ -32,7 +32,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { createRow, getZodSchemaFromCols } from "../actions"
 
-const CreateRowBtn = () => {
+const AddRowBtn = () => {
   const [open, setOpen] = useState(false)
   return (
     <TooltipProvider>
@@ -47,10 +47,10 @@ const CreateRowBtn = () => {
             </TooltipTrigger>
           </SheetTrigger>
           <SheetContent className="overflow-y-auto">
-            <SheetHeader>
+            <SheetHeader className="mb-4">
               <SheetTitle>Add new row</SheetTitle>
             </SheetHeader>
-            <CreateRowForm setOpenSheet={setOpen} />
+            <AddRowForm setOpenSheet={setOpen} />
           </SheetContent>
         </Sheet>
         <TooltipContent
@@ -64,13 +64,13 @@ const CreateRowBtn = () => {
   )
 }
 
-export default CreateRowBtn
+export default AddRowBtn
 
-interface CreateRowFormProps {
+interface AddRowFormProps {
   setOpenSheet: Dispatch<SetStateAction<boolean>>
 }
 
-const CreateRowForm = ({ setOpenSheet }: CreateRowFormProps) => {
+const AddRowForm = ({ setOpenSheet }: AddRowFormProps) => {
   const queryClient = useQueryClient()
   const tableName = useSearchParams().get("tableName")!
   const { data, isLoading } = useQuery({

@@ -18,9 +18,7 @@ const ConnectionsPage = () => {
   const router = useRouter()
   const { data: connections, isLoading } = useQuery({
     queryKey: [],
-    queryFn: async () => {
-      return await getConnections()
-    }
+    queryFn: async () => await getConnections()
   })
 
   if (isLoading) return <LoadingSpinner />

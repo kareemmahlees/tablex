@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
-import ConnectionRadio from "./_components/conn-radio"
+import ConnectionDetails from "./_components/conn-radio"
 import SqliteConnection from "./_components/sqlite-connection"
 
 const ConnectionPage = () => {
@@ -69,7 +69,7 @@ const ConnectionPage = () => {
       {selectedDriver === Drivers.SQLite ? (
         <SqliteConnection />
       ) : (
-        selectedDriver && <ConnectionRadio driver={selectedDriver} />
+        selectedDriver && <ConnectionDetails driver={selectedDriver} />
       )}
       <Image
         src={"/bg-2.svg"}

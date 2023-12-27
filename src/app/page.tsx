@@ -1,20 +1,18 @@
 "use client"
 import CreateConnectionBtn from "@/components/create-connection-btn"
-import LoadingSpinner from "@/components/loading-spinner"
-import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { useLayoutEffect } from "react"
 import { checkConsExist } from "./actions"
 
 export default function Home() {
   const router = useRouter()
-  const { isLoading } = useQuery({
-    queryKey: [],
-    queryFn: async () =>
-      (await checkConsExist()) ? router.push("/connections") : null
-  })
 
-  if (isLoading) return <LoadingSpinner />
+  useLayoutEffect(() => {
+    checkConsExist().then((exist) =>
+      exist ? router.push("/connections") : null
+    )
+  })
 
   return (
     <main className="relative flex flex-col items-center justify-center gap-y-20 h-full">

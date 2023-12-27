@@ -1,6 +1,6 @@
 import { type DriversValues } from "@/lib/types"
+import { customToast } from "@/lib/utils"
 import { invoke } from "@tauri-apps/api/tauri"
-import toast from "react-hot-toast"
 
 export const testConnection = async (
   connString: string,
@@ -10,16 +10,13 @@ export const testConnection = async (
     connString,
     driver
   })
-  toast.promise(
+  customToast(
     command,
     {
-      loading: "Loading",
       success: (s) => s,
       error: (e: string) => e
     },
-    {
-      id: "connection"
-    }
+    "test_connection"
   )
 }
 

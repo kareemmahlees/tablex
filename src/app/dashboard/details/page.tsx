@@ -1,12 +1,11 @@
 "use client"
 import LoadingSpinner from "@/components/loading-spinner"
 import { useQueries } from "@tanstack/react-query"
-import { unregister } from "@tauri-apps/api/globalShortcut"
 import { useSearchParams } from "next/navigation"
-import { useLayoutEffect, useRef } from "react"
+import { useRef } from "react"
 import { generateColumnsDefs } from "./_components/columns"
 import DataTable from "./_components/data-table"
-import { getRows, registerScrollUpShortcut } from "./actions"
+import { getRows } from "./actions"
 
 const TableDataPage = () => {
   const tableName = useSearchParams().get("tableName")!
@@ -26,11 +25,6 @@ const TableDataPage = () => {
         queryFn: async () => await getRows(tableName)
       }
     ]
-  })
-  useLayoutEffect(() => {
-    unregister("CommandOrControl+Up").then(() => {
-      registerScrollUpShortcut(sectionRef)
-    })
   })
 
   if (isColumnsLoading || isRowsLoading) return <LoadingSpinner />

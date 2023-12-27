@@ -9,8 +9,10 @@ interface ConnectionParamsProps {
   driver: Exclude<DriversValues, typeof Drivers.SQLite>
 }
 
-const ConnectionRadio = ({ driver }: ConnectionParamsProps) => {
-  const [radioValue, setRadioValue] = useState("conn_params")
+const ConnectionDetails = ({ driver }: ConnectionParamsProps) => {
+  const [radioValue, setRadioValue] = useState<
+    (string & {}) | "conn_params" | "conn_string"
+  >("conn_params")
   return (
     <>
       <RadioGroup
@@ -45,4 +47,4 @@ const ConnectionRadio = ({ driver }: ConnectionParamsProps) => {
   )
 }
 
-export default ConnectionRadio
+export default ConnectionDetails

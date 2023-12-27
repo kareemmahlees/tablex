@@ -35,42 +35,15 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
-  const onClickConnect = async ({
-    connName,
-    username,
-    password,
-    host,
-    port,
-    db
-  }: z.infer<typeof formSchema>) => {
-    const connString = constructConnectionString({
-      driver,
-      username,
-      password,
-      host,
-      port,
-      db
-    })
-    await createConnectionRecord(connName, connString, driver)
+  const onClickConnect = async (values: z.infer<typeof formSchema>) => {
+    const connString = constructConnectionString({ ...values, driver })
+    await createConnectionRecord(values.connName, connString, driver)
     router.push("/connections")
   }
 
-  const onClickTest = async ({
-    username,
-    password,
-    host,
-    port,
-    db
-  }: z.infer<typeof formSchema>) => {
-    const connString = constructConnectionString({
-      driver,
-      username,
-      password,
-      host,
-      port,
-      db
-    })
-    await testConnection(connString)
+  const onClickTest = async (values: z.infer<typeof formSchema>) => {
+    const connString = constructConnectionString({ ...values, driver })
+    await testConnection(connString, driver)
   }
   return (
     <Form {...form}>
