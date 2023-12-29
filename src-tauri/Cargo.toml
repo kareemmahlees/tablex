@@ -9,6 +9,13 @@ default-run = "table_x"
 edition = "2021"
 rust-version = "1.60"
 
+[profile.release]
+panic = "abort" 
+codegen-units = 1 
+lto = true 
+opt-level = "s" 
+strip = true 
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
