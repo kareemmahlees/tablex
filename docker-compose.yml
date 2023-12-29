@@ -9,3 +9,13 @@ services:
       MYSQL_DATABASE: tablex
     ports:
       - 3306:3306
+  tablex_psql:
+    image: postgres
+    container_name: tablex_postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: tablex
+      POSTGRES_USER: tablex
+      POSTGRES_DB: tablex
+    ports:
+      - 54321:5432
