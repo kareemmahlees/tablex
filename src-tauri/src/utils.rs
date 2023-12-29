@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use std::io::{BufReader, BufWriter, Write};
+use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::PathBuf;
 use std::{collections::HashMap, fs::OpenOptions};
+use tauri::Runtime;
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -22,7 +23,7 @@ pub struct ConnConfig {
     conn_name: String,
 }
 
-pub fn get_connections_file_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf, String> {
     let mut config_dir = app
         .path_resolver()
         .app_config_dir()
@@ -37,8 +38,7 @@ pub fn write_into_connections_file(
     conn_string: String,
     conn_name: String,
 ) -> Result<(), String> {
-    let mut contents = read_from_connections_file(connections_file_path)
-        .map_err(|_| "Couldn't read contents of connections file")?;
+    let mut contents = read_from_connections_file(connections_file_path)?;
 
     let connection = ConnConfig {
         driver,
@@ -108,6 +108,7 @@ pub fn read_from_connections_file(
             .map_err(|_| "Couldn't write initial content into connections file".to_string())?;
     }
 
+    let _ = file.seek(SeekFrom::Start(0));
     let reader = BufReader::new(file);
     let content: serde_json::Result<serde_json::Value> = serde_json::from_reader(reader);
     content.map_err(|e| e.to_string())
