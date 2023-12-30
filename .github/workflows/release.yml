@@ -19,6 +19,7 @@ on:
       - .gitignore
       - .github/**
       - website/**
+  workflow_dispatch:
 
 jobs:
   release:
