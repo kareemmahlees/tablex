@@ -25,7 +25,6 @@ tauri-build = { version = "1.5.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.5.2", features = [ "os-all", "clipboard-write-text", "global-shortcut-all", "dialog-open", "test"] }
-# chrono = { version = "0.4.*", features = ["serde"] }
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls" ,"sqlite", "postgres", "mysql", "time"] }
 uuid = {version = "1.6.1",features = ["v4", "fast-rng", "macro-diagnostics"] }
 tokio = { version = "1", features = ["full"] }
