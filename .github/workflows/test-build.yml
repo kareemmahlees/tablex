@@ -43,7 +43,9 @@ jobs:
           node-version: 20
 
       - name: install frontend dependencies
-        run: yarn install --production
+        run: |
+          yarn install --production
+          yarn add -D @tauri-apps/cli
 
       - uses: tauri-apps/tauri-action@v0
         env:
