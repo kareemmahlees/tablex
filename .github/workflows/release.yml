@@ -2,14 +2,13 @@ name: Release
 
 on:
   push:
-    branches:
-      - master
     tags:
       - "v*"
   workflow_dispatch:
 
 jobs:
   build-tauri:
+    if: github.ref == 'refs/heads/master'
     permissions:
       contents: write
     strategy:
