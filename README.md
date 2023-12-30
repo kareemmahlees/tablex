@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+  <img src="./docs/billboard.png">
+</p>
+<div align="center">
+    <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/kareemmahlees/tablex/lint.yml">
+  <img alt="GitHub package.json version (subfolder of monorepo)" src="https://img.shields.io/github/package-json/v/kareemmahlees/tablex?color=blue">
+  <img alt="Static Badge" src="https://img.shields.io/badge/node-v20.9.0%20-green">
+<img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
 
-## Getting Started
+</div>
 
-First, run the development server:
+> Note: TableX is still under development, don't expect it to be perfect, yet.
+
+## About the Project
+
+Tablex aims at delivering a fast, user friendly, productive and **free** database browsing experience.
+
+While not claiming that it is a replacement of any other tool, yet, it strives to provide a, hopefully, good user experience.
+
+## What Does it offer ✨
+
+- Delightful user experience
+- Top-Notch performance
+- Ultra small bundle size (~ 12MB)
+- Free and Open-Source
+
+## Tech Stack ⌨️
+
+- [Tauri](https://tauri.app/) :
+  - [NextJs](https://nextjs.org/) : Frontend Framework
+  - [Rust](https://www.rust-lang.org/) : Backend
+- [Tailwind](https://tailwindcss.com/) : CSS Framework
+- [Tanstack]() : [Query](), [Table]()
+- [shadcn/ui](https://ui.shadcn.com/) : Components
+- [Vercel](https://vercel.com/) : Deployment
+
+## Local Development 🧑🏻‍💻
+
+To start playing around with TableX locally, you will need the following requirements:
+
+- Node v20.9.0 or later ( you can use the .nvmrc )
+- Cargo 1.74.1 or later
+
+> some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
+
+Once you have setup the previous requirements, you can start by cloning the repo:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/kareemmahlees/tablex.git --depth=1
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+then, install necessary dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn install
+# And
+cargo install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+install husky git hooks:
 
-## Learn More
+```bash
+yarn husky install
+```
 
-To learn more about Next.js, take a look at the following resources:
+and you are good to go 💫, you can start your development server by running:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+yarn tauri dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Contributing 🫱🏻‍🫲🏻
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+please refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
