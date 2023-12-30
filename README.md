@@ -22,6 +22,7 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 - Delightful user experience
 - Top-Notch performance
 - Ultra small bundle size (~ 12MB)
+- Keyboard shortcuts for productivity homies
 - Free and Open-Source
 
 ## Tech Stack ⌨️
@@ -30,9 +31,19 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
   - [NextJs](https://nextjs.org/) : Frontend Framework
   - [Rust](https://www.rust-lang.org/) : Backend
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
-- [Tanstack]() : [Query](), [Table]()
+- [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
 - [Vercel](https://vercel.com/) : Deployment
+
+## Keyboard Shortcuts
+
+| Shortcut                       | Description                       |
+| ------------------------------ | --------------------------------- |
+| <kbd>Ctrl</kbd> + <kbd>k</kbd> | open command palette              |
+| <kbd>Ctrl</kbd> + <kbd>s</kbd> | focus search input                |
+| <kbd>Ctrl</kbd> + <kbd>a</kbd> | select or deselect all            |
+| <kbd>Ctrl</kbd> + <kbd>c</kbd> | copy selected rows into clipboard |
+| <kbd>Delete</kbd>              | delete selected rows              |
 
 ## Local Development 🧑🏻‍💻
 
