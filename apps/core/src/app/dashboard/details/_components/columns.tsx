@@ -7,24 +7,25 @@ export const generateColumnsDefs = async (
   tableName: string
 ): Promise<ColumnDef<any>[]> => {
   const columns = await getColsDefinitions(tableName)
-  let columnsDefinition: ColumnDef<any>[]
 
-  columnsDefinition = Object.entries(columns).map(([colName, colProps]) => {
-    const columnDefinition: ColumnDef<any> = {
-      accessorKey: colName,
-      // types for `meta` come from env.d.ts
-      meta: {
-        name: colName
-      },
-      header: ({ column }: { column: Column<any> }) => {
-        return <SortingButton column={column} title={colName} />
+  const columnsDefinition: ColumnDef<any>[] = Object.entries(columns).map(
+    ([colName, colProps]) => {
+      const columnDefinition: ColumnDef<any> = {
+        accessorKey: colName,
+        // types for `meta` come from env.d.ts
+        meta: {
+          name: colName
+        },
+        header: ({ column }: { column: Column<any> }) => {
+          return <SortingButton column={column} title={colName} />
+        }
       }
+      columnDefinition.id = colProps.isPK
+        ? "pk"
+        : (columnDefinition.accessorKey as string)
+      return columnDefinition
     }
-    columnDefinition.id = colProps.isPK
-      ? "pk"
-      : (columnDefinition.accessorKey as string)
-    return columnDefinition
-  })
+  )
 
   // add the select box column in the beginning of columns
   columnsDefinition.unshift({

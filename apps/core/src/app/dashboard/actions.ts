@@ -53,7 +53,7 @@ export const getColsDefinitions = async (tableName: string) => {
 
 export const getZodSchemaFromCols = async (tableName: string) => {
   const cols = await getColsDefinitions(tableName)
-  let schemaObject: z.ZodRawShape = {}
+  const schemaObject: z.ZodRawShape = {}
   Object.entries(cols).forEach(([colName, colProps]) => {
     let validationRule: z.ZodTypeAny
 
@@ -83,10 +83,13 @@ export const getZodSchemaFromCols = async (tableName: string) => {
       // only valid in postgres
       case colProps.type == "uuid":
         validationRule = z.string().uuid()
+        break
       case colProps.type == "boolean":
         validationRule = z.boolean()
+        break
       case date_data_types.includes(colProps.type):
         validationRule = z.date()
+        break
       default:
         validationRule = z.any()
     }

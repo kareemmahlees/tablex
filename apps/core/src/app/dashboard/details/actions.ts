@@ -59,7 +59,7 @@ export const updateRow = async (
     data
   })
   customToast(command, {
-    success: (s) => {
+    success: () => {
       setIsSheetOpen(false)
       return `Successfully updated rows`
     },

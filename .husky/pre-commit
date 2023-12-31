@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn next:lint
-yarn rust:lint
-yarn check-format
+yarn lint
+yarn format:check

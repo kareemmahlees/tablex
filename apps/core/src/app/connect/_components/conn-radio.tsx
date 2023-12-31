@@ -11,7 +11,7 @@ interface ConnectionParamsProps {
 
 const ConnectionDetails = ({ driver }: ConnectionParamsProps) => {
   const [radioValue, setRadioValue] = useState<
-    (string & {}) | "conn_params" | "conn_string"
+    (string & NonNullable<unknown>) | "conn_params" | "conn_string"
   >("conn_params")
   return (
     <>

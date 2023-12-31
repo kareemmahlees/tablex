@@ -1,6 +1,7 @@
 import Providers from "@/lib/providers"
 import { GeistSans } from "geist/font/sans"
 import type { Metadata } from "next"
+import type React from "react"
 
 import "./globals.css"
 

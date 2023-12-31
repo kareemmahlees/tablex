@@ -50,7 +50,8 @@ export function dirtyValues(
   return Object.fromEntries(
     Object.keys(dirtyFields).map((key) => [
       key,
-      // @ts-ignore
+      //@ts-expect-error because ts cannot infer that key is a `keyof typeof dirtyFields`
+      // and trying to infer it with the `as` is just ugly
       dirtyValues(dirtyFields[key], allValues[key])
     ])
   )
@@ -59,8 +60,7 @@ export function dirtyValues(
 export function customToast<T>(
   promise: Promise<T>,
   callbacks: Omit<Parameters<typeof toast.promise<T>>["1"], "loading">,
-  id: string | undefined = undefined,
-  loadingMessage?: string
+  id: string | undefined = undefined
 ) {
   toast.promise(
     promise,
