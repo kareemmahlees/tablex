@@ -45,7 +45,6 @@ jobs:
         with:
           run_install: |
             - recursive: true
-              args: [--prod]
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -54,7 +53,7 @@ jobs:
           cache: "pnpm"
 
       - name: install tauri cli
-        run: pnpm add -w --prod @tauri-apps/cli
+        run: pnpm add -w @tauri-apps/cli
 
       - uses: tauri-apps/tauri-action@v0
         env:
