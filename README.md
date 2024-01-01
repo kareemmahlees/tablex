@@ -84,3 +84,4 @@ pnpm tauri:dev
 ## Contributing 🫱🏻‍🫲🏻
 
 please refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+foo
