@@ -21,3 +21,7 @@ This is a very crucial part and we care about it soo much to keep the commit log
 ## Multiply tiny is better than a Big one
 
 Separating your changes into multiple small commits is better to review and debug than a big fat commit
+
+## Changesets
+
+It is very preferable to add a changeset at the end of your work in the pr.
