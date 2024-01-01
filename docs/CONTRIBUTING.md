@@ -25,3 +25,4 @@ Separating your changes into multiple small commits is better to review and debu
 ## Changesets
 
 It is very preferable to add a changeset at the end of your work in the pr.
+Please refer to [changesets](https://github.com/changesets/changesets) documentation for more info.
