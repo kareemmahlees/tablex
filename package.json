@@ -14,23 +14,24 @@
     "apps/*"
   ],
   "scripts": {
-    "tauri:dev": "yarn workspace @tablex/core tauri dev",
-    "tauri:build": "yarn workspace @tablex/core tauri build",
-    "astro:dev": "yarn workspace @tablex/web dev",
-    "astro:build": "yarn workspace @tablex/web astro check && yarn workspace @tablex/web astro build",
-    "astro:preview": "yarn workspace @tablex/web astro preview",
-    "lint": "eslint . && yarn workspace @tablex/core next:lint && yarn workspace @tablex/core rust:lint",
+    "tauri:dev": "pnpm --filter @tablex/core exec tauri dev",
+    "tauri:build": "pnpm --filter @tablex/core exec tauri build",
+    "astro:dev": "pnpm --filter @tablex/web dev",
+    "astro:build": "pnpm --filter @tablex/web build",
+    "astro:preview": "pnpm --filter @tablex/web preview",
+    "lint": "eslint . && pnpm --filter @tablex/core next:lint && pnpm --filter @tablex/core rust:lint",
     "format:check": "npx prettier . --check",
-    "format": "npx prettier . --write"
+    "format:fix": "npx prettier . --write"
   },
   "devDependencies": {
-    "eslint": "^8",
-    "eslint-config-prettier": "^9.1.0",
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
-    "husky": "^8.0.3",
-    "prettier": "3.1.1",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@typescript-eslint/parser": "^6.16.0"
-  }
+    "@typescript-eslint/parser": "^6.16.0",
+    "eslint": "^8",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^8.0.3",
+    "prettier": "3.1.1"
+  },
+  "packageManager": "pnpm@8.13.1"
 }

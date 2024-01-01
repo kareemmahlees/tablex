@@ -19,6 +19,9 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            apps/core
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
@@ -34,16 +37,20 @@ jobs:
         with:
           workspaces: "./src-tauri -> target"
 
+      - uses: pnpm/action-setup@v2
+        with:
+          run_install: |
+            - recursive: true
+              args: [--prod]
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "yarn"
+          cache: "pnpm"
 
-      - name: install frontend dependencies
-        run: |
-          yarn install --production
-          yarn add -D @tauri-apps/cli
+      - name: install tauri cli
+        run: pnpm add -Dw @tauri-apps/cli
 
       - uses: tauri-apps/tauri-action@v0
         env:

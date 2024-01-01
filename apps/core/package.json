@@ -9,7 +9,7 @@
     "start": "next start",
     "next:lint": "next lint",
     "rust:lint": "cargo clippy --manifest-path ./src-tauri/Cargo.toml",
-    "lint": "yarn next:lint && yarn rust:lint"
+    "lint": "pnpm next:lint && pnpm rust:lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",

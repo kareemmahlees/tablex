@@ -9,11 +9,19 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          sparse-checkout: .
+
+      - uses: pnpm/action-setup@v2
+        with:
+          run_install: |
+            - recursive: false
+              args: [--frozen-lockfile]
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
+          cache: "pnpm"
+
       - name: Install commitlint
         run: |
           yarn add conventional-changelog-conventionalcommits
@@ -30,23 +38,31 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
+
+      - uses: pnpm/action-setup@v2
+        with:
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile]
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
-      - name: Install Dependencies
-        run: yarn add next eslint eslint-config-next prettier
-      - name: Run Eslint
-        run: yarn next:lint
+          cache: "pnpm"
+
+      - name: Run Lint
+        run: pnpm lint
       - name: Run Prettier
-        run: yarn check-format
+        run: pnpm format:check
   clippy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
+          sparse-checkout: | # fetch only rust code
+            apps/core/src-tauri
+
       - name: Install tauri specific dependencies
         run: |
           sudo apt-get update
@@ -54,10 +70,11 @@ jobs:
       - uses: moonrepo/setup-rust@v1
         with:
           components: clippy
-      - name: Run Clippy
-        run: yarn rust:lint
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
+
+      - name: Run Clippy
+        run: pnpm --filter @tablex/core rust:lint
