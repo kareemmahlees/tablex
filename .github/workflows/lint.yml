@@ -27,8 +27,8 @@ jobs:
 
       - name: Install commitlint
         run: |
-          pnpm add conventional-changelog-conventionalcommits
-          pnpm add commitlint@latest
+          pnpm add -w conventional-changelog-conventionalcommits
+          pnpm add -w commitlint@latest
       - name: Validate latest commit
         if: github.event_name == 'push'
         run: npx commitlint --from HEAD~1 --to HEAD --verbose
