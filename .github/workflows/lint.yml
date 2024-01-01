@@ -22,6 +22,9 @@ jobs:
           node-version: 20
           cache: "pnpm"
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install commitlint
         run: |
           yarn add conventional-changelog-conventionalcommits
@@ -50,10 +53,15 @@ jobs:
           node-version: 20
           cache: "pnpm"
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Run Lint
-        run: pnpm lint
+        run: pnpm ts:lint
+
       - name: Run Prettier
         run: pnpm format:check
+
   clippy:
     runs-on: ubuntu-latest
     steps:
@@ -76,5 +84,7 @@ jobs:
         with:
           workspaces: "./src-tauri -> target"
 
+      - uses: pnpm/action-setup@v2
+
       - name: Run Clippy
-        run: pnpm --filter @tablex/core rust:lint
+        run: pnpm rust:lint
