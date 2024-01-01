@@ -1,14 +1,12 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: created
   workflow_dispatch:
 
 jobs:
   build-tauri:
-    if: github.ref == 'refs/heads/master'
     permissions:
       contents: write
     strategy:
@@ -41,23 +39,18 @@ jobs:
         with:
           run_install: |
             - recursive: true
-              args: [--prod]
 
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: "pnpm"
 
       - name: install tauri cli
-        run: pnpm add -Dw @tauri-apps/cli
+        run: pnpm add -w @tauri-apps/cli
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: "TableX v__VERSION__"
-          releaseBody: "See the assets to download and install this version."
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ github.event.release.id }}
