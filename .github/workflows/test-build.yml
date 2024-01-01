@@ -54,7 +54,7 @@ jobs:
           cache: "pnpm"
 
       - name: install tauri cli
-        run: pnpm add -W @tauri-apps/cli
+        run: pnpm add @tauri-apps/cli
 
       - uses: tauri-apps/tauri-action@v0
         env:
