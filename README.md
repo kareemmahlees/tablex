@@ -51,6 +51,7 @@ To start playing around with TableX locally, you will need the following require
 
 - Node v20.9.0 or later ( you can use the .nvmrc )
 - Cargo 1.74.1 or later
+- pnpm 8.13.1 or later
 
 > some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
 
@@ -63,7 +64,7 @@ git clone https://github.com/kareemmahlees/tablex.git --depth=1
 then, install necessary dependencies:
 
 ```bash
-yarn install
+pnpm install
 # And
 cargo install
 ```
@@ -71,13 +72,13 @@ cargo install
 install husky git hooks:
 
 ```bash
-yarn husky install
+pnpm husky install
 ```
 
 and you are good to go 💫, you can start your development server by running:
 
 ```bash
-yarn tauri dev
+pnpm tauri:dev
 ```
 
 ## Contributing 🫱🏻‍🫲🏻
