@@ -16,9 +16,9 @@
   "scripts": {
     "tauri:dev": "pnpm --filter @tablex/core exec tauri dev",
     "tauri:build": "pnpm --filter @tablex/core exec tauri build",
-    "astro:dev": "pnpm --filter @tablex/web dev",
-    "astro:build": "pnpm --filter @tablex/web build",
-    "astro:preview": "pnpm --filter @tablex/web preview",
+    "vite:dev": "pnpm --filter @tablex/web dev",
+    "vite:build": "pnpm --filter @tablex/web build",
+    "vite:preview": "pnpm --filter @tablex/web preview",
     "ts:lint": "eslint . && pnpm --filter @tablex/core next:lint",
     "rust:lint": "pnpm --filter @tablex/core rust:lint",
     "lint": "eslint . && pnpm --filter @tablex/core next:lint && pnpm --filter @tablex/core rust:lint",
@@ -31,11 +31,18 @@
     "@commitlint/config-conventional": "^18.4.3",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.2",
     "husky": "^8.0.3",
-    "prettier": "3.1.1"
+    "prettier": "3.1.1",
+    "typescript": "^5"
   },
-  "packageManager": "pnpm@8.13.1"
+  "packageManager": "pnpm@8.13.1",
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  }
 }

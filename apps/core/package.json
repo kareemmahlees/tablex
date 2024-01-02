@@ -27,29 +27,22 @@
     "@tanstack/react-table": "^8.10.7",
     "@tauri-apps/api": "^1.5.1",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "geist": "^1.2.0",
     "lucide-react": "^0.292.0",
     "next": "14.0.2",
     "next-themes": "^0.2.1",
-    "react": "^18",
-    "react-dom": "^18",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
     "tailwind-merge": "^2.0.0",
-    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.6",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint-config-next": "14.0.2",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "tailwindcss": "^3.3.0"
   }
 }

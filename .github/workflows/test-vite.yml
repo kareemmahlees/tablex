@@ -49,5 +49,5 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
 
-      - name: run astro build
-        run: pnpm astro:build
+      - name: run vite build
+        run: pnpm vite:build
