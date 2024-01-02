@@ -1,4 +1,4 @@
-name: Test Build
+name: Test Tauri Build
 
 on:
   push:

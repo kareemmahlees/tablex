@@ -1,0 +1,53 @@
+name: Test Astro Build
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "**"
+      - "!*.md"
+      - "!docs/**"
+      - "!public/**"
+      - "!.husky/**"
+      - "!.gitignore"
+      - "!.github/**"
+      - "!.changeset/**"
+      - "!apps/core/**"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "**"
+      - "!*.md"
+      - "!docs/**"
+      - "!public/**"
+      - "!.husky/**"
+      - "!.gitignore"
+      - "!.github/**"
+      - "!.changeset/**"
+      - "!apps/core/**"
+  workflow_dispatch:
+
+jobs:
+  test-tauri:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            apps/web
+
+      - uses: pnpm/action-setup@v2
+        with:
+          run_install: |
+            - recursive: true
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: "pnpm"
+
+      - name: run astro build
+        run: pnpm astro:build
