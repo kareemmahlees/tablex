@@ -42,6 +42,7 @@ jobs:
         with:
           run_install: |
             - recursive: true
+              args[--prod]
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -49,5 +50,5 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
 
-      - name: run astro build
-        run: pnpm astro:build
+      - name: run vite build
+        run: pnpm vite:build
