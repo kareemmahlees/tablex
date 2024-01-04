@@ -11,9 +11,14 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-slot": "^1.0.2",
+    "framer-motion": "^10.17.4",
+    "vaul": "^0.8.0"
   }
 }
