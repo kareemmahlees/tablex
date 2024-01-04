@@ -57,7 +57,7 @@ const Heading = () => {
       <img
         src="/overview.png"
         alt="overview"
-        className="w-[400px] md:w-[600px] rounded-sm mt-5 [mask-image:linear-gradient(black,gray,transparent_75%)] brightness-[80%]"
+        className="w-[400px] md:w-[600px] lg:w-[850px] rounded-sm mt-5 [mask-image:linear-gradient(black,gray,transparent_75%)] brightness-[80%]"
       />
     </header>
   )

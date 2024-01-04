@@ -4,14 +4,15 @@ import { Drawer, DrawerContent, DrawerTrigger } from "./ui/drawer"
 
 const Nav = () => {
   return (
-    <nav className="w-full fixed -top-0 backdrop-blur-md  flex justify-between p-2 md:p-3 lg:p-4 items-center">
+    <nav className="w-full fixed -top-0 backdrop-blur-md z-[999] flex justify-between p-2 md:p-3 lg:p-4 items-center">
       <Button
         size={"sm"}
         variant={"ghost"}
         className="hover:bg-transparent"
         onClick={() =>
           window.scrollTo({
-            top: 0
+            top: 0,
+            behavior: "smooth"
           })
         }
       >
