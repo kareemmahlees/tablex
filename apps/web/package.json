@@ -1,20 +1,26 @@
 {
   "name": "@tablex/web",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "version": "0.1.0",
-  "license": "MIT",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "vite": "^5.0.8"
   },
   "dependencies": {
-    "@astrojs/check": "^0.3.4",
-    "@astrojs/tailwind": "^5.1.0",
-    "astro": "^4.0.8",
-    "tailwindcss": "^3.4.0",
-    "typescript": "^5"
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@vercel/analytics": "^1.1.1",
+    "@vercel/speed-insights": "^1.0.2",
+    "framer-motion": "^10.17.4",
+    "vaul": "^0.8.0"
   }
 }
