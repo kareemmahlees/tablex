@@ -165,6 +165,9 @@ importers:
       "@radix-ui/react-slot":
         specifier: ^1.0.2
         version: 1.0.2(@types/react@18.2.46)(react@18.2.0)
+      "@vercel/speed-insights":
+        specifier: ^1.0.2
+        version: 1.0.2
       framer-motion:
         specifier: ^10.17.4
         version: 10.17.4(react-dom@18.2.0)(react@18.2.0)
@@ -3340,6 +3343,14 @@ packages:
         integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
       }
     dev: true
+
+  /@vercel/speed-insights@1.0.2:
+    resolution:
+      {
+        integrity: sha512-y5HWeB6RmlyVYxJAMrjiDEz8qAIy2cit0fhBq+MD78WaUwQvuBnQlX4+5MuwVTWi46bV3klaRMq83u9zUy1KOg==
+      }
+    requiresBuild: true
+    dev: false
 
   /@vitejs/plugin-react@4.2.1(vite@5.0.10):
     resolution:

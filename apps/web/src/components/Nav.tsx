@@ -4,12 +4,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "./ui/drawer"
 
 const Nav = () => {
   return (
-    <nav
-      className="w-full sticky bg-zinc-900 flex justify-between p-2 md:p-3 lg:p-4 items-center"
-      onScroll={(e) => {
-        e.currentTarget.style.background = "bg-zinc-800"
-      }}
-    >
+    <nav className="w-full fixed -top-0 backdrop-blur-md  flex justify-between p-2 md:p-3 lg:p-4 items-center">
       <Button
         size={"sm"}
         variant={"ghost"}
