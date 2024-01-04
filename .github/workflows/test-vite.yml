@@ -42,7 +42,6 @@ jobs:
         with:
           run_install: |
             - recursive: true
-              args[--prod]
 
       - name: setup node
         uses: actions/setup-node@v4
