@@ -49,6 +49,10 @@
   }
 }
 
+kbd {
+  @apply border border-b-2 rounded-lg px-1.5 py-1;
+}
+
 @layer base {
   * {
     @apply border-border;
