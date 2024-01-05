@@ -10,7 +10,12 @@ const BundleSizeCard = () => {
         <p>
           <span className="font-semibold text-foreground">TableX</span>, thanks
           to{" "}
-          <a className="text-white underline" href="https://tauri.app/">
+          <a
+            className="text-white underline"
+            href="https://tauri.app/"
+            target="_blank"
+            rel="noreferrer"
+          >
             tauri
           </a>
           , produces a very small bundle size (~ 10 MB) compared to the
