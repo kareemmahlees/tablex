@@ -4,29 +4,27 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "**"
-      - "!*.md"
-      - "!docs/**"
-      - "!public/**"
-      - "!.husky/**"
-      - "!.gitignore"
-      - "!.github/**"
-      - "!.changeset/**"
-      - "!apps/core/**"
+    paths-ignore:
+      - "*.md"
+      - "docs/**"
+      - "public/**"
+      - ".husky/**"
+      - ".gitignore"
+      - ".github/**"
+      - ".changeset/**"
+      - "apps/core/**"
   pull_request:
     branches:
       - master
-    paths:
-      - "**"
-      - "!*.md"
-      - "!docs/**"
-      - "!public/**"
-      - "!.husky/**"
-      - "!.gitignore"
-      - "!.github/**"
-      - "!.changeset/**"
-      - "!apps/core/**"
+    paths-ignore:
+      - "*.md"
+      - "docs/**"
+      - "public/**"
+      - ".husky/**"
+      - ".gitignore"
+      - ".github/**"
+      - ".changeset/**"
+      - "apps/core/**"
   workflow_dispatch:
 
 jobs:
