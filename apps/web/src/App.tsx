@@ -13,7 +13,7 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Analytics />
       <SpeedInsights />
-      <main className="font-[Rubik]">
+      <main className="font-[Rubik] ">
         <Nav />
         <MaxWidthWrapper>
           <Heading />

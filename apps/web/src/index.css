@@ -60,4 +60,7 @@ kbd {
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    @apply scroll-auto md:scroll-smooth;
+  }
 }

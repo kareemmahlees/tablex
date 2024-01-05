@@ -52,7 +52,7 @@ const BundleSizeChart = () => {
       <Tooltip
         wrapperClassName="rounded-md text-muted-foreground"
         contentStyle={{
-          background: "black"
+          background: "hsl(var(--background))"
         }}
       />
       <Bar dataKey="size" fill="white" />

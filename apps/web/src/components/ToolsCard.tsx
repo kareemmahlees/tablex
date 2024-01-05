@@ -9,6 +9,7 @@ import {
 const ToolsCard = () => {
   return (
     <Card
+      id="tools"
       header="Built with the tools you love"
       content={
         <p>
