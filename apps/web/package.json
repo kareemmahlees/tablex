@@ -18,9 +18,11 @@
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
     "framer-motion": "^10.17.4",
+    "recharts": "^2.10.3",
     "vaul": "^0.8.0"
   }
 }

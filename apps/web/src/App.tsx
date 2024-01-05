@@ -14,6 +14,7 @@ function App() {
         <Nav />
         <MaxWidthWrapper>
           <Heading />
+          <ToolsCard />
         </MaxWidthWrapper>
       </main>
     </ThemeProvider>
