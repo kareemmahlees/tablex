@@ -15,6 +15,7 @@ function App() {
         <MaxWidthWrapper>
           <Heading />
           <ToolsCard />
+          <BundleSizeCard />
         </MaxWidthWrapper>
       </main>
     </ThemeProvider>
