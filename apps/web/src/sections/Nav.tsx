@@ -1,3 +1,11 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
 import { Menu } from "lucide-react"
 import { useState } from "react"
 import { Button, buttonVariants } from "../components/ui/button"
@@ -13,8 +21,7 @@ const Nav = () => {
         className="hover:bg-transparent"
         onClick={() =>
           window.scrollTo({
-            top: 0,
-            behavior: "smooth"
+            top: 0
           })
         }
       >
@@ -49,9 +56,34 @@ const Nav = () => {
         >
           Download
         </Button>
-        <Button variant={"ghost"} size={"sm"} className="text-muted-foreground">
-          Pricing
-        </Button>
+        <Dialog>
+          <DialogTrigger>
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              className="text-muted-foreground"
+            >
+              Pricing
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>100% Free 🥳</DialogTitle>
+              <DialogDescription>
+                Tablex is absolutely free to download and use, if you would like
+                to support the project, consider giving us a Star ⭐ on{" "}
+                <a
+                  className="text-foreground underline"
+                  href="https://github.com/kareemmahlees/tablex"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Github
+                </a>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </ul>
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerTrigger asChild>
