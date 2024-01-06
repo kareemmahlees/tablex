@@ -6,7 +6,8 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
     "plugin:react/recommended",
-    "plugin:react/jsx-runtime"
+    "plugin:react/jsx-runtime",
+    "plugin:prettier/recommended"
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parser: "@typescript-eslint/parser",
@@ -16,7 +17,13 @@ module.exports = {
       "warn",
       { allowConstantExport: true }
     ],
-    "react/prop-types": ["off"]
+    "react/prop-types": ["off"],
+    "prettier/prettier": [
+      "error",
+      {
+        endOfLine: "auto"
+      }
+    ]
   },
 
   settings: {

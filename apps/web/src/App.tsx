@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 import { ThemeProvider } from "./components/providers/theme-provider"
 import BundleSizeCard from "./sections/BundleSizeCard"
 import Download from "./sections/Download"
+import Footer from "./sections/Footer"
 import KbdShortcutsCard from "./sections/KbdShortcutsCard"
 import ToolsCard from "./sections/ToolsCard"
 
@@ -22,6 +23,7 @@ function App() {
           <BundleSizeCard />
           <KbdShortcutsCard />
           <Download />
+          <Footer />
         </MaxWidthWrapper>
       </main>
     </ThemeProvider>
