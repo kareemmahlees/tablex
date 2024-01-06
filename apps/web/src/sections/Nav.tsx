@@ -6,7 +6,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "../components/ui/drawer"
 const Nav = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   return (
-    <nav className="fixed -top-0 z-[999] flex w-full items-center justify-between scroll-smooth p-2 backdrop-blur-md md:p-3 lg:p-4">
+    <nav className="bg-background/40 fixed -top-0 z-[999] flex w-full items-center justify-between scroll-smooth p-2 backdrop-blur-md md:p-3 lg:p-4">
       <Button
         size={"sm"}
         variant={"ghost"}
