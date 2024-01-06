@@ -37,7 +37,16 @@ const Nav = () => {
         >
           Features
         </Button>
-        <Button variant={"ghost"} size={"sm"} className="text-muted-foreground">
+        <Button
+          variant={"ghost"}
+          size={"sm"}
+          className="text-muted-foreground"
+          onClick={() =>
+            document
+              .getElementById("download")
+              ?.scrollIntoView({ block: "center" })
+          }
+        >
           Download
         </Button>
         <Button variant={"ghost"} size={"sm"} className="text-muted-foreground">
@@ -66,14 +75,20 @@ const Nav = () => {
             >
               Features
             </Button>
-            <a
-              className={buttonVariants({
-                size: "sm",
-                variant: "ghost"
-              })}
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              onClick={() => {
+                setIsDrawerOpen(false)
+                setTimeout(() => {
+                  document
+                    .getElementById("download")
+                    ?.scrollIntoView({ block: "center", inline: "center" })
+                }, 500)
+              }}
             >
               Download
-            </a>
+            </Button>
             <a
               className={buttonVariants({
                 size: "sm",

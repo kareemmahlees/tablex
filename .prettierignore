@@ -4,3 +4,4 @@ out
 public
 src-tauri
 pnpm-lock.yaml
+/**/dist

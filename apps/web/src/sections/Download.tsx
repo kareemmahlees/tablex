@@ -5,10 +5,13 @@ import { version as packageVersion } from "@tablex/core/package.json"
 const Download = () => {
   return (
     <section
-      className="mt-[100px] space-y-7 md:space-y-9 lg:space-y-11
+      className="mt-[100px] w-full space-y-7 md:space-y-9 lg:space-y-11
     "
     >
-      <h3 className="text-center text-2xl font-bold underline underline-offset-4 md:text-3xl">
+      <h3
+        className="text-center text-2xl font-bold underline underline-offset-4 md:text-3xl"
+        id="download"
+      >
         Download
       </h3>
       <Tabs
@@ -30,7 +33,7 @@ const Download = () => {
             Linux
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="windows">
+        <TabsContent value="windows" className="w-2/3">
           <DownloadCard
             title="exe installer"
             downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_${packageVersion}_x64-setup.exe`}
@@ -40,14 +43,14 @@ const Download = () => {
             downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_${packageVersion}_x64_en-US.msi`}
           />
         </TabsContent>
-        <TabsContent value="macos">
+        <TabsContent value="macos" className="w-2/3">
           <DownloadCard
             title=".dmg"
             downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_${packageVersion}_x64.dmg
 `}
           />
         </TabsContent>
-        <TabsContent value="linux">
+        <TabsContent value="linux" className="w-2/3">
           <DownloadCard
             title=".deb"
             downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/table-x_${packageVersion}_amd64.deb`}
