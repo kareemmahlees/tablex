@@ -29,8 +29,8 @@ const ConnectionsPage = () => {
   if (isLoading) return <LoadingSpinner />
 
   return (
-    <main className="flex items-start h-full">
-      <ul className="flex flex-col justify-start gap-y-5 p-5 lg:p-7 h-full flex-[0.5] overflow-y-auto">
+    <main className="flex h-full items-start">
+      <ul className="flex h-full flex-[0.5] flex-col justify-start gap-y-5 overflow-y-auto p-5 lg:p-7">
         {Object.entries(connections!).map(([id, config]) => {
           return (
             <li key={id}>
@@ -40,14 +40,14 @@ const ConnectionsPage = () => {
                   role="button"
                   onClick={() => router.push(`/dashboard?id=${id}`)}
                 >
-                  <p className="lg:text-lg font-medium">{config.connName}</p>
+                  <p className="font-medium lg:text-lg">{config.connName}</p>
                   <p className="text-muted-foreground text-sm lg:text-lg">
                     {config.driver}
                   </p>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger>
-                    <MoreHorizontal className="w-5 h-5 lg:w-6 lg:h-6" />
+                    <MoreHorizontal className="h-5 w-5 lg:h-6 lg:w-6" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem
@@ -66,12 +66,12 @@ const ConnectionsPage = () => {
           )
         })}
       </ul>
-      <aside className="relative flex flex-col items-center gap-y-10 lg:gap-y-20 justify-center h-full flex-[0.5]">
-        <div className="relative w-[120px] h-[120px] lg:w-[170px] lg:h-[170px]">
+      <aside className="relative flex h-full flex-[0.5] flex-col items-center justify-center gap-y-10 lg:gap-y-20">
+        <div className="relative h-[120px] w-[120px] lg:h-[170px] lg:w-[170px]">
           <Image src={"/icons/planet.svg"} alt="planet" aria-hidden fill />
         </div>
         <CreateConnectionBtn />
-        <div className="absolute h-full w-full -z-10 overflow-hidden opacity-30">
+        <div className="absolute -z-10 h-full w-full overflow-hidden opacity-30">
           <Image
             src={"/bg-2.svg"}
             alt="background"

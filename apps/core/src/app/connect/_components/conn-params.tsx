@@ -126,7 +126,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
             </FormItem>
           )}
         />
-        <div className="col-span-full flex justify-center items-center gap-x-4">
+        <div className="col-span-full flex items-center justify-center gap-x-4">
           <Button
             variant={"secondary"}
             className="w-[100px]"
@@ -135,7 +135,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
             Connect
           </Button>
           <Button
-            className="bg-green-500 hover:bg-green-700 w-[100px]"
+            className="w-[100px] bg-green-500 hover:bg-green-700"
             onClick={form.handleSubmit(onClickTest)}
           >
             Test

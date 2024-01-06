@@ -92,8 +92,8 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
             </FormItem>
           )}
         />
-        <pre className="text-sm text-muted-foreground">{selectedPath}</pre>
-        <div className="col-span-full flex justify-center items-center gap-x-4">
+        <pre className="text-muted-foreground text-sm">{selectedPath}</pre>
+        <div className="col-span-full flex items-center justify-center gap-x-4">
           <Button
             variant={"secondary"}
             className="w-[100px]"
@@ -103,7 +103,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
           </Button>
           <Button
             type="button"
-            className="bg-green-500 hover:bg-green-700 w-[100px]"
+            className="w-[100px] bg-green-500 hover:bg-green-700"
             onClick={onClickTest}
           >
             Test

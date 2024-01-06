@@ -71,18 +71,18 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
 
   return (
     <main className="flex h-full">
-      <aside className="bg-zinc-800 flex flex-col items-start justify-between w-56 lg:w-72 p-3 lg:p-5 overflow-y-auto">
-        <div className="flex flex-col items-start gap-y-4 lg:gap-y-5 mb-4">
-          <h1 className="font-bold text-lg text-gray-500">{data?.connName}</h1>
-          <div className="flex items-center bg-background rounded-sm px-1">
+      <aside className="flex w-56 flex-col items-start justify-between overflow-y-auto bg-zinc-800 p-3 lg:w-72 lg:p-5">
+        <div className="mb-4 flex flex-col items-start gap-y-4 lg:gap-y-5">
+          <h1 className="text-lg font-bold text-gray-500">{data?.connName}</h1>
+          <div className="bg-background flex items-center rounded-sm px-1">
             <Search className="h-3 lg:h-5" color="#4a506f" />
             <Input
               ref={inputRef}
               onKeyUp={handleKeyUp}
               placeholder="Search..."
-              className="h-6 lg:h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-xs lg:placeholder:text-base text-sm"
+              className="h-6 border-none text-sm placeholder:text-xs focus-visible:ring-0 focus-visible:ring-offset-0 lg:h-8 lg:placeholder:text-base"
             />
-            <div className="items-center text-xs gap-x-1 hidden lg:flex">
+            <div className="hidden items-center gap-x-1 text-xs lg:flex">
               <p className="bg-muted rounded-sm px-1 py-[0.5px]">Ctrl</p>
               <p>+</p>
               <p className="bg-muted rounded-sm px-1 py-[0.5px]">S</p>
@@ -93,7 +93,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
               return (
                 <li
                   key={index}
-                  className="flex items-center justify-center text-white text-sm lg:text-base gap-x-1"
+                  className="flex items-center justify-center gap-x-1 text-sm text-white lg:text-base"
                   role="button"
                   onClick={() => {
                     router.push(

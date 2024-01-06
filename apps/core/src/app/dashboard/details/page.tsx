@@ -31,10 +31,10 @@ const TableDataPage = () => {
 
   return (
     <section
-      className="flex flex-col overflow-auto w-full will-change-scroll"
+      className="flex w-full flex-col overflow-auto will-change-scroll"
       ref={sectionRef}
     >
-      <h1 className="font-bold text-2xl p-4 w-full ">{tableName}</h1>
+      <h1 className="w-full p-4 text-2xl font-bold ">{tableName}</h1>
       <DataTable columns={columns!} data={rows!} />
     </section>
   )

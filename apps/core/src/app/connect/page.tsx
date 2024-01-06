@@ -20,7 +20,7 @@ const ConnectionPage = () => {
     null
   )
   return (
-    <main className="relative h-full flex flex-col items-center gap-y-9 justify-center">
+    <main className="relative flex h-full flex-col items-center justify-center gap-y-9">
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -76,7 +76,7 @@ const ConnectionPage = () => {
         fill
         alt="bg"
         aria-hidden
-        className="object-cover -z-10 opacity-20 object-center"
+        className="-z-10 object-cover object-center opacity-20"
       />
     </main>
   )

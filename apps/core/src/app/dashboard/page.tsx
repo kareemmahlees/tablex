@@ -2,7 +2,7 @@ import Image from "next/image"
 
 const DashboardPage = () => {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center text-2xl font-bold break-words text-gray-500 opacity-50 text-center gap-y-3">
+    <div className="flex h-full w-full flex-col items-center justify-center gap-y-3 break-words text-center text-2xl font-bold text-gray-500 opacity-50">
       <Image
         src={"/cube.svg"}
         alt="cube"

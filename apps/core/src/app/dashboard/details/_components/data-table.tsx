@@ -101,7 +101,7 @@ const DataTable = <TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="font-bold text-sm lg:text-base"
+                      className="text-sm font-bold lg:text-base"
                     >
                       {header.isPlaceholder
                         ? null

@@ -1,10 +1,10 @@
-import Card from "./Card"
+import Card from "../components/Card"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
-} from "./ui/tooltip"
+} from "../components/ui/tooltip"
 
 const ToolsCard = () => {
   return (
@@ -13,7 +13,7 @@ const ToolsCard = () => {
       header="Built with the tools you love"
       content={
         <p>
-          <span className="font-semibold text-foreground">TableX</span> utilizes
+          <span className="text-foreground font-semibold">TableX</span> utilizes
           modern tooling to provide a delightful developer experience and an
           Immersive user experience.
         </p>
@@ -51,13 +51,13 @@ const Tools = () => {
   ]
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-3  mx-auto gap-5 md:gap-y-8 mt-7 w-full">
+      <div className="mx-auto mt-7  grid w-full grid-cols-3 gap-5 md:gap-y-8">
         <Tooltip>
           <TooltipTrigger asChild>
             <img
               src="/icons/next.svg"
               alt="nextjs"
-              className="w-10 h-10 invert justify-self-center"
+              className="h-10 w-10 justify-self-center invert"
             />
           </TooltipTrigger>
           <TooltipContent>Nextjs</TooltipContent>
@@ -69,7 +69,7 @@ const Tools = () => {
                 <img
                   src={src}
                   alt={alt}
-                  className="w-10 h-10 justify-self-center"
+                  className="h-10 w-10 justify-self-center"
                 />
               </TooltipTrigger>
               <TooltipContent>{content}</TooltipContent>
@@ -81,7 +81,7 @@ const Tools = () => {
             <img
               src="/icons/shadcn.svg"
               alt="shadcn"
-              className="w-8 h-8 justify-self-center"
+              className="h-8 w-8 justify-self-center"
             />
           </TooltipTrigger>
           <TooltipContent>Nextjs</TooltipContent>

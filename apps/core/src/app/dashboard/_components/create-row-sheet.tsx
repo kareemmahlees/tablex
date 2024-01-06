@@ -41,9 +41,9 @@ const AddRowBtn = () => {
           <SheetTrigger>
             <TooltipTrigger
               role="button"
-              className="bg-zinc-900 p-1 rounded-full"
+              className="rounded-full bg-zinc-900 p-1"
             >
-              <Plus className="w-4 h-4 lg:w-5 lg:h-5" />
+              <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
             </TooltipTrigger>
           </SheetTrigger>
           <SheetContent className="overflow-y-auto">
@@ -55,7 +55,7 @@ const AddRowBtn = () => {
         </Sheet>
         <TooltipContent
           side="right"
-          className="text-xs mr-1 p-1 lg:text-sm lg:px-2 lg:py-1 lg:mr-2"
+          className="mr-1 p-1 text-xs lg:mr-2 lg:px-2 lg:py-1 lg:text-sm"
         >
           <p>Add new row</p>
         </TooltipContent>
