@@ -32,9 +32,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            apps/web
 
       - uses: pnpm/action-setup@v2
         with:
