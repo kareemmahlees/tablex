@@ -50,7 +50,7 @@
 }
 
 kbd {
-  @apply border border-b-2 rounded-lg px-1.5 py-1;
+  @apply rounded-lg border border-b-2 px-1.5 py-1;
 }
 
 @layer base {

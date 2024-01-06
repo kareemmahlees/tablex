@@ -8,7 +8,7 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { ReactElement } from "react"
-import Card from "./Card"
+import Card from "../components/Card"
 
 const KbdShortcutsCard = () => {
   return (
@@ -19,7 +19,7 @@ const KbdShortcutsCard = () => {
         <div>
           <p>If you Love to use your keyboard very often, We Got you.</p>
           <br />
-          <span className="font-semibold text-foreground">TableX</span> is
+          <span className="text-foreground font-semibold">TableX</span> is
           designed to be keyboard friendly from the start, while we don&apos;t
           have that much of shortcuts available right now, but more and more
           will be added soon.
@@ -86,7 +86,7 @@ const ShortcutsTable = () => {
           {shortcuts.map(({ shortcut, description }, idx) => {
             return (
               <TableRow key={idx}>
-                <TableCell className="font-medium whitespace-nowrap">
+                <TableCell className="whitespace-nowrap font-medium">
                   {shortcut}
                 </TableCell>
                 <TableCell className="font-medium">{description}</TableCell>

@@ -73,7 +73,7 @@ const ConnectionStringForm = ({ driver }: ConnectionParamsFormProps) => {
             </FormItem>
           )}
         />
-        <div className="col-span-2 flex justify-center items-center gap-x-4">
+        <div className="col-span-2 flex items-center justify-center gap-x-4">
           <Button
             variant={"secondary"}
             onClick={form.handleSubmit(onClickConnect)}

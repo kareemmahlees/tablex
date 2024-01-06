@@ -44,7 +44,7 @@ const CommandPalette = () => {
             className="flex items-center gap-x-2"
             onSelect={() => router.push("/connect")}
           >
-            <Link className="w-4 h-4" />
+            <Link className="h-4 w-4" />
             Create Connection
           </CommandItem>
         </CommandGroup>

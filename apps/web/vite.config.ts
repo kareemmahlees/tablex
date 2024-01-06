@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      "@tablex/core": path.resolve(__dirname, "../core"),
       "@": path.resolve(__dirname, "./src")
     }
   }

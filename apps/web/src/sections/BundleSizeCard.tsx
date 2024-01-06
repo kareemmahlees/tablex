@@ -1,5 +1,5 @@
 import { Bar, BarChart, Tooltip, XAxis, YAxis } from "recharts"
-import Card from "./Card"
+import Card from "../components/Card"
 
 const BundleSizeCard = () => {
   return (
@@ -8,7 +8,7 @@ const BundleSizeCard = () => {
       header="Ultra small bundle size"
       content={
         <p>
-          <span className="font-semibold text-foreground">TableX</span>, thanks
+          <span className="text-foreground font-semibold">TableX</span>, thanks
           to{" "}
           <a
             className="text-white underline"
@@ -23,7 +23,7 @@ const BundleSizeCard = () => {
         </p>
       }
     >
-      <div className="flex w-full h-full items-center justify-center mt-4 md:mt-0">
+      <div className="mt-4 flex h-full w-full items-center justify-center md:mt-0">
         <BundleSizeChart />
       </div>
     </Card>

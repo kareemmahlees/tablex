@@ -1,12 +1,13 @@
-import Heading from "@/components/Heading"
 import MaxWidthWrapper from "@/components/MaxWidthWrapper"
-import Nav from "@/components/Nav"
+import Heading from "@/sections/Heading"
+import Nav from "@/sections/Nav"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import BundleSizeCard from "./components/BundleSizeCard"
-import KbdShortcutsCard from "./components/KbdShortcutsCard"
-import ToolsCard from "./components/ToolsCard"
 import { ThemeProvider } from "./components/providers/theme-provider"
+import BundleSizeCard from "./sections/BundleSizeCard"
+import Download from "./sections/Download"
+import KbdShortcutsCard from "./sections/KbdShortcutsCard"
+import ToolsCard from "./sections/ToolsCard"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <ToolsCard />
           <BundleSizeCard />
           <KbdShortcutsCard />
+          <Download />
         </MaxWidthWrapper>
       </main>
     </ThemeProvider>

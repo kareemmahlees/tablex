@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
-import { Button, buttonVariants } from "./ui/button"
+import { Button, buttonVariants } from "../components/ui/button"
 
 const Heading = () => {
   return (
-    <header className="mt-24 md:mt-32 break-keep gap-y-6 md:gap-y-8 relative flex flex-col items-center">
+    <header className="relative mt-24 flex flex-col items-center gap-y-6 break-keep md:mt-32 md:gap-y-8">
       <motion.image
         initial={{ opacity: 0 }}
         animate={{
@@ -12,14 +12,14 @@ const Heading = () => {
         }}
         aria-hidden
         transition={{ duration: 3 }}
-        className="absolute -top-20 md:-top-32 -z-10 opacity-20 md:opacity-10 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] md:[mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
+        className="absolute -top-20 -z-10 opacity-20 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] md:-top-32 md:opacity-10 md:[mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"
       >
         <img src="/grid.svg" alt="bg" />
       </motion.image>
-      <h1 className="font-bold text-4xl text-center md:text-5xl lg:text-6xl">
+      <h1 className="text-center text-4xl font-bold md:text-5xl lg:text-6xl">
         Table viewer for modern developers
       </h1>
-      <p className="text-center text-muted-foreground md:text-lg lg:text-xl">
+      <p className="text-muted-foreground text-center md:text-lg lg:text-xl">
         Database browsing experience like never before
       </p>
       <div className="flex items-center gap-x-7">
@@ -32,12 +32,12 @@ const Heading = () => {
             buttonVariants({
               variant: "secondary"
             }),
-            "relative group hover:bg-secondary"
+            "hover:bg-secondary group relative"
           )}
         >
-          <img src="/icons/github.svg" alt="github icon" className="w-5 h-5" />
+          <img src="/icons/github.svg" alt="github icon" className="h-5 w-5" />
           <motion.image
-            className="absolute w-7 h-7 -z-10"
+            className="absolute -z-10 h-7 w-7"
             initial={{
               opacity: 0
             }}
@@ -48,7 +48,7 @@ const Heading = () => {
             <img
               src="/icons/start.svg"
               alt="star"
-              className="group-hover:-translate-y-5 transition-transform"
+              className="transition-transform group-hover:-translate-y-5"
               aria-hidden
             />
           </motion.image>
@@ -57,7 +57,7 @@ const Heading = () => {
       <img
         src="/overview.png"
         alt="overview"
-        className="w-[400px] md:w-[600px] lg:w-[850px] rounded-sm mt-5 [mask-image:linear-gradient(black,gray,transparent_75%)] brightness-[80%]"
+        className="mt-5 w-[400px] rounded-sm brightness-[80%] [mask-image:linear-gradient(black,gray,transparent_75%)] md:w-[600px] lg:w-[850px]"
       />
     </header>
   )

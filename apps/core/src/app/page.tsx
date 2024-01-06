@@ -15,9 +15,9 @@ export default function Home() {
   })
 
   return (
-    <main className="relative flex flex-col items-center justify-center gap-y-20 h-full">
+    <main className="relative flex h-full flex-col items-center justify-center gap-y-20">
       <div className="flex items-center">
-        <h1 className="text-6xl font-bold text-white z-20 ">Table</h1>
+        <h1 className="z-20 text-6xl font-bold text-white ">Table</h1>
         <Image
           src={"/icons/icon.svg"}
           alt="logo"
@@ -32,7 +32,7 @@ export default function Home() {
         alt="bg"
         aria-hidden
         fill
-        className="w-full h-full object-cover -z-10"
+        className="-z-10 h-full w-full object-cover"
       />
     </main>
   )
