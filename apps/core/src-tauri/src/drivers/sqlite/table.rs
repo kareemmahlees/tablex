@@ -55,7 +55,7 @@ pub async fn get_columns_definition(
             JsonString(row.get(1)),
             JsonBool(!row.get::<i16, usize>(2) == 0),
             decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-            JsonBool(row.get::<i16, usize>(4) == 0),
+            JsonBool(row.get::<i16, usize>(4) == 1),
         );
         result.insert(row.get(0), column_props);
     });
