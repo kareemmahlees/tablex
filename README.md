@@ -5,6 +5,8 @@
     <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/kareemmahlees/tablex/lint.yml">
   <img alt="GitHub package.json version (subfolder of monorepo)" src="https://img.shields.io/github/package-json/v/kareemmahlees/tablex?color=blue">
   <img alt="Static Badge" src="https://img.shields.io/badge/node-v20.9.0%20-green">
+  <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/kareemmahlees/tablex/production?label=production">
+
 <img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
 
 </div>
