@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/billboard.png">
+  <img src="./apps/web/public/billboard.png">
 </p>
 <div align="center">
     <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/kareemmahlees/tablex/lint.yml">
