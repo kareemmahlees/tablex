@@ -33,15 +33,19 @@ export const deleteRows = async (
     rowPkValues: rows,
     tableName
   })
-  customToast(command, {
-    success: (rowsAffected) => {
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-      return `Successfully deleted ${
-        rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-      }`
+  customToast(
+    command,
+    {
+      success: (rowsAffected) => {
+        queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+        return `Successfully deleted ${
+          rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
+        }`
+      },
+      error: (err: string) => err
     },
-    error: (err: string) => err
-  })
+    "delete_row"
+  )
   table.toggleAllRowsSelected(false)
 }
 
