@@ -8,7 +8,8 @@ import type { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
 export const getRows = async (tableName: string) => {
-  return await invoke<Record<string, any>[]>("get_rows", { tableName })
+  const result = await invoke<Record<string, any>[]>("get_rows", { tableName })
+  return result
 }
 
 export const deleteRows = async (
@@ -62,13 +63,17 @@ export const updateRow = async (
     pkColValue,
     data
   })
-  customToast(command, {
-    success: () => {
-      setIsSheetOpen(false)
-      return `Successfully updated rows`
+  customToast(
+    command,
+    {
+      success: () => {
+        setIsSheetOpen(false)
+        return `Successfully updated rows`
+      },
+      error: (e: string) => e
     },
-    error: (e: string) => e
-  })
+    "update_row"
+  )
 }
 
 export const copyRowIntoClipboard = async (

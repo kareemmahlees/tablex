@@ -112,14 +112,18 @@ export const createRow = async (
 ) => {
   const command = invoke<number>("create_row", { tableName, data })
 
-  customToast(command, {
-    success: (s) => {
-      setIsSheetOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-      return `Successfully created ${s} row`
+  customToast(
+    command,
+    {
+      success: (s) => {
+        setIsSheetOpen(false)
+        queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+        return `Successfully created ${s} row`
+      },
+      error: (e: string) => e
     },
-    error: (e: string) => e
-  })
+    "create_row"
+  )
 }
 
 export const registerSearchShortcut = (
