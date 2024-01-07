@@ -5,3 +5,4 @@ public
 src-tauri
 pnpm-lock.yaml
 /**/dist
+/apps/web/src/components

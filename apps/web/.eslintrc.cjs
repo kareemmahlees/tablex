@@ -9,7 +9,7 @@ module.exports = {
     "plugin:react/jsx-runtime",
     "plugin:prettier/recommended"
   ],
-  ignorePatterns: ["dist", ".eslintrc.cjs"],
+  ignorePatterns: ["dist", ".eslintrc.cjs", "/src/components"],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],
   rules: {
