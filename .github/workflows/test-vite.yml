@@ -11,6 +11,7 @@ on:
       - ".husky/**"
       - ".gitignore"
       - ".github/**"
+      - ".vscode/**"
       - ".changeset/**"
       - "apps/core/**"
   pull_request:
@@ -23,6 +24,7 @@ on:
       - ".husky/**"
       - ".gitignore"
       - ".github/**"
+      - ".vscode/**"
       - ".changeset/**"
       - "apps/core/**"
   workflow_dispatch:
