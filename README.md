@@ -8,6 +8,7 @@
   <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/kareemmahlees/tablex/production?label=production">
 
 <img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
+<img alt="GitHub contributors" src="https://img.shields.io/github/contributors/kareemmahlees/tablex">
 
 </div>
 
@@ -86,3 +87,14 @@ pnpm tauri:dev
 ## Contributing 🫱🏻‍🫲🏻
 
 please refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
