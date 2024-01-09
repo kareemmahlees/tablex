@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - master
+    branches-ignore:
+      - changeset-release/*
   pull_request:
     branches:
       - master
+    branches-ignore:
+      - changeset-release/*
 
 jobs:
   commitlint:
@@ -67,7 +71,6 @@ jobs:
 
       - name: Run Prettier
         run: pnpm format:check
-
   clippy:
     runs-on: ubuntu-latest
     steps:
