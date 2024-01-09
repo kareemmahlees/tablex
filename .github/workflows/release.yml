@@ -7,6 +7,7 @@ on:
 
 jobs:
   release-app:
+    if: github.actor != 'github-actions[bot]'
     permissions:
       contents: write
     strategy:
