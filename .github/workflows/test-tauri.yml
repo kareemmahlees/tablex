@@ -31,7 +31,6 @@ on:
 
 jobs:
   test-tauri:
-    if: github.actor != 'github-actions[bot]'
     strategy:
       fail-fast: false
       matrix:

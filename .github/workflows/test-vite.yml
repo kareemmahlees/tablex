@@ -31,7 +31,6 @@ on:
 
 jobs:
   test-vite:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
