@@ -81,14 +81,13 @@ fn main() {
             create_row,
             update_row,
         ])
-        .on_window_event(move |event| match event.event() {
-            WindowEvent::Destroyed => {
+        .on_window_event(move |event| {
+            if let WindowEvent::Destroyed = event.event() {
                 let db_instance: tauri::State<'_, DbInstance> = event.window().state();
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 rt.block_on(db_instance.cleanup_connections());
                 rt.shutdown_background();
             }
-            _ => {}
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
