@@ -194,7 +194,9 @@ const TableContextMenuContent = ({
       data-side="bottom"
     >
       <ContextMenuItem
-        onSelect={async () => await deleteRows(table, tableName, queryClient)}
+        onSelect={async () =>
+          await deleteRows(table, tableName, queryClient, contextMenuRow)
+        }
       >
         Delete
         <ContextMenuShortcut>Delete</ContextMenuShortcut>

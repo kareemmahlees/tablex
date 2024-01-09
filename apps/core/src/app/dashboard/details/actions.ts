@@ -15,7 +15,8 @@ export const getRows = async (tableName: string) => {
 export const deleteRows = async (
   table: Table<any>,
   tableName: string,
-  queryClient: QueryClient
+  queryClient: QueryClient,
+  contextMenuRow?: Row<any>
 ) => {
   const column = table.getColumn("pk")
   if (!column)
@@ -23,17 +24,24 @@ export const deleteRows = async (
       id: "table_pk_error"
     })
 
-  const rows = table
-    .getSelectedRowModel()
-    .rows.map((row) => row.getValue(column.id))
-
-  if (rows.length <= 0) return
-
-  const command = invoke<number>("delete_rows", {
+  const command_options: { [k: string]: any } = {
     pkColName: column.columnDef.meta?.name,
-    rowPkValues: rows,
     tableName
-  })
+  }
+
+  if (table.getIsSomeRowsSelected()) {
+    const rows = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.getValue(column.id))
+
+    if (rows.length <= 0) return
+
+    command_options.rowPkValues = rows
+  } else if (contextMenuRow) {
+    command_options.rowPkValues = [contextMenuRow.getValue("pk")]
+  }
+
+  const command = invoke<number>("delete_rows", command_options)
   customToast(
     command,
     {
