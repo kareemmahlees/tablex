@@ -23,7 +23,7 @@ import { updateRow } from "../actions"
 
 interface EditRowSheetProps {
   table: Table<any>
-  row: Row<any>
+  row?: Row<any>
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
@@ -38,6 +38,9 @@ const EditRowSheet = ({ setIsSheetOpen, row, table }: EditRowSheetProps) => {
   const form = useForm<z.infer<NonNullable<typeof data>>>({
     resolver: zodResolver(data!)
   })
+
+  if (!row) return null
+
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
     await updateRow(
       tableName,
