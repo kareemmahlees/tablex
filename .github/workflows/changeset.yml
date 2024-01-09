@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          sparse-checkout: |
-            .changeset
 
       - uses: pnpm/action-setup@v2
         with:
