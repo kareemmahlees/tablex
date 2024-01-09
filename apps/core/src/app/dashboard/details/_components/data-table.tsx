@@ -151,22 +151,17 @@ const DataTable = <TData, TValue>({
                 table={table}
                 setIsSheetOpen={setIsSheetOpen}
                 queryClient={queryClient}
-                contextMenuRow={contextMenuRow!}
+                contextMenuRow={contextMenuRow}
               />
             </TableBody>
           </ContextMenuTrigger>
         </Table>
       </ContextMenu>
-      {
-        // because initially, contextMenuRow is null and the component can't be rendered
-        contextMenuRow && (
-          <EditRowSheet
-            setIsSheetOpen={setIsSheetOpen}
-            row={contextMenuRow}
-            table={table}
-          />
-        )
-      }
+      <EditRowSheet
+        setIsSheetOpen={setIsSheetOpen}
+        row={contextMenuRow}
+        table={table}
+      />
     </Sheet>
   )
 }
@@ -175,7 +170,7 @@ export default DataTable
 
 interface TableContextMenuContentProps {
   table: TableType<any>
-  contextMenuRow: Row<any>
+  contextMenuRow?: Row<any>
   tableName: string
   queryClient: QueryClient
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
@@ -188,13 +183,16 @@ const TableContextMenuContent = ({
   setIsSheetOpen,
   contextMenuRow
 }: TableContextMenuContentProps) => {
+  if (!contextMenuRow) return null
   return (
     <ContextMenuContent
-      className="bg-transparent backdrop-blur-md"
+      className="bg-background/40 backdrop-blur-md"
       data-side="bottom"
     >
       <ContextMenuItem
-        onSelect={async () => await deleteRows(table, tableName, queryClient)}
+        onSelect={async () =>
+          await deleteRows(table, tableName, queryClient, contextMenuRow)
+        }
       >
         Delete
         <ContextMenuShortcut>Delete</ContextMenuShortcut>
