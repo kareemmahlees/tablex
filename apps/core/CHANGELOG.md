@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.1.4
+
+### Patch Changes
+
+- [`934e9d3`](https://github.com/kareemmahlees/tablex/commit/934e9d3b8532f933c5fd016b6b6ea4136dbd37b2) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - remove branch-ignores in workflows
+
 ## 0.1.3
 
 ### Patch Changes
