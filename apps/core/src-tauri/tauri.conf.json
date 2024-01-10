@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "TableX",
-    "version": "0.1.0"
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
@@ -70,4 +70,5 @@
       }
     ]
   }
+
 }
