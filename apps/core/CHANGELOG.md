@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.1.6
+
+### Patch Changes
+
+- [`e6764be`](https://github.com/kareemmahlees/tablex/commit/e6764be67a244db399b62f0e237e20aaaf8a66d4) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - fixing download links
+
 ## 0.1.5
 
 ### Patch Changes
