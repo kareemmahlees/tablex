@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.1.5
+
+### Patch Changes
+
+- [`f79f512`](https://github.com/kareemmahlees/tablex/commit/f79f512ab14647e23e5cea27efd90aedbe290632) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - use RELEASE_TOKEN in release workflow
+
 ## 0.1.4
 
 ### Patch Changes
