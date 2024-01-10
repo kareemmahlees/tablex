@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.1.2
+
+### Patch Changes
+
+- [`c92efee`](https://github.com/kareemmahlees/tablex/commit/c92efee21cd409e24d0e55e8e24cc8e01e0777d5) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - adding a fake publish script to create github releases
+
 ## 0.1.1
 
 ### Patch Changes
