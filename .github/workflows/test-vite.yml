@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    branches-ignore:
-      - changeset-release/*
     paths-ignore:
       - "*.md"
       - "docs/**"
@@ -19,8 +17,6 @@ on:
   pull_request:
     branches:
       - master
-    branches-ignore:
-      - changeset-release/*
     paths-ignore:
       - "*.md"
       - "docs/**"

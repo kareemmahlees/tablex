@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - master
-    branches-ignore:
-      - changeset-release/*
   pull_request:
     branches:
       - master
-    branches-ignore:
-      - changeset-release/*
 
 jobs:
   commitlint:
