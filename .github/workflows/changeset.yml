@@ -29,7 +29,6 @@ jobs:
         uses: changesets/action@v1
         with:
           commit: "chore: version pump"
-          createGithubReleases: true
-          publish: echo "Ignore publishing"
+          publish: pnpm changeset tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
