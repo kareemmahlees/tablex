@@ -23,7 +23,16 @@ const Heading = () => {
         Database browsing experience like never before
       </p>
       <div className="flex items-center gap-x-7">
-        <Button className="font-semi">Download Now</Button>
+        <Button
+          className="font-semi"
+          onClick={() =>
+            document
+              .getElementById("download")
+              ?.scrollIntoView({ block: "center" })
+          }
+        >
+          Download Now
+        </Button>
         <a
           href="https://github.com/kareemmahlees/tablex"
           target="_blank"

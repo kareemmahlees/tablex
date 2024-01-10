@@ -36,28 +36,28 @@ const Download = () => {
         <TabsContent value="windows" className="w-2/3">
           <DownloadCard
             title="exe installer"
-            downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_${packageVersion}_x64-setup.exe`}
+            downloadLink={`https://github.com/kareemmahlees/tablex/releases/latest/download/TableX_${packageVersion}_x64-setup.exe`}
           />
           <DownloadCard
             title="msi installer"
-            downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_${packageVersion}_x64_en-US.msi`}
+            downloadLink={`https://github.com/kareemmahlees/tablex/releases/latest/download/TableX_${packageVersion}_x64_en-US.msi`}
           />
         </TabsContent>
         <TabsContent value="macos" className="w-2/3">
           <DownloadCard
             title=".dmg"
-            downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_${packageVersion}_x64.dmg
+            downloadLink={`https://github.com/kareemmahlees/tablex/releases/latest/download/TableX_${packageVersion}_x64.dmg
 `}
           />
         </TabsContent>
         <TabsContent value="linux" className="w-2/3">
           <DownloadCard
             title=".deb"
-            downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/table-x_${packageVersion}_amd64.deb`}
+            downloadLink={`https://github.com/kareemmahlees/tablex/releases/latest/download/table-x_${packageVersion}_amd64.deb`}
           />
           <DownloadCard
             title=".tar.gz"
-            downloadLink={`https://github.com/kareemmahlees/tablex/releases/download/latest/TableX_x64.app.tar.gz`}
+            downloadLink={`https://github.com/kareemmahlees/tablex/releases/latest/download/TableX_x64.app.tar.gz`}
           />
         </TabsContent>
       </Tabs>
