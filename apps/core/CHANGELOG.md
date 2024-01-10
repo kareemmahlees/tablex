@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.1.3
+
+### Patch Changes
+
+- [`5fa4e83`](https://github.com/kareemmahlees/tablex/commit/5fa4e830ce854f795b6184a542af297399d6843d) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - minor fix to changeset action
+
 ## 0.1.2
 
 ### Patch Changes
