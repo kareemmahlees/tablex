@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.1.7
+
+### Patch Changes
+
+- [`574e072`](https://github.com/kareemmahlees/tablex/commit/574e0724f5c777ab639a4f9986555646f82d32c2) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - make tauri.config.json use package.json for versioning
+
 ## 0.1.6
 
 ### Patch Changes
