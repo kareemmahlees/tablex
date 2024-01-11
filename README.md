@@ -41,7 +41,7 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
 - [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
-- [Changesets](): Versioning and Changelogs
+- [Changesets](https://github.com/changesets/changesets): Versioning and Changelogs
 - [Vercel](https://vercel.com/) : Deployment
 
 ## Keyboard Shortcuts
