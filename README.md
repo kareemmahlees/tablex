@@ -15,6 +15,8 @@
 
 > Note: TableX is still under development, don't expect it to be perfect, yet.
 
+Checkout [Changleogs](./apps/core/CHANGELOG.md), and our [issues](https://github.com/kareemmahlees/tablex/issues) section.
+
 ## About the Project
 
 Tablex aims at delivering a fast, user friendly, productive and **free** database browsing experience.
@@ -26,6 +28,8 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 - Delightful user experience
 - Top-Notch performance
 - Ultra small bundle size (~ 12MB)
+- Support for SQLite, PostgreSQL, MySQL
+- Available for Windows, MacOS, and Linux
 - Keyboard shortcuts for productivity homies
 - Free and Open-Source
 
@@ -37,6 +41,7 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
 - [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
+- [Changesets](): Versioning and Changelogs
 - [Vercel](https://vercel.com/) : Deployment
 
 ## Keyboard Shortcuts
