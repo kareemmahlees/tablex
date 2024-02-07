@@ -7,8 +7,6 @@ mod row;
 mod table;
 mod utils;
 
-use std::borrow::Borrow;
-
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
@@ -18,11 +16,7 @@ use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
 use tauri::api::process::CommandChild;
-use tauri::{
-    api::process::{Command, CommandEvent},
-    Manager, WindowEvent,
-};
-use tauri::{RunEvent, Window};
+use tauri::{Manager, WindowEvent};
 use tokio::sync::Mutex;
 use utils::Drivers;
 

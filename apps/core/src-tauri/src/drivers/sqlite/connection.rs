@@ -19,7 +19,7 @@ pub async fn establish_connection(
         .map_err(|_| "Couldn't establish connection to db".to_string())?;
     *state.sqlite_pool.lock().await = Some(pool);
     *state.driver.lock().await = Some(driver);
-    let (_, after) = conn_string.split_once(":").unwrap();
+    let (_, after) = conn_string.split_once(':').unwrap();
     let (mut rx, child) = Command::new_sidecar("meta-x")
         .expect("failed to create `meta-x` binary command")
         .args(["sqlite3", "-f", after])
