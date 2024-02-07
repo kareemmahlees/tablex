@@ -64,7 +64,7 @@ const ConnectionStringForm = ({ driver }: ConnectionParamsFormProps) => {
               <FormLabel>Connection String</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="user:password@host:port/dbName"
+                  placeholder={`${driver}://user:password@host:port/dbName?sslmode=`}
                   className="w-[300px] lg:w-[400px]"
                   {...field}
                 />

@@ -7,6 +7,8 @@ mod row;
 mod table;
 mod utils;
 
+use std::borrow::Borrow;
+
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
@@ -15,7 +17,12 @@ use row::{create_row, delete_rows, get_rows, update_row};
 use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
-use tauri::{Manager, WindowEvent};
+use tauri::api::process::CommandChild;
+use tauri::{
+    api::process::{Command, CommandEvent},
+    Manager, WindowEvent,
+};
+use tauri::{RunEvent, Window};
 use tokio::sync::Mutex;
 use utils::Drivers;
 
@@ -25,10 +32,11 @@ pub struct DbInstance {
     postgres_pool: Mutex<Option<PgPool>>,
     mysql_pool: Mutex<Option<MySqlPool>>,
     driver: Mutex<Option<Drivers>>,
+    metax_command_child: Mutex<Option<CommandChild>>,
 }
 
 impl DbInstance {
-    async fn cleanup_connections(&self) {
+    async fn cleanup(&self) {
         let long_lived = self.sqlite_pool.lock().await;
         let sqlite_pool = long_lived.as_ref();
         if let Some(sqlite_pool) = sqlite_pool {
@@ -46,6 +54,11 @@ impl DbInstance {
         if let Some(mysql_pool) = mysql_pool {
             mysql_pool.close().await
         }
+
+        let mut long_lived = self.metax_command_child.lock().await;
+        if let Some(command) = long_lived.take() {
+            command.kill().expect("unable to kill sidecar")
+        }
     }
 }
 
@@ -56,6 +69,7 @@ fn main() {
             postgres_pool: Default::default(),
             mysql_pool: Default::default(),
             driver: Default::default(),
+            metax_command_child: Default::default(),
         })
         .setup(|app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
@@ -83,9 +97,9 @@ fn main() {
         ])
         .on_window_event(move |event| {
             if let WindowEvent::Destroyed = event.event() {
-                let db_instance: tauri::State<'_, DbInstance> = event.window().state();
+                let state: tauri::State<'_, DbInstance> = event.window().state();
                 let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(db_instance.cleanup_connections());
+                rt.block_on(state.cleanup());
                 rt.shutdown_background();
             }
         })
