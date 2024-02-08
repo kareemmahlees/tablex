@@ -18,9 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: "true"
+          submodules: recursive
           sparse-checkout: |
             apps/core
+            apps/meta-x
+            apps/scripts
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
