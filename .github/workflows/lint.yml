@@ -70,10 +70,11 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          sparse-checkout: | # fetch only rust code
+          submodules: recursive
+          sparse-checkout: |
             apps/scripts
             apps/meta-x
             apps/core/src-tauri
@@ -89,7 +90,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: "./src-tauri -> target"
+          workspaces: "apps/core/src-tauri -> target"
 
       - uses: pnpm/action-setup@v2
 
