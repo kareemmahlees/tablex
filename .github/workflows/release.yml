@@ -51,6 +51,9 @@ jobs:
         with:
           go-version: "stable"
 
+      - name: Run prepare-metax script
+        run: pnpm prepare-metax
+
       - name: install tauri cli
         run: pnpm add -w @tauri-apps/cli
 
