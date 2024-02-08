@@ -40,6 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          submodules: "true"
           sparse-checkout: |
             apps/core
             apps/meta-x
@@ -73,6 +74,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "stable"
+
+      - name: Run prepare-metax script
+        run: pnpm prepare-metax
 
       - name: install tauri cli
         run: pnpm add -w @tauri-apps/cli
