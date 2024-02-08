@@ -40,6 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          submodules: "true"
           sparse-checkout: |
             apps/core
             apps/meta-x
