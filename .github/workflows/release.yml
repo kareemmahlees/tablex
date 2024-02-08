@@ -46,6 +46,11 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
 
+      - name: setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
       - name: install tauri cli
         run: pnpm add -w @tauri-apps/cli
 
