@@ -17,6 +17,10 @@
 
 Checkout [Changleogs](./apps/core/CHANGELOG.md), and our [issues](https://github.com/kareemmahlees/tablex/issues) section.
 
+## Don't Waste time, try it NOW 💥
+
+Head to TableX's [official website](https://tablex-tan.vercel.app/) and download the executable of your choice.
+
 ## About the Project
 
 Tablex aims at delivering a fast, user friendly, productive and **free** database browsing experience.
@@ -27,11 +31,19 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 
 - Delightful user experience
 - Top-Notch performance
-- Ultra small bundle size (~ 12MB)
 - Support for SQLite, PostgreSQL, MySQL
 - Available for Windows, MacOS, and Linux
+- Automatically create a RESTfull and GraphQL APIs for your database
 - Keyboard shortcuts for productivity homies
 - Free and Open-Source
+
+## V2 Update 🎉: Say hi to MetaX
+
+TableX now uses [MetaX](https://github.com/kareemmahlees/meta-x) to automatically create a RESTfull and GraphQL APIs for your database.
+
+MetaX supercharges your experience by allowing you to interact with your database through an API interface ( which is fully swagger documented ), allowing your for example to create, read, update or delete databases, tables or columns through http requests with no effort from you what so over ✨.
+
+Just connect your database and start running 🚀.
 
 ## Tech Stack ⌨️
 
@@ -40,6 +52,7 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
   - [Rust](https://www.rust-lang.org/) : Backend
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
 - [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8)
+- [Golang](https://go.dev): [MetaX](https://github.com/kareemmahlees/meta-x)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
 - [Changesets](https://github.com/changesets/changesets): Versioning and Changelogs
 - [Vercel](https://vercel.com/) : Deployment
@@ -66,13 +79,16 @@ To start playing around with TableX locally, you will need the following require
 
 Once you have setup the previous requirements, you can start by cloning the repo:
 
-```bash
+```shell
 git clone https://github.com/kareemmahlees/tablex.git --depth=1
 ```
 
+> Note: TableX uses MetaX as a **submodule**, so, once you have ran the above command you will se an empty meta-x folder.
+> there is no need to delete that.
+
 then, install necessary dependencies:
 
-```bash
+```shell
 pnpm install
 # And
 cargo install
@@ -89,6 +105,16 @@ and you are good to go 💫, you can start your development server by running:
 ```bash
 pnpm tauri:dev
 ```
+
+Want to test how your modification will look like at the final executable? run this:
+
+```shell
+pnpm tauri:debug
+```
+
+this will create a debug build/executables of the application that you can then install and see your features in action 🥳
+
+> Note: the `tauri:build` script requires `Golang` to be installed in order to build _MetaX_ and include it as a sidecar in the release build.
 
 ## Contributing 🫱🏻‍🫲🏻
 
