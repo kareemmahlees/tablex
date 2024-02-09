@@ -13,6 +13,7 @@ import {
   useRef,
   useState
 } from "react"
+import APIDocsDialog from "./_components/api-docs-dialog"
 import CommandPalette from "./_components/command-palette"
 import AddRowBtn from "./_components/create-row-sheet"
 import {
@@ -28,6 +29,7 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
   const connectionId = params.get("id")!
   const tableName = params.get("tableName")!
   const [tables, setTables] = useState<string[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useLayoutEffect(() => {
@@ -111,7 +113,11 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
         {tableName && <AddRowBtn />}
       </aside>
       {children}
-      <CommandPalette />
+      <CommandPalette setIsDialogOpen={setIsDialogOpen} />
+      <APIDocsDialog
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+      />
     </main>
   )
 }

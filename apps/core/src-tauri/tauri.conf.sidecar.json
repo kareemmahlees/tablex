@@ -26,6 +26,7 @@
         "all": true
       },
       "shell": {
+        "open": true,
         "sidecar": true,
         "scope": [
           {"name": "../../bin/meta-x","sidecar": true}
