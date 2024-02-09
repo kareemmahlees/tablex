@@ -15,6 +15,7 @@ use row::{create_row, delete_rows, get_rows, update_row};
 use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
+#[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
 use tauri::{Manager, WindowEvent};
 use tokio::sync::Mutex;
@@ -26,6 +27,7 @@ pub struct DbInstance {
     postgres_pool: Mutex<Option<PgPool>>,
     mysql_pool: Mutex<Option<MySqlPool>>,
     driver: Mutex<Option<Drivers>>,
+    #[cfg(not(debug_assertions))]
     metax_command_child: Mutex<Option<CommandChild>>,
 }
 
@@ -49,9 +51,12 @@ impl DbInstance {
             mysql_pool.close().await
         }
 
-        let mut long_lived = self.metax_command_child.lock().await;
-        if let Some(command) = long_lived.take() {
-            command.kill().expect("unable to kill sidecar")
+        #[cfg(not(debug_assertions))]
+        {
+            let mut long_lived = self.metax_command_child.lock().await;
+            if let Some(command) = long_lived.take() {
+                command.kill().expect("unable to kill sidecar")
+            }
         }
     }
 }
@@ -63,6 +68,7 @@ fn main() {
             postgres_pool: Default::default(),
             mysql_pool: Default::default(),
             driver: Default::default(),
+            #[cfg(not(debug_assertions))]
             metax_command_child: Default::default(),
         })
         .setup(|app| {

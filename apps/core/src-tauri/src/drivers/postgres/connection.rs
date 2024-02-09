@@ -1,10 +1,7 @@
 use crate::{utils::Drivers, DbInstance};
 use sqlx::postgres::PgPoolOptions;
 use std::time::Duration;
-use tauri::{
-    api::process::{Command, CommandEvent},
-    State,
-};
+use tauri::State;
 
 pub async fn establish_connection(
     state: &State<'_, DbInstance>,
@@ -20,25 +17,17 @@ pub async fn establish_connection(
     *state.postgres_pool.lock().await = Some(pool);
     *state.driver.lock().await = Some(driver);
 
-    let (mut rx, child) = Command::new_sidecar("meta-x")
-        .expect("failed to create `meta-x` binary command")
-        .args(["pg", "--url", conn_string.as_str()])
-        .spawn()
-        .expect("failed to spawn sidecar");
-    #[cfg(debug_assertions)]
+    #[cfg(not(debug_assertions))]
     {
-        tauri::async_runtime::spawn(async move {
-            while let Some(event) = rx.recv().await {
-                if let CommandEvent::Stdout(line) = &event {
-                    println!("{line}")
-                }
-                if let CommandEvent::Stderr(line) = &event {
-                    println!("{line}")
-                }
-            }
-        });
+        use tauri::api::process::{Command, CommandEvent};
+
+        let (mut rx, child) = Command::new_sidecar("meta-x")
+            .expect("failed to create `meta-x` binary command")
+            .args(["pg", "--url", conn_string.as_str()])
+            .spawn()
+            .expect("failed to spawn sidecar");
+        *state.metax_command_child.lock().await = Some(child);
     }
-    *state.metax_command_child.lock().await = Some(child);
 
     Ok(())
 }

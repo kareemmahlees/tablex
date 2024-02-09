@@ -24,6 +24,12 @@
       },
       "os": {
         "all": true
+      },
+      "shell": {
+        "sidecar": true,
+        "scope": [
+          {"name": "../../bin/meta-x","sidecar": true}
+        ]
       }
     },
     "bundle": {
@@ -33,7 +39,9 @@
       "deb": {
         "depends": []
       },
-      "externalBin": [],
+      "externalBin": [
+        "../../bin/meta-x"
+      ],
       "icon": ["icons/icon.ico"],
       "identifier": "tablex",
       "longDescription": "",

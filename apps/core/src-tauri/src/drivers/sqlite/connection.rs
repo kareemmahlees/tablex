@@ -1,10 +1,7 @@
 use crate::{utils::Drivers, DbInstance};
 use sqlx::sqlite::SqlitePoolOptions;
 use std::time::Duration;
-use tauri::{
-    api::process::{Command, CommandEvent},
-    State,
-};
+use tauri::State;
 
 pub async fn establish_connection(
     state: &State<'_, DbInstance>,
@@ -19,27 +16,18 @@ pub async fn establish_connection(
         .map_err(|_| "Couldn't establish connection to db".to_string())?;
     *state.sqlite_pool.lock().await = Some(pool);
     *state.driver.lock().await = Some(driver);
-    let (_, after) = conn_string.split_once(':').unwrap();
-    let (mut rx, child) = Command::new_sidecar("meta-x")
-        .expect("failed to create `meta-x` binary command")
-        .args(["sqlite3", "-f", after])
-        .spawn()
-        .expect("failed to spawn sidecar");
-
-    #[cfg(debug_assertions)]
+    #[cfg(not(debug_assertions))]
     {
-        tauri::async_runtime::spawn(async move {
-            while let Some(event) = rx.recv().await {
-                if let CommandEvent::Stdout(line) = &event {
-                    println!("{line}")
-                }
-                if let CommandEvent::Stderr(line) = &event {
-                    println!("{line}")
-                }
-            }
-        });
+        use tauri::api::process::{Command, CommandEvent};
+
+        let (_, after) = conn_string.split_once(':').unwrap();
+        let (mut rx, child) = Command::new_sidecar("meta-x")
+            .expect("failed to create `meta-x` binary command")
+            .args(["sqlite3", "-f", after])
+            .spawn()
+            .expect("failed to spawn sidecar");
+        *state.metax_command_child.lock().await = Some(child);
     }
-    *state.metax_command_child.lock().await = Some(child);
 
     Ok(())
 }

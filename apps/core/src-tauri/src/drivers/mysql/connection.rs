@@ -1,12 +1,7 @@
 use crate::{utils::Drivers, DbInstance};
 use sqlx::mysql::MySqlPoolOptions;
 use std::time::Duration;
-use tauri::{
-    api::process::{Command, CommandEvent},
-    State,
-};
-
-use regex::Regex;
+use tauri::State;
 
 pub async fn establish_connection(
     state: &State<'_, DbInstance>,
@@ -22,31 +17,24 @@ pub async fn establish_connection(
     *state.mysql_pool.lock().await = Some(pool);
     *state.driver.lock().await = Some(driver);
 
-    let stripped_conn_string = conn_string.strip_prefix("mysql://").unwrap().to_string();
-
-    let re = Regex::new(r"@(.+?)/").unwrap();
-    let output = re.replace_all(&stripped_conn_string, |caps: &regex::Captures| {
-        format!("@tcp({})/", &caps[1])
-    });
-
-    let (mut rx, child) = Command::new_sidecar("meta-x")
-        .expect("failed to create `meta-x` binary command")
-        .args(["mysql", "--url", &output])
-        .spawn()
-        .expect("failed to spawn sidecar");
-    #[cfg(debug_assertions)]
+    #[cfg(not(debug_assertions))]
     {
-        tauri::async_runtime::spawn(async move {
-            while let Some(event) = rx.recv().await {
-                if let CommandEvent::Stdout(line) = &event {
-                    println!("{line}")
-                }
-                if let CommandEvent::Stderr(line) = &event {
-                    println!("{line}")
-                }
-            }
+        use regex::Regex;
+        use tauri::api::process::{Command, CommandEvent};
+
+        let stripped_conn_string = conn_string.strip_prefix("mysql://").unwrap().to_string();
+
+        let re = Regex::new(r"@(.+?)/").unwrap();
+        let output = re.replace_all(&stripped_conn_string, |caps: &regex::Captures| {
+            format!("@tcp({})/", &caps[1])
         });
+
+        let (mut rx, child) = Command::new_sidecar("meta-x")
+            .expect("failed to create `meta-x` binary command")
+            .args(["mysql", "--url", &output])
+            .spawn()
+            .expect("failed to spawn sidecar");
+        *state.metax_command_child.lock().await = Some(child);
     }
-    *state.metax_command_child.lock().await = Some(child);
     Ok(())
 }
