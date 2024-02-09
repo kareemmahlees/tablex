@@ -40,7 +40,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
           sparse-checkout: |
             apps/core
 
@@ -63,19 +62,18 @@ jobs:
           run_install: |
             - recursive: true
 
-      - name: setup node
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: "pnpm"
 
-      - name: install tauri cli
+      - name: Install tauri cli
         run: pnpm add -w @tauri-apps/cli
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: "--debug"
           includeRelease: false
           includeDebug: true

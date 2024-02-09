@@ -73,7 +73,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          submodules: recursive
           sparse-checkout: |
             apps/core/src-tauri
 
