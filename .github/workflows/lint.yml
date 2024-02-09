@@ -75,8 +75,6 @@ jobs:
           fetch-depth: 1
           submodules: recursive
           sparse-checkout: |
-            apps/scripts
-            apps/meta-x
             apps/core/src-tauri
 
       - name: Install tauri specific dependencies
@@ -93,14 +91,6 @@ jobs:
           workspaces: "apps/core/src-tauri -> target"
 
       - uses: pnpm/action-setup@v2
-
-      - name: setup go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "stable"
-
-      - name: Run prepare-metax script
-        run: pnpm prepare-metax
 
       - name: Run Clippy
         run: pnpm rust:lint
