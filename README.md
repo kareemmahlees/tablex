@@ -1,7 +1,4 @@
 <p align="center">
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
   <img src="./apps/web/public/billboard.png">
 </p>
 <div align="center">
@@ -11,8 +8,9 @@
   <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/kareemmahlees/tablex/production?label=production">
 
 <img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
-<img alt="GitHub contributors" src="https://img.shields.io/github/contributors/kareemmahlees/tablex">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/kareemmahlees/tablex">
+
+[![All Contributors](https://img.shields.io/github/all-contributors/kareemmahlees/tablex?color=ee8449)](#contributors)
 
 </div>
 
