@@ -1,5 +1,13 @@
 # @tablex/core
 
+## 0.2.0
+
+### Minor Changes
+
+- [#20](https://github.com/kareemmahlees/tablex/pull/20) [`232d431`](https://github.com/kareemmahlees/tablex/commit/232d431637e0cc6edd86dd687fddd518214076f1) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - _TableX_ now uses _MetaX_ as a sidecar to expose a RESTfull and GraphQL APIs for the connected database.
+
+  For optimization reasons, this is only enabled in **release builds**, dev and debug builds are opted out.
+
 ## 0.1.7
 
 ### Patch Changes
