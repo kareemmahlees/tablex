@@ -16,7 +16,8 @@
   "scripts": {
     "prepare-metax": "go build -C ./apps/meta-x/ -o ../bin/ && go run ./apps/scripts/suffex-meta-x.go",
     "tauri:dev": "pnpm --filter @tablex/core exec tauri dev",
-    "tauri:build": "pnpm --filter @tablex/core exec tauri build",
+    "tauri:debug": "pnpm --filter @tablex/core exec tauri build --debug",
+    "tauri:build": "pnpm prepare-metax &&  pnpm --filter @tablex/core exec tauri build --config src-tauri/tauri.conf.sidecar.json",
     "vite:dev": "pnpm --filter @tablex/web dev",
     "vite:build": "pnpm --filter @tablex/web build",
     "vite:preview": "pnpm --filter @tablex/web preview",
@@ -52,6 +53,7 @@
   "dependencies": {
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "execa": "^8.0.1",
     "lucide-react": "^0.292.0",
     "react": "^18",
     "react-dom": "^18",

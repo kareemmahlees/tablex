@@ -49,6 +49,12 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<(), String> {
+    #[cfg(not(debug_assertions))]
+    {
+        if let Some(sidecar) = db.metax_command_child.lock().await.take() {
+            sidecar.kill().expect("failed to kill sidecar")
+        }
+    }
     match driver {
         Drivers::SQLite => sqlite::connection::establish_connection(&db, conn_string, driver).await,
         Drivers::PostgreSQL => {

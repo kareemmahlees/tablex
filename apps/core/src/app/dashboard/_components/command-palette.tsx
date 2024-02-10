@@ -6,12 +6,16 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command"
-import { Globe2, Link } from "lucide-react"
+import { FileText, Globe2, Link } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
-const CommandPalette = () => {
+interface CommandPaletteProps {
+  setIsDialogOpen: Dispatch<SetStateAction<boolean>>
+}
+
+const CommandPalette = ({ setIsDialogOpen }: CommandPaletteProps) => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
 
@@ -46,6 +50,16 @@ const CommandPalette = () => {
           >
             <Link className="h-4 w-4" />
             Create Connection
+          </CommandItem>
+          <CommandItem
+            className="flex items-center gap-x-2"
+            onSelect={() => {
+              setOpen(false)
+              setIsDialogOpen(true)
+            }}
+          >
+            <FileText className="h-4 w-4" />
+            Show API Docs
           </CommandItem>
         </CommandGroup>
       </CommandList>
