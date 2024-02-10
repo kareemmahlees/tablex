@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.2.1
+
+### Patch Changes
+
+- [`6fe8cd7`](https://github.com/kareemmahlees/tablex/commit/6fe8cd7b1909f27024754ed66bbaacf71a7583ca) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - fix some issues in readme
+
 ## 0.2.0
 
 ### Minor Changes
