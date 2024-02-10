@@ -7,3 +7,4 @@ pnpm-lock.yaml
 /**/dist
 /apps/web/src/components
 /apps/meta-x
+.all-contributorsrc
