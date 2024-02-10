@@ -57,12 +57,10 @@ jobs:
       - name: Run prepare-metax script
         run: pnpm prepare-metax
 
-      - name: install tauri cli
-        run: pnpm add -w @tauri-apps/cli
-
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           releaseId: ${{ github.event.release.id }}
+          projectPath: ./apps/core
           args: "--config tauri.conf.sidecar.json"
