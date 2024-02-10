@@ -65,4 +65,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           releaseId: ${{ github.event.release.id }}
-          args: "--config src-tauri/tauri.conf.sidecar.json"
+          args: "--config tauri.conf.sidecar.json"
