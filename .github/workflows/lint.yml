@@ -11,6 +11,7 @@ on:
 jobs:
   commitlint:
     runs-on: ubuntu-latest
+    if: ! contains(github.event.head_commit.message, '[skip ci]')
     steps:
       - uses: actions/checkout@v3
         with:
@@ -43,6 +44,7 @@ jobs:
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
   eslint-prettier:
     runs-on: ubuntu-latest
+    if: ! contains(github.event.head_commit.message, '[skip ci]')
     steps:
       - uses: actions/checkout@v3
         with:
@@ -69,6 +71,7 @@ jobs:
         run: pnpm format:check
   clippy:
     runs-on: ubuntu-latest
+    if: ! contains(github.event.head_commit.message, '[skip ci]')
     steps:
       - uses: actions/checkout@v4
         with:
