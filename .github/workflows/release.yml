@@ -63,5 +63,5 @@ jobs:
         with:
           releaseId: ${{ github.event.release.id }}
           projectPath: ./apps/core
-          tauriScript: pnpm tauri build
+          tauriScript: pnpm tauri
           args: --config src-tauri/tauri.conf.sidecar.json
