@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.2.3
+
+### Patch Changes
+
+- [`68a5127`](https://github.com/kareemmahlees/tablex/commit/68a5127b5b8bf87e4aad62143356dd82b86079a3) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - make tauri action work on release
+
 ## 0.2.2
 
 ### Patch Changes
