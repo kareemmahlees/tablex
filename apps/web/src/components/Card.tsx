@@ -19,7 +19,7 @@ const Card = ({
     <section
       id={id}
       className={cn(
-        "mt-[100px] flex flex-col rounded-md border-2 border-b-4 p-6 md:mx-6 md:flex-row md:p-7 lg:p-8",
+        "mt-[100px] flex flex-col rounded-md border-2 border-b-4 p-6 md:mx-6 md:flex-row md:p-7 lg:p-8 leading-7",
         className
       )}
     >

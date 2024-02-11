@@ -8,6 +8,7 @@ import BundleSizeCard from "./sections/BundleSizeCard"
 import Download from "./sections/Download"
 import Footer from "./sections/Footer"
 import KbdShortcutsCard from "./sections/KbdShortcutsCard"
+import MetaXCard from "./sections/MetaXCard"
 import ToolsCard from "./sections/ToolsCard"
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <MaxWidthWrapper>
           <Heading />
           <ToolsCard />
+          <MetaXCard />
           <BundleSizeCard />
           <KbdShortcutsCard />
           <Download />
