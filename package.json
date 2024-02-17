@@ -14,10 +14,9 @@
     "apps/*"
   ],
   "scripts": {
-    "prepare-metax": "go build -C ./apps/meta-x/ -o ../bin/ && go run ./apps/scripts/suffex-meta-x.go",
     "tauri:dev": "pnpm --filter @tablex/core exec tauri dev",
     "tauri:debug": "pnpm --filter @tablex/core exec tauri build --debug",
-    "tauri:build": "pnpm prepare-metax &&  pnpm --filter @tablex/core exec tauri build --config src-tauri/tauri.conf.sidecar.json",
+    "tauri:build": "pnpm --filter @tablex/core exec tauri build",
     "vite:dev": "pnpm --filter @tablex/web dev",
     "vite:build": "pnpm --filter @tablex/web build",
     "vite:preview": "pnpm --filter @tablex/web preview",
