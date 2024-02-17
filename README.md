@@ -16,7 +16,7 @@
 
 > Note: TableX is still under development, don't expect it to be perfect, yet.
 
-Checkout [Changleogs](./apps/core/CHANGELOG.md), and our [issues](https://github.com/kareemmahlees/tablex/issues) section.
+Checkout [Changleogs](./apps/core/CHANGELOG.md) and our [issues](https://github.com/kareemmahlees/tablex/issues) section.
 
 ## Don't Waste time, try it NOW 💥
 
@@ -42,7 +42,7 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 
 TableX now uses [MetaX](https://github.com/kareemmahlees/meta-x) to automatically create a RESTfull and GraphQL APIs for your database.
 
-MetaX supercharges your experience by allowing you to interact with your database through an API interface ( which is fully swagger documented ), allowing your for example to create, read, update or delete databases, tables or columns through http requests with no effort from you what so over ✨.
+MetaX supercharges your experience by allowing you to interact with your database through an API interface ( which is fully swagger documented ), allowing you for example to create, read, update or delete databases, tables or columns through http requests with no effort from you what so over ✨.
 
 Just connect your database and start running 🚀.
 
@@ -67,55 +67,6 @@ Just connect your database and start running 🚀.
 | <kbd>Ctrl</kbd> + <kbd>a</kbd> | select or deselect all            |
 | <kbd>Ctrl</kbd> + <kbd>c</kbd> | copy selected rows into clipboard |
 | <kbd>Delete</kbd>              | delete selected rows              |
-
-## Local Development 🧑🏻‍💻
-
-To start playing around with TableX locally, you will need the following requirements:
-
-- Node v20.9.0 or later ( you can use the .nvmrc )
-- Cargo 1.74.1 or later
-- pnpm 8.13.1 or later
-
-> some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
-
-Once you have setup the previous requirements, you can start by cloning the repo:
-
-```shell
-git clone https://github.com/kareemmahlees/tablex.git --depth=1
-```
-
-> Note: TableX uses MetaX as a **submodule**, so, once you have ran the above command you will se an empty meta-x folder.
-> there is no need to delete that.
-
-then, install necessary dependencies:
-
-```shell
-pnpm install
-# And
-cargo install
-```
-
-install husky git hooks:
-
-```bash
-pnpm husky install
-```
-
-and you are good to go 💫, you can start your development server by running:
-
-```bash
-pnpm tauri:dev
-```
-
-Want to test how your modification will look like at the final executable? run this:
-
-```shell
-pnpm tauri:debug
-```
-
-this will create a debug build/executables of the application that you can then install and see your features in action 🥳
-
-> Note: the `tauri:build` script requires `Golang` to be installed in order to build _MetaX_ and include it as a sidecar in the release build.
 
 ## Contributing 🫱🏻‍🫲🏻
 
