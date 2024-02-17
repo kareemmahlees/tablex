@@ -20,7 +20,7 @@ pub async fn establish_connection(
     #[cfg(not(debug_assertions))]
     {
         use regex::Regex;
-        use tauri::api::process::{Command, CommandEvent};
+        use tauri::api::process::Command;
 
         let stripped_conn_string = conn_string.strip_prefix("mysql://").unwrap().to_string();
 
@@ -29,7 +29,7 @@ pub async fn establish_connection(
             format!("@tcp({})/", &caps[1])
         });
 
-        let (mut rx, child) = Command::new_sidecar("meta-x")
+        let (_, child) = Command::new_sidecar("meta-x")
             .expect("failed to create `meta-x` binary command")
             .args(["mysql", "--url", &output])
             .spawn()

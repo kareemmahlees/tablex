@@ -18,10 +18,10 @@ pub async fn establish_connection(
     *state.driver.lock().await = Some(driver);
     #[cfg(not(debug_assertions))]
     {
-        use tauri::api::process::{Command, CommandEvent};
+        use tauri::api::process::Command;
 
         let (_, after) = conn_string.split_once(':').unwrap();
-        let (mut rx, child) = Command::new_sidecar("meta-x")
+        let (_, child) = Command::new_sidecar("meta-x")
             .expect("failed to create `meta-x` binary command")
             .args(["sqlite3", "-f", after])
             .spawn()

@@ -19,9 +19,9 @@ pub async fn establish_connection(
 
     #[cfg(not(debug_assertions))]
     {
-        use tauri::api::process::{Command, CommandEvent};
+        use tauri::api::process::Command;
 
-        let (mut rx, child) = Command::new_sidecar("meta-x")
+        let (_, child) = Command::new_sidecar("meta-x")
             .expect("failed to create `meta-x` binary command")
             .args(["pg", "--url", conn_string.as_str()])
             .spawn()

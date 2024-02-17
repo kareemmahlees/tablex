@@ -26,7 +26,7 @@ pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Option<Vec<String>
     }
 
     let mut result: Vec<String> = vec![];
-    for (_, row) in rows.iter().enumerate() {
+    for row in rows.iter() {
         result.push(row.get::<String, usize>(0))
     }
     Ok(Some(result))
