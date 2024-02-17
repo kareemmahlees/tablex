@@ -71,15 +71,15 @@ fn main() {
             #[cfg(not(debug_assertions))]
             metax_command_child: Default::default(),
         })
-        .setup(|app| {
-            #[cfg(debug_assertions)] // only include this code on debug builds
-            {
+        .setup(
+            #[cfg(debug_assertions)]
+            |app| {
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
                 window.close_devtools();
-            }
-            Ok(())
-        })
+                Ok(())
+            },
+        )
         .invoke_handler(tauri::generate_handler![
             test_connection,
             create_connection_record,
