@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: kareemmahlees/meta-x
-          path: apps
+          path: apps/meta-x
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
