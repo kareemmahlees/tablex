@@ -10,10 +10,12 @@ Whatever the level of your expertise, you will definitely find some issue that s
 
 **TableX** is a [Tauri](https://tauri.app/) app which uses [NextJs](https://nextjs.org/) for the Frontend and [Rust](https://www.rust-lang.org/) as the Backend.
 
+During release builds, we bundle [MetaX](https://github.com/kareemmahlees/metta-x) with the final build.
+
 **TableX** is also a `monorepo` that contains:
 
 - TableX application logic at `apps/core`.
-- TableX website, built with `React + Vite`, at `apps/web`.
+- TableX website, built with `Astro`, at `apps/web`.
 
 You will find also an `apps/scripts` directory, which contain some scripts that are used only in the `release` action on github.
 
@@ -69,6 +71,12 @@ If you want to create a release build, run the following:
 pnpm tauri:build
 ```
 
+If you are interested in playing around with the website, run the following:
+
+```shell
+pnpm astro:dev
+```
+
 ## Some Guidelines to follow
 
 Make sure you have fulfilled the requirements and local development steps mentioned [here](../README.md#local-development-🧑🏻‍💻).
@@ -88,4 +96,13 @@ Separating your changes into multiple small commits is better to review and debu
 ## Changesets
 
 It is very preferable to add a changeset at the end of your work in the pr.
+
+We use [Changesets Bot](https://github.com/changesets/bot) to check for changeset in PRs, if you are working on the website, you can create an empty changeset to make the bot happy:
+
+```shell
+pnpm changeset add --empty
+```
+
+because we don't version tag updates in the website.
+
 Please refer to [changesets](https://github.com/changesets/changesets) documentation for more info.

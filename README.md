@@ -53,6 +53,7 @@ Just connect your database and start running 🚀.
   - [Rust](https://www.rust-lang.org/) : Backend
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
 - [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8)
+- [Astro](https://astro.build/) : Website
 - [Golang](https://go.dev): [MetaX](https://github.com/kareemmahlees/meta-x)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
 - [Changesets](https://github.com/changesets/changesets): Versioning and Changelogs
