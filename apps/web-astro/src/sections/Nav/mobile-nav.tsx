@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle
-} from "../ui/dialog"
+} from "../../components/ui/dialog"
 
 const MobileNav = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)

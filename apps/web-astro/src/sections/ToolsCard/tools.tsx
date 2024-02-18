@@ -1,15 +1,21 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 
 interface ToolsTooltipProps {
-    tools : {
-        src :string
-        alt:string
-        content:string
-    }[]
+  tools: {
+    src: string
+    alt: string
+    content: string
+  }[]
 }
 
-const Tools = ({tools}:ToolsTooltipProps) => {
-    return ( <TooltipProvider>
+const Tools = ({ tools }: ToolsTooltipProps) => {
+  return (
+    <TooltipProvider>
       <div className="mx-auto mt-7  grid w-full grid-cols-3 gap-5 md:gap-y-8">
         {tools.map(({ src, alt, content }, idx) => {
           return (
@@ -27,7 +33,7 @@ const Tools = ({tools}:ToolsTooltipProps) => {
         })}
       </div>
     </TooltipProvider>
- );
+  )
 }
- 
-export default Tools;
+
+export default Tools
