@@ -1,9 +1,14 @@
 ---
+import Heading from "@/components/Heading/Heading.astro"
 import Nav from "@/components/Nav/Nav.astro"
 import Layout from "@/layouts/Layout.astro"
+import MaxWidthWrapper from "@/layouts/MaxWidthWrapper.astro"
 import "@/styles/globals.css"
 ---
 
 <Layout>
   <Nav />
+  <MaxWidthWrapper>
+    <Heading />
+  </MaxWidthWrapper>
 </Layout>
