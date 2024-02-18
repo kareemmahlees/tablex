@@ -1,0 +1,22 @@
+---
+import { cn } from "@/lib/utils"
+
+interface Props {
+  header: string
+  id?: string
+}
+
+const {header,id} = Astro.props
+---
+    <section
+      id={id}
+      class={cn(
+        "mt-[100px] flex flex-col rounded-md border-2 border-b-4 p-6 md:mx-6 md:flex-row md:p-7 lg:p-8 leading-7")}
+    >
+      <div class="text-start">
+        <h3 class="text-xl font-semibold">{header}</h3>
+        <div class="text-muted-foreground mt-4"><slot name="content"/></div>
+      </div>
+      <slot/>
+    </section>
+
