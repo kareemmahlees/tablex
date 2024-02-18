@@ -1,5 +1,6 @@
 ---
 import { cn } from "@/lib/utils"
+import { Image } from "astro:assets"
 
 interface Props {
   imgSrc: string
@@ -16,6 +17,6 @@ const { imgSrc, alt, class: cls } = Astro.props
     "flex flex-col items-center justify-center gap-y-1 rounded-lg border-[1px] border-[#333333] bg-[#111111] p-5 "
   )}
 >
-  <img src={imgSrc} alt={alt} class="h-10 w-10" />
+  <Image src={imgSrc} alt={alt} class="h-10 w-10" width={40} height={40} />
   <p class="text-muted-foreground">{alt}</p>
 </section>
