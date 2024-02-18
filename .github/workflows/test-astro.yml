@@ -1,4 +1,4 @@
-name: Test Vite Build
+name: Test Astro Build
 
 on:
   push:
@@ -34,17 +34,19 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            apps/web
 
       - uses: pnpm/action-setup@v2
         with:
           run_install: |
             - recursive: true
 
-      - name: setup node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: "pnpm"
 
-      - name: run vite build
-        run: pnpm vite:build
+      - name: Run Astro build
+        run: pnpm astro:build
