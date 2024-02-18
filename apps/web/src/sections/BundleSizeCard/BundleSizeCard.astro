@@ -1,0 +1,22 @@
+---
+import Card from "@/components/Card.astro"
+import BundleSizeChart from "./bundle-size-chart"
+---
+
+<Card header="Ultra small bundle size">
+  <p slot="content">
+    <span class="text-foreground font-semibold">TableX</span>, thanks to{" "}
+    <a
+      class="text-white underline"
+      href="https://tauri.app/"
+      target="_blank"
+      rel="noreferrer"
+    >
+      tauri
+    </a>
+    , produces a very small bundle size (~ 10 MB) compared to the alternatives.
+  </p>
+  <div class="mt-4 flex h-full w-full items-center justify-center md:mt-0">
+    <BundleSizeChart client:visible />
+  </div>
+</Card>
