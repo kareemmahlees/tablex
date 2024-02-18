@@ -37,6 +37,7 @@ jobs:
         with:
           sparse-checkout: |
             apps/web
+            apps/core/package.json
 
       - uses: pnpm/action-setup@v2
         with:
