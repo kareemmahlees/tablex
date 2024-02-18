@@ -56,6 +56,10 @@ body,
   }
 }
 
+kbd {
+  @apply rounded-lg border border-b-2 px-1.5 py-1;
+}
+
 @layer base {
   * {
     @apply border-border;
