@@ -8,5 +8,6 @@
       "@/*": ["./src/*"],
       "@tablex/core/*": ["../core/*"]
     }
-  }
+  },
+  "exclude": ["./dist", "./node_modules"]
 }
