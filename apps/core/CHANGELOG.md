@@ -1,5 +1,20 @@
 # @tablex/core
 
+## 0.2.4
+
+### Patch Changes
+
+- [#29](https://github.com/kareemmahlees/tablex/pull/29) [`6806384`](https://github.com/kareemmahlees/tablex/commit/6806384861018d57358797280b22a52e4174bfd6) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - ## Modifications
+
+  ### Backend
+
+  - Fix a bug while creating the connections file, previously it didn't create the parent directories before creating the file.
+  - Return empty Vector if there are not tables in the database
+
+  ### Frontend
+
+  - Make creating a connection more verbose with toast info
+
 ## 0.2.3
 
 ### Patch Changes
