@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use tauri::State;
 
 #[tauri::command]
-pub async fn get_tables(db: State<'_, DbInstance>) -> Result<Option<Vec<String>>, String> {
+pub async fn get_tables(db: State<'_, DbInstance>) -> Result<Vec<String>, String> {
     let long_lived = db.driver.lock().await;
     let driver = long_lived.as_ref().unwrap();
     match driver {

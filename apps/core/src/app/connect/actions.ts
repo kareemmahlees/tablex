@@ -25,7 +25,7 @@ export const createConnectionRecord = async (
   connString: string,
   driver: DriversValues
 ) => {
-  await invoke("create_connection_record", {
+  return await invoke("create_connection_record", {
     connString,
     connName,
     driver

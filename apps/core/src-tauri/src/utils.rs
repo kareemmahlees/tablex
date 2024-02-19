@@ -96,12 +96,16 @@ pub fn delete_from_connections_file(
 pub fn read_from_connections_file(
     connections_file_path: &PathBuf,
 ) -> Result<serde_json::Value, String> {
+    let prefix = connections_file_path.parent().unwrap();
+    std::fs::create_dir_all(prefix)
+        .or_else(|_| Err("Couldn't create config directory for TableX".to_string()))?;
+
     let mut file = OpenOptions::new()
         .read(true)
         .create(true)
         .write(true)
         .open(connections_file_path)
-        .map_err(|e| e.to_string())?;
+        .or_else(|_| Err("connections.json file is not found"))?;
 
     if file.metadata().unwrap().len() == 0 {
         write!(file, "{{}}")

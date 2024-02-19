@@ -7,7 +7,7 @@ use sqlx::Row;
 use std::collections::HashMap;
 use tauri::State;
 
-pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Option<Vec<String>>, String> {
+pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Vec<String>, String> {
     let conn_long_lived = db.postgres_pool.lock().await;
     let conn = conn_long_lived.as_ref().unwrap();
 
@@ -22,14 +22,14 @@ pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Option<Vec<String>
     .map_err(|err| err.to_string())?;
 
     if rows.is_empty() {
-        return Ok(None);
+        return Ok(vec![]);
     }
 
     let mut result: Vec<String> = Default::default();
     for row in rows.iter() {
         result.push(row.try_get::<String, usize>(0).unwrap())
     }
-    Ok(Some(result))
+    Ok(result)
 }
 
 pub async fn get_columns_definition(
