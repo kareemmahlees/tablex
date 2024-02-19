@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Drivers, DriversValues } from "@/lib/types"
+import { customToast } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -32,8 +33,22 @@ const ConnectionStringForm = ({ driver }: ConnectionParamsFormProps) => {
   })
 
   const onClickConnect = async (values: z.infer<typeof formSchema>) => {
-    await createConnectionRecord(values.connName, values.connString, driver)
-    router.push("/connections")
+    const action = createConnectionRecord(
+      values.connName,
+      values.connString,
+      driver
+    )
+    customToast(
+      action,
+      {
+        success: () => {
+          router.push("/connections")
+          return "Successfully created connection"
+        },
+        error: (e) => e
+      },
+      "create_connection"
+    )
   }
 
   const onClickTest = async (values: z.infer<typeof formSchema>) => {
