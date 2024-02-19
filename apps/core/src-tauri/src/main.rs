@@ -77,8 +77,8 @@ fn main() {
                 let window = app.get_window("main").unwrap();
                 window.open_devtools();
                 window.close_devtools();
-                Ok(())
             }
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             test_connection,
