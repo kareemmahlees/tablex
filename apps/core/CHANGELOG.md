@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.2.5
+
+### Patch Changes
+
+- [`482136a`](https://github.com/kareemmahlees/tablex/commit/482136af44950f459545814a5cb14210d01de4df) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Fix lint error in main.rs
+
 ## 0.2.4
 
 ### Patch Changes
