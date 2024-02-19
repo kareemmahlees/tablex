@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.2.6
+
+### Patch Changes
+
+- [`d62ad6e`](https://github.com/kareemmahlees/tablex/commit/d62ad6e204eb61284fca638a5a4d3fa56b303257) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Fix annoying lint error in setup
+
 ## 0.2.5
 
 ### Patch Changes
