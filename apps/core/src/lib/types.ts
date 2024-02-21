@@ -31,3 +31,8 @@ export interface ColumnProps {
   defaultValue?: any
   isPK: boolean
 }
+
+export interface PaginatedRows {
+  data: Record<string, any>[]
+  pageCount: number
+}

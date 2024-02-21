@@ -1,11 +1,7 @@
 "use client"
 
 import {
-  SortingState,
   flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
   type ColumnDef,
   type Row,
   type Table as TableType
@@ -21,6 +17,15 @@ import {
 } from "@/components/ui/table"
 
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink
+} from "@/components/ui/pagination"
+
+import LoadingSpinner from "@/components/loading-spinner"
+import { Button } from "@/components/ui/button"
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -30,14 +35,8 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { unregister } from "@tauri-apps/api/globalShortcut"
-import { useSearchParams } from "next/navigation"
-import {
-  useLayoutEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction
-} from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useLayoutEffect, type Dispatch, type SetStateAction } from "react"
 import {
   copyRowIntoClipboard,
   deleteRows,
@@ -45,36 +44,30 @@ import {
   registerDeleteShortcut,
   registerSelectAllShortcut
 } from "../actions"
+import { useSetupReactTable } from "../hooks"
 import EditRowSheet from "./edit-row-sheet"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  tableName: string
 }
 
 const DataTable = <TData, TValue>({
   columns,
-  data
+  tableName
 }: DataTableProps<TData, TValue>) => {
-  const tableName = useSearchParams().get("tableName")!
+  const {
+    table,
+    contextMenuRow,
+    isSheetOpen,
+    setIsSheetOpen,
+    setContextMenuRow,
+    isRowsLoading,
+    tableRef
+  } = useSetupReactTable({ columns, tableName })
+
   const queryClient = useQueryClient()
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-  const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
-  const tableRef = useRef<HTMLTableElement>(null)
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      rowSelection
-    }
-  })
+
   useLayoutEffect(() => {
     unregister("Delete").then(() => {
       registerDeleteShortcut(table, tableName, queryClient)
@@ -87,8 +80,14 @@ const DataTable = <TData, TValue>({
     )
   })
 
+  if (isRowsLoading) return <LoadingSpinner />
+
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <div className="flex items-center justify-between p-4">
+        <h1 className="w-full  text-2xl font-bold ">{tableName}</h1>
+        <PaginationControls table={table} />
+      </div>
       <ContextMenu>
         <Table className="text-xs lg:text-sm" ref={tableRef}>
           <TableHeader>
@@ -207,5 +206,45 @@ const TableContextMenuContent = ({
         <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>
       </ContextMenuItem>
     </ContextMenuContent>
+  )
+}
+
+interface PaginationControlsProps {
+  table: TableType<any>
+}
+
+const PaginationControls = ({ table }: PaginationControlsProps) => {
+  return (
+    <Pagination className="justify-end">
+      <PaginationContent>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft className="mr-1 h-4 w-4 p-0" />
+            Previous
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink>
+            {table.getState().pagination.pageIndex + 1}
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+            <ChevronRight className="ml-1 h-4 w-4 p-0" />
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   )
 }

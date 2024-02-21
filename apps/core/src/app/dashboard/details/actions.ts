@@ -1,3 +1,4 @@
+import { PaginatedRows } from "@/lib/types"
 import { customToast } from "@/lib/utils"
 import { type QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
@@ -7,8 +8,16 @@ import { invoke } from "@tauri-apps/api/tauri"
 import type { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
-export const getRows = async (tableName: string) => {
-  const result = await invoke<Record<string, any>[]>("get_rows", { tableName })
+export const getPaginatedRows = async (
+  tableName: string,
+  pageIndex: number,
+  pageSize: number
+) => {
+  const result = await invoke<PaginatedRows>("get_paginated_rows", {
+    tableName,
+    pageIndex,
+    pageSize
+  })
   return result
 }
 

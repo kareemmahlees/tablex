@@ -5,6 +5,7 @@ public
 src-tauri
 pnpm-lock.yaml
 /**/dist
-/apps/web/src/components
+apps/core/src/components
+apps/web/src/components
 apps/web-astro/src/components
 .all-contributorsrc
