@@ -65,7 +65,7 @@ export const useSetupReactTable = <TData, TValue>({
 const useSetupPagination = () => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10 // TODO: hard coded for now
+    pageSize: 500 // TODO: hard coded for now
   })
   const defaultData = useMemo(() => [], [])
   const pagination = useMemo(

@@ -7,6 +7,8 @@ import {
   type Table as TableType
 } from "@tanstack/react-table"
 
+import { useVirtualizer } from "@tanstack/react-virtual"
+
 import {
   Table,
   TableBody,
@@ -41,7 +43,12 @@ import {
   ChevronsLeft,
   ChevronsRight
 } from "lucide-react"
-import { useLayoutEffect, type Dispatch, type SetStateAction } from "react"
+import {
+  useLayoutEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction
+} from "react"
 import {
   copyRowIntoClipboard,
   deleteRows,
@@ -73,6 +80,18 @@ const DataTable = <TData, TValue>({
 
   const queryClient = useQueryClient()
 
+  const { rows } = table.getRowModel()
+
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 50, //* I reached to this number by trial and error
+    overscan: 10,
+    debug: process.env.NODE_ENV === "development" ? true : false
+  })
+
   useLayoutEffect(() => {
     unregister("Delete").then(() => {
       registerDeleteShortcut(table, tableName, queryClient)
@@ -85,82 +104,94 @@ const DataTable = <TData, TValue>({
     )
   })
 
-  if (isRowsLoading) return <LoadingSpinner />
-
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <div className="flex items-center justify-between p-4">
         <h1 className="w-full  text-2xl font-bold ">{tableName}</h1>
         <PaginationControls table={table} />
       </div>
-      <ContextMenu>
-        <Table className="text-xs lg:text-sm" ref={tableRef}>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className="sticky top-0 backdrop-blur-md "
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="text-sm font-bold lg:text-base"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <ContextMenuTrigger asChild>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    onClick={() => row.toggleSelected(!row.getIsSelected())}
-                    className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
-                    onContextMenu={() => setContextMenuRow(row)}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
+      {isRowsLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <ContextMenu>
+          <Table
+            ref={tableRef}
+            virtualizer={virtualizer}
+            virtualizerRef={parentRef}
+          >
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="sticky top-0 backdrop-blur-lg"
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className="text-sm font-bold lg:text-base"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              )}
-              <TableContextMenuContent
-                tableName={tableName}
-                table={table}
-                setIsSheetOpen={setIsSheetOpen}
-                queryClient={queryClient}
-                contextMenuRow={contextMenuRow}
-              />
-            </TableBody>
-          </ContextMenuTrigger>
-        </Table>
-      </ContextMenu>
+              ))}
+            </TableHeader>
+            <ContextMenuTrigger asChild>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  // table.getRowModel().rows.map((row) => (
+
+                  virtualizer.getVirtualItems().map((virtualRow) => {
+                    const row = rows[virtualRow.index]
+                    return (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        onClick={() => row.toggleSelected(!row.getIsSelected())}
+                        className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
+                        onContextMenu={() => setContextMenuRow(row)}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )
+                  })
+                ) : (
+                  // ))
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableContextMenuContent
+                  tableName={tableName}
+                  table={table}
+                  setIsSheetOpen={setIsSheetOpen}
+                  queryClient={queryClient}
+                  contextMenuRow={contextMenuRow}
+                />
+              </TableBody>
+            </ContextMenuTrigger>
+          </Table>
+        </ContextMenu>
+      )}
       <EditRowSheet
         setIsSheetOpen={setIsSheetOpen}
         row={contextMenuRow}
