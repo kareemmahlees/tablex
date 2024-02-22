@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.3.0
+
+### Minor Changes
+
+- [#34](https://github.com/kareemmahlees/tablex/pull/34) [`1021466`](https://github.com/kareemmahlees/tablex/commit/102146644874808c5145f959482413d08c9eb6aa) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Added pagination and used Tanstack Virtual for table view
+
 ## 0.2.6
 
 ### Patch Changes
