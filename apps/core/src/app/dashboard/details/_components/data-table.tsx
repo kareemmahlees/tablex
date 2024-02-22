@@ -35,7 +35,12 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { unregister } from "@tauri-apps/api/globalShortcut"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
+} from "lucide-react"
 import { useLayoutEffect, type Dispatch, type SetStateAction } from "react"
 import {
   copyRowIntoClipboard,
@@ -221,6 +226,16 @@ const PaginationControls = ({ table }: PaginationControlsProps) => {
           <Button
             variant={"ghost"}
             size={"sm"}
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -242,6 +257,16 @@ const PaginationControls = ({ table }: PaginationControlsProps) => {
           >
             Next
             <ChevronRight className="ml-1 h-4 w-4 p-0" />
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronsRight className="h-4 w-4" />
           </Button>
         </PaginationItem>
       </PaginationContent>
