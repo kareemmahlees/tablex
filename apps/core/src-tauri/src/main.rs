@@ -11,7 +11,7 @@ use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
 };
-use row::{create_row, delete_rows, get_rows, update_row};
+use row::{create_row, delete_rows, get_paginated_rows, update_row};
 use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
@@ -89,7 +89,7 @@ fn main() {
             get_connections,
             get_connection_details,
             get_tables,
-            get_rows,
+            get_paginated_rows,
             delete_rows,
             get_columns_definition,
             create_row,

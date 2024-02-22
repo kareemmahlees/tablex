@@ -1,23 +1,32 @@
 use crate::{drivers::postgres::decode, DbInstance};
-use serde_json::value::Value as JsonValue;
+use serde_json::value::{Map as JsonMap, Value as JsonValue};
 use sqlx::{Column, Row};
-use std::collections::HashMap;
 use tauri::State;
 
-pub async fn get_rows(
+pub async fn get_paginated_rows(
     db: &State<'_, DbInstance>,
     table_name: String,
-) -> Result<Vec<HashMap<String, JsonValue>>, String> {
+    page_index: u16,
+    page_size: u32,
+) -> Result<JsonMap<String, JsonValue>, String> {
     let long_lived = db.postgres_pool.lock().await;
     let conn = long_lived.as_ref().unwrap();
 
-    let rows = sqlx::query(format!("SELECT * FROM {};", table_name).as_str())
-        .fetch_all(conn)
-        .await
-        .unwrap();
+    let rows = sqlx::query(
+        format!(
+            "SELECT * FROM {} limit {} offset {};",
+            table_name,
+            page_size,
+            page_index as u32 * page_size
+        )
+        .as_str(),
+    )
+    .fetch_all(conn)
+    .await
+    .unwrap();
     let mut values = Vec::new();
     for row in rows {
-        let mut value = HashMap::default();
+        let mut value = JsonMap::default();
         for (i, column) in row.columns().iter().enumerate() {
             let v = row.try_get_raw(i).unwrap();
 
@@ -28,7 +37,19 @@ pub async fn get_rows(
 
         values.push(value);
     }
-    Ok(values)
+
+    let page_count_result = sqlx::query(format!("SELECT COUNT(*) from {}", table_name).as_str())
+        .fetch_one(conn)
+        .await
+        .unwrap();
+    let page_count: i64 =
+        page_count_result.try_get::<i64, usize>(0).unwrap() / <u32 as Into<i64>>::into(page_size);
+
+    let mut result = JsonMap::new();
+    result.insert("data".to_string(), values.into());
+    result.insert("pageCount".to_string(), page_count.into());
+
+    Ok(result)
 }
 
 pub async fn delete_rows(

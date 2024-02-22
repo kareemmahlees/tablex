@@ -1,15 +1,13 @@
 "use client"
 
 import {
-  SortingState,
   flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
   type ColumnDef,
   type Row,
   type Table as TableType
 } from "@tanstack/react-table"
+
+import { useVirtualizer } from "@tanstack/react-virtual"
 
 import {
   Table,
@@ -21,6 +19,15 @@ import {
 } from "@/components/ui/table"
 
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink
+} from "@/components/ui/pagination"
+
+import LoadingSpinner from "@/components/loading-spinner"
+import { Button } from "@/components/ui/button"
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -30,11 +37,15 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { unregister } from "@tauri-apps/api/globalShortcut"
-import { useSearchParams } from "next/navigation"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
+} from "lucide-react"
 import {
   useLayoutEffect,
   useRef,
-  useState,
   type Dispatch,
   type SetStateAction
 } from "react"
@@ -45,36 +56,42 @@ import {
   registerDeleteShortcut,
   registerSelectAllShortcut
 } from "../actions"
+import { useSetupReactTable } from "../hooks"
 import EditRowSheet from "./edit-row-sheet"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  tableName: string
 }
 
 const DataTable = <TData, TValue>({
   columns,
-  data
+  tableName
 }: DataTableProps<TData, TValue>) => {
-  const tableName = useSearchParams().get("tableName")!
+  const {
+    table,
+    contextMenuRow,
+    isSheetOpen,
+    setIsSheetOpen,
+    setContextMenuRow,
+    isRowsLoading,
+    tableRef
+  } = useSetupReactTable({ columns, tableName })
+
   const queryClient = useQueryClient()
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-  const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
-  const tableRef = useRef<HTMLTableElement>(null)
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      rowSelection
-    }
+
+  const { rows } = table.getRowModel()
+
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 50, //* I reached to this number by trial and error
+    overscan: 10,
+    debug: process.env.NODE_ENV === "development" ? true : false
   })
+
   useLayoutEffect(() => {
     unregister("Delete").then(() => {
       registerDeleteShortcut(table, tableName, queryClient)
@@ -89,74 +106,92 @@ const DataTable = <TData, TValue>({
 
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-      <ContextMenu>
-        <Table className="text-xs lg:text-sm" ref={tableRef}>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className="sticky top-0 backdrop-blur-md "
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="text-sm font-bold lg:text-base"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <ContextMenuTrigger asChild>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    onClick={() => row.toggleSelected(!row.getIsSelected())}
-                    className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
-                    onContextMenu={() => setContextMenuRow(row)}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
+      <div className="flex items-center justify-between p-4">
+        <h1 className="w-full  text-2xl font-bold ">{tableName}</h1>
+        <PaginationControls table={table} />
+      </div>
+      {isRowsLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <ContextMenu>
+          <Table
+            ref={tableRef}
+            virtualizer={virtualizer}
+            virtualizerRef={parentRef}
+          >
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="sticky top-0 backdrop-blur-lg"
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className="text-sm font-bold lg:text-base"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              )}
-              <TableContextMenuContent
-                tableName={tableName}
-                table={table}
-                setIsSheetOpen={setIsSheetOpen}
-                queryClient={queryClient}
-                contextMenuRow={contextMenuRow}
-              />
-            </TableBody>
-          </ContextMenuTrigger>
-        </Table>
-      </ContextMenu>
+              ))}
+            </TableHeader>
+            <ContextMenuTrigger asChild>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  // table.getRowModel().rows.map((row) => (
+
+                  virtualizer.getVirtualItems().map((virtualRow) => {
+                    const row = rows[virtualRow.index]
+                    return (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        onClick={() => row.toggleSelected(!row.getIsSelected())}
+                        className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
+                        onContextMenu={() => setContextMenuRow(row)}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )
+                  })
+                ) : (
+                  // ))
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableContextMenuContent
+                  tableName={tableName}
+                  table={table}
+                  setIsSheetOpen={setIsSheetOpen}
+                  queryClient={queryClient}
+                  contextMenuRow={contextMenuRow}
+                />
+              </TableBody>
+            </ContextMenuTrigger>
+          </Table>
+        </ContextMenu>
+      )}
       <EditRowSheet
         setIsSheetOpen={setIsSheetOpen}
         row={contextMenuRow}
@@ -207,5 +242,65 @@ const TableContextMenuContent = ({
         <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>
       </ContextMenuItem>
     </ContextMenuContent>
+  )
+}
+
+interface PaginationControlsProps {
+  table: TableType<any>
+}
+
+const PaginationControls = ({ table }: PaginationControlsProps) => {
+  return (
+    <Pagination className="justify-end">
+      <PaginationContent>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft className="mr-1 h-4 w-4 p-0" />
+            Previous
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink>
+            {table.getState().pagination.pageIndex + 1}
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+            <ChevronRight className="ml-1 h-4 w-4 p-0" />
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   )
 }

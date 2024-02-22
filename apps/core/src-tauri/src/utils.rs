@@ -98,14 +98,14 @@ pub fn read_from_connections_file(
 ) -> Result<serde_json::Value, String> {
     let prefix = connections_file_path.parent().unwrap();
     std::fs::create_dir_all(prefix)
-        .or_else(|_| Err("Couldn't create config directory for TableX".to_string()))?;
+        .map_err(|_| "Couldn't create config directory for TableX".to_string())?;
 
     let mut file = OpenOptions::new()
         .read(true)
         .create(true)
         .write(true)
         .open(connections_file_path)
-        .or_else(|_| Err("connections.json file is not found"))?;
+        .map_err(|_| "connections.json file is not found")?;
 
     if file.metadata().unwrap().len() == 0 {
         write!(file, "{{}}")

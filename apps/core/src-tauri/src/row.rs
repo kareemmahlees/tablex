@@ -11,16 +11,24 @@ use std::result::Result::Ok;
 use tauri::State;
 
 #[tauri::command]
-pub async fn get_rows(
+pub async fn get_paginated_rows(
     db: State<'_, DbInstance>,
     table_name: String,
-) -> Result<Vec<HashMap<String, JsonValue>>, String> {
+    page_index: u16,
+    page_size: u32,
+) -> Result<Map<String, JsonValue>, String> {
     let long_lived = db.driver.lock().await;
     let driver = long_lived.as_ref().unwrap();
     match driver {
-        Drivers::SQLite => sqlite::row::get_rows(&db, table_name).await,
-        Drivers::PostgreSQL => postgres::row::get_rows(&db, table_name).await,
-        Drivers::MySQL => mysql::row::get_rows(&db, table_name).await,
+        Drivers::SQLite => {
+            sqlite::row::get_paginated_rows(&db, table_name, page_index, page_size).await
+        }
+        Drivers::PostgreSQL => {
+            postgres::row::get_paginated_rows(&db, table_name, page_index, page_size).await
+        }
+        Drivers::MySQL => {
+            mysql::row::get_paginated_rows(&db, table_name, page_index, page_size).await
+        }
     }
 }
 

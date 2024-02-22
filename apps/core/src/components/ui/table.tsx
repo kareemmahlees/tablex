@@ -1,17 +1,25 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { Virtualizer } from "@tanstack/react-virtual"
+
+interface TableProps extends   React.HTMLAttributes<HTMLTableElement>   {
+  virtualizerRef:React.RefObject<HTMLDivElement>
+  virtualizer:Virtualizer<any,any>
+}
 
 const Table = React.forwardRef<
   HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative h-full w-full overflow-auto">
+  TableProps
+>(({ className,virtualizerRef,virtualizer, ...props }, ref) => (
+  <div className="relative h-full w-full overflow-auto" >
+    <div ref={virtualizerRef} style={{height:`${virtualizer.getTotalSize()}px`}}>
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
       {...props}
     />
+    </div>
   </div>
 ))
 Table.displayName = "Table"
@@ -112,3 +120,4 @@ export {
   TableHeader,
   TableRow
 }
+

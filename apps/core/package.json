@@ -25,14 +25,15 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^5.8.4",
     "@tanstack/react-table": "^8.10.7",
+    "@tanstack/react-virtual": "^3.1.2",
     "@tauri-apps/api": "^1.5.1",
     "cmdk": "^0.2.0",
+    "geist": "^1.2.0",
     "next": "14.0.2",
     "next-themes": "^0.2.1",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
-    "zod": "^3.22.4",
-    "geist": "^1.2.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.6",
