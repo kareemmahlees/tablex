@@ -31,16 +31,16 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 ## What Does it offer ✨
 
 - Delightful user experience
-- Top-Notch performance
+- Top-Notch performance with pagination and virtualization
 - Support for SQLite, PostgreSQL, MySQL
 - Available for Windows, MacOS, and Linux
 - Automatically create a RESTfull and GraphQL APIs for your database
 - Keyboard shortcuts for productivity homies
 - Free and Open-Source
 
-## V2 Update 🎉: Say hi to MetaX
+## Say hi to MetaX 🎉
 
-TableX now uses [MetaX](https://github.com/kareemmahlees/meta-x) to automatically create a RESTfull and GraphQL APIs for your database.
+TableX uses [MetaX](https://github.com/kareemmahlees/meta-x) to automatically create a RESTfull and GraphQL APIs for your database.
 
 MetaX supercharges your experience by allowing you to interact with your database through an API interface ( which is fully swagger documented ), allowing you for example to create, read, update or delete databases, tables or columns through http requests with no effort from you what so over ✨.
 
@@ -52,7 +52,7 @@ Just connect your database and start running 🚀.
   - [NextJs](https://nextjs.org/) : Frontend Framework
   - [Rust](https://www.rust-lang.org/) : Backend
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
-- [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8)
+- [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8), [Virtual](https://tanstack.com/virtual/latest)
 - [Astro](https://astro.build/) : Website
 - [Golang](https://go.dev): [MetaX](https://github.com/kareemmahlees/meta-x)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
