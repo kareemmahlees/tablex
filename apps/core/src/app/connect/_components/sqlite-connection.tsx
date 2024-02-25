@@ -31,7 +31,7 @@ const SqliteConnection = () => {
             filters: [
               {
                 name: "DB File",
-                extensions: ["db"]
+                extensions: ["db", "db3", "s3db", "sl3", "sqlite", "sqlite3"]
               }
             ]
           })
