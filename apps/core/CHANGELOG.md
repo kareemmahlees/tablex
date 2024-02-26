@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.3.1
+
+### Patch Changes
+
+- [#37](https://github.com/kareemmahlees/tablex/pull/37) [`9c475f5`](https://github.com/kareemmahlees/tablex/commit/9c475f5e02221b5ea0528ce04d0705e59d1da253) Thanks [@dbarnett](https://github.com/dbarnett)! - Support other common SQLite file extensions (like .sqlite)
+
 ## 0.3.0
 
 ### Minor Changes
