@@ -82,6 +82,7 @@ please refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://kareem-ebrahim.vercel.app/"><img src="https://avatars.githubusercontent.com/u/89863279?v=4?s=100" width="100px;" alt="Kareem Ebrahim"/><br /><sub><b>Kareem Ebrahim</b></sub></a><br /><a href="https://github.com/kareemmahlees/tablex/commits?author=kareemmahlees" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://diffingdiffs.blogspot.com"><img src="https://avatars.githubusercontent.com/u/65244?v=4?s=100" width="100px;" alt="David Barnett"/><br /><sub><b>David Barnett</b></sub></a><br /><a href="https://github.com/kareemmahlees/tablex/commits?author=dbarnett" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
