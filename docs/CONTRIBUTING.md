@@ -10,7 +10,7 @@ Whatever the level of your expertise, you will definitely find some issue that s
 
 **TableX** is a [Tauri](https://tauri.app/) app which uses [NextJs](https://nextjs.org/) for the Frontend and [Rust](https://www.rust-lang.org/) as the Backend.
 
-During release builds, we bundle [MetaX](https://github.com/kareemmahlees/metta-x) with the final build.
+During release builds, we bundle [MetaX](https://github.com/kareemmahlees/meta-x) with the final build.
 
 **TableX** is also a `monorepo` that contains:
 
@@ -42,10 +42,12 @@ then, install necessary dependencies:
 ```shell
 pnpm install
 # And
-cargo install
+cargo install --path apps/core/src-tauri
 ```
 
-install husky git hooks:
+NOTE: The cargo install may need you to install some other system dependencies, such as: libsoup, libjavascriptcoregtk, libgtk, libwebkit2gtk. Exact installation instructions will vary by platform.
+
+Install husky git hooks:
 
 ```bash
 pnpm husky install
@@ -79,7 +81,7 @@ pnpm astro:dev
 
 ## Some Guidelines to follow
 
-Make sure you have fulfilled the requirements and local development steps mentioned [here](../README.md#local-development-🧑🏻‍💻).
+Make sure you have fulfilled the requirements and local development steps mentioned [here](#local-development).
 
 ## Commits
 
@@ -95,14 +97,24 @@ Separating your changes into multiple small commits is better to review and debu
 
 ## Changesets
 
-It is very preferable to add a changeset at the end of your work in the pr.
+It is very preferable to add a changeset at the end of your work in the PR.
 
-We use [Changesets Bot](https://github.com/changesets/bot) to check for changeset in PRs, if you are working on the website, you can create an empty changeset to make the bot happy:
+We use [Changesets Bot](https://github.com/changesets/bot) to check for changeset in PRs.
+
+Generally after making changes you'll run
+
+```shell
+pnpm changeset
+```
+
+and fill in the blanks to create a temporary changeset file with metadata about what you've changed that will be submitted to the repo along with your changes. Example: https://github.com/kareemmahlees/tablex/commit/6806384
+
+The Changesets Bot will expect each PR to include such a file, and then after the PR is merged it will process and delete the file.
+
+If your changes don't affect any major component of the repo (such as changes in the website, which we don't version tag), you may need to create an empty changeset to make the bot happy:
 
 ```shell
 pnpm changeset add --empty
 ```
-
-because we don't version tag updates in the website.
 
 Please refer to [changesets](https://github.com/changesets/changesets) documentation for more info.
