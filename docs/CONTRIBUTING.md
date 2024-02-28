@@ -41,11 +41,7 @@ then, install necessary dependencies:
 
 ```shell
 pnpm install
-# And
-cargo install --path apps/core/src-tauri
 ```
-
-NOTE: The cargo install may need you to install some other system dependencies, such as: libsoup, libjavascriptcoregtk, libgtk, libwebkit2gtk. Exact installation instructions will vary by platform.
 
 Install husky git hooks:
 
@@ -58,6 +54,8 @@ and you are good to go 💫, you can start your development server by running:
 ```bash
 pnpm tauri:dev
 ```
+
+> NOTE: This will start a dev server, but will also install cargo dependencies before that, which may require you to install some system dependencies, such as: libsoup, libjavascriptcoregtk, libgtk, libwebkit2gtk. Exact installation instructions will vary by platform.
 
 Want to test how your modification will look like at the final executable? run this:
 
