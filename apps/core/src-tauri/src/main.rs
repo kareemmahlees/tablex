@@ -7,6 +7,7 @@ mod row;
 mod table;
 mod utils;
 
+use clap::Parser;
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
@@ -20,6 +21,10 @@ use tauri::api::process::CommandChild;
 use tauri::{Manager, WindowEvent};
 use tokio::sync::Mutex;
 use utils::Drivers;
+
+#[derive(Parser, Debug)]
+#[command(version, about)]
+struct Args {}
 
 #[derive(Default)]
 pub struct DbInstance {
@@ -62,6 +67,10 @@ impl DbInstance {
 }
 
 fn main() {
+    // Process basic cli args (like --help and --version).
+    // TODO: #46 - Support arguments such as DB connection.
+    Args::parse();
+
     tauri::Builder::default()
         .manage(DbInstance {
             sqlite_pool: Default::default(),
