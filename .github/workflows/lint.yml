@@ -63,6 +63,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             apps/core/src-tauri
+            .github/actions
 
       - name: Install tauri specific dependencies
         run: |
