@@ -63,7 +63,6 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             apps/core/src-tauri
-            .github/actions
 
       - name: Install tauri specific dependencies
         run: |
@@ -79,4 +78,4 @@ jobs:
           workspaces: "apps/core/src-tauri -> target"
 
       - name: Run Clippy
-        run: npm rust:lint
+        run: npm run rust:lint

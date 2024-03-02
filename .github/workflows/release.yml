@@ -21,6 +21,8 @@ jobs:
           sparse-checkout: |
             apps/core
             apps/scripts
+            .github/actions
+
       - name: Checkout MetaX's repo
         uses: actions/checkout@v4
         with:

@@ -37,6 +37,7 @@ jobs:
         with:
           sparse-checkout: |
             apps/web
+            .github/actions
 
       - name: Setup Node & PNPM
         uses: ./.github/actions/setup-node-pnpm
