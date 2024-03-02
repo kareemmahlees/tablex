@@ -16,7 +16,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          sparse-checkout: .
+          sparse-checkout: |
+            .github/actions
 
       - name: Setup Node & PNPM
         uses: ./.github/actions/setup-node-pnpm
@@ -62,6 +63,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             apps/core/src-tauri
+            .github/actions
 
       - name: Install tauri specific dependencies
         run: |
