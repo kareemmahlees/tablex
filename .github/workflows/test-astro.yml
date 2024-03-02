@@ -37,17 +37,12 @@ jobs:
         with:
           sparse-checkout: |
             apps/web
-            apps/core/package.json
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: true
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lock
 
       - name: Run Astro build
         run: pnpm astro:build
