@@ -30,13 +30,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-vite:
+  test-astro:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
             apps/web
+            apps/core
             .github/actions
 
       - name: Setup Node & PNPM
