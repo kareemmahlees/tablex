@@ -1,4 +1,5 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router"
+import { invoke } from "@tauri-apps/api/tauri"
 import React, { Suspense } from "react"
 
 const TanStackRouterDevtools =
@@ -10,6 +11,10 @@ const TanStackRouterDevtools =
           default: res.TanStackRouterDevtools
         }))
       )
+
+document.addEventListener("DOMContentLoaded", () => {
+  invoke("close_splashscreen")
+})
 
 export const Route = createRootRoute({
   component: () => (
