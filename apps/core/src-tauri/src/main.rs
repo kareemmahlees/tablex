@@ -18,9 +18,23 @@ use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
-use tauri::{Manager, WindowEvent};
+use tauri::{Manager, Window, WindowEvent};
 use tokio::sync::Mutex;
 use utils::Drivers;
+
+#[tauri::command]
+async fn close_splashscreen(window: Window) {
+    // Close splashscreen
+    if let Some(splashscreen) = window.get_window("splashscreen") {
+        splashscreen.close().unwrap();
+
+        window
+            .get_window("main")
+            .expect("no window labeled 'main' found")
+            .show()
+            .unwrap();
+    }
+}
 
 #[derive(Default)]
 pub struct DbInstance {
@@ -84,6 +98,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            close_splashscreen,
             test_connection,
             create_connection_record,
             delete_connection_record,
