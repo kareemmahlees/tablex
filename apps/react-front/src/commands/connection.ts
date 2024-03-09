@@ -1,5 +1,6 @@
-import { type SupportedDrivers } from "@/lib/types"
+import type { Connections, SupportedDrivers } from "@/lib/types"
 import { customToast } from "@/lib/utils"
+import { type Router } from "@tanstack/react-router"
 import { invoke } from "@tauri-apps/api/tauri"
 
 export const testConnection = async (
@@ -40,4 +41,23 @@ export const establishConnection = async (
     connString,
     driver
   })
+}
+
+export const getConnections = async () => {
+  return await invoke<Connections>("get_connections")
+}
+
+export const deleteConnection = async (router: Router, connId: string) => {
+  const command = invoke("delete_connection_record", { connId })
+  customToast(
+    command,
+    {
+      success: () => {
+        router.invalidate()
+        return "Succesfully deleted connection"
+      },
+      error: (e: string) => e
+    },
+    "delete_connection"
+  )
 }

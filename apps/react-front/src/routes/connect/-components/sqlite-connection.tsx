@@ -90,7 +90,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       filePath: selectedPath
     })
     await createConnectionRecord(values.connName, connString, Drivers.SQLite)
-    navigate({ to: "" }) // TODO navigate to connections page
+    navigate({ to: "/connections" })
   }
 
   const onClickTest = async () => {
