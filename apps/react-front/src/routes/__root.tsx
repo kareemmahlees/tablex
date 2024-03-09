@@ -16,7 +16,7 @@ const TanStackRouterDevtools =
 export const Route = createRootRoute({
   onEnter: closeSplashScreen,
   component: () => (
-    <main className="h-full w-full">
+    <main className="dark h-full w-full">
       <Toaster position="top-right" />
       <Outlet />
       <Suspense>

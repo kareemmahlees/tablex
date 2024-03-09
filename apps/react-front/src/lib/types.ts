@@ -1,3 +1,11 @@
+export interface ConnectionDetails {
+  connString: string
+  connName: string
+  driver: SupportedDrivers
+}
+
+export type Connections = Record<string, ConnectionDetails>
+
 export const Drivers = {
   SQLite: "sqlite",
   PostgreSQL: "postgresql",

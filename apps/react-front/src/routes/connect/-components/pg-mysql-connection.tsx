@@ -111,7 +111,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
       ...values
     })
     await createConnectionRecord(values.connName, connString, Drivers.SQLite)
-    navigate({ to: "" }) // TODO navigate to connections page
+    navigate({ to: "/connections" })
   }
 
   const onClickTest = async (
@@ -246,7 +246,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
     await createConnectionRecord(values.connName, values.connString, driver)
-    navigate({ to: "" }) // TODO navigate to connections page
+    navigate({ to: "/connections" })
   }
 
   const onClickTest = async (
