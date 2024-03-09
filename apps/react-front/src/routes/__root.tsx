@@ -1,6 +1,7 @@
+import { closeSplashScreen } from "@/commands/splash-screen"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
-import { invoke } from "@tauri-apps/api/tauri"
 import React, { Suspense } from "react"
+import { Toaster } from "react-hot-toast"
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -12,16 +13,11 @@ const TanStackRouterDevtools =
         }))
       )
 
-document.addEventListener("DOMContentLoaded", () => {
-  invoke("close_splashscreen")
-})
-
 export const Route = createRootRoute({
+  onEnter: closeSplashScreen,
   component: () => (
-    <main>
-      <div className="">
-        <h1 className="bg-red-200">Hello world</h1>
-      </div>
+    <main className="h-full w-full">
+      <Toaster position="top-right" />
       <Outlet />
       <Suspense>
         <TanStackRouterDevtools />

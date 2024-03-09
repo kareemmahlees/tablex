@@ -89,12 +89,22 @@ fn main() {
             metax_command_child: Default::default(),
         })
         .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
             #[cfg(debug_assertions)]
             {
-                let window = app.get_window("main").unwrap();
-                window.open_devtools();
-                window.close_devtools();
+                main_window.open_devtools();
+                main_window.close_devtools();
             }
+
+            // let exist = connections_exist(app.app_handle()).unwrap();
+
+            // if exist {
+            //     let _ = main_window.eval(&format!(
+            //         "window.location.replace('http://localhost:{}/connect')",
+            //         "5173"
+            //     ));
+            // }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
