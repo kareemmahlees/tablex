@@ -93,14 +93,14 @@ fn main() {
                 main_window.close_devtools();
             }
 
-            // let exist = connections_exist(app.app_handle()).unwrap();
+            let exist = connections_exist(app.app_handle()).unwrap();
 
-            // if exist {
-            //     let _ = main_window.eval(&format!(
-            //         "window.location.replace('http://localhost:{}/connect')",
-            //         "5173"
-            //     ));
-            // }
+            if exist {
+                let _ = main_window.eval(&format!(
+                    "window.location.replace('http://localhost:{}/connections')",
+                    "5173"
+                ));
+            }
 
             Ok(())
         })
