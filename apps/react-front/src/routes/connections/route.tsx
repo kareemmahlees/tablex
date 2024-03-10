@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
-import { createFileRoute, useRouter } from "@tanstack/react-router"
+import { Link, createFileRoute, useRouter } from "@tanstack/react-router"
 import { Globe2, MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
 
@@ -31,20 +31,22 @@ function ConnectionsPage() {
     <main className="flex h-full items-start">
       <ul className="flex h-full flex-[0.5] flex-col justify-start gap-y-5 overflow-y-auto p-5 lg:p-7">
         <Suspense fallback={<LoadingSpinner />}>
-          {Object.entries(connections!).map(([id, config]) => {
+          {Object.entries(connections).map(([id, config]) => {
             return (
               <li key={id}>
                 <div className="flex justify-between">
-                  <div
+                  <Link
+                    to="/dashboard/layout/data"
+                    search={{ connectionId: id }}
                     className="w-full"
                     role="button"
-                    onClick={() => router.navigate({})} // TODO navigate to dashboard page
+                    preload={false}
                   >
                     <p className="font-medium lg:text-lg">{config.connName}</p>
                     <p className="text-muted-foreground text-sm lg:text-lg">
                       {config.driver}
                     </p>
-                  </div>
+                  </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <MoreHorizontal className="h-5 w-5 lg:h-6 lg:w-6" />

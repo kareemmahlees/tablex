@@ -20,7 +20,7 @@ export const Route = createRootRoute({
       <Toaster position="top-right" />
       <Outlet />
       <Suspense>
-        <TanStackRouterDevtools />
+        <TanStackRouterDevtools position="bottom-right" />
       </Suspense>
     </main>
   )

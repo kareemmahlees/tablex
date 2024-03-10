@@ -1,4 +1,8 @@
-import type { Connections, SupportedDrivers } from "@/lib/types"
+import type {
+  ConnectionDetails,
+  Connections,
+  SupportedDrivers
+} from "@/lib/types"
 import { customToast } from "@/lib/utils"
 import { type Router } from "@tanstack/react-router"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -45,6 +49,12 @@ export const establishConnection = async (
 
 export const getConnections = async () => {
   return await invoke<Connections>("get_connections")
+}
+
+export const getConnectionDetails = async (connId: string) => {
+  return await invoke<ConnectionDetails>("get_connection_details", {
+    connId
+  })
 }
 
 export const deleteConnection = async (router: Router, connId: string) => {
