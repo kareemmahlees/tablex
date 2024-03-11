@@ -5,7 +5,6 @@
 body,
 html,
 :root {
-  width: 100%;
   height: 100%;
 }
 
@@ -28,6 +27,11 @@ html,
 }
 
 @layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -52,7 +56,7 @@ html,
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 0% 7%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;

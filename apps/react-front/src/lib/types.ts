@@ -1,4 +1,4 @@
-export interface ConnectionDetails {
+export type ConnectionDetails = {
   connString: string
   connName: string
   driver: SupportedDrivers
@@ -38,3 +38,15 @@ export type ConnectionStringParams =
       port: number
       db: string
     }
+
+export type PaginatedRows = {
+  data: Record<string, any>[]
+  pageCount: number
+}
+
+export type ColumnProps = {
+  type: string
+  isNullable: boolean
+  defaultValue?: any
+  isPK: boolean
+}

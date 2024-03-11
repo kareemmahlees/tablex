@@ -47,6 +47,7 @@ export const Route = createFileRoute("/dashboard/_layout")({
 })
 
 function DashboardLayout() {
+  const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
   const [tables, setTables] = useState<string[]>(data?.tables)
   // const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -75,7 +76,7 @@ function DashboardLayout() {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <main className="flex h-full">
+      <main className="flex h-full w-full">
         <aside className="flex w-56 flex-col items-start justify-between overflow-y-auto bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
           <Link
             to="/connections"
@@ -107,9 +108,12 @@ function DashboardLayout() {
                 {tables.map((table, index) => {
                   return (
                     <Link
-                      to="/dashboard/layout/data/$tableName"
+                      to="/dashboard/layout/$tableName"
                       params={{
                         tableName: table
+                      }}
+                      search={{
+                        connectionId: deps.connectionId
                       }}
                       key={index}
                       className="flex items-center justify-center gap-x-1 text-sm text-white lg:text-base"

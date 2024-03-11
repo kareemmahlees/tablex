@@ -205,9 +205,15 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.0.7(@types/react-dom@18.2.19)(@types/react@18.2.56)(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-query':
+        specifier: ^5.8.4
+        version: 5.17.0(react@18.2.0)
       '@tanstack/react-router':
         specifier: ^1.19.2
         version: 1.19.2(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-table':
+        specifier: ^8.10.7
+        version: 8.11.2(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-virtual':
         specifier: ^3.1.2
         version: 3.1.2(react-dom@18.2.0)(react@18.2.0)
@@ -247,9 +253,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.1)
-      tauri-controls:
-        specifier: ^0.3.0
-        version: 0.3.0(clsx@2.1.0)(react-dom@18.2.0)(react@18.2.0)(tailwind-merge@2.2.1)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -10238,20 +10241,6 @@ packages:
       streamx: 2.15.8
     dev: false
     optional: true
-
-  /tauri-controls@0.3.0(clsx@2.1.0)(react-dom@18.2.0)(react@18.2.0)(tailwind-merge@2.2.1):
-    resolution: {integrity: sha512-H161zhUIAyFY4+KZfky3TEGWqD6yZAl1h7Y2ADo1EAB5iqufvwXgE/lw6pcgCzzgvKrH+CUlrsYPV14ZyaEeHg==}
-    peerDependencies:
-      clsx: ^2.0.0
-      react: ^18.2.0
-      react-dom: ^18.2.0
-      tailwind-merge: ^1.14.0
-    dependencies:
-      clsx: 2.1.0
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      tailwind-merge: 2.2.1
-    dev: false
 
   /term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
