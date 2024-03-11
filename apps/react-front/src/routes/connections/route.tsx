@@ -36,7 +36,7 @@ function ConnectionsPage() {
               <li key={id}>
                 <div className="flex justify-between">
                   <Link
-                    to="/dashboard/layout/data"
+                    to="/dashboard/layout/land"
                     search={{ connectionId: id }}
                     className="w-full"
                     role="button"
