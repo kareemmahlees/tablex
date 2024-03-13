@@ -57,12 +57,12 @@ const DataTable = <TData, TValue>({
   tableName
 }: DataTableProps<TData, TValue>) => {
   const {
-    table,
-    contextMenuRow,
+    isRowsLoading,
     isSheetOpen,
     setIsSheetOpen,
+    contextMenuRow,
     setContextMenuRow,
-    isRowsLoading,
+    table,
     tableRef
   } = useSetupReactTable({ columns, tableName })
   const router = useRouter()

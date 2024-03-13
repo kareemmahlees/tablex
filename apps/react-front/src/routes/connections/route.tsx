@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Link, createFileRoute, useRouter } from "@tanstack/react-router"
-import { Globe2, MoreHorizontal, Trash } from "lucide-react"
+import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
 
 export const Route = createFileRoute("/connections")({
@@ -70,7 +70,12 @@ function ConnectionsPage() {
         </Suspense>
       </ul>
       <aside className="relative flex h-full flex-[0.5] flex-col items-center justify-center gap-y-14 lg:gap-y-20">
-        <Globe2 className="h-16 w-16 " />
+        <img
+          src="/icons/planet.svg"
+          alt="planet"
+          className="h-[120px] w-[120px] lg:h-[170px] lg:w-[170px]"
+          aria-hidden
+        />
         <CreateConnectionBtn />
         <img
           src={"/connect.svg"}
