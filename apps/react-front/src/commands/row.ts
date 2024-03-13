@@ -1,5 +1,6 @@
 import type { PaginatedRows } from "@/lib/types"
 import { customToast } from "@/lib/utils"
+import type { QueryClient } from "@tanstack/react-query"
 import type { Router } from "@tanstack/react-router"
 import type { Row, Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/api/clipboard"
@@ -18,6 +19,28 @@ export const getPaginatedRows = async (
     pageSize
   })
   return result
+}
+
+export const createRow = async (
+  tableName: string,
+  data: Record<string, any>,
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>,
+  queryClient: QueryClient
+) => {
+  const command = invoke<number>("create_row", { tableName, data })
+
+  customToast(
+    command,
+    {
+      success: (s) => {
+        setIsSheetOpen(false)
+        queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+        return `Successfully created ${s} row`
+      },
+      error: (e: string) => e
+    },
+    "create_row"
+  )
 }
 
 export const deleteRows = async (
