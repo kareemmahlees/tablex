@@ -15,13 +15,15 @@ const TanStackRouterDevtools =
 
 export const Route = createRootRoute({
   onEnter: closeSplashScreen,
-  component: () => (
-    <main className="dark h-full w-full">
-      <Toaster position="top-right" />
-      <Outlet />
-      <Suspense>
-        <TanStackRouterDevtools position="bottom-right" />
-      </Suspense>
-    </main>
-  )
+  component: () => {
+    return (
+      <main className="dark h-full w-full">
+        <Toaster position="top-right" />
+        <Outlet />
+        <Suspense>
+          <TanStackRouterDevtools position="bottom-right" />
+        </Suspense>
+      </main>
+    )
+  }
 })

@@ -17,6 +17,18 @@ declare module "@tanstack/react-router" {
   }
 }
 
+// if (import.meta.hot) {
+//   console.log(true)
+//   import.meta.hot.on("vite:beforeUpdate", () => {
+//     // unregisterAll()
+//     console.log("beforeUpdate")
+//   })
+//   import.meta.hot.on("vite:beforeFullReload", () => {
+//     // unregisterAll()
+//     console.log("beforeFullReload")
+//   })
+// }
+
 const client = new QueryClient()
 
 const rootElement = document.getElementById("app")!
