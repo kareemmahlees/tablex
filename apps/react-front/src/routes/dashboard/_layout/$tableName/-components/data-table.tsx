@@ -37,6 +37,8 @@ import {
 } from "@/components/ui/context-menu"
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
+import { registerShortcuts } from "@/shortcuts"
+import { useQueryClient } from "@tanstack/react-query"
 import { Router, useRouter } from "@tanstack/react-router"
 import {
   ChevronLeft,
@@ -44,7 +46,12 @@ import {
   ChevronsLeft,
   ChevronsRight
 } from "lucide-react"
-import { useRef, type Dispatch, type SetStateAction } from "react"
+import {
+  useLayoutEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction
+} from "react"
 import EditRowSheet from "./edit-row-sheet"
 
 interface DataTableProps<TData, TValue> {
@@ -66,6 +73,7 @@ const DataTable = <TData, TValue>({
     tableRef
   } = useSetupReactTable({ columns, tableName })
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { rows } = table.getRowModel()
 
@@ -79,17 +87,13 @@ const DataTable = <TData, TValue>({
     debug: process.env.NODE_ENV === "development" ? true : false
   })
 
-  // useLayoutEffect(() => {
-  //   unregister("Delete").then(() => {
-  //     registerDeleteShortcut(table, tableName, queryClient)
-  //   })
-  //   unregister("CommandOrControl+A").then(() =>
-  //     registerSelectAllShortcut(table)
-  //   )
-  //   unregister("CommandOrControl+C").then(() =>
-  //     registerCopyShortcut(table, contextMenuRow)
-  //   )
-  // })
+  useLayoutEffect(() => {
+    registerShortcuts({
+      "CommandOrControl+A": [table],
+      "CommandOrControl+C": [table, contextMenuRow],
+      Delete: [table, tableName, queryClient, contextMenuRow]
+    })
+  })
 
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
