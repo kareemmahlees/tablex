@@ -1,13 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod cli;
 mod connection;
 mod drivers;
 mod row;
 mod table;
 mod utils;
 
-use clap::Parser;
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
@@ -21,10 +21,6 @@ use tauri::api::process::CommandChild;
 use tauri::{Manager, WindowEvent};
 use tokio::sync::Mutex;
 use utils::Drivers;
-
-#[derive(Parser, Debug)]
-#[command(version, about)]
-struct Args {}
 
 #[derive(Default)]
 pub struct DbInstance {
@@ -67,9 +63,7 @@ impl DbInstance {
 }
 
 fn main() {
-    // Process basic cli args (like --help and --version).
-    // TODO: #46 - Support arguments such as DB connection.
-    Args::parse();
+    cli::parse_cli_args();
 
     tauri::Builder::default()
         .manage(DbInstance {
