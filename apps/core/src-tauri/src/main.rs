@@ -99,10 +99,7 @@ fn main() {
             let exist = connections_exist(app.app_handle()).unwrap();
 
             if exist {
-                let _ = main_window.eval(&format!(
-                    "window.location.replace('http://localhost:{}/connections')",
-                    "5173"
-                ));
+                let _ = main_window.eval("window.location.replace('/connections')");
             }
 
             Ok(())
