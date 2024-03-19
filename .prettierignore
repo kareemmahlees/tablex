@@ -5,7 +5,6 @@ public
 src-tauri
 pnpm-lock.yaml
 /**/dist
-.all-contributorsrc
 .pnpm-store
 **/components/ui
 **/*.gen.ts
