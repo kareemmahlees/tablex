@@ -2,8 +2,8 @@
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
     "beforeBuildCommand": "npm run build",
-    "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:3000",
+    "beforeDevCommand": "pnpm --filter @tablex/react-front dev",
+    "devPath": "http://localhost:5173",
     "distDir": "../out"
   },
   "package": {
