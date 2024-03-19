@@ -22,6 +22,7 @@ strip = true
 tauri-build = { version = "1.5.0", features = [] }
 
 [dependencies]
+clap = { version = "4.5.1", features = ["derive"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.5.2", features = [ "shell-open", "os-all", "clipboard-write-text", "global-shortcut-all", "dialog-open", "test", "process-command-api"] }
@@ -36,3 +37,6 @@ regex = "1.10.3"
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
 # DO NOT REMOVE!!
 custom-protocol = [ "tauri/custom-protocol" ]
+
+[target."cfg(windows)".dependencies]
+windows = { version = "0.54.0", features = ["Win32_System_Console", "Win32_Foundation"] }

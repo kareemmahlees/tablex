@@ -9,4 +9,5 @@ apps/core/src/components
 apps/web/src/components
 apps/web-astro/src/components
 .all-contributorsrc
+**/routeTree.gen.ts
 .pnpm-store
