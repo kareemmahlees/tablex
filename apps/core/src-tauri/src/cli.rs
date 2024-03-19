@@ -7,6 +7,7 @@ pub(crate) struct Args {}
 /// Only on windows.
 ///
 /// Attaches the console so the user can see output in the terminal.
+#[cfg(windows)]
 fn attach_console() {
     use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
     let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
@@ -16,6 +17,7 @@ fn attach_console() {
 ///
 /// Frees the console so the user won't see weird println's  
 /// after he is done using the cli.
+#[cfg(windows)]
 fn free_console() {
     use windows::Win32::System::Console::FreeConsole;
     let _ = unsafe { FreeConsole() };
