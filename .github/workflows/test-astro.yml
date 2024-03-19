@@ -30,24 +30,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-vite:
+  test-astro:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |
             apps/web
-            apps/core/package.json
+            apps/core
+            .github/actions
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: true
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lock
 
       - name: Run Astro build
         run: pnpm astro:build

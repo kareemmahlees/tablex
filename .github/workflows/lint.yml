@@ -16,18 +16,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          sparse-checkout: .
+          sparse-checkout: |
+            .github/actions
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: false
-              args: [--frozen-lockfile]
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
       - name: Enable Corepack
         run: corepack enable
@@ -48,16 +41,11 @@ jobs:
         with:
           fetch-depth: 1
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: true
-              args: [--frozen-lockfile]
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lock
 
       - name: Enable Corepack
         run: corepack enable
@@ -75,11 +63,16 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             apps/core/src-tauri
+            .github/actions
 
       - name: Install tauri specific dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev librsvg2-dev
+
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
+
       - uses: moonrepo/setup-rust@v1
         with:
           components: clippy
@@ -88,8 +81,6 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: "apps/core/src-tauri -> target"
-
-      - uses: pnpm/action-setup@v2
 
       - name: Run Clippy
         run: pnpm rust:lint

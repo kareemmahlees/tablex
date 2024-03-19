@@ -42,6 +42,7 @@ jobs:
         with:
           sparse-checkout: |
             apps/core
+            .github/actions
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
@@ -57,23 +58,17 @@ jobs:
         with:
           workspaces: "apps/core/src-tauri -> target"
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: true
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
-
-      - name: Install tauri cli
-        run: pnpm add -w @tauri-apps/cli
+      - name: Install dependencies
+        run: pnpm install --frozen-lock
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          projectPath: ./apps/core
+          tauriScript: pnpm tauri
           includeRelease: false
           includeDebug: true

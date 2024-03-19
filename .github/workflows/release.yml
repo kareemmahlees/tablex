@@ -21,6 +21,8 @@ jobs:
           sparse-checkout: |
             apps/core
             apps/scripts
+            .github/actions
+
       - name: Checkout MetaX's repo
         uses: actions/checkout@v4
         with:
@@ -41,25 +43,22 @@ jobs:
         with:
           workspaces: "apps/core/src-tauri -> target"
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: true
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lock
 
-      - name: setup Go
+      - name: Setup Go
         uses: actions/setup-go@v5
         with:
+          cache: true
+          cache-dependency-path: "**/go.sum"
           go-version: "stable"
 
       - name: Run prepare-metax script
         run: |
-          go build -C ./apps/meta-x/ -o ../bin/
+          go build -C ./apps/meta-x/ -o ../bin/ -ldflags "-w -s"
           go run ./apps/scripts/suffex-meta-x.go
 
       - uses: tauri-apps/tauri-action@v0

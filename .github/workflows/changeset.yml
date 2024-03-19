@@ -16,22 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v2
-        with:
-          run_install: |
-            - recursive: false
-              args: [--frozen-lockfile]
+      - name: Setup Node & PNPM
+        uses: ./.github/actions/setup-node-pnpm
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lock
 
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
-          commit: "chore: version pump"
+          commit: "chore: version pump 🔖"
           publish: pnpm changeset tag
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
