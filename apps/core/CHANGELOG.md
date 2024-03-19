@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.3.2
+
+### Patch Changes
+
+- [#47](https://github.com/kareemmahlees/tablex/pull/47) [`8eaee57`](https://github.com/kareemmahlees/tablex/commit/8eaee575241b6c71a8b95da88539fc65a2e9101d) Thanks [@dbarnett](https://github.com/dbarnett)! - Support trivial cli args like --version
+
 ## 0.3.1
 
 ### Patch Changes
