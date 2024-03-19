@@ -1,4 +1,4 @@
-export const string_data_types = [
+export const STRING_DATA_TYPES = [
   // mysql types
   "char",
   "varchar",
@@ -16,7 +16,7 @@ export const string_data_types = [
   "TEXT"
 ]
 
-export const numeric_data_types = [
+export const NUMERIC_DATA_TYPE = [
   // mysql types
   "int",
   "tinyint",
@@ -38,7 +38,7 @@ export const numeric_data_types = [
   "REAL"
 ]
 
-export const date_data_types = [
+export const DATE_DATA_TYPES = [
   // mysql types
   "datetime",
   // pg types

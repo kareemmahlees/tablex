@@ -1,12 +1,16 @@
+import { cn } from "@/lib/utils"
+import { Link } from "@tanstack/react-router"
 import { LinkIcon } from "lucide-react"
-import Link from "next/link"
 import { buttonVariants } from "./ui/button"
 
 const CreateConnectionBtn = () => {
   return (
-    <Link href={"/connect"} className={buttonVariants({ size: "sm" })}>
-      <LinkIcon className="text-muted-foreground mr-3" size={20} />
-      Start a connection
+    <Link
+      to={"/connect"}
+      className={cn(buttonVariants({ size: "sm" }), "space-x-2")}
+    >
+      <LinkIcon className="text-muted-foreground" size={20} />
+      <p>Start a connection</p>
     </Link>
   )
 }
