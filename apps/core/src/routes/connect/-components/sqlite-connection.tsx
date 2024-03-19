@@ -75,7 +75,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       establishConnection(connString, Drivers.SQLite),
       {
         success: () => {
-          navigate({ to: "" }) // TODO naviaget to dashboard page
+          navigate({ to: "/dashboard/layout/land" })
           return "Successfully created connection"
         },
         error: (e: string) => e

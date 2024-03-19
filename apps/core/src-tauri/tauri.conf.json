@@ -1,10 +1,10 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "pnpm --filter @tablex/react-front build",
-    "beforeDevCommand": "pnpm --filter @tablex/react-front dev",
+    "beforeBuildCommand": "pnpm build",
+    "beforeDevCommand": "pnpm dev",
     "devPath": "http://localhost:5173",
-    "distDir": "../../react-front/dist"
+    "distDir": "../dist"
   },
   "package": {
     "productName": "TableX",

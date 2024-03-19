@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 import { z } from "zod"
 
 interface EditRowSheetProps {
@@ -46,10 +47,15 @@ const EditRowSheet = ({
   if (!row) return null
 
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
+    const column = table.getColumn("pk")
+    if (!column)
+      return toast.error("Table Doesn't have a primary key", {
+        id: "table_pk_error"
+      })
     await updateRow(
       tableName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      table.getColumn("pk")?.columnDef.meta?.name!,
+      column.columnDef.meta?.name!,
       row.getValue("pk"),
       dirtyValues(form.formState.dirtyFields, values),
       setIsSheetOpen
