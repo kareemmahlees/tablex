@@ -36,4 +36,3 @@ next-env.d.ts
 /**/target
 **/bin/
 **/dist
-**/routeTree.gen.ts
