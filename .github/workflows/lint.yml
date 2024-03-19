@@ -65,15 +65,10 @@ jobs:
             apps/core/src-tauri
             .github/actions
 
-      - name: Install tauri specific dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev librsvg2-dev
-
       - name: Setup Node & PNPM
         uses: ./.github/actions/setup-node-pnpm
 
-      - uses: moonrepo/setup-rust@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
 
