@@ -1,7 +1,7 @@
-export interface ConnectionDetails {
+export type ConnectionDetails = {
   connString: string
   connName: string
-  driver: DriversValues
+  driver: SupportedDrivers
 }
 
 export type Connections = Record<string, ConnectionDetails>
@@ -11,6 +11,8 @@ export const Drivers = {
   PostgreSQL: "postgresql",
   MySQL: "mysql"
 } as const
+
+export type SupportedDrivers = (typeof Drivers)[keyof typeof Drivers]
 
 /**
  * This is only used in the combo box at the connect page
@@ -23,16 +25,28 @@ export const MappedDrivers = Object.entries(Drivers).map(([key, value]) => {
   }
 })
 
-export type DriversValues = (typeof Drivers)[keyof typeof Drivers]
+export type ConnectionStringParams =
+  | {
+      driver: typeof Drivers.SQLite
+      filePath: string
+    }
+  | {
+      driver: typeof Drivers.PostgreSQL | typeof Drivers.MySQL
+      username: string
+      password: string
+      host: string
+      port: number
+      db: string
+    }
 
-export interface ColumnProps {
+export type PaginatedRows = {
+  data: Record<string, any>[]
+  pageCount: number
+}
+
+export type ColumnProps = {
   type: string
   isNullable: boolean
   defaultValue?: any
   isPK: boolean
-}
-
-export interface PaginatedRows {
-  data: Record<string, any>[]
-  pageCount: number
 }

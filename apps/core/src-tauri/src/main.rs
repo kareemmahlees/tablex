@@ -18,9 +18,23 @@ use sqlx::{MySqlPool, PgPool};
 use table::{get_columns_definition, get_tables};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
-use tauri::{Manager, WindowEvent};
+use tauri::{Manager, Window, WindowEvent};
 use tokio::sync::Mutex;
 use utils::Drivers;
+
+#[tauri::command]
+async fn close_splashscreen(window: Window) {
+    // Close splashscreen
+    if let Some(splashscreen) = window.get_window("splashscreen") {
+        splashscreen.close().unwrap();
+
+        window
+            .get_window("main")
+            .expect("no window labeled 'main' found")
+            .show()
+            .unwrap();
+    }
+}
 
 #[derive(Default)]
 pub struct DbInstance {
@@ -75,15 +89,23 @@ fn main() {
             metax_command_child: Default::default(),
         })
         .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
             #[cfg(debug_assertions)]
             {
-                let window = app.get_window("main").unwrap();
-                window.open_devtools();
-                window.close_devtools();
+                main_window.open_devtools();
+                main_window.close_devtools();
             }
+
+            let exist = connections_exist(app.app_handle()).unwrap();
+
+            if exist {
+                let _ = main_window.eval("window.location.replace('/connections')");
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            close_splashscreen,
             test_connection,
             create_connection_record,
             delete_connection_record,

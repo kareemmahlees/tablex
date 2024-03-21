@@ -34,4 +34,5 @@ next-env.d.ts
 
 *.db
 /**/target
-**/bin
+**/bin/
+**/dist

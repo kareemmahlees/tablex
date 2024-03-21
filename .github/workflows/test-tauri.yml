@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths-ignore:
-      - "i**/*.md"
+      - "**/*.md"
       - "docs/**"
       - "public/**"
       - ".husky/**"

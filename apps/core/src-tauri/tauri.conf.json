@@ -1,10 +1,10 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build",
-    "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:3000",
-    "distDir": "../out"
+    "beforeBuildCommand": "pnpm build",
+    "beforeDevCommand": "pnpm dev",
+    "devPath": "http://localhost:5173",
+    "distDir": "../dist"
   },
   "package": {
     "productName": "TableX",
@@ -69,7 +69,16 @@
         "resizable": true,
         "title": "TableX",
         "width": 800,
-        "center": true
+        "center": true,
+        "visible": false
+      },
+      {
+      "width": 600,
+      "height": 350,
+      "decorations": false,
+      "url": "splashscreen.html",
+      "label": "splashscreen",
+      "center": true
       }
     ]
   }

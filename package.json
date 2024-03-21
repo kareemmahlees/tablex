@@ -21,7 +21,7 @@
     "astro:check": "pnpm --filter @tablex/web check",
     "astro:build": "pnpm --filter @tablex/web build",
     "astro:preview": "pnpm --filter @tablex/web preview",
-    "ts:lint": "pnpm astro:check && pnpm --filter @tablex/core next:lint",
+    "ts:lint": "pnpm astro:check && pnpm --filter @tablex/core lint",
     "rust:lint": "pnpm --filter @tablex/core rust:lint",
     "lint": "pnpm ts:lint && pnpm rust:lint",
     "format:check": "pnpm prettier . --check",
