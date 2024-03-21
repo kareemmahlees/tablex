@@ -66,7 +66,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
     resolver: zodResolver(formSchema)
   })
 
-  const onClickConnect = async () => {
+  const onClickConnect = async (values: z.infer<typeof formSchema>) => {
     const connString = constructConnectionString({
       driver: Drivers.SQLite,
       filePath: selectedPath
@@ -75,8 +75,13 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       establishConnection(connString, Drivers.SQLite),
       {
         success: () => {
-          navigate({ to: "/dashboard/layout/land" })
-          return "Successfully created connection"
+          navigate({
+            to: "/dashboard/layout/land",
+            search: {
+              connectionName: values.connName
+            }
+          })
+          return "Successfully established connection"
         },
         error: (e: string) => e
       },

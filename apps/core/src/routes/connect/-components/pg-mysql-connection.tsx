@@ -94,7 +94,12 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
       establishConnection(connString, driver),
       {
         success: () => {
-          navigate({ to: "/dashboard/layout/land" })
+          navigate({
+            to: "/dashboard/layout/land",
+            search: {
+              connectionName: values.connName
+            }
+          })
           return "Successfully established connection"
         },
         error: (e: string) => e
@@ -233,7 +238,12 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
       establishConnection(values.connString, driver),
       {
         success: () => {
-          navigate({ to: "/dashboard/layout/land" })
+          navigate({
+            to: "/dashboard/layout/land",
+            search: {
+              connectionName: values.connName
+            }
+          })
           return "Successfully established connection"
         },
         error: (e) => e

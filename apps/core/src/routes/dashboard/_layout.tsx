@@ -17,17 +17,19 @@ import CommandPalette from "./_layout/-components/command-palette"
 import AddRowBtn from "./_layout/-components/create-row-sheet"
 
 const dashboardConnectionSchema = z.object({
+  connectionName: z.string().optional(),
   connectionId: z.string().uuid().optional(),
   tableName: z.string().optional()
 })
 
 export const Route = createFileRoute("/dashboard/_layout")({
   validateSearch: dashboardConnectionSchema,
-  loaderDeps: ({ search: { connectionId, tableName } }) => ({
+  loaderDeps: ({ search: { connectionId, tableName, connectionName } }) => ({
+    connectionName,
     connectionId,
     tableName
   }),
-  loader: async ({ deps: { connectionId }, navigate }) => {
+  loader: async ({ deps: { connectionId, connectionName }, navigate }) => {
     await registerShortcuts({ "CommandOrControl+S": [] })
     let connName: string
 
@@ -42,7 +44,7 @@ export const Route = createFileRoute("/dashboard/_layout")({
       connName = connDetails.connName
     } else {
       // * useful for `on the fly` connections
-      connName = "Temp Connection"
+      connName = connectionName || "Temp Connection"
     }
 
     const tables = await getTables()
