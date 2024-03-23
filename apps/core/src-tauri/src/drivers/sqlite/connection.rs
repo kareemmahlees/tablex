@@ -1,10 +1,11 @@
-use crate::{utils::Drivers, DbInstance};
+use crate::{state::SharedState, utils::Drivers};
 use sqlx::sqlite::SqlitePoolOptions;
 use std::time::Duration;
+use tauri::async_runtime::Mutex;
 use tauri::State;
 
 pub async fn establish_connection(
-    state: &State<'_, DbInstance>,
+    state: &State<'_, Mutex<SharedState>>,
     conn_string: String,
     driver: Drivers,
 ) -> Result<(), String> {
@@ -14,8 +15,11 @@ pub async fn establish_connection(
         .connect(&conn_string)
         .await
         .map_err(|_| "Couldn't establish connection to db".to_string())?;
-    *state.sqlite_pool.lock().await = Some(pool);
-    *state.driver.lock().await = Some(driver);
+
+    let mut state = state.lock().await;
+
+    state.sqlite_pool = Some(pool);
+    state.driver = Some(driver);
     #[cfg(not(debug_assertions))]
     {
         use tauri::api::process::Command;
@@ -26,7 +30,7 @@ pub async fn establish_connection(
             .args(["sqlite3", "-f", after])
             .spawn()
             .expect("failed to spawn sidecar");
-        *state.metax_command_child.lock().await = Some(child);
+        state.metax = Some(child);
     }
 
     Ok(())
