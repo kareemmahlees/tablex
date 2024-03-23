@@ -1,6 +1,6 @@
 use crate::{
     drivers::{mysql, postgres, sqlite},
-    state::{self, SharedState},
+    state::SharedState,
     utils::Drivers,
 };
 use serde_json::Map;

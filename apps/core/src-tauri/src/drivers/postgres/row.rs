@@ -1,7 +1,6 @@
 use crate::drivers::postgres::decode;
 use serde_json::value::{Map as JsonMap, Value as JsonValue};
 use sqlx::{Column, Pool, Postgres, Row};
-use tauri::State;
 
 pub async fn get_paginated_rows(
     pool: &Pool<Postgres>,

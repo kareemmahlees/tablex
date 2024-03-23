@@ -5,7 +5,6 @@ use serde_json::{
 };
 use sqlx::{Pool, Postgres, Row};
 use std::collections::HashMap;
-use tauri::State;
 
 pub async fn get_tables(pool: &Pool<Postgres>) -> Result<Vec<String>, String> {
     let rows = sqlx::query(
