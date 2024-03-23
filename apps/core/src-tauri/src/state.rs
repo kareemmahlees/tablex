@@ -4,6 +4,7 @@ use sqlx::{MySqlPool, PgPool};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
 
+#[derive(Default, Debug)]
 pub(crate) struct SharedState {
     pub sqlite_pool: Option<SqlitePool>,
     pub postgres_pool: Option<PgPool>,
@@ -11,19 +12,6 @@ pub(crate) struct SharedState {
     pub driver: Option<Drivers>,
     #[cfg(not(debug_assertions))]
     pub metax: Option<CommandChild>,
-}
-
-impl Default for SharedState {
-    fn default() -> Self {
-        Self {
-            sqlite_pool: None,
-            postgres_pool: None,
-            mysql_pool: None,
-            driver: None,
-            #[cfg(not(debug_assertions))]
-            metax: None,
-        }
-    }
 }
 
 impl SharedState {

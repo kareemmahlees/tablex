@@ -1,11 +1,10 @@
-use crate::{drivers::sqlite::decode, state::SharedState, utils};
+use crate::{drivers::sqlite::decode, utils};
 use serde_json::{
     value::Value::{Bool as JsonBool, String as JsonString},
     Value as JsonValue,
 };
-use sqlx::{Pool, Postgres, Row, Sqlite};
-use std::{collections::HashMap, sync::Mutex};
-use tauri::State;
+use sqlx::{Pool, Row, Sqlite};
+use std::collections::HashMap;
 
 pub async fn get_tables(pool: &Pool<Sqlite>) -> Result<Vec<String>, String> {
     let rows = sqlx::query(

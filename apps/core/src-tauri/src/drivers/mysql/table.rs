@@ -5,7 +5,6 @@ use serde_json::{
 };
 use sqlx::{MySql, Pool, Row};
 use std::collections::HashMap;
-use tauri::State;
 
 pub async fn get_tables(pool: &Pool<MySql>) -> Result<Vec<String>, String> {
     let rows = sqlx::query("show tables;")

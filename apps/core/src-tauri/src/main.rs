@@ -20,11 +20,9 @@ use table::{get_columns_definition, get_tables};
 use tauri::api::process::CommandChild;
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
-use utils::Drivers;
 
 #[tauri::command]
 async fn close_splashscreen(window: Window) {
-    // Close splashscreen
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
 
@@ -35,46 +33,6 @@ async fn close_splashscreen(window: Window) {
             .unwrap();
     }
 }
-
-// #[derive(Default)]
-// pub struct DbInstance {
-//     sqlite_pool: Mutex<Option<SqlitePool>>,
-//     postgres_pool: Mutex<Option<PgPool>>,
-//     mysql_pool: Mutex<Option<MySqlPool>>,
-//     driver: Mutex<Option<Drivers>>,
-//     #[cfg(not(debug_assertions))]
-//     metax_command_child: Mutex<Option<CommandChild>>,
-// }
-
-// impl DbInstance {
-//     async fn cleanup(&self) {
-//         let long_lived = self.sqlite_pool.lock().await;
-//         let sqlite_pool = long_lived.as_ref();
-//         if let Some(sqlite_pool) = sqlite_pool {
-//             sqlite_pool.close().await
-//         }
-
-//         let long_lived = self.postgres_pool.lock().await;
-//         let postgres_pool = long_lived.as_ref();
-//         if let Some(postgres_pool) = postgres_pool {
-//             postgres_pool.close().await
-//         }
-
-//         let long_lived = self.mysql_pool.lock().await;
-//         let mysql_pool = long_lived.as_ref();
-//         if let Some(mysql_pool) = mysql_pool {
-//             mysql_pool.close().await
-//         }
-
-//         #[cfg(not(debug_assertions))]
-//         {
-//             let mut long_lived = self.metax_command_child.lock().await;
-//             if let Some(command) = long_lived.take() {
-//                 command.kill().expect("unable to kill sidecar")
-//             }
-//         }
-//     }
-// }
 
 fn main() {
     cli::parse_cli_args();
