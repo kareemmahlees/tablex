@@ -1,10 +1,12 @@
+use tauri::async_runtime::Mutex;
+
 use crate::{
     drivers::{mysql, postgres, sqlite},
+    state::SharedState,
     utils::{
         delete_from_connections_file, get_connections_file_path, read_from_connections_file,
         write_into_connections_file, Drivers,
     },
-    DbInstance,
 };
 use sqlx::{AnyConnection, Connection};
 use tauri::State;
@@ -45,7 +47,7 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
 
 #[tauri::command]
 pub async fn establish_connection(
-    db: State<'_, DbInstance>,
+    state: State<'_, Mutex<SharedState>>,
     conn_string: String,
     driver: Drivers,
 ) -> Result<(), String> {
@@ -56,11 +58,15 @@ pub async fn establish_connection(
         }
     }
     match driver {
-        Drivers::SQLite => sqlite::connection::establish_connection(&db, conn_string, driver).await,
-        Drivers::PostgreSQL => {
-            postgres::connection::establish_connection(&db, conn_string, driver).await
+        Drivers::SQLite => {
+            sqlite::connection::establish_connection(&state, conn_string, driver).await
         }
-        Drivers::MySQL => mysql::connection::establish_connection(&db, conn_string, driver).await,
+        Drivers::PostgreSQL => {
+            postgres::connection::establish_connection(&state, conn_string, driver).await
+        }
+        Drivers::MySQL => {
+            mysql::connection::establish_connection(&state, conn_string, driver).await
+        }
     }
 }
 

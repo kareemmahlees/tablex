@@ -1,23 +1,20 @@
-use crate::{drivers::sqlite::decode, utils, DbInstance};
+use crate::{drivers::sqlite::decode, state::SharedState, utils};
 use serde_json::{
     value::Value::{Bool as JsonBool, String as JsonString},
     Value as JsonValue,
 };
-use sqlx::Row;
-use std::collections::HashMap;
+use sqlx::{Pool, Postgres, Row, Sqlite};
+use std::{collections::HashMap, sync::Mutex};
 use tauri::State;
 
-pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Vec<String>, String> {
-    let conn_long_lived = db.sqlite_pool.lock().await;
-    let conn = conn_long_lived.as_ref().unwrap();
-
+pub async fn get_tables(pool: &Pool<Sqlite>) -> Result<Vec<String>, String> {
     let rows = sqlx::query(
         "SELECT name
     FROM sqlite_schema
     WHERE type ='table' 
     AND name NOT LIKE 'sqlite_%';",
     )
-    .fetch_all(conn)
+    .fetch_all(pool)
     .await
     .map_err(|err| err.to_string())?;
 
@@ -33,18 +30,16 @@ pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Vec<String>, Strin
 }
 
 pub async fn get_columns_definition(
-    db: &State<'_, DbInstance>,
+    pool: &Pool<Sqlite>,
     table_name: String,
 ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String> {
-    let long_lived = db.sqlite_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
     let rows = sqlx::query(
         format!(
             "select name,type,\"notnull\",dflt_value,pk from pragma_table_info('{table_name}');"
         )
         .as_str(),
     )
-    .fetch_all(conn)
+    .fetch_all(pool)
     .await
     .map_err(|err| err.to_string())?;
 

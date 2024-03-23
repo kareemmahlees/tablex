@@ -1,17 +1,13 @@
-use crate::{drivers::sqlite::decode, DbInstance};
+use crate::drivers::sqlite::decode;
 use serde_json::value::{Map as JsonMap, Value as JsonValue};
-use sqlx::{Column, Row};
-use tauri::State;
+use sqlx::{Column, Pool, Row, Sqlite};
 
 pub async fn get_paginated_rows(
-    db: &State<'_, DbInstance>,
+    pool: &Pool<Sqlite>,
     table_name: String,
     page_index: u16,
     page_size: u32,
 ) -> Result<JsonMap<String, JsonValue>, String> {
-    let long_lived = db.sqlite_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-
     let rows = sqlx::query(
         format!(
             "SELECT * FROM {} limit {} offset {};",
@@ -21,7 +17,7 @@ pub async fn get_paginated_rows(
         )
         .as_str(),
     )
-    .fetch_all(conn)
+    .fetch_all(pool)
     .await
     .unwrap();
     let mut values = Vec::new();
@@ -38,7 +34,7 @@ pub async fn get_paginated_rows(
         values.push(value);
     }
     let page_count_result = sqlx::query(format!("SELECT COUNT(*) from {}", table_name).as_str())
-        .fetch_one(conn)
+        .fetch_one(pool)
         .await
         .unwrap();
     let page_count = page_count_result.try_get::<u32, usize>(0).unwrap() / page_size;
@@ -51,49 +47,40 @@ pub async fn get_paginated_rows(
 }
 
 pub async fn delete_rows(
-    db: &State<'_, DbInstance>,
+    pool: &Pool<Sqlite>,
     pk_col_name: String,
     table_name: String,
     params: String,
 ) -> Result<u64, String> {
-    let long_lived = db.sqlite_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-
     let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});");
     let result = sqlx::query(&query_str)
-        .execute(conn)
+        .execute(pool)
         .await
         .map_err(|_| "Failed to delete rows".to_string())?;
     Ok(result.rows_affected())
 }
 
 pub async fn create_row(
-    db: &State<'_, DbInstance>,
+    pool: &Pool<Sqlite>,
     table_name: String,
     columns: String,
     values: String,
 ) -> Result<u64, String> {
-    let long_lived = db.sqlite_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-
     let res =
         sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
-            .execute(conn)
+            .execute(pool)
             .await
             .map_err(|_| "Failed to create row".to_string())?;
     Ok(res.rows_affected())
 }
 
 pub async fn update_row(
-    db: &State<'_, DbInstance>,
+    pool: &Pool<Sqlite>,
     table_name: String,
     set_condition: String,
     pk_col_name: String,
     pk_col_value: JsonValue,
 ) -> Result<u64, String> {
-    let long_lived = db.sqlite_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-
     let res = sqlx::query(
         format!(
             "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
@@ -101,7 +88,7 @@ pub async fn update_row(
         )
         .as_str(),
     )
-    .execute(conn)
+    .execute(pool)
     .await
     .map_err(|_| "Failed to update row".to_string())?;
     Ok(res.rows_affected())

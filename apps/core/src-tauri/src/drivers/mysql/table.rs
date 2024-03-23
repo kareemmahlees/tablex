@@ -1,18 +1,15 @@
-use crate::{drivers::mysql::decode, utils, DbInstance};
+use crate::{drivers::mysql::decode, utils};
 use serde_json::{
     value::Value::{Bool as JsonBool, String as JsonString},
     Value as JsonValue,
 };
-use sqlx::Row;
+use sqlx::{MySql, Pool, Row};
 use std::collections::HashMap;
 use tauri::State;
 
-pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Vec<String>, String> {
-    let long_lived = db.mysql_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
-
+pub async fn get_tables(pool: &Pool<MySql>) -> Result<Vec<String>, String> {
     let rows = sqlx::query("show tables;")
-        .fetch_all(conn)
+        .fetch_all(pool)
         .await
         .map_err(|err| err.to_string())?;
 
@@ -28,11 +25,9 @@ pub async fn get_tables(db: &State<'_, DbInstance>) -> Result<Vec<String>, Strin
 }
 
 pub async fn get_columns_definition(
-    db: &State<'_, DbInstance>,
+    pool: &Pool<MySql>,
     table_name: String,
 ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String> {
-    let long_lived = db.mysql_pool.lock().await;
-    let conn = long_lived.as_ref().unwrap();
     let rows = sqlx::query(
         format!(
             "SELECT cols.column_name,
@@ -46,7 +41,7 @@ pub async fn get_columns_definition(
         )
         .as_str(),
     )
-    .fetch_all(conn)
+    .fetch_all(pool)
     .await
     .map_err(|err| err.to_string())?;
 
@@ -63,13 +58,3 @@ pub async fn get_columns_definition(
     });
     Ok(result)
 }
-
-/*
-select cols.column_name,cols.data_type,
-    if(cols.is_nullable = "YES",true,false) as is_nullable ,
-    cols.column_default,
-    if(kcu.constraint_name = 'PRIMARY',true,false) as is_pk
-from information_schema.columns  as cols
-left join information_schema.key_column_usage as kcu on cols.column_name = kcu.column_name
-where cols.table_name = "test";
- */
