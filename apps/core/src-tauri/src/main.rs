@@ -35,22 +35,20 @@ async fn close_splashscreen(window: Window) {
 }
 
 fn main() {
-    cli::parse_cli_args();
-
     tauri::Builder::default()
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
-            let main_window = app.get_window("main").unwrap();
+            let splash_screen = app.get_window("splashscreen").unwrap();
+            splash_screen.show().unwrap();
+
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(cli::parse_cli_args(&app.handle()));
+
             #[cfg(debug_assertions)]
             {
+                let main_window = app.get_window("main").unwrap();
                 main_window.open_devtools();
                 main_window.close_devtools();
-            }
-
-            let exist = connections_exist(app.app_handle()).unwrap();
-
-            if exist {
-                let _ = main_window.eval("window.location.replace('/connections')");
             }
 
             Ok(())
@@ -73,6 +71,10 @@ fn main() {
         ])
         .on_window_event(move |event| {
             if let WindowEvent::Destroyed = event.event() {
+                // If the destroyed window is for e.g splashscreen then don't cleanup
+                if event.window().label() != "main" {
+                    return;
+                }
                 let state: tauri::State<'_, Mutex<SharedState>> = event.window().state();
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 let mut stt = rt.block_on(state.lock());

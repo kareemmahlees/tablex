@@ -7,10 +7,9 @@ use tauri::State;
 pub async fn establish_connection(
     state: &State<'_, Mutex<SharedState>>,
     conn_string: String,
-    driver: Drivers,
 ) -> Result<(), String> {
     let pool = SqlitePoolOptions::new()
-        .acquire_timeout(Duration::new(5, 0))
+        .acquire_timeout(Duration::from_secs(5))
         .test_before_acquire(true)
         .connect(&conn_string)
         .await
@@ -19,7 +18,7 @@ pub async fn establish_connection(
     let mut state = state.lock().await;
 
     state.sqlite_pool = Some(pool);
-    state.driver = Some(driver);
+    state.driver = Some(Drivers::SQLite);
     #[cfg(not(debug_assertions))]
     {
         use tauri::api::process::Command;

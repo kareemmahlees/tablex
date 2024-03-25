@@ -58,15 +58,11 @@ pub async fn establish_connection(
         }
     }
     match driver {
-        Drivers::SQLite => {
-            sqlite::connection::establish_connection(&state, conn_string, driver).await
-        }
+        Drivers::SQLite => sqlite::connection::establish_connection(&state, conn_string).await,
         Drivers::PostgreSQL => {
-            postgres::connection::establish_connection(&state, conn_string, driver).await
+            postgres::connection::establish_connection(&state, conn_string).await
         }
-        Drivers::MySQL => {
-            mysql::connection::establish_connection(&state, conn_string, driver).await
-        }
+        Drivers::MySQL => mysql::connection::establish_connection(&state, conn_string).await,
     }
 }
 

@@ -4,13 +4,16 @@ services:
     image: mysql
     container_name: tablex_mysql
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     environment:
+      MYSQL_USER: tablex
       MYSQL_ROOT_PASSWORD: tablex
       MYSQL_DATABASE: tablex
     ports:
       - 3306:3306
+      - "33060:33060"
   tablex_psql:
-    image: postgres
+    image: postgres:16.2
     container_name: tablex_postgres
     restart: always
     environment:

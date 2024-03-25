@@ -47,7 +47,12 @@ export const Route = createFileRoute("/dashboard/_layout")({
       connName = connectionName || "Temp Connection"
     }
 
-    const tables = await getTables()
+    let tables: string[] = []
+    try {
+      tables = await getTables()
+    } catch (error) {
+      toast.error(error as string)
+    }
 
     return { connName, tables }
   },
@@ -59,18 +64,6 @@ function DashboardLayout() {
   const data = Route.useLoaderData()
   const [tables, setTables] = useState<string[]>(data?.tables)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  // const inputRef = useRef<HTMLInputElement>(null)
-
-  // if (import.meta.hot) {
-  //   import.meta.hot.on("vite:beforeFullReload", () => {
-  //     // unregisterAll()
-  //     console.log("full reload")
-  //   })
-  // }
-
-  // useEffect(() => {
-  //   registerShortcuts(["CommandOrControl+S"])
-  // })
 
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -130,8 +123,10 @@ function DashboardLayout() {
                     }}
                     search={{
                       connectionId: deps.connectionId,
+                      connectionName: deps.connectionName,
                       tableName: table
                     }}
+                    preload={false}
                     key={index}
                     className="flex items-center justify-center gap-x-1 text-sm text-white lg:text-base"
                     role="button"
