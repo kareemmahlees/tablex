@@ -1,10 +1,12 @@
+use clap::Command;
 use clap::{error::ErrorKind, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, Manager};
 use tauri::{AppHandle, Window};
 
-use crate::connection::connections_exist;
+use crate::connection::{connections_exist, create_connection_record};
 use crate::drivers::{mysql, postgres, sqlite};
 use crate::state::SharedState;
+use crate::utils::Drivers;
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -15,6 +17,10 @@ pub(crate) struct Args {
     /// Optional name of the connection
     #[arg(short, long, value_name = "NAME")]
     conn_name: Option<String>,
+
+    /// Save the connection
+    #[arg(short, long, value_name = "SAVE")]
+    save: bool,
 }
 
 /// Only on windows.
@@ -47,11 +53,16 @@ pub(crate) async fn parse_cli_args(app: &AppHandle) {
     let main_window = app.get_window("main").unwrap();
 
     if let Some(conn_string) = args.conn_string {
-        let _ = establish_on_the_fly_connection(app, conn_string)
+        let driver = establish_on_the_fly_connection(app, &conn_string)
             .await
             .map_err(|e| {
                 cmd.error(ErrorKind::Format, e).exit();
-            });
+            })
+            .unwrap();
+
+        if args.save {
+            let _ = save_connection(app, conn_string, &args.conn_name, driver, cmd);
+        }
 
         let url = format!(
             "/dashboard/layout/land?connectionName={}",
@@ -69,22 +80,36 @@ pub(crate) async fn parse_cli_args(app: &AppHandle) {
 /// If the app is ran with CLI args
 async fn establish_on_the_fly_connection(
     app: &AppHandle,
-    conn_string: String,
-) -> Result<(), String> {
+    conn_string: &String,
+) -> Result<Drivers, String> {
     let (prefix, _) = conn_string
         .split_once(":")
         .ok_or::<String>("Invalid connection string format".into())?;
 
     let state = app.state::<Mutex<SharedState>>();
 
-    match prefix {
-        "sqlite" | "sqlite3" => sqlite::connection::establish_connection(&state, conn_string).await,
-        "postgresql" | "postgres" => {
-            postgres::connection::establish_connection(&state, conn_string).await
+    let mut driver: Drivers = Drivers::SQLite;
+
+    let result = match prefix {
+        "sqlite" | "sqlite3" => {
+            driver = Drivers::SQLite;
+            sqlite::connection::establish_connection(&state, conn_string.into()).await
         }
-        "mysql" => mysql::connection::establish_connection(&state, conn_string).await,
+        "postgresql" | "postgres" => {
+            driver = Drivers::PostgreSQL;
+            postgres::connection::establish_connection(&state, conn_string.into()).await
+        }
+        "mysql" => {
+            driver = Drivers::MySQL;
+            mysql::connection::establish_connection(&state, conn_string.into()).await
+        }
         _ => Err(format!("Unsupported driver {prefix}")),
-    }
+    };
+
+    if let Err(err) = result {
+        return Err(err);
+    };
+    Ok(driver)
 }
 
 /// If the app is ran without CLI args
@@ -94,4 +119,25 @@ fn normal_navigation(app: &AppHandle, main_window: Window) {
     if exist {
         let _ = main_window.eval("window.location.replace('/connections')");
     }
+}
+
+/// Save the connection if `--save` is set.
+///
+/// **Errors** if `--save` is set without `-c`.
+fn save_connection(
+    app: &AppHandle,
+    conn_string: String,
+    conn_name: &Option<String>,
+    driver: Drivers,
+    mut cmd: Command,
+) -> Result<(), String> {
+    if let None = conn_name {
+        cmd.error(
+            ErrorKind::MissingRequiredArgument,
+            "if using --save, -c must be set",
+        )
+        .exit();
+    }
+
+    create_connection_record(app.clone(), conn_string, conn_name.clone().unwrap(), driver)
 }
