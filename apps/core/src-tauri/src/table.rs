@@ -35,7 +35,6 @@ pub async fn get_columns_definition(
 ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String> {
     let state = state.lock().await;
     let driver = state.driver.as_ref().unwrap();
-
     match driver {
         Drivers::SQLite => {
             let pool = state.sqlite_pool.as_ref().unwrap();

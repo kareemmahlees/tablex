@@ -7,6 +7,7 @@ use sqlx::{Pool, Postgres, Row};
 use std::collections::HashMap;
 
 pub async fn get_tables(pool: &Pool<Postgres>) -> Result<Vec<String>, String> {
+    let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
     let rows = sqlx::query(
         "SELECT \"table_name\"
             FROM INFORMATION_SCHEMA.TABLES

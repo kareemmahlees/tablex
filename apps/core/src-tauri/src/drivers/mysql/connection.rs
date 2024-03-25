@@ -8,10 +8,9 @@ use tauri::State;
 pub async fn establish_connection(
     state: &State<'_, Mutex<SharedState>>,
     conn_string: String,
-    driver: Drivers,
 ) -> Result<(), String> {
     let pool = MySqlPoolOptions::new()
-        .acquire_timeout(Duration::new(5, 0))
+        .acquire_timeout(Duration::from_secs(1))
         .test_before_acquire(true)
         .connect(&conn_string)
         .await
@@ -20,7 +19,7 @@ pub async fn establish_connection(
     let mut state = state.lock().await;
 
     state.mysql_pool = Some(pool);
-    state.driver = Some(driver);
+    state.driver = Some(Drivers::MySQL);
 
     #[cfg(not(debug_assertions))]
     {

@@ -7,6 +7,7 @@ use sqlx::{MySql, Pool, Row};
 use std::collections::HashMap;
 
 pub async fn get_tables(pool: &Pool<MySql>) -> Result<Vec<String>, String> {
+    let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
     let rows = sqlx::query("show tables;")
         .fetch_all(pool)
         .await
