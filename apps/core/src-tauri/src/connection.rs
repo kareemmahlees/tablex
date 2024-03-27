@@ -53,7 +53,7 @@ pub async fn establish_connection(
 ) -> Result<(), String> {
     #[cfg(not(debug_assertions))]
     {
-        if let Some(sidecar) = state.lock().await.metax {
+        if let Some(sidecar) = state.lock().await.metax.take() {
             sidecar.kill().expect("failed to kill sidecar")
         }
     }

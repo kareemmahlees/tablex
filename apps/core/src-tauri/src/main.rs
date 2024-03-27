@@ -16,8 +16,6 @@ use connection::{
 use row::{create_row, delete_rows, get_paginated_rows, update_row};
 use state::SharedState;
 use table::{get_columns_definition, get_tables};
-#[cfg(not(debug_assertions))]
-use tauri::api::process::CommandChild;
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
 
@@ -35,14 +33,17 @@ async fn close_splashscreen(window: Window) {
 }
 
 fn main() {
+    let (args, cmd) = cli::parse_cli_args();
+
     tauri::Builder::default()
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(cli::handle_cli_args(&app.app_handle(), args, cmd));
+            cli::parse_cli_args();
+
             let splash_screen = app.get_window("splashscreen").unwrap();
             splash_screen.show().unwrap();
-
-            let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(cli::parse_cli_args(&app.handle()));
 
             #[cfg(debug_assertions)]
             {

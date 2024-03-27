@@ -19,7 +19,7 @@ pub(crate) struct Args {
     conn_name: Option<String>,
 
     /// Save the connection
-    #[arg(short, long, value_name = "SAVE")]
+    #[arg(short, long, value_name = "SAVE", requires = "conn_name")]
     save: bool,
 }
 
@@ -42,14 +42,27 @@ fn free_console() {
     let _ = unsafe { FreeConsole() };
 }
 
-/// If the app is ran with CLI args, this will parse them and open the appropriate
-/// window, if not then then application will run normally
-pub(crate) async fn parse_cli_args(app: &AppHandle) {
+/// If the app is ran with CLI args, this will parse them and handle
+/// the errors messages.
+pub(crate) fn parse_cli_args() -> (Args, Command) {
     #[cfg(all(windows, not(dev)))]
     attach_console();
 
     let args = Args::parse();
-    let mut cmd = Args::command();
+    let cmd = Args::command();
+
+    #[cfg(all(windows, not(dev)))]
+    free_console();
+    (args, cmd)
+}
+
+/// Receives the return values from `parse_cli_args` and handles establishing
+/// and saving connections.
+/// # Errors
+/// - If the connection string is malformed.
+/// - If the driver is invalid.
+/// - If `--save` is set without `-c`.
+pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
     let main_window = app.get_window("main").unwrap();
 
     if let Some(conn_string) = args.conn_string {
@@ -61,7 +74,7 @@ pub(crate) async fn parse_cli_args(app: &AppHandle) {
             .unwrap();
 
         if args.save {
-            let _ = save_connection(app, conn_string, &args.conn_name, driver, cmd);
+            let _ = save_connection(app, conn_string, args.conn_name.as_ref().unwrap(), driver);
         }
 
         let url = format!(
@@ -72,9 +85,6 @@ pub(crate) async fn parse_cli_args(app: &AppHandle) {
     } else {
         normal_navigation(app, main_window);
     }
-
-    #[cfg(all(windows, not(dev)))]
-    free_console();
 }
 
 /// If the app is ran with CLI args
@@ -122,22 +132,13 @@ fn normal_navigation(app: &AppHandle, main_window: Window) {
 }
 
 /// Save the connection if `--save` is set.
-///
-/// **Errors** if `--save` is set without `-c`.
+/// # Errors
+/// if `--save` is set without `-c`.
 fn save_connection(
     app: &AppHandle,
     conn_string: String,
-    conn_name: &Option<String>,
+    conn_name: &String,
     driver: Drivers,
-    mut cmd: Command,
 ) -> Result<(), String> {
-    if let None = conn_name {
-        cmd.error(
-            ErrorKind::MissingRequiredArgument,
-            "if using --save, -c must be set",
-        )
-        .exit();
-    }
-
-    create_connection_record(app.clone(), conn_string, conn_name.clone().unwrap(), driver)
+    create_connection_record(app.clone(), conn_string, conn_name.clone(), driver)
 }
