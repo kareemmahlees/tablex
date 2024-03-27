@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.3.3
+
+### Patch Changes
+
+- [#50](https://github.com/kareemmahlees/tablex/pull/50) [`36dd26b`](https://github.com/kareemmahlees/tablex/commit/36dd26b40fe2029da43460ae7555c446e3869c07) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Migrate from NextJs to React + Vite
+
 ## 0.3.2
 
 ### Patch Changes
