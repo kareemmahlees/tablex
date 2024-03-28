@@ -98,7 +98,7 @@ async fn establish_on_the_fly_connection(
 
     let state = app.state::<Mutex<SharedState>>();
 
-    let mut driver: Drivers = Drivers::SQLite;
+    let mut driver: Drivers = Drivers::default();
 
     let result = match prefix {
         "sqlite" | "sqlite3" => {
