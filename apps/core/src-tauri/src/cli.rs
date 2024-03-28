@@ -66,6 +66,9 @@ pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Comman
     let main_window = app.get_window("main").unwrap();
 
     if let Some(conn_string) = args.conn_string {
+        #[cfg(all(windows, not(dev)))]
+        attach_console();
+
         let driver = establish_on_the_fly_connection(app, &conn_string)
             .await
             .map_err(|e| {
@@ -74,8 +77,18 @@ pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Comman
             .unwrap();
 
         if args.save {
-            let _ = save_connection(app, conn_string, args.conn_name.as_ref().unwrap(), driver);
+            if let Err(e) = create_connection_record(
+                app.clone(),
+                conn_string,
+                args.conn_name.clone().unwrap(),
+                driver,
+            ) {
+                cmd.error(ErrorKind::Io, e).exit();
+            }
         }
+
+        #[cfg(all(windows, not(dev)))]
+        free_console();
 
         let url = format!(
             "/dashboard/layout/land?connectionName={}",
@@ -93,14 +106,14 @@ async fn establish_on_the_fly_connection(
     conn_string: &String,
 ) -> Result<Drivers, String> {
     let (prefix, _) = conn_string
-        .split_once(":")
+        .split_once(':')
         .ok_or::<String>("Invalid connection string format".into())?;
 
     let state = app.state::<Mutex<SharedState>>();
 
     let mut driver: Drivers = Drivers::default();
 
-    let result = match prefix {
+    match prefix {
         "sqlite" | "sqlite3" => {
             driver = Drivers::SQLite;
             sqlite::connection::establish_connection(&state, conn_string.into()).await
@@ -114,11 +127,8 @@ async fn establish_on_the_fly_connection(
             mysql::connection::establish_connection(&state, conn_string.into()).await
         }
         _ => Err(format!("Unsupported driver {prefix}")),
-    };
+    }?;
 
-    if let Err(err) = result {
-        return Err(err);
-    };
     Ok(driver)
 }
 
@@ -129,16 +139,4 @@ fn normal_navigation(app: &AppHandle, main_window: Window) {
     if exist {
         let _ = main_window.eval("window.location.replace('/connections')");
     }
-}
-
-/// Save the connection if `--save` is set.
-/// # Errors
-/// if `--save` is set without `-c`.
-fn save_connection(
-    app: &AppHandle,
-    conn_string: String,
-    conn_name: &String,
-    driver: Drivers,
-) -> Result<(), String> {
-    create_connection_record(app.clone(), conn_string, conn_name.clone(), driver)
 }
