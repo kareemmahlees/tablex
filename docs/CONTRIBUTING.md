@@ -29,6 +29,7 @@ To start playing around with TableX locally, you will need the following require
 - Cargo 1.74.1 or later
 - pnpm 8.13.1 or later
 
+> [!IMPORTANT]
 > some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
 
 Once you have setup the previous requirements, you can start by cloning the repo:
@@ -55,7 +56,7 @@ and you are good to go 💫, you can start your development server by running:
 pnpm tauri:dev
 ```
 
-> [!NOTE]
+> [!IMPORTANT]
 > This will start a dev server, but will also install cargo dependencies before that, which may require you to install some system dependencies, such as: libsoup, libjavascriptcoregtk, libgtk, libwebkit2gtk. Exact installation instructions will vary by platform.
 
 Want to test how your modification will look like at the final executable? run this:
