@@ -9,6 +9,7 @@
 <img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/kareemmahlees/tablex">
 
+[![Ceasefire Now](https://badge.techforpalestine.org/default)](https://techforpalestine.org/learn-more)
 [![All Contributors](https://img.shields.io/github/all-contributors/kareemmahlees/tablex?color=ee8449)](#contributors)
 
 </div>
