@@ -3,18 +3,20 @@
 </p>
 <div align="center">
   <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/kareemmahlees/tablex/lint.yml">
-  <img alt="GitHub package.json version (subfolder of monorepo)" src="https://img.shields.io/github/package-json/v/kareemmahlees/tablex?color=blue">
   <img alt="Static Badge" src="https://img.shields.io/badge/node-v20.9.0%20-green">
   <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/kareemmahlees/tablex/production?label=production">
 
 <img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
 <img alt="GitHub Release" src="https://img.shields.io/github/v/release/kareemmahlees/tablex">
 
+[![Ceasefire Now](https://badge.techforpalestine.org/default)](https://techforpalestine.org/learn-more)
 [![All Contributors](https://img.shields.io/github/all-contributors/kareemmahlees/tablex?color=ee8449)](#contributors)
 
 </div>
 
-> Note: TableX is still under development, don't expect it to be perfect, yet.
+> [!NOTE]
+> 🚧
+> TableX is still under development, don't expect it to be perfect, yet.
 
 Checkout [Changleogs](./apps/core/CHANGELOG.md) and our [issues](https://github.com/kareemmahlees/tablex/issues) section.
 
@@ -34,27 +36,25 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 - Top-Notch performance with pagination and virtualization
 - Support for SQLite, PostgreSQL, MySQL
 - Available for Windows, MacOS, and Linux
+- A CLI to boost your workflow
 - Automatically create a RESTfull and GraphQL APIs for your database
 - Keyboard shortcuts for productivity homies
 - Free and Open-Source
 
-## Say hi to MetaX 🎉
+## Announcements 🎉
 
-TableX uses [MetaX](https://github.com/kareemmahlees/meta-x) to automatically create a RESTfull and GraphQL APIs for your database.
-
-MetaX supercharges your experience by allowing you to interact with your database through an API interface ( which is fully swagger documented ), allowing you for example to create, read, update or delete databases, tables or columns through http requests with no effort from you what so over ✨.
-
-Just connect your database and start running 🚀.
+- TableX now ships with a little CLI tool that helps you to create & save `on the fly` connections with ease from your terminal ⭐, checkout the [CLI](./docs/CLI.md) documentation.
+- TableX bundle size is now roughly 30% smaller 🚀
 
 ## Tech Stack ⌨️
 
 - [Tauri](https://tauri.app/) :
-  - [NextJs](https://nextjs.org/) : Frontend Framework
+  - [React](https://react.dev/) + [Vite](https://vitejs.dev/) : Frontend
   - [Rust](https://www.rust-lang.org/) : Backend
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
-- [Tanstack](https://tanstack.com/) : [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8), [Virtual](https://tanstack.com/virtual/latest)
+- [Tanstack](https://tanstack.com/) : [Router](https://tanstack.com/router/latest), [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8), [Virtual](https://tanstack.com/virtual/latest)
 - [Astro](https://astro.build/) : Website
-- [Golang](https://go.dev): [MetaX](https://github.com/kareemmahlees/meta-x)
+- [Golang](https://go.dev) : [MetaX](https://github.com/kareemmahlees/meta-x)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
 - [Changesets](https://github.com/changesets/changesets): Versioning and Changelogs
 - [Vercel](https://vercel.com/) : Deployment

@@ -29,6 +29,7 @@ To start playing around with TableX locally, you will need the following require
 - Cargo 1.74.1 or later
 - pnpm 8.13.1 or later
 
+> [!IMPORTANT]
 > some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
 
 Once you have setup the previous requirements, you can start by cloning the repo:
@@ -55,7 +56,8 @@ and you are good to go 💫, you can start your development server by running:
 pnpm tauri:dev
 ```
 
-> NOTE: This will start a dev server, but will also install cargo dependencies before that, which may require you to install some system dependencies, such as: libsoup, libjavascriptcoregtk, libgtk, libwebkit2gtk. Exact installation instructions will vary by platform.
+> [!IMPORTANT]
+> This will start a dev server, but will also install cargo dependencies before that, which may require you to install some system dependencies, such as: libsoup, libjavascriptcoregtk, libgtk, libwebkit2gtk. Exact installation instructions will vary by platform.
 
 Want to test how your modification will look like at the final executable? run this:
 
@@ -63,7 +65,7 @@ Want to test how your modification will look like at the final executable? run t
 pnpm tauri:debug
 ```
 
-this will create a debug build/executables of the application that you can then install and see your features in action 🥳.
+this will create a debug build/executable, which you don't have to install in order to see your changes, just run the file located under `apps\core\src-tauri\target\debug\TableX.exe` :partying_face:.
 
 If you want to create a release build, run the following:
 
@@ -71,10 +73,30 @@ If you want to create a release build, run the following:
 pnpm tauri:build
 ```
 
+The same steps are applied as the debug build if you want to run the release build without installing it, just make sure to replace `target\debug` with `target\release` :rocket:.
+
 If you are interested in playing around with the website, run the following:
 
 ```shell
 pnpm astro:dev
+```
+
+## Developing the CLI
+
+We use [Clap]() as the CLI parser and not the tauri integration solely because clap is more verbose.
+
+developing the CLI doesn't differ that much from running the normal application, you just create a debug or a release build and run the produced executable with the args/flags of your choice:
+
+For example:
+
+```shell
+$ apps/core/src-tauri/target/{{release,debug}}/TableX.exe {{ARGS_OR_FLAGS_HERE}}
+```
+
+If you wish to run in dev mode, make sure to run the following command:
+
+```shell
+$ pnpm tauri:dev -- -- -- [CONN_NAME] [FLAGS]
 ```
 
 ## Some Guidelines to follow
@@ -88,6 +110,15 @@ TableX follows commit conventions inforced by [commitlint](https://github.com/co
 Commit checking is highly integrated in all parts of development process either as a pre-commit hook or checking by the lint action on push or pull-request.
 
 This is a very crucial part and we care about it soo much to keep the commit log consistent and clean, so please take the time to read the conventions of commitlint.
+
+## Branch naming convention
+
+There is no CI check that checks the names of PR branches, but we encourage you to follow the `type/name` schema when naming your branches.
+
+For example:
+
+- `feat/some-cool-new-feature`
+- `fix/serious-issue`
 
 ## Multiply tiny is better than a Big one
 

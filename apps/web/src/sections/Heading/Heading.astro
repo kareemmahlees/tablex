@@ -1,16 +1,30 @@
 ---
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import AnimatedBG from "./animated-bg"
 import AnimatedStar from "./animated-star"
 import { Image } from "astro:assets"
 import Overview from "../../../public/overview.png"
+import { ArrowRight } from "lucide-react"
 ---
 
 <header
   class="relative mt-24 flex flex-col items-center gap-y-6 break-keep md:mt-32 md:gap-y-8"
 >
-  <AnimatedBG client:load />
+  <div
+    class="rounded-3xl p-px bg-gradient-to-bl from-gray-400 to-transparent to-95%"
+  >
+    <a
+      href="https://github.com/kareemmahlees/tablex"
+      target="_blank"
+      class="bg-background rounded-[calc(1.5rem-1px)] px-3 py-1 flex items-center gap-x-1 text-xs sm:text-sm md:text-base group"
+      ><p class="text-center mb-1">We are open source</p>
+      <ArrowRight
+        className="h-4 w-4 group-hover:translate-x-1 transition-transform"
+        strokeWidth={1.5}
+      /></a
+    >
+  </div>
+
   <h1 class="text-center text-4xl font-bold md:text-5xl lg:text-6xl">
     Table viewer for modern developers
   </h1>

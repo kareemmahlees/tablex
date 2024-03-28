@@ -6,7 +6,8 @@ import { generateColumnsDefs } from "./-components/columns"
 import DataTable from "./-components/data-table"
 
 const tablePageSchema = z.object({
-  tableName: z.string().optional()
+  tableName: z.string().optional(),
+  connectionName: z.string().optional()
 })
 
 export const Route = createFileRoute("/dashboard/_layout/$tableName")({
