@@ -40,10 +40,6 @@ fn main() {
         .setup(|app| {
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(&app.app_handle(), args, cmd));
-            cli::parse_cli_args();
-
-            let splash_screen = app.get_window("splashscreen").unwrap();
-            splash_screen.show().unwrap();
 
             #[cfg(debug_assertions)]
             {

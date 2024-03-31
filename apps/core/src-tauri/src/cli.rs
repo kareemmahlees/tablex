@@ -27,7 +27,7 @@ pub(crate) struct Args {
 ///
 /// Attaches the console so the user can see output in the terminal.
 #[cfg(all(windows, not(dev)))]
-fn attach_console() {
+pub(crate) fn attach_console() {
     use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
     let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
 }
@@ -37,7 +37,7 @@ fn attach_console() {
 /// Frees the console so the user won't see weird println's  
 /// after he is done using the cli.
 #[cfg(all(windows, not(dev)))]
-fn free_console() {
+pub(crate) fn free_console() {
     use windows::Win32::System::Console::FreeConsole;
     let _ = unsafe { FreeConsole() };
 }
@@ -64,6 +64,7 @@ pub(crate) fn parse_cli_args() -> (Args, Command) {
 /// - If `--save` is set without `-c`.
 pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
     let main_window = app.get_window("main").unwrap();
+    let splash_screen = app.get_window("splashscreen").unwrap();
 
     if let Some(conn_string) = args.conn_string {
         #[cfg(all(windows, not(dev)))]
@@ -71,24 +72,23 @@ pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Comman
 
         let driver = establish_on_the_fly_connection(app, &conn_string)
             .await
-            .map_err(|e| {
-                cmd.error(ErrorKind::Format, e).exit();
-            })
+            .map_err(|e| cmd.error(ErrorKind::Format, e).exit())
             .unwrap();
 
         if args.save {
-            if let Err(e) = create_connection_record(
+            let _ = create_connection_record(
                 app.clone(),
                 conn_string,
                 args.conn_name.clone().unwrap(),
                 driver,
-            ) {
-                cmd.error(ErrorKind::Io, e).exit();
-            }
+            )
+            .map_err(|e| cmd.error(ErrorKind::Io, e).exit());
         }
 
         #[cfg(all(windows, not(dev)))]
         free_console();
+
+        splash_screen.show().unwrap();
 
         let url = format!(
             "/dashboard/layout/land?connectionName={}",
@@ -96,6 +96,8 @@ pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Comman
         );
         let _ = main_window.eval(format!("window.location.replace('{url}')").as_str());
     } else {
+        splash_screen.show().unwrap();
+
         normal_navigation(app, main_window);
     }
 }
