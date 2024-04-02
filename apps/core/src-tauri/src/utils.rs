@@ -6,9 +6,10 @@ use std::{collections::HashMap, fs::OpenOptions};
 use tauri::Runtime;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Drivers {
+    #[default]
     SQLite,
     PostgreSQL,
     MySQL,

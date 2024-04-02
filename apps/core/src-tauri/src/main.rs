@@ -5,6 +5,7 @@ mod cli;
 mod connection;
 mod drivers;
 mod row;
+mod state;
 mod table;
 mod utils;
 
@@ -13,18 +14,13 @@ use connection::{
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_paginated_rows, update_row};
-use sqlx::sqlite::SqlitePool;
-use sqlx::{MySqlPool, PgPool};
+use state::SharedState;
 use table::{get_columns_definition, get_tables};
-#[cfg(not(debug_assertions))]
-use tauri::api::process::CommandChild;
+use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
-use tokio::sync::Mutex;
-use utils::Drivers;
 
 #[tauri::command]
 async fn close_splashscreen(window: Window) {
-    // Close splashscreen
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
 
@@ -36,70 +32,20 @@ async fn close_splashscreen(window: Window) {
     }
 }
 
-#[derive(Default)]
-pub struct DbInstance {
-    sqlite_pool: Mutex<Option<SqlitePool>>,
-    postgres_pool: Mutex<Option<PgPool>>,
-    mysql_pool: Mutex<Option<MySqlPool>>,
-    driver: Mutex<Option<Drivers>>,
-    #[cfg(not(debug_assertions))]
-    metax_command_child: Mutex<Option<CommandChild>>,
-}
-
-impl DbInstance {
-    async fn cleanup(&self) {
-        let long_lived = self.sqlite_pool.lock().await;
-        let sqlite_pool = long_lived.as_ref();
-        if let Some(sqlite_pool) = sqlite_pool {
-            sqlite_pool.close().await
-        }
-
-        let long_lived = self.postgres_pool.lock().await;
-        let postgres_pool = long_lived.as_ref();
-        if let Some(postgres_pool) = postgres_pool {
-            postgres_pool.close().await
-        }
-
-        let long_lived = self.mysql_pool.lock().await;
-        let mysql_pool = long_lived.as_ref();
-        if let Some(mysql_pool) = mysql_pool {
-            mysql_pool.close().await
-        }
-
-        #[cfg(not(debug_assertions))]
-        {
-            let mut long_lived = self.metax_command_child.lock().await;
-            if let Some(command) = long_lived.take() {
-                command.kill().expect("unable to kill sidecar")
-            }
-        }
-    }
-}
-
 fn main() {
-    cli::parse_cli_args();
+    let (args, cmd) = cli::parse_cli_args();
 
     tauri::Builder::default()
-        .manage(DbInstance {
-            sqlite_pool: Default::default(),
-            postgres_pool: Default::default(),
-            mysql_pool: Default::default(),
-            driver: Default::default(),
-            #[cfg(not(debug_assertions))]
-            metax_command_child: Default::default(),
-        })
+        .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
-            let main_window = app.get_window("main").unwrap();
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(cli::handle_cli_args(&app.app_handle(), args, cmd));
+
             #[cfg(debug_assertions)]
             {
+                let main_window = app.get_window("main").unwrap();
                 main_window.open_devtools();
                 main_window.close_devtools();
-            }
-
-            let exist = connections_exist(app.app_handle()).unwrap();
-
-            if exist {
-                let _ = main_window.eval("window.location.replace('/connections')");
             }
 
             Ok(())
@@ -122,9 +68,14 @@ fn main() {
         ])
         .on_window_event(move |event| {
             if let WindowEvent::Destroyed = event.event() {
-                let state: tauri::State<'_, DbInstance> = event.window().state();
+                // If the destroyed window is for e.g splashscreen then don't cleanup
+                if event.window().label() != "main" {
+                    return;
+                }
+                let state: tauri::State<'_, Mutex<SharedState>> = event.window().state();
                 let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(state.cleanup());
+                let mut stt = rt.block_on(state.lock());
+                rt.block_on(stt.cleanup());
                 rt.shutdown_background();
             }
         })

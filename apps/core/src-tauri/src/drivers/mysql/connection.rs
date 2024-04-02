@@ -1,21 +1,25 @@
-use crate::{utils::Drivers, DbInstance};
+use crate::state::SharedState;
+use crate::utils::Drivers;
 use sqlx::mysql::MySqlPoolOptions;
 use std::time::Duration;
+use tauri::async_runtime::Mutex;
 use tauri::State;
 
 pub async fn establish_connection(
-    state: &State<'_, DbInstance>,
+    state: &State<'_, Mutex<SharedState>>,
     conn_string: String,
-    driver: Drivers,
 ) -> Result<(), String> {
     let pool = MySqlPoolOptions::new()
-        .acquire_timeout(Duration::new(5, 0))
+        .acquire_timeout(Duration::from_secs(1))
         .test_before_acquire(true)
         .connect(&conn_string)
         .await
         .map_err(|_| "Couldn't establish connection to db".to_string())?;
-    *state.mysql_pool.lock().await = Some(pool);
-    *state.driver.lock().await = Some(driver);
+
+    let mut state = state.lock().await;
+
+    state.mysql_pool = Some(pool);
+    state.driver = Some(Drivers::MySQL);
 
     #[cfg(not(debug_assertions))]
     {
@@ -34,7 +38,7 @@ pub async fn establish_connection(
             .args(["mysql", "--url", &output])
             .spawn()
             .expect("failed to spawn sidecar");
-        *state.metax_command_child.lock().await = Some(child);
+        state.metax = Some(child);
     }
     Ok(())
 }

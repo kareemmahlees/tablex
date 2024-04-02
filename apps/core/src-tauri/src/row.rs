@@ -1,46 +1,51 @@
 use crate::{
     drivers::{mysql, postgres, sqlite},
+    state::SharedState,
     utils::Drivers,
-    DbInstance,
 };
 use serde_json::Map;
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use std::iter::Iterator;
 use std::result::Result::Ok;
+use tauri::async_runtime::Mutex;
 use tauri::State;
 
 #[tauri::command]
 pub async fn get_paginated_rows(
-    db: State<'_, DbInstance>,
+    state: State<'_, Mutex<SharedState>>,
     table_name: String,
     page_index: u16,
     page_size: u32,
 ) -> Result<Map<String, JsonValue>, String> {
-    let long_lived = db.driver.lock().await;
-    let driver = long_lived.as_ref().unwrap();
+    let state = state.lock().await;
+    let driver = state.driver.as_ref().unwrap();
+
     match driver {
         Drivers::SQLite => {
-            sqlite::row::get_paginated_rows(&db, table_name, page_index, page_size).await
+            let pool = state.sqlite_pool.as_ref().unwrap();
+            sqlite::row::get_paginated_rows(pool, table_name, page_index, page_size).await
         }
         Drivers::PostgreSQL => {
-            postgres::row::get_paginated_rows(&db, table_name, page_index, page_size).await
+            let pool = state.postgres_pool.as_ref().unwrap();
+            postgres::row::get_paginated_rows(pool, table_name, page_index, page_size).await
         }
         Drivers::MySQL => {
-            mysql::row::get_paginated_rows(&db, table_name, page_index, page_size).await
+            let pool = state.mysql_pool.as_ref().unwrap();
+            mysql::row::get_paginated_rows(pool, table_name, page_index, page_size).await
         }
     }
 }
 
 #[tauri::command]
 pub async fn delete_rows(
-    db: State<'_, DbInstance>,
+    state: State<'_, Mutex<SharedState>>,
     pk_col_name: String,
     row_pk_values: Vec<JsonValue>,
     table_name: String,
 ) -> Result<u64, String> {
-    let long_lived = db.driver.lock().await;
-    let driver = long_lived.as_ref().unwrap();
+    let state = state.lock().await;
+    let driver = state.driver.as_ref().unwrap();
 
     let mut params: String = Default::default();
     for val in row_pk_values.iter() {
@@ -54,22 +59,29 @@ pub async fn delete_rows(
     params.pop(); // to remove the last trailing comma
 
     match driver {
-        Drivers::SQLite => sqlite::row::delete_rows(&db, pk_col_name, table_name, params).await,
-        Drivers::PostgreSQL => {
-            postgres::row::delete_rows(&db, pk_col_name, table_name, params).await
+        Drivers::SQLite => {
+            let pool = state.sqlite_pool.as_ref().unwrap();
+            sqlite::row::delete_rows(pool, pk_col_name, table_name, params).await
         }
-        Drivers::MySQL => mysql::row::delete_rows(&db, pk_col_name, table_name, params).await,
+        Drivers::PostgreSQL => {
+            let pool = state.postgres_pool.as_ref().unwrap();
+            postgres::row::delete_rows(pool, pk_col_name, table_name, params).await
+        }
+        Drivers::MySQL => {
+            let pool = state.mysql_pool.as_ref().unwrap();
+            mysql::row::delete_rows(pool, pk_col_name, table_name, params).await
+        }
     }
 }
 
 #[tauri::command]
 pub async fn create_row(
-    db: State<'_, DbInstance>,
+    state: State<'_, Mutex<SharedState>>,
     table_name: String,
     data: HashMap<String, JsonValue>,
 ) -> Result<u64, String> {
-    let long_lived = db.driver.lock().await;
-    let driver = long_lived.as_ref().unwrap();
+    let state = state.lock().await;
+    let driver = state.driver.as_ref().unwrap();
 
     let columns = data
         .keys()
@@ -87,22 +99,32 @@ pub async fn create_row(
     values = values.replace('\"', "'");
 
     match driver {
-        Drivers::SQLite => sqlite::row::create_row(&db, table_name, columns, values).await,
-        Drivers::PostgreSQL => postgres::row::create_row(&db, table_name, columns, values).await,
-        Drivers::MySQL => mysql::row::create_row(&db, table_name, columns, values).await,
+        Drivers::SQLite => {
+            let pool = state.sqlite_pool.as_ref().unwrap();
+            sqlite::row::create_row(pool, table_name, columns, values).await
+        }
+
+        Drivers::PostgreSQL => {
+            let pool = state.postgres_pool.as_ref().unwrap();
+            postgres::row::create_row(pool, table_name, columns, values).await
+        }
+        Drivers::MySQL => {
+            let pool = state.mysql_pool.as_ref().unwrap();
+            mysql::row::create_row(pool, table_name, columns, values).await
+        }
     }
 }
 
 #[tauri::command]
 pub async fn update_row(
-    db: State<'_, DbInstance>,
+    state: State<'_, Mutex<SharedState>>,
     table_name: String,
     pk_col_name: String,
     pk_col_value: JsonValue,
     data: Map<String, JsonValue>,
 ) -> Result<u64, String> {
-    let long_lived = db.driver.lock().await;
-    let driver = long_lived.as_ref().unwrap();
+    let state = state.lock().await;
+    let driver = state.driver.as_ref().unwrap();
 
     if data.is_empty() {
         return Ok(0);
@@ -115,14 +137,18 @@ pub async fn update_row(
 
     match driver {
         Drivers::SQLite => {
-            sqlite::row::update_row(&db, table_name, set_condition, pk_col_name, pk_col_value).await
+            let pool = state.sqlite_pool.as_ref().unwrap();
+            sqlite::row::update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
+                .await
         }
         Drivers::PostgreSQL => {
-            postgres::row::update_row(&db, table_name, set_condition, pk_col_name, pk_col_value)
+            let pool = state.postgres_pool.as_ref().unwrap();
+            postgres::row::update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
                 .await
         }
         Drivers::MySQL => {
-            mysql::row::update_row(&db, table_name, set_condition, pk_col_name, pk_col_value).await
+            let pool = state.mysql_pool.as_ref().unwrap();
+            mysql::row::update_row(pool, table_name, set_condition, pk_col_name, pk_col_value).await
         }
     }
 }
