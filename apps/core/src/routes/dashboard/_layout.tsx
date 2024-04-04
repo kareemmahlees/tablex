@@ -82,8 +82,8 @@ function DashboardLayout() {
 
   return (
     <main className="flex h-full w-full">
-      <aside className="flex w-56 flex-col items-start justify-between overflow-y-auto bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
-        <div className="mb-4 flex flex-col items-start gap-y-4 lg:gap-y-5">
+      <aside className="flex w-56 flex-col items-start justify-between  bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
+        <div className="mb-4 flex flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
           <Link
             to="/connections"
             className={cn(
@@ -100,7 +100,6 @@ function DashboardLayout() {
           <div className="bg-background flex items-center rounded-sm px-1">
             <Search className="h-3 lg:h-5" color="#4a506f" />
             <Input
-              // ref={inputRef}
               id="search_input"
               onKeyUp={handleKeyUp}
               placeholder="Search..."
@@ -113,7 +112,7 @@ function DashboardLayout() {
             </div>
           </div>
           <div className="mb-4 overflow-y-auto">
-            <ul className="flex flex-col items-start gap-y-1 ">
+            <ul className="flex flex-col items-start gap-y-1 overflow-y-auto">
               {tables.map((table, index) => {
                 return (
                   <Link
