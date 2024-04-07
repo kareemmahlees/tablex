@@ -1,9 +1,9 @@
 use crate::state::SharedState;
-use crate::utils::Drivers;
 use sqlx::mysql::MySqlPoolOptions;
 use std::time::Duration;
 use tauri::async_runtime::Mutex;
 use tauri::State;
+use tx_lib::Drivers;
 
 pub async fn establish_connection(
     state: &State<'_, Mutex<SharedState>>,

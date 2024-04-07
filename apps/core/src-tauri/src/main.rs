@@ -1,13 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod cli;
 mod connection;
 mod drivers;
 mod row;
 mod state;
 mod table;
-mod utils;
 
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
@@ -33,13 +31,13 @@ async fn close_splashscreen(window: Window) {
 }
 
 fn main() {
-    let (args, cmd) = cli::parse_cli_args();
+    let (args, cmd) = tx_cli::parse_cli_args();
 
     tauri::Builder::default()
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
             let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(cli::handle_cli_args(&app.app_handle(), args, cmd));
+            rt.block_on(tx_cli::handle_cli_args(&app.app_handle(), args, cmd));
 
             #[cfg(debug_assertions)]
             {

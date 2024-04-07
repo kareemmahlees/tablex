@@ -71,8 +71,7 @@ pub fn delete_from_connections_file(
     connections_file_path: &mut PathBuf,
     conn_id: String,
 ) -> Result<(), String> {
-    let mut contents = read_from_connections_file(connections_file_path)
-        .map_err(|_| "Couldn't read contents of connections file")?;
+    let mut contents = read_from_connections_file(connections_file_path)?;
 
     match contents.as_object_mut() {
         Some(v) => {

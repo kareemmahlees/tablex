@@ -1,8 +1,8 @@
-use crate::utils::Drivers;
 use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
+use tx_lib::Drivers;
 
 #[derive(Default, Debug)]
 pub(crate) struct SharedState {

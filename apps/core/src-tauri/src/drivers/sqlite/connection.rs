@@ -1,8 +1,9 @@
-use crate::{state::SharedState, utils::Drivers};
+use crate::state::SharedState;
 use sqlx::sqlite::SqlitePoolOptions;
 use std::time::Duration;
 use tauri::async_runtime::Mutex;
 use tauri::State;
+use tx_lib::Drivers;
 
 pub async fn establish_connection(
     state: &State<'_, Mutex<SharedState>>,

@@ -1,10 +1,11 @@
-use crate::{drivers::sqlite::decode, utils};
+use crate::drivers::sqlite::decode;
 use serde_json::{
     value::Value::{Bool as JsonBool, String as JsonString},
     Value as JsonValue,
 };
 use sqlx::{Pool, Row, Sqlite};
 use std::collections::HashMap;
+use tx_lib::create_column_definition_map;
 
 pub async fn get_tables(pool: &Pool<Sqlite>) -> Result<Vec<String>, String> {
     let rows = sqlx::query(
@@ -45,7 +46,7 @@ pub async fn get_columns_definition(
     let mut result = HashMap::<String, HashMap<String, JsonValue>>::new();
 
     rows.iter().for_each(|row| {
-        let column_props = utils::create_column_definition_map(
+        let column_props = create_column_definition_map(
             JsonString(row.get(1)),
             JsonBool(!row.get::<i16, usize>(2) == 0),
             decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),

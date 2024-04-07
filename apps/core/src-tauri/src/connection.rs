@@ -3,13 +3,13 @@ use tauri::async_runtime::Mutex;
 use crate::{
     drivers::{mysql, postgres, sqlite},
     state::SharedState,
-    utils::{
-        delete_from_connections_file, get_connections_file_path, read_from_connections_file,
-        write_into_connections_file, Drivers,
-    },
 };
 use sqlx::{AnyConnection, Connection};
 use tauri::State;
+use tx_lib::{
+    delete_from_connections_file, get_connections_file_path, read_from_connections_file,
+    write_into_connections_file, Drivers,
+};
 
 #[tauri::command]
 pub async fn test_connection(conn_string: String) -> Result<String, String> {
