@@ -1,10 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod cli;
 mod connection;
-mod drivers;
 mod row;
-mod state;
 mod table;
 
 use connection::{
@@ -12,13 +11,13 @@ use connection::{
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_paginated_rows, update_row};
-use state::SharedState;
 use table::{get_columns_definition, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
+use tx_lib::state::SharedState;
 
 #[tauri::command]
-async fn close_splashscreen(window: Window) {
+fn close_splashscreen(window: Window) {
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
 
@@ -31,13 +30,13 @@ async fn close_splashscreen(window: Window) {
 }
 
 fn main() {
-    let (args, cmd) = tx_cli::parse_cli_args();
+    let (args, cmd) = cli::parse_cli_args();
 
     tauri::Builder::default()
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
             let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(tx_cli::handle_cli_args(&app.app_handle(), args, cmd));
+            rt.block_on(cli::handle_cli_args(&app.app_handle(), args, cmd));
 
             #[cfg(debug_assertions)]
             {
@@ -70,7 +69,7 @@ fn main() {
                 if event.window().label() != "main" {
                     return;
                 }
-                let state: tauri::State<'_, Mutex<SharedState>> = event.window().state();
+                let state = event.window().state::<Mutex<SharedState>>();
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 let mut stt = rt.block_on(state.lock());
                 rt.block_on(stt.cleanup());

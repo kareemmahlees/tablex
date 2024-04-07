@@ -1,4 +1,4 @@
-use crate::drivers::mysql::decode;
+use crate::decode;
 use serde_json::{
     value::Value::{Bool as JsonBool, String as JsonString},
     Value as JsonValue,

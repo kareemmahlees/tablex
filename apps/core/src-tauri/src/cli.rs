@@ -1,16 +1,9 @@
-extern crate clap;
-extern crate tauri;
-extern crate windows;
-
+use crate::connection::{connections_exist, create_connection_record, establish_connection};
 use clap::Command;
 use clap::{error::ErrorKind, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, Manager};
 use tauri::{AppHandle, Window};
-
-// use crate::connection::{connections_exist, create_connection_record};
-// use crate::drivers::{mysql, postgres, sqlite};
-// use crate::state::SharedState;
-// use crate::utils::Drivers;
+use tx_lib::{state::SharedState, Drivers};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -74,20 +67,20 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
         #[cfg(all(windows, not(dev)))]
         attach_console();
 
-        // let driver = establish_on_the_fly_connection(app, &conn_string)
-        //     .await
-        //     .map_err(|e| cmd.error(ErrorKind::Format, e).exit())
-        //     .unwrap();
+        let driver = establish_on_the_fly_connection(app, &conn_string)
+            .await
+            .map_err(|e| cmd.error(ErrorKind::Format, e).exit())
+            .unwrap();
 
-        // if args.save {
-        //     let _ = create_connection_record(
-        //         app.clone(),
-        //         conn_string,
-        //         args.conn_name.clone().unwrap(),
-        //         driver,
-        //     )
-        //     .map_err(|e| cmd.error(ErrorKind::Io, e).exit());
-        // }
+        if args.save {
+            let _ = create_connection_record(
+                app.clone(),
+                conn_string,
+                args.conn_name.clone().unwrap(),
+                driver,
+            )
+            .map_err(|e| cmd.error(ErrorKind::Io, e).exit());
+        }
 
         #[cfg(all(windows, not(dev)))]
         free_console();
@@ -107,42 +100,43 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
 }
 
 /// If the app is ran with CLI args
-// async fn establish_on_the_fly_connection(
-//     app: &AppHandle,
-//     conn_string: &String,
-// ) -> Result<Drivers, String> {
-//     let (prefix, _) = conn_string
-//         .split_once(':')
-//         .ok_or::<String>("Invalid connection string format".into())?;
+async fn establish_on_the_fly_connection(
+    app: &AppHandle,
+    conn_string: &String,
+) -> Result<Drivers, String> {
+    let (prefix, _) = conn_string
+        .split_once(':')
+        .ok_or::<String>("Invalid connection string format".into())?;
 
-// let state = app.state::<Mutex<SharedState>>();
+    let state = app.state::<Mutex<SharedState>>();
 
-// let mut driver: Drivers = Drivers::default();
+    let mut driver: Drivers = Drivers::default();
 
-// match prefix {
-//     "sqlite" | "sqlite3" => {
-//         driver = Drivers::SQLite;
-//         sqlite::connection::establish_connection(&state, conn_string.into()).await
-//     }
-//     "postgresql" | "postgres" => {
-//         driver = Drivers::PostgreSQL;
-//         postgres::connection::establish_connection(&state, conn_string.into()).await
-//     }
-//     "mysql" => {
-//         driver = Drivers::MySQL;
-//         mysql::connection::establish_connection(&state, conn_string.into()).await
-//     }
-//     _ => Err(format!("Unsupported driver {prefix}")),
-// }?;
+    match prefix {
+        "sqlite" | "sqlite3" => {
+            driver = Drivers::SQLite;
+            Ok(())
+        }
+        "postgresql" | "postgres" => {
+            driver = Drivers::PostgreSQL;
+            Ok(())
+        }
+        "mysql" => {
+            driver = Drivers::MySQL;
+            Ok(())
+        }
+        _ => Err(format!("Unsupported driver {prefix}")),
+    }?;
+    establish_connection(state, conn_string.into(), driver.clone()).await?;
 
-//     Ok(driver)
-// }
+    Ok(driver)
+}
 
 /// If the app is ran without CLI args
 fn normal_navigation(app: &AppHandle, main_window: Window) {
-    // let exist = connections_exist(app.clone()).unwrap();
+    let exist = connections_exist(app.clone()).unwrap();
 
-    // if exist {
-    //     let _ = main_window.eval("window.location.replace('/connections')");
-    // }
+    if exist {
+        let _ = main_window.eval("window.location.replace('/connections')");
+    }
 }

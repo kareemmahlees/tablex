@@ -1,9 +1,9 @@
-use crate::drivers::mysql::decode;
+use crate::decode;
 use serde_json::value::{Map as JsonMap, Value as JsonValue};
-use sqlx::{Column, MySql, Pool, Row};
+use sqlx::{Column, Pool, Row, Sqlite};
 
 pub async fn get_paginated_rows(
-    pool: &Pool<MySql>,
+    pool: &Pool<Sqlite>,
     table_name: String,
     page_index: u16,
     page_size: u32,
@@ -47,7 +47,7 @@ pub async fn get_paginated_rows(
 }
 
 pub async fn delete_rows(
-    pool: &Pool<MySql>,
+    pool: &Pool<Sqlite>,
     pk_col_name: String,
     table_name: String,
     params: String,
@@ -61,7 +61,7 @@ pub async fn delete_rows(
 }
 
 pub async fn create_row(
-    pool: &Pool<MySql>,
+    pool: &Pool<Sqlite>,
     table_name: String,
     columns: String,
     values: String,
@@ -70,12 +70,12 @@ pub async fn create_row(
         sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
             .execute(pool)
             .await
-            .map_err(|err| err.to_string())?;
+            .map_err(|_| "Failed to create row".to_string())?;
     Ok(res.rows_affected())
 }
 
 pub async fn update_row(
-    pool: &Pool<MySql>,
+    pool: &Pool<Sqlite>,
     table_name: String,
     set_condition: String,
     pk_col_name: String,

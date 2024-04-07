@@ -1,9 +1,8 @@
-use crate::state::SharedState;
 use sqlx::postgres::PgPoolOptions;
 use std::time::Duration;
 use tauri::async_runtime::Mutex;
 use tauri::State;
-use tx_lib::Drivers;
+use tx_lib::{state::SharedState, Drivers};
 
 pub async fn establish_connection(
     state: &State<'_, Mutex<SharedState>>,

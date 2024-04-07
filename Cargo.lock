@@ -832,9 +832,9 @@ checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
 
 [[package]]
 name = "downcast-rs"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
+checksum = "75b325c5dbd37f80359721ad39aca5a29fb04c89279657cffdda8736d0c0b9d2"
 
 [[package]]
 name = "dtoa"
@@ -1835,7 +1835,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c2a198fb6b0eada2a8df47933734e6d35d350665a33a3593d7164fa52c75c19"
 dependencies = [
  "cfg-if",
- "windows-targets 0.52.4",
+ "windows-targets 0.48.5",
 ]
 
 [[package]]
@@ -2002,6 +2002,18 @@ dependencies = [
  "libc",
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "mysql"
+version = "0.3.4"
+dependencies = [
+ "regex",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "time",
+ "tx_lib",
 ]
 
 [[package]]
@@ -2596,6 +2608,18 @@ dependencies = [
  "fdeflate",
  "flate2",
  "miniz_oxide",
+]
+
+[[package]]
+name = "postgres"
+version = "0.3.4"
+dependencies = [
+ "regex",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "time",
+ "tx_lib",
 ]
 
 [[package]]
@@ -3276,6 +3300,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "sqlite"
+version = "0.3.4"
+dependencies = [
+ "regex",
+ "serde_json",
+ "sqlx",
+ "tauri",
+ "time",
+ "tx_lib",
+]
+
+[[package]]
 name = "sqlx"
 version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3609,15 +3645,18 @@ dependencies = [
 name = "table_x"
 version = "0.3.4"
 dependencies = [
+ "clap",
+ "mysql",
+ "postgres",
  "regex",
  "serde",
  "serde_json",
+ "sqlite",
  "sqlx",
  "tauri",
  "tauri-build",
  "time",
  "tokio",
- "tx_cli",
  "tx_lib",
  "uuid",
  "windows 0.54.0",
@@ -4200,25 +4239,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d127780145176e2b5d16611cc25a900150e86e9fd79d3bde6ff3a37359c9cb5"
 dependencies = [
  "serde_json",
-]
-
-[[package]]
-name = "tx_cli"
-version = "0.3.4"
-dependencies = [
- "clap",
- "tauri",
- "windows 0.54.0",
-]
-
-[[package]]
-name = "tx_commands"
-version = "0.3.4"
-dependencies = [
- "serde_json",
- "sqlx",
- "tauri",
- "tx_lib",
 ]
 
 [[package]]

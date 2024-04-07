@@ -8,7 +8,7 @@ use std::{collections::HashMap, fs::OpenOptions};
 use tauri::Runtime;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Drivers {
     #[default]

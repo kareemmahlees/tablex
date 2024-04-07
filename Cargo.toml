@@ -7,7 +7,6 @@ members = [
 resolver = "2"
 
 [workspace.package]
-name = "tablex" 
 description = "Table Viewer for modern developers"
 version = "0.3.4"    
 license = "MIT"
@@ -16,8 +15,7 @@ repository = "https://github.com/kareemmahlees/tablex"
 rust-version = "1.60"
 edition = "2021"
 
-
-[workspace.profile.release]
+[profile.release]
 panic = "abort" 
 codegen-units = 1 
 lto = true 
@@ -30,4 +28,7 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 uuid = {version = "1.6.1",features = ["v4", "fast-rng", "macro-diagnostics"] }
 sqlx = { version = "0.7.4", features = [ "runtime-tokio", "tls-native-tls", "sqlite", "postgres", "mysql", "time"] }
+time = "0.3.30"
+
+regex = "1.10.3"
 

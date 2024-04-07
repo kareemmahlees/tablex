@@ -15,7 +15,7 @@ pub struct SharedState {
 }
 
 impl SharedState {
-    pub(crate) async fn cleanup(&mut self) {
+    pub async fn cleanup(&mut self) {
         if let Some(sqlite_pool) = &self.sqlite_pool {
             sqlite_pool.close().await
         }
