@@ -1,5 +1,5 @@
 [package]
-name = "tx_lib"
+name = "tx_commands"
 description.workspace = true
 version.workspace = true
 license.workspace = true
@@ -9,8 +9,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-serde_json = { workspace = true }
-serde = { workspace = true }
+tx_lib = {path = "../lib"}
 tauri = { workspace = true }
-uuid = { workspace = true }
+serde_json = { workspace = true }
 sqlx = { workspace = true }

@@ -1,3 +1,5 @@
+pub mod state;
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
