@@ -4,29 +4,15 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "public/**"
-      - ".husky/**"
-      - ".gitignore"
-      - ".github/**"
-      - ".vscode/**"
-      - ".changeset/**"
-      - "apps/core/**"
+    paths:
+      - "apps/web/**"
+      - "package.json"
   pull_request:
     branches:
       - master
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "public/**"
-      - ".husky/**"
-      - ".gitignore"
-      - ".github/**"
-      - ".vscode/**"
-      - ".changeset/**"
-      - "apps/core/**"
+      - "apps/web/**"
+      - "package.json"
   workflow_dispatch:
 
 jobs:
