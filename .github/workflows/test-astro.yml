@@ -6,12 +6,14 @@ on:
       - master
     paths:
       - "apps/web/**"
+      - "packages"
       - "package.json"
   pull_request:
     branches:
       - master
-    paths-ignore:
+    paths:
       - "apps/web/**"
+      - "packages"
       - "package.json"
   workflow_dispatch:
 
