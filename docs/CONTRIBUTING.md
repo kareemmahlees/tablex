@@ -8,14 +8,17 @@ Whatever the level of your expertise, you will definitely find some issue that s
 
 # Codebase Overview
 
-**TableX** is a [Tauri](https://tauri.app/) app which uses [NextJs](https://nextjs.org/) for the Frontend and [Rust](https://www.rust-lang.org/) as the Backend.
+**TableX** is a [Tauri](https://tauri.app/) app which uses [React](https://react.dev/) for the Frontend and [Rust](https://www.rust-lang.org/) as the Backend.
 
 During release builds, we bundle [MetaX](https://github.com/kareemmahlees/meta-x) with the final build.
 
-**TableX** is also a `monorepo` that contains:
+**TableX** is a `monorepo` which contains:
 
-- TableX application logic at `apps/core`.
-- TableX website, built with `Astro`, at `apps/web`.
+- `apps/core`: containing the desktop application core logic.
+- `apps/web`: landing page for TableX.
+- `crates`: some of TableX's logic splitted into small crates for better organization.
+- `packages`: shared package between `core` and `web`.
+- `scripts`: some useful scripts for setting up some things in github actions, **your probably won't need to touch this**.
 
 You will find also an `apps/scripts` directory, which contain some scripts that are used only in the `release` action on github.
 
