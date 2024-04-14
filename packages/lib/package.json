@@ -1,0 +1,16 @@
+{
+  "name": "@tablex/lib",
+  "version": "0.0.0",
+  "private": true,
+  "description": "TableX frontend lib",
+  "type": "module",
+  "dependencies": {
+    "react-hot-toast": "^2.4.1"
+  },
+  "exports": {
+    ".": "./src/index",
+    "./constants": "./src/constants.ts",
+    "./utils": "./src/utils.ts",
+    "./types": "./src/types.ts"
+  }
+}

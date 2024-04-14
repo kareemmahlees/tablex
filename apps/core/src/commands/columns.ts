@@ -2,8 +2,8 @@ import {
   DATE_DATA_TYPES,
   NUMERIC_DATA_TYPE,
   STRING_DATA_TYPES
-} from "@/lib/constants"
-import { ColumnProps } from "@/lib/types"
+} from "@tablex/lib/constants"
+import { ColumnProps } from "@tablex/lib/types"
 import { invoke } from "@tauri-apps/api/tauri"
 import { z } from "zod"
 

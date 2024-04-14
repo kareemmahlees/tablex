@@ -21,6 +21,7 @@
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@tablex/core": "workspace:^",
+    "@tablex/lib": "workspace:^",
     "astro": "^4.4.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

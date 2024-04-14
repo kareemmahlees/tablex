@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { dirtyValues } from "@/lib/utils"
+import { dirtyValues } from "@tablex/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"

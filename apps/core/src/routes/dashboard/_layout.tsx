@@ -5,7 +5,7 @@ import {
 import { getTables } from "@/commands/table"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
+import { cn } from "@tablex/lib/utils"
 import { registerShortcuts } from "@/shortcuts"
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"

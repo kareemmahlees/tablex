@@ -2,8 +2,8 @@ import type {
   ConnectionDetails,
   Connections,
   SupportedDrivers
-} from "@/lib/types"
-import { customToast } from "@/lib/utils"
+} from "@tablex/lib/types"
+import { customToast } from "@tablex/lib/utils"
 import { type Router } from "@tanstack/react-router"
 import { invoke } from "@tauri-apps/api/tauri"
 
