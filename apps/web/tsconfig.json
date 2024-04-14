@@ -5,8 +5,7 @@
     "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@tablex/core/*": ["../core/*"]
+      "@/*": ["./src/*"]
     }
   },
   "exclude": ["./dist", "./node_modules"]

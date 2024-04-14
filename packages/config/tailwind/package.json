@@ -1,0 +1,10 @@
+{
+  "name": "@tablex/tailwind",
+  "version": "0.0.0",
+  "description": "Tailwindcss preset for OrbitKit workspace",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

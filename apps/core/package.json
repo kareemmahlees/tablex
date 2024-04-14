@@ -41,6 +41,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@tablex/tailwind": "workspace:^",
     "@tanstack/router-devtools": "^1.19.1",
     "@tanstack/router-vite-plugin": "^1.18.1",
     "@tauri-apps/cli": "^1.5.11",
