@@ -4,7 +4,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-
+    inputs:
+      release-id:
+        type: string
+        description: Optional release-id (only used when running worklfow manually)
 jobs:
   release-app:
     permissions:
@@ -71,7 +74,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          releaseId: ${{ github.event.release.id }}
+          releaseId: ${{ github.event.release.id || github.event.inputs.release-id }}
           projectPath: ./apps/core
           tauriScript: pnpm tauri
           args: --config src-tauri/tauri.conf.sidecar.json
