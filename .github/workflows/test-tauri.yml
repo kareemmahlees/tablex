@@ -42,6 +42,8 @@ jobs:
         with:
           sparse-checkout: |
             apps/core
+            crates
+            packages
             .github/actions
 
       - name: install dependencies (ubuntu only)
@@ -55,8 +57,6 @@ jobs:
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/core/src-tauri -> target"
 
       - name: Setup Node & PNPM
         uses: ./.github/actions/setup-node-pnpm

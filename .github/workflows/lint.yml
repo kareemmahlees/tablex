@@ -63,6 +63,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             apps/core/src-tauri
+            crates
             .github/actions
 
       - name: Install tauri specific dependencies
@@ -79,8 +80,6 @@ jobs:
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/core/src-tauri -> target"
 
       - name: Run Clippy
         run: pnpm rust:lint
