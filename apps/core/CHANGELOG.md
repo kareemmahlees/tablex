@@ -1,5 +1,20 @@
 # @tablex/core
 
+## 0.3.5
+
+### Patch Changes
+
+- [`2a591c3`](https://github.com/kareemmahlees/tablex/commit/2a591c3e912a0f77a0aa709aec8064ed8ee6cccb) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - ## Fixes
+
+  ### Compile
+
+  - Sync `tauri.conf.sidecar.json` with `tauri.conf.json`
+
+  ### UI
+
+  - Overflow the tables sidebar in table view
+  - Prevent Command Palette auto focus behavior
+
 ## 0.3.4
 
 ### Patch Changes
