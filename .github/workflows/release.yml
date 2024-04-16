@@ -4,7 +4,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
-
+    inputs:
+      release-id:
+        type: string
+        description: Optional release-id (only used when running worklfow manually)
 jobs:
   release-app:
     permissions:
@@ -20,6 +23,8 @@ jobs:
         with:
           sparse-checkout: |
             apps/core
+            crates
+            packages
             apps/scripts
             .github/actions
 
@@ -40,8 +45,6 @@ jobs:
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/core/src-tauri -> target"
 
       - name: Setup Node & PNPM
         uses: ./.github/actions/setup-node-pnpm
@@ -56,16 +59,22 @@ jobs:
           cache-dependency-path: "**/go.sum"
           go-version: "stable"
 
-      - name: Run prepare-metax script
-        run: |
-          go build -C ./apps/meta-x/ -o ../bin/ -ldflags "-w -s"
-          go run ./apps/scripts/suffex-meta-x.go
+      - name: Build MetaX
+        run: go build -C ./apps/meta-x/ -o ../bin/ -ldflags "-w -s"
+
+      - name: Prepare MetaX (windows)
+        if: matrix.platform == 'windows'
+        run: ./scripts/suffex_metax.ps1
+
+      - name: Prepare MetaX (mac, linux)
+        if: matrix.platform != 'windows'
+        run: ./scripts/suffex_metax.sh
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          releaseId: ${{ github.event.release.id }}
+          releaseId: ${{ github.event.release.id || github.event.inputs.release-id }}
           projectPath: ./apps/core
           tauriScript: pnpm tauri
           args: --config src-tauri/tauri.conf.sidecar.json

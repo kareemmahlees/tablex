@@ -3,24 +3,21 @@
 
 mod cli;
 mod connection;
-mod drivers;
 mod row;
-mod state;
 mod table;
-mod utils;
 
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_paginated_rows, update_row};
-use state::SharedState;
 use table::{get_columns_definition, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
+use tx_lib::state::SharedState;
 
 #[tauri::command]
-async fn close_splashscreen(window: Window) {
+fn close_splashscreen(window: Window) {
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
 
@@ -72,7 +69,7 @@ fn main() {
                 if event.window().label() != "main" {
                     return;
                 }
-                let state: tauri::State<'_, Mutex<SharedState>> = event.window().state();
+                let state = event.window().state::<Mutex<SharedState>>();
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 let mut stt = rt.block_on(state.lock());
                 rt.block_on(stt.cleanup());

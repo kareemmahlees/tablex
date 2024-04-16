@@ -90,6 +90,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.0
         version: 3.4.0
+      tsconfig-paths:
+        specifier: ^4.2.0
+        version: 4.2.0
       typescript:
         specifier: ^5
         version: 5.3.3
@@ -181,6 +184,12 @@ importers:
         specifier: ^3.22.4
         version: 3.22.4
     devDependencies:
+      '@tablex/lib':
+        specifier: workspace:^
+        version: link:../../packages/lib
+      '@tablex/tailwind':
+        specifier: workspace:^
+        version: link:../../packages/config/tailwind
       '@tanstack/router-devtools':
         specifier: ^1.19.1
         version: 1.19.1(csstype@3.1.3)(react-dom@18.2.0)(react@18.2.0)
@@ -253,6 +262,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.0.7(@types/react-dom@18.2.19)(@types/react@18.2.56)(react-dom@18.2.0)(react@18.2.0)
+      '@tablex/core':
+        specifier: workspace:^
+        version: link:../core
+      '@tablex/lib':
+        specifier: workspace:^
+        version: link:../../packages/lib
       '@types/react':
         specifier: ^18.2.56
         version: 18.2.56
@@ -301,6 +316,18 @@ importers:
       vaul:
         specifier: ^0.8.0
         version: 0.8.0(@types/react-dom@18.2.19)(@types/react@18.2.56)(react-dom@18.2.0)(react@18.2.0)
+    devDependencies:
+      '@tablex/tailwind':
+        specifier: workspace:^
+        version: link:../../packages/config/tailwind
+
+  packages/config/tailwind: {}
+
+  packages/lib:
+    dependencies:
+      react-hot-toast:
+        specifier: ^2.4.1
+        version: 2.4.1(csstype@3.1.3)(react-dom@18.2.0)(react@18.2.0)
 
 packages:
 
@@ -8739,6 +8766,15 @@ packages:
     dependencies:
       typescript: 5.3.3
     dev: false
+
+  /tsconfig-paths@4.2.0:
+    resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
+    engines: {node: '>=6'}
+    dependencies:
+      json5: 2.2.3
+      minimist: 1.2.8
+      strip-bom: 3.0.0
+    dev: true
 
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}

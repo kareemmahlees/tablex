@@ -1,0 +1,10 @@
+{
+  "name": "@tablex/tailwind",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Tailwindcss preset for TableX workspace",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

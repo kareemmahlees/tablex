@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@tablex/lib/utils"
 import { Link } from "@tanstack/react-router"
 import { LinkIcon } from "lucide-react"
 import { buttonVariants } from "./ui/button"

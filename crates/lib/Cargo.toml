@@ -1,0 +1,16 @@
+[package]
+name = "tx_lib"
+description.workspace = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde_json = { workspace = true }
+serde = { workspace = true }
+tauri = { workspace = true }
+uuid = { workspace = true }
+sqlx = { workspace = true }

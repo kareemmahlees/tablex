@@ -1,36 +1,31 @@
 [package]
 name = "table_x"
-version = "0.3.2"
-description = "Table Viewer for modern developers"
-authors = ["Kareem Ebrahim"]
-license = "MIT"
-repository = "https://github.com/kareemmahlees/tablex"
+version.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
 default-run = "table_x"
-edition = "2021"
-rust-version = "1.60"
-
-[profile.release]
-panic = "abort" 
-codegen-units = 1 
-lto = true 
-opt-level = "s" 
-strip = true 
+edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
+regex= { workspace = true }
 tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
-clap = { version = "4.5.1", features = ["derive"] }
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.6.1", features = [ "shell-open", "os-all", "clipboard-write-text", "global-shortcut-all", "dialog-open", "test", "process-command-api"] }
-sqlx = { version = "0.7.4", features = [ "runtime-tokio", "tls-native-tls", "sqlite", "postgres", "mysql", "time"] }
-uuid = {version = "1.6.1",features = ["v4", "fast-rng", "macro-diagnostics"] }
+tx_lib = { path = "../../../crates/lib" }
+sqlite = { path = "../../../crates/sqlite"  }
+postgres = { path = "../../../crates/postgres"  }
+mysql = { path = "../../../crates/mysql"  }
+serde_json = { workspace = true }
+serde = { workspace = true }
+tauri = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
 tokio = { version = "1", features = ["full"] }
-time = "0.3.30"
-regex = "1.10.3"
+clap = { version = "4.5.1", features = ["derive"] }
+time = { workspace = true }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

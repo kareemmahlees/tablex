@@ -1,3 +1,5 @@
+pub mod state;
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
@@ -6,7 +8,7 @@ use std::{collections::HashMap, fs::OpenOptions};
 use tauri::Runtime;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum Drivers {
     #[default]
@@ -71,8 +73,7 @@ pub fn delete_from_connections_file(
     connections_file_path: &mut PathBuf,
     conn_id: String,
 ) -> Result<(), String> {
-    let mut contents = read_from_connections_file(connections_file_path)
-        .map_err(|_| "Couldn't read contents of connections file")?;
+    let mut contents = read_from_connections_file(connections_file_path)?;
 
     match contents.as_object_mut() {
         Some(v) => {

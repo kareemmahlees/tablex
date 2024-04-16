@@ -1,4 +1,4 @@
-import { customToast } from "@/lib/utils"
+import { customToast } from "@tablex/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/api/clipboard"

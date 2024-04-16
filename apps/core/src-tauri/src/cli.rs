@@ -1,16 +1,13 @@
+use crate::connection::{connections_exist, create_connection_record, establish_connection};
 use clap::Command;
 use clap::{error::ErrorKind, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, Manager};
 use tauri::{AppHandle, Window};
-
-use crate::connection::{connections_exist, create_connection_record};
-use crate::drivers::{mysql, postgres, sqlite};
-use crate::state::SharedState;
-use crate::utils::Drivers;
+use tx_lib::{state::SharedState, Drivers};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
-pub(crate) struct Args {
+pub struct Args {
     /// Connection string of the database
     conn_string: Option<String>,
 
@@ -27,7 +24,7 @@ pub(crate) struct Args {
 ///
 /// Attaches the console so the user can see output in the terminal.
 #[cfg(all(windows, not(dev)))]
-pub(crate) fn attach_console() {
+fn attach_console() {
     use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
     let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
 }
@@ -37,14 +34,14 @@ pub(crate) fn attach_console() {
 /// Frees the console so the user won't see weird println's  
 /// after he is done using the cli.
 #[cfg(all(windows, not(dev)))]
-pub(crate) fn free_console() {
+fn free_console() {
     use windows::Win32::System::Console::FreeConsole;
     let _ = unsafe { FreeConsole() };
 }
 
 /// If the app is ran with CLI args, this will parse them and handle
 /// the errors messages.
-pub(crate) fn parse_cli_args() -> (Args, Command) {
+pub fn parse_cli_args() -> (Args, Command) {
     #[cfg(all(windows, not(dev)))]
     attach_console();
 
@@ -62,7 +59,7 @@ pub(crate) fn parse_cli_args() -> (Args, Command) {
 /// - If the connection string is malformed.
 /// - If the driver is invalid.
 /// - If `--save` is set without `-c`.
-pub(crate) async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
+pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
     let main_window = app.get_window("main").unwrap();
     let splash_screen = app.get_window("splashscreen").unwrap();
 
@@ -118,18 +115,19 @@ async fn establish_on_the_fly_connection(
     match prefix {
         "sqlite" | "sqlite3" => {
             driver = Drivers::SQLite;
-            sqlite::connection::establish_connection(&state, conn_string.into()).await
+            Ok(())
         }
         "postgresql" | "postgres" => {
             driver = Drivers::PostgreSQL;
-            postgres::connection::establish_connection(&state, conn_string.into()).await
+            Ok(())
         }
         "mysql" => {
             driver = Drivers::MySQL;
-            mysql::connection::establish_connection(&state, conn_string.into()).await
+            Ok(())
         }
         _ => Err(format!("Unsupported driver {prefix}")),
     }?;
+    establish_connection(state, conn_string.into(), driver.clone()).await?;
 
     Ok(driver)
 }

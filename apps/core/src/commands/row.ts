@@ -1,5 +1,5 @@
-import type { PaginatedRows } from "@/lib/types"
-import { customToast } from "@/lib/utils"
+import type { PaginatedRows } from "@tablex/lib/types"
+import { customToast } from "@tablex/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Router } from "@tanstack/react-router"
 import type { Row, Table } from "@tanstack/react-table"

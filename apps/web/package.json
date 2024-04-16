@@ -20,6 +20,8 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
+    "@tablex/core": "workspace:^",
+    "@tablex/lib": "workspace:^",
     "astro": "^4.4.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -34,5 +36,8 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.3",
     "vaul": "^0.8.0"
+  },
+  "devDependencies": {
+    "@tablex/tailwind": "workspace:^"
   }
 }

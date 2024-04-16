@@ -1,6 +1,6 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: ["class"],
+import { type Config } from "tailwindcss"
+
+export const tablexTailwindPreset: Config = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   prefix: "",
   theme: {

@@ -1,11 +1,11 @@
-use crate::utils::Drivers;
+use crate::Drivers;
 use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
 
 #[derive(Default, Debug)]
-pub(crate) struct SharedState {
+pub struct SharedState {
     pub sqlite_pool: Option<SqlitePool>,
     pub postgres_pool: Option<PgPool>,
     pub mysql_pool: Option<MySqlPool>,
@@ -15,7 +15,7 @@ pub(crate) struct SharedState {
 }
 
 impl SharedState {
-    pub(crate) async fn cleanup(&mut self) {
+    pub async fn cleanup(&mut self) {
         if let Some(sqlite_pool) = &self.sqlite_pool {
             sqlite_pool.close().await
         }

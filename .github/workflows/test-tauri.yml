@@ -4,29 +4,19 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "public/**"
-      - ".husky/**"
-      - ".gitignore"
-      - ".github/**"
-      - ".vscode/**"
-      - ".changeset/**"
-      - "apps/web/**"
+    paths:
+      - "apps/core"
+      - "crates"
+      - "packages"
+      - "package.json"
   pull_request:
     branches:
       - master
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "public/**"
-      - ".husky/**"
-      - ".gitignore"
-      - ".github/**"
-      - ".vscode/**"
-      - ".changeset/**"
-      - "apps/web/**"
+    paths:
+      - "apps/core"
+      - "crates"
+      - "packages"
+      - "package.json"
   workflow_dispatch:
 
 jobs:
@@ -42,6 +32,8 @@ jobs:
         with:
           sparse-checkout: |
             apps/core
+            crates
+            packages
             .github/actions
 
       - name: install dependencies (ubuntu only)
@@ -55,8 +47,6 @@ jobs:
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/core/src-tauri -> target"
 
       - name: Setup Node & PNPM
         uses: ./.github/actions/setup-node-pnpm
