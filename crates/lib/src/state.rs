@@ -3,12 +3,14 @@ use sqlx::sqlite::SqlitePool;
 use sqlx::{MySqlPool, PgPool};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
+use tx_handlers::Handler;
 
 #[derive(Default, Debug)]
 pub struct SharedState {
     pub sqlite_pool: Option<SqlitePool>,
     pub postgres_pool: Option<PgPool>,
     pub mysql_pool: Option<MySqlPool>,
+    pub handler: Option<Box<dyn Handler>>,
     pub driver: Option<Drivers>,
     #[cfg(not(debug_assertions))]
     pub metax: Option<CommandChild>,

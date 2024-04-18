@@ -15,6 +15,7 @@ tauri-build = { version = "1.5.1", features = [] }
 
 [dependencies]
 tx_lib = { path = "../../../crates/lib" }
+tx_handlers = { path = "../../../crates/handlers" }
 sqlite = { path = "../../../crates/sqlite"  }
 postgres = { path = "../../../crates/postgres"  }
 mysql = { path = "../../../crates/mysql"  }

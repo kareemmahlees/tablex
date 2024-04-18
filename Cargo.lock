@@ -150,6 +150,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-trait"
+version = "0.1.80"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6fa2087f2753a7da8cc1c0dbfcf89579dd57458e36769de5ac750b4671737ca"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.58",
+]
+
+[[package]]
 name = "atk"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1835,7 +1846,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c2a198fb6b0eada2a8df47933734e6d35d350665a33a3593d7164fa52c75c19"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.4",
 ]
 
 [[package]]
@@ -3657,6 +3668,7 @@ dependencies = [
  "tauri-build",
  "time",
  "tokio",
+ "tx_handlers",
  "tx_lib",
  "uuid",
  "windows 0.54.0",
@@ -4242,6 +4254,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tx_handlers"
+version = "0.3.4"
+dependencies = [
+ "async-trait",
+ "regex",
+ "sqlx",
+]
+
+[[package]]
 name = "tx_lib"
 version = "0.3.4"
 dependencies = [
@@ -4249,6 +4270,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tauri",
+ "tx_handlers",
  "uuid",
 ]
 

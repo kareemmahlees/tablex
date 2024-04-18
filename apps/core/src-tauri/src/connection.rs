@@ -1,10 +1,11 @@
 use tauri::async_runtime::Mutex;
 
-use mysql;
-use postgres;
-use sqlite;
+// use mysql;
+// use postgres;
+// use sqlite;
 use sqlx::{AnyConnection, Connection};
 use tauri::State;
+use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler, Handler};
 use tx_lib::{
     delete_from_connections_file, get_connections_file_path, read_from_connections_file,
     state::SharedState, write_into_connections_file, Drivers,
@@ -56,13 +57,57 @@ pub async fn establish_connection(
             sidecar.kill().expect("failed to kill sidecar")
         }
     }
-    match driver {
-        Drivers::SQLite => sqlite::connection::establish_connection(&state, conn_string).await,
-        Drivers::PostgreSQL => {
-            postgres::connection::establish_connection(&state, conn_string).await
-        }
-        Drivers::MySQL => mysql::connection::establish_connection(&state, conn_string).await,
+    let pool = tx_handlers::establish_connection(&conn_string).await?;
+
+    let handler: Box<dyn Handler> = match driver {
+        Drivers::SQLite => Box::new(SQLiteHandler { pool: pool.clone() }),
+        Drivers::PostgreSQL => Box::new(PostgresHandler { pool: pool.clone() }),
+        Drivers::MySQL => Box::new(MySQLHandler { pool: pool.clone() }),
+    };
+
+    let mut state = state.lock().await;
+
+    state.handler = Some(handler);
+    #[cfg(not(debug_assertions))]
+    {
+        let child = spawn_sidecar(driver);
+        state.metax = Some(child);
     }
+
+    Ok(())
+}
+
+#[cfg(not(debug_assertions))]
+fn spawn_sidecar(driver: Drivers) -> CommandChild {
+    let mut args = Vec::<&str>::with_capacity(3);
+
+    match driver {
+        Drivers::SQLite => {
+            let (_, after) = conn_string.split_once(':').unwrap();
+            args = vec!["sqlite3", "-f", after];
+        }
+        Drivers::PostgreSQL => args = vec!["pg", "--url", conn_string.as_str()],
+        Drivers::MySQL => {
+            let stripped_conn_string = conn_string.strip_prefix("mysql://").unwrap().to_string();
+
+            use regex::Regex;
+
+            let re = Regex::new(r"@(.+?)/").unwrap();
+            let output = re.replace_all(&stripped_conn_string, |caps: &regex::Captures| {
+                format!("@tcp({})/", &caps[1])
+            });
+            args = output;
+        }
+    };
+
+    use tauri::api::process::Command;
+
+    let (_, child) = Command::new_sidecar("meta-x")
+        .expect("failed to create `meta-x` binary command")
+        .args(args)
+        .spawn()
+        .expect("failed to spawn sidecar");
+    child;
 }
 
 #[tauri::command]
