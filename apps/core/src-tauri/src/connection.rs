@@ -7,13 +7,16 @@ use sqlx::{AnyConnection, Connection};
 use tauri::State;
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler, Handler};
 use tx_lib::{
-    delete_from_connections_file, get_connections_file_path, read_from_connections_file,
-    state::SharedState, write_into_connections_file, Drivers,
+    fs::{
+        delete_from_connections_file, get_connections_file_path, read_from_connections_file,
+        write_into_connections_file,
+    },
+    state::SharedState,
+    Drivers,
 };
 
 #[tauri::command]
 pub async fn test_connection(conn_string: String) -> Result<String, String> {
-    sqlx::any::install_default_drivers();
     let mut con = AnyConnection::connect(conn_string.as_str())
         .await
         .map_err(|_| "Couldn't connect to DB".to_string())?;

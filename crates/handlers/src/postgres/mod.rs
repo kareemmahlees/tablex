@@ -23,6 +23,32 @@ impl TableHandler for PostgresHandler {
         .await
         .map_err(|err| err.to_string())
     }
+
+    async fn get_columns_definition(&self, table_name: String) -> Result<Vec<AnyRow>, String> {
+        sqlx::query(
+        format!(
+            "SELECT COL.COLUMN_NAME,
+                COL.DATA_TYPE,
+                CASE
+                                WHEN COL.IS_NULLABLE = 'YES' THEN TRUE
+                                ELSE FALSE
+                END IS_NULLABLE,
+                COL.COLUMN_DEFAULT,
+                CASE
+                                WHEN TC.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN TRUE
+                                ELSE FALSE
+                END IS_PK
+            FROM INFORMATION_SCHEMA.COLUMNS AS COL
+            LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS CCU ON COL.COLUMN_NAME = CCU.COLUMN_NAME
+            LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME
+            WHERE COL.TABLE_NAME = '{table_name}';"
+        )
+        .as_str(),
+    )
+    .fetch_all(&self.pool)
+    .await
+    .map_err(|err| err.to_string())
+    }
 }
 
 impl RowHandler for PostgresHandler {}

@@ -16,10 +16,10 @@ pub trait RowHandler {}
 #[async_trait]
 pub trait TableHandler {
     async fn get_tables(&self) -> Result<Vec<AnyRow>, String>;
+    async fn get_columns_definition(&self, table_name: String) -> Result<Vec<AnyRow>, String>;
 }
 
 pub async fn establish_connection(conn_string: &String) -> Result<AnyPool, String> {
-    sqlx::any::install_default_drivers();
     let pool = AnyPoolOptions::new()
         .acquire_timeout(Duration::from_secs(5))
         .test_before_acquire(true)

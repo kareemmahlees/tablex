@@ -24,4 +24,16 @@ impl TableHandler for SQLiteHandler {
         .await
         .map_err(|err| err.to_string())
     }
+
+    async fn get_columns_definition(&self, table_name: String) -> Result<Vec<AnyRow>, String> {
+        sqlx::query(
+            format!(
+            "select name,type,\"notnull\",dflt_value,pk from pragma_table_info('{table_name}');"
+        )
+            .as_str(),
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|err| err.to_string())
+    }
 }
