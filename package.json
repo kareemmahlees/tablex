@@ -23,7 +23,7 @@
     "astro:build": "pnpm --filter @tablex/web build",
     "astro:preview": "pnpm --filter @tablex/web preview",
     "ts:lint": "pnpm astro:check && pnpm --filter @tablex/core lint",
-    "rust:lint": "pnpm --filter @tablex/core rust:lint",
+    "rust:lint": "cargo clippy",
     "lint": "pnpm ts:lint && pnpm rust:lint",
     "format:check": "pnpm prettier . --check",
     "format:fix": "pnpm prettier . --write"
@@ -39,7 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "autoprefixer": "^10.0.1",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.2",
     "eslint-plugin-react": "^7.33.2",

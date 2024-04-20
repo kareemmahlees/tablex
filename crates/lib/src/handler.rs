@@ -1,10 +1,7 @@
 use async_trait::async_trait;
 use serde_json::{Map as JsonMap, Value as JsonValue};
-use sqlx::{
-    any::{AnyPoolOptions, AnyRow},
-    AnyPool, Column, Row,
-};
-use std::{collections::HashMap, fmt::Debug, time::Duration};
+use sqlx::{any::AnyRow, AnyPool, Column, Row};
+use std::{collections::HashMap, fmt::Debug};
 
 pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
 
@@ -16,17 +13,6 @@ pub trait TableHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String>;
-}
-
-pub async fn establish_connection(conn_string: &String) -> Result<AnyPool, String> {
-    let pool = AnyPoolOptions::new()
-        .acquire_timeout(Duration::from_secs(5))
-        .test_before_acquire(true)
-        .connect(conn_string)
-        .await
-        .map_err(|_| "Couldn't establish connection to db".to_string())?;
-
-    Ok(pool)
 }
 
 #[async_trait]

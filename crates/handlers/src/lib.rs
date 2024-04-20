@@ -5,7 +5,7 @@ pub mod mysql;
 pub mod postgres;
 pub mod sqlite;
 
-pub async fn establish_connection(conn_string: &String) -> Result<AnyPool, String> {
+pub async fn establish_connection(conn_string: &str) -> Result<AnyPool, String> {
     let pool = AnyPoolOptions::new()
         .acquire_timeout(Duration::from_secs(5))
         .test_before_acquire(true)
