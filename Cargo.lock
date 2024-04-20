@@ -2039,18 +2039,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mysql"
-version = "0.3.4"
-dependencies = [
- "regex",
- "serde_json",
- "sqlx",
- "tauri",
- "time",
- "tx_lib",
-]
-
-[[package]]
 name = "native-tls"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2699,18 +2687,6 @@ dependencies = [
  "fdeflate",
  "flate2",
  "miniz_oxide",
-]
-
-[[package]]
-name = "postgres"
-version = "0.3.4"
-dependencies = [
- "regex",
- "serde_json",
- "sqlx",
- "tauri",
- "time",
- "tx_lib",
 ]
 
 [[package]]
@@ -3390,18 +3366,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sqlite"
-version = "0.3.4"
-dependencies = [
- "regex",
- "serde_json",
- "sqlx",
- "tauri",
- "time",
- "tx_lib",
-]
-
-[[package]]
 name = "sqlx"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3637,20 +3601,15 @@ name = "table_x"
 version = "0.3.4"
 dependencies = [
  "clap",
- "mysql",
- "postgres",
  "regex",
  "serde",
  "serde_json",
- "sqlite",
  "sqlx",
  "tauri",
  "tauri-build",
- "time",
  "tokio",
  "tx_handlers",
  "tx_lib",
- "uuid",
  "windows 0.54.0",
 ]
 
@@ -4247,7 +4206,6 @@ name = "tx_handlers"
 version = "0.3.4"
 dependencies = [
  "async-trait",
- "regex",
  "serde_json",
  "sqlx",
  "tx_lib",
@@ -4263,7 +4221,6 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tauri",
- "time",
  "uuid",
 ]
 

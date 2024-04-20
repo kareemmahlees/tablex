@@ -31,7 +31,6 @@ tauri = { version = "1.6.1", features = [
 ] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 # sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "time"] }
 sqlx = { version = "0.6.3", features = [
     "runtime-tokio-native-tls",
@@ -42,6 +41,4 @@ sqlx = { version = "0.6.3", features = [
     "chrono",
     "time",
 ] }
-time = "0.3.30"
 async-trait = "0.1.80"
-regex = "1.10.3"

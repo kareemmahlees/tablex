@@ -12,8 +12,7 @@ edition.workspace = true
 serde_json = { workspace = true }
 serde = { workspace = true }
 tauri = { workspace = true }
-uuid = { workspace = true }
+uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 sqlx = { workspace = true }
-time = { workspace = true }
 async-trait = { workspace = true }
 chrono = "0.4.38"
