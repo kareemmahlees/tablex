@@ -1,6 +1,6 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use serde_json::Value as JsonValue;
-use sqlx::{any::AnyValueRef, Any, TypeInfo, Value, ValueRef};
+use sqlx::{any::AnyValueRef, TypeInfo, Value, ValueRef};
 
 // this code was taken from here
 // https://github.com/tauri-apps/tauri-plugin-sql/blob/v1/src/decode/sqlite.rs

@@ -1,4 +1,5 @@
 use crate::decode;
+pub trait RowHandler {}
 use serde_json::value::{Map as JsonMap, Value as JsonValue};
 use sqlx::{Column, Pool, Row, Sqlite};
 

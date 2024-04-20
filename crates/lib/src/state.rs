@@ -1,9 +1,9 @@
+use crate::handler::Handler;
 use crate::Drivers;
 use sqlx::sqlite::SqlitePool;
-use sqlx::{MySqlPool, PgPool};
+use sqlx::{AnyPool, MySqlPool, PgPool};
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
-use tx_handlers::Handler;
 
 #[derive(Default, Debug)]
 pub struct SharedState {
@@ -11,6 +11,7 @@ pub struct SharedState {
     pub postgres_pool: Option<PgPool>,
     pub mysql_pool: Option<MySqlPool>,
     pub handler: Option<Box<dyn Handler>>,
+    pub pool: Option<AnyPool>,
     pub driver: Option<Drivers>,
     #[cfg(not(debug_assertions))]
     pub metax: Option<CommandChild>,

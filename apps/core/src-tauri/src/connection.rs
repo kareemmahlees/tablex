@@ -5,12 +5,13 @@ use tauri::async_runtime::Mutex;
 // use sqlite;
 use sqlx::{AnyConnection, Connection};
 use tauri::State;
-use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler, Handler};
+use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
     fs::{
         delete_from_connections_file, get_connections_file_path, read_from_connections_file,
         write_into_connections_file,
     },
+    handler::Handler,
     state::SharedState,
     Drivers,
 };
@@ -63,13 +64,14 @@ pub async fn establish_connection(
     let pool = tx_handlers::establish_connection(&conn_string).await?;
 
     let handler: Box<dyn Handler> = match driver {
-        Drivers::SQLite => Box::new(SQLiteHandler { pool: pool.clone() }),
-        Drivers::PostgreSQL => Box::new(PostgresHandler { pool: pool.clone() }),
-        Drivers::MySQL => Box::new(MySQLHandler { pool: pool.clone() }),
+        Drivers::SQLite => Box::new(SQLiteHandler {}),
+        Drivers::PostgreSQL => Box::new(PostgresHandler {}),
+        Drivers::MySQL => Box::new(MySQLHandler {}),
     };
 
     let mut state = state.lock().await;
 
+    state.pool = Some(pool);
     state.handler = Some(handler);
     #[cfg(not(debug_assertions))]
     {

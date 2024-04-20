@@ -4248,20 +4248,22 @@ version = "0.3.4"
 dependencies = [
  "async-trait",
  "regex",
+ "serde_json",
  "sqlx",
+ "tx_lib",
 ]
 
 [[package]]
 name = "tx_lib"
 version = "0.3.4"
 dependencies = [
+ "async-trait",
  "chrono",
  "serde",
  "serde_json",
  "sqlx",
  "tauri",
  "time",
- "tx_handlers",
  "uuid",
 ]
 

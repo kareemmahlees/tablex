@@ -14,5 +14,7 @@ edition.workspace = true
 regex = { workspace = true }
 
 [dependencies]
-async-trait = "0.1.80"
 sqlx = { workspace = true }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+tx_lib = { path = "../lib" }
