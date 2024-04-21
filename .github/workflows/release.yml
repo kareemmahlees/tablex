@@ -25,7 +25,7 @@ jobs:
             apps/core
             crates
             packages
-            apps/scripts
+            scripts
             .github/actions
 
       - name: Checkout MetaX's repo
