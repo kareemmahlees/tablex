@@ -15,7 +15,7 @@
     "packages/**"
   ],
   "scripts": {
-    "tauri:dev": "pnpm --filter @tablex/core exec tauri dev",
+    "tauri:dev": "set RUST_BACKTRACE=1 && pnpm --filter @tablex/core exec tauri dev",
     "tauri:debug": "pnpm --filter @tablex/core exec tauri build --debug",
     "tauri:build": "pnpm --filter @tablex/core exec tauri build",
     "astro:dev": "pnpm --filter @tablex/web dev",
@@ -23,7 +23,7 @@
     "astro:build": "pnpm --filter @tablex/web build",
     "astro:preview": "pnpm --filter @tablex/web preview",
     "ts:lint": "pnpm astro:check && pnpm --filter @tablex/core lint",
-    "rust:lint": "pnpm --filter @tablex/core rust:lint",
+    "rust:lint": "cargo clippy",
     "lint": "pnpm ts:lint && pnpm rust:lint",
     "format:check": "pnpm prettier . --check",
     "format:fix": "pnpm prettier . --write"
@@ -36,10 +36,10 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@typescript-eslint/parser": "^6.16.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
     "autoprefixer": "^10.0.1",
-    "eslint": "^8",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.2",
     "eslint-plugin-react": "^7.33.2",
@@ -48,14 +48,12 @@
     "prettier": "3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.3.0",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@8.13.1",
+  "packageManager": "pnpm@9.0.4",
   "dependencies": {
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "execa": "^8.0.1",
     "lucide-react": "^0.292.0",
     "react": "^18",
     "react-dom": "^18",
