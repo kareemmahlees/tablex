@@ -9,6 +9,7 @@ use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "lowercase")]
+/// Supported drivers, stored inside connection config in `connections.json`.
 pub enum Drivers {
     #[default]
     SQLite,
@@ -17,6 +18,7 @@ pub enum Drivers {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+/// Connection Config Stored inside `connections.json` file
 pub struct ConnConfig {
     driver: Drivers,
     #[serde(rename = "connString")]
@@ -25,7 +27,7 @@ pub struct ConnConfig {
     conn_name: String,
 }
 
-/// shared between drivers::$::table.rs
+/// Utility to generate a Map with some data about a column.
 pub fn create_column_definition_map(
     data_type: JsonValue,
     is_nullable: JsonValue,

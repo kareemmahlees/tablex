@@ -2,8 +2,8 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use serde_json::Value as JsonValue;
 use sqlx::{any::AnyValueRef, TypeInfo, Value, ValueRef};
 
-// this code was taken from here
-// https://github.com/tauri-apps/tauri-plugin-sql/blob/v1/src/decode/sqlite.rs
+/// Utility to decode *most* of db types into rust types.
+/// this code was taken from [here] (https://github.com/tauri-apps/tauri-plugin-sql/blob/v1/src/decode)
 pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
     if v.is_null() {
         return Ok(JsonValue::Null);
@@ -53,6 +53,7 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
                 JsonValue::Null
             }
         }
+        // TODO the current sqlx version doesn't implement the `Decode` trait for usize rust types.
         // "TINYINT UNSIGNED" | "SMALLINT UNSIGNED" | "INT UNSIGNED" | "MEDIUMINT UNSIGNED"
         // | "BIGINT UNSIGNED" | "YEAR" => {
         //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<u32>() {

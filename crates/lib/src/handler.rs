@@ -3,9 +3,12 @@ use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool, Column, Row};
 use std::{collections::HashMap, fmt::Debug};
 
+/// **Handler** must be implemented by any logic handling service, which is
+/// therefore persisted in `SharedState`.
 pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
 
 #[async_trait]
+/// Every handler must provide it's own implementation of this.
 pub trait TableHandler {
     async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>, String>;
     async fn get_columns_definition(
@@ -16,6 +19,7 @@ pub trait TableHandler {
 }
 
 #[async_trait]
+/// The logic for this trait is almost identical between all drivers, so default implementation is created.
 pub trait RowHandler {
     async fn get_paginated_rows(
         &self,

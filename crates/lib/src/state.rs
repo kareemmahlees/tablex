@@ -6,6 +6,7 @@ use tauri::api::process::CommandChild;
 #[derive(Default, Debug)]
 pub struct SharedState {
     pub handler: Option<Box<dyn Handler>>,
+    /// `pool` is passed to the Handler
     pub pool: Option<AnyPool>,
     #[cfg(not(debug_assertions))]
     pub metax: Option<CommandChild>,

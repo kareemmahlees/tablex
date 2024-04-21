@@ -5,6 +5,9 @@ use std::path::PathBuf;
 use tauri::Runtime;
 use uuid::Uuid;
 
+/// Get the file path to `connections.json`.
+///
+/// **Varies by platform**.
 pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf, String> {
     let mut config_dir = app
         .path_resolver()
@@ -14,6 +17,7 @@ pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Resul
     Ok(config_dir)
 }
 
+/// Create a new connection record in `connections.json`.
 pub fn write_into_connections_file(
     connections_file_path: &mut PathBuf,
     driver: Drivers,
@@ -48,6 +52,7 @@ pub fn write_into_connections_file(
     }
 }
 
+/// Delete connection record from `connections.json`.
 pub fn delete_from_connections_file(
     connections_file_path: &mut PathBuf,
     conn_id: String,
@@ -74,6 +79,7 @@ pub fn delete_from_connections_file(
     }
 }
 
+/// Get all connections from `connections.json`.
 pub fn read_from_connections_file(
     connections_file_path: &PathBuf,
 ) -> Result<serde_json::Value, String> {
