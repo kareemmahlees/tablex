@@ -18,7 +18,15 @@ tx_lib = { path = "../../../crates/lib" }
 tx_handlers = { path = "../../../crates/handlers" }
 serde_json = { workspace = true }
 serde = { workspace = true }
-tauri = { workspace = true }
+tauri = { version = "1.6.1", features = [
+    "shell-open",
+    "os-all",
+    "clipboard-write-text",
+    "global-shortcut-all",
+    "dialog-open",
+    "test",
+    "process-command-api",
+] }
 sqlx = { workspace = true }
 tokio = { version = "1", features = ["full"] }
 clap = { version = "4.5.1", features = ["derive"] }

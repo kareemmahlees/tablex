@@ -20,15 +20,6 @@ opt-level = "s"
 strip = true
 
 [workspace.dependencies]
-tauri = { version = "1.6.1", features = [
-    "shell-open",
-    "os-all",
-    "clipboard-write-text",
-    "global-shortcut-all",
-    "dialog-open",
-    "test",
-    "process-command-api",
-] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 # sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "time"] }

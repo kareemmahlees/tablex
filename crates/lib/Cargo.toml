@@ -11,7 +11,7 @@ edition.workspace = true
 [dependencies]
 serde_json = { workspace = true }
 serde = { workspace = true }
-tauri = { workspace = true }
+tauri = { version = "1.6.1", features = ["process-command-api"] }
 uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 sqlx = { workspace = true }
 async-trait = { workspace = true }
