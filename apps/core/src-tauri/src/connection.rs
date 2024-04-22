@@ -1,9 +1,7 @@
-use tauri::async_runtime::Mutex;
-
-// use mysql;
-// use postgres;
-// use sqlite;
 use sqlx::{AnyConnection, Connection};
+#[cfg(not(debug_assertions))]
+use tauri::api::process::{Command, CommandChild};
+use tauri::async_runtime::Mutex;
 use tauri::State;
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
@@ -75,7 +73,7 @@ pub async fn establish_connection(
     state.handler = Some(handler);
     #[cfg(not(debug_assertions))]
     {
-        let child = spawn_sidecar(driver);
+        let child = spawn_sidecar(driver, conn_string);
         state.metax = Some(child);
     }
 
@@ -83,7 +81,7 @@ pub async fn establish_connection(
 }
 
 #[cfg(not(debug_assertions))]
-fn spawn_sidecar(driver: Drivers) -> CommandChild {
+fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
     let mut args = Vec::<&str>::with_capacity(3);
 
     match driver {
