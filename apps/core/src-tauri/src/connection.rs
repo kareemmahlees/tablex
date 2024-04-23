@@ -82,35 +82,33 @@ pub async fn establish_connection(
 
 #[cfg(not(debug_assertions))]
 fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
-    let mut args = Vec::<&str>::with_capacity(3);
-
-    match driver {
+    let args = match driver {
         Drivers::SQLite => {
             let (_, after) = conn_string.split_once(':').unwrap();
-            args = vec!["sqlite3", "-f", after];
+            vec!["sqlite3", "-f", after]
         }
-        Drivers::PostgreSQL => args = vec!["pg", "--url", conn_string.as_str()],
+        Drivers::PostgreSQL => vec!["pg", "--url", conn_string.as_str()],
         Drivers::MySQL => {
-            let stripped_conn_string = conn_string.strip_prefix("mysql://").unwrap().to_string();
+            let stripped_conn_string = conn_string.strip_prefix("mysql://").unwrap();
 
             use regex::Regex;
 
             let re = Regex::new(r"@(.+?)/").unwrap();
-            let output = re.replace_all(&stripped_conn_string, |caps: &regex::Captures| {
+
+            re.replace_all(stripped_conn_string, |caps: &regex::Captures| {
                 format!("@tcp({})/", &caps[1])
             });
-            args = output;
+
+            vec!["mysql", "--url", stripped_conn_string]
         }
     };
-
-    use tauri::api::process::Command;
 
     let (_, child) = Command::new_sidecar("meta-x")
         .expect("failed to create `meta-x` binary command")
         .args(args)
         .spawn()
         .expect("failed to spawn sidecar");
-    child;
+    child
 }
 
 #[tauri::command]
