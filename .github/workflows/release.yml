@@ -63,12 +63,13 @@ jobs:
         run: go build -C ./apps/meta-x/ -o ../bin/ -ldflags "-w -s"
 
       - name: Prepare MetaX (windows)
-        if: matrix.platform == 'windows'
+        if: matrix.platform == 'windows-latest'
         run: ./scripts/suffex_metax.ps1
 
       - name: Prepare MetaX (mac, linux)
-        if: matrix.platform != 'windows'
+        if: matrix.platform != 'windows-latest'
         run: |
+          rustc -Vv
           chmod +x ./scripts/suffex_metax.sh
           ./scripts/suffex_metax.sh
 
