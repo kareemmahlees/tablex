@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-re="host:\s.+"
+re="host:[[:space:]].+"
 
 if [[ `rustc -Vv` =~ $re ]]; then
     IFS=' ' read -ra res <<< "${BASH_REMATCH[0]}"
