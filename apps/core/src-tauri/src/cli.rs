@@ -1,9 +1,10 @@
 use crate::connection::{connections_exist, create_connection_record, establish_connection};
+use crate::state::SharedState;
 use clap::Command;
 use clap::{error::ErrorKind, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, Manager};
 use tauri::{AppHandle, Window};
-use tx_lib::{state::SharedState, Drivers};
+use tx_lib::Drivers;
 
 #[derive(Parser, Debug)]
 #[command(version, about)]

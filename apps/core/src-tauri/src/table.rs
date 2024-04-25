@@ -1,8 +1,8 @@
+use crate::state::SharedState;
 use serde_json::Value as JsonValue;
 use sqlx::Row;
 use std::collections::HashMap;
 use tauri::{async_runtime::Mutex, State};
-use tx_lib::state::SharedState;
 
 #[tauri::command]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>, String> {

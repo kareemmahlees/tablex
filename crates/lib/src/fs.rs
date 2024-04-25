@@ -2,20 +2,7 @@ use crate::{ConnConfig, Drivers};
 use std::fs::OpenOptions;
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::PathBuf;
-use tauri::Runtime;
 use uuid::Uuid;
-
-/// Get the file path to `connections.json`.
-///
-/// **Varies by platform**.
-pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf, String> {
-    let mut config_dir = app
-        .path_resolver()
-        .app_config_dir()
-        .ok_or("Couldn't read config dir path".to_string())?;
-    config_dir.push("connections.json");
-    Ok(config_dir)
-}
 
 /// Create a new connection record in `connections.json`.
 pub fn write_into_connections_file(

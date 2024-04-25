@@ -1,9 +1,9 @@
+use crate::state::SharedState;
 use serde_json::Map;
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use tauri::async_runtime::Mutex;
 use tauri::State;
-use tx_lib::state::SharedState;
 
 #[tauri::command]
 pub async fn get_paginated_rows(

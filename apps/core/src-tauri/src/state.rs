@@ -1,7 +1,7 @@
-use crate::handler::Handler;
 use sqlx::AnyPool;
 #[cfg(not(debug_assertions))]
 use tauri::api::process::CommandChild;
+use tx_lib::handler::Handler;
 
 #[derive(Default, Debug)]
 pub struct SharedState {

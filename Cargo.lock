@@ -4220,7 +4220,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlx",
- "tauri",
  "uuid",
 ]
 

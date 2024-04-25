@@ -4,8 +4,10 @@
 mod cli;
 mod connection;
 mod row;
+mod state;
 mod table;
 
+use crate::state::SharedState;
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
@@ -14,7 +16,6 @@ use row::{create_row, delete_rows, get_paginated_rows, update_row};
 use table::{get_columns_definition, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
-use tx_lib::state::SharedState;
 
 #[tauri::command]
 fn close_splashscreen(window: Window) {

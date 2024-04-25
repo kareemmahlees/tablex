@@ -1,16 +1,13 @@
+use crate::state::SharedState;
 use sqlx::{AnyConnection, Connection};
+use std::path::PathBuf;
 #[cfg(not(debug_assertions))]
 use tauri::api::process::{Command, CommandChild};
-use tauri::async_runtime::Mutex;
-use tauri::State;
+use tauri::{async_runtime::Mutex, Runtime, State};
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
-    fs::{
-        delete_from_connections_file, get_connections_file_path, read_from_connections_file,
-        write_into_connections_file,
-    },
+    fs::{delete_from_connections_file, read_from_connections_file, write_into_connections_file},
     handler::Handler,
-    state::SharedState,
     Drivers,
 };
 
@@ -141,4 +138,16 @@ pub fn get_connection_details(
         .ok_or("Couldn't find the specified connection".to_string())?
         .to_owned();
     Ok(connection_details)
+}
+
+/// Get the file path to `connections.json`.
+///
+/// **Varies by platform**.
+pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf, String> {
+    let mut config_dir = app
+        .path_resolver()
+        .app_config_dir()
+        .ok_or("Couldn't read config dir path".to_string())?;
+    config_dir.push("connections.json");
+    Ok(config_dir)
 }
