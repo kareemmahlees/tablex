@@ -13,7 +13,7 @@ use connection::{
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_paginated_rows, update_row};
-use table::{get_columns_definition, get_tables};
+use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
 
@@ -60,7 +60,7 @@ fn main() {
             get_tables,
             get_paginated_rows,
             delete_rows,
-            get_columns_definition,
+            get_columns_props,
             create_row,
             update_row,
         ])

@@ -45,8 +45,10 @@ export type PaginatedRows = {
 }
 
 export type ColumnProps = {
+  columnName: string
   type: string
   isNullable: boolean
   defaultValue?: any
   isPK: boolean
+  hasFkRelation: boolean
 }

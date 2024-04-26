@@ -4,6 +4,7 @@ use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use tauri::async_runtime::Mutex;
 use tauri::State;
+use tx_lib::handler::PaginatedRows;
 
 #[tauri::command]
 pub async fn get_paginated_rows(
@@ -11,7 +12,7 @@ pub async fn get_paginated_rows(
     table_name: String,
     page_index: u16,
     page_size: i32,
-) -> Result<Map<String, JsonValue>, String> {
+) -> Result<PaginatedRows, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();

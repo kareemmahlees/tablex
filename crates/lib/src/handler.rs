@@ -1,7 +1,10 @@
 use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool, Column, Row};
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
+
+use crate::ColumnProps;
 
 /// **Handler** must be implemented by any logic handling service, which is
 /// therefore persisted in `SharedState`.
@@ -11,11 +14,18 @@ pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
 /// Every handler must provide it's own implementation of this.
 pub trait TableHandler {
     async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>, String>;
-    async fn get_columns_definition(
+    async fn get_columns_props(
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String>;
+    ) -> Result<Vec<ColumnProps>, String>;
+}
+
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct PaginatedRows {
+    data: Vec<JsonMap<String, JsonValue>>,
+    #[serde(rename = "pageCount")]
+    page_count: i64,
 }
 
 #[async_trait]
@@ -27,7 +37,7 @@ pub trait RowHandler {
         table_name: String,
         page_index: u16,
         page_size: i32,
-    ) -> Result<JsonMap<String, JsonValue>, String> {
+    ) -> Result<PaginatedRows, String> {
         let rows = sqlx::query(
             format!(
                 "SELECT * FROM {} limit {} offset {};",
@@ -40,18 +50,20 @@ pub trait RowHandler {
         .fetch_all(pool)
         .await
         .unwrap();
-        let mut values = Vec::new();
+
+        let mut paginated_rows = PaginatedRows::default();
+
         for row in rows {
-            let mut value = JsonMap::default();
+            let mut row_data = JsonMap::default();
             for (i, column) in row.columns().iter().enumerate() {
                 let v = row.try_get_raw(i).unwrap();
 
                 let v = crate::decode::to_json(v)?;
 
-                value.insert(column.name().to_string(), v);
+                row_data.insert(column.name().to_string(), v);
             }
 
-            values.push(value);
+            paginated_rows.data.push(row_data);
         }
         let page_count_result =
             sqlx::query(format!("SELECT COUNT(*) from {}", table_name).as_str())
@@ -60,12 +72,11 @@ pub trait RowHandler {
                 .unwrap();
         let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() / page_size as i64;
 
-        let mut result = JsonMap::new();
-        result.insert("data".to_string(), values.into());
-        result.insert("pageCount".to_string(), page_count.into());
+        paginated_rows.page_count = page_count;
 
-        Ok(result)
+        Ok(paginated_rows)
     }
+
     async fn delete_rows(
         &self,
         pool: &AnyPool,
