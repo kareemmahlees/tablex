@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde_json::Value::{Bool as JsonBool, String as JsonString};
 use sqlx::{any::AnyRow, AnyPool, Row};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
-use tx_lib::ColumnProps;
+use tx_lib::{ColumnProps, FkRelation};
 
 #[derive(Debug)]
 pub struct MySQLHandler;
@@ -43,14 +43,16 @@ impl TableHandler for MySQLHandler {
         let mut columns = Vec::new();
 
         rows.iter().for_each(|row| {
+            let column_name = row.get::<String, usize>(0);
+
             let column_props = ColumnProps::new(
-                row.get(0),
+                column_name,
                 JsonString(row.get(1)),
                 JsonBool(row.get::<i16, usize>(2) == 1),
                 tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
                 JsonBool(row.get::<i16, usize>(4) == 1),
                 // TODO change
-                false,
+                JsonBool(true),
             );
 
             columns.push(column_props);
@@ -60,4 +62,13 @@ impl TableHandler for MySQLHandler {
 }
 
 #[async_trait]
-impl RowHandler for MySQLHandler {}
+impl RowHandler for MySQLHandler {
+    // TODO remove
+    async fn fk_relations(
+        &self,
+        pool: &AnyPool,
+        table_name: String,
+    ) -> Result<Option<Vec<FkRelation>>, String> {
+        Ok(None)
+    }
+}

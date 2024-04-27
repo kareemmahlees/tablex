@@ -50,5 +50,5 @@ export type ColumnProps = {
   isNullable: boolean
   defaultValue?: any
   isPK: boolean
-  hasFkRelation: boolean
+  hasFkRelations: boolean
 }

@@ -44,7 +44,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Link
 } from "lucide-react"
 import {
   useLayoutEffect,
@@ -84,7 +85,7 @@ const DataTable = <TData, TValue>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50, //* I reached to this number by trial and error
     overscan: 10,
-    debug: process.env.NODE_ENV === "development" ? true : false
+    debug: import.meta.env.DEV
   })
 
   useLayoutEffect(() => {
@@ -149,10 +150,18 @@ const DataTable = <TData, TValue>({
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            <div className="flex items-center gap-x-2">
+                              {cell.column.columnDef.meta?.hasFkRelations ? (
+                                <Link
+                                  className="md:h-3 md:w-3 lg:h-4 lg:w-4"
+                                  role="button"
+                                />
+                              ) : null}
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </div>
                           </TableCell>
                         ))}
                       </TableRow>

@@ -4,7 +4,7 @@ use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool, Column, Row};
 use std::fmt::Debug;
 
-use crate::ColumnProps;
+use crate::{ColumnProps, FkRelation};
 
 /// **Handler** must be implemented by any logic handling service, which is
 /// therefore persisted in `SharedState`.
@@ -125,4 +125,10 @@ pub trait RowHandler {
         .map_err(|_| "Failed to update row".to_string())?;
         Ok(res.rows_affected())
     }
+
+    async fn fk_relations(
+        &self,
+        pool: &AnyPool,
+        table_name: String,
+    ) -> Result<Option<Vec<FkRelation>>, String>;
 }

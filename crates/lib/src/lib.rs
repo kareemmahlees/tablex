@@ -4,7 +4,6 @@ pub mod handler;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -26,7 +25,7 @@ pub struct ConnConfig {
     conn_name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ColumnProps {
     #[serde(rename = "columnName")]
     pub column_name: String,
@@ -38,8 +37,8 @@ pub struct ColumnProps {
     pub default_value: JsonValue,
     #[serde(rename = "isPK")]
     pub is_pk: JsonValue,
-    #[serde(rename = "hasFkRelation")]
-    pub has_fk_relation: bool,
+    #[serde(rename = "hasFkRelations")]
+    pub has_fk_relations: JsonValue,
 }
 
 impl ColumnProps {
@@ -49,7 +48,7 @@ impl ColumnProps {
         is_nullable: JsonValue,
         default_value: JsonValue,
         is_pk: JsonValue,
-        has_fk_relation: bool,
+        has_fk_relations: JsonValue,
     ) -> Self {
         ColumnProps {
             column_name,
@@ -57,22 +56,20 @@ impl ColumnProps {
             is_nullable,
             default_value,
             is_pk,
-            has_fk_relation,
+            has_fk_relations,
         }
     }
 }
 
-/// Utility to generate a Map with some data about a column.
-pub fn create_column_definition_map(
-    data_type: JsonValue,
-    is_nullable: JsonValue,
-    default_value: JsonValue,
-    is_pk: JsonValue,
-) -> HashMap<String, JsonValue> {
-    let mut map = HashMap::<String, JsonValue>::new();
-    map.insert("type".to_string(), data_type);
-    map.insert("isNullable".to_string(), is_nullable);
-    map.insert("defaultValue".to_string(), default_value);
-    map.insert("isPK".to_string(), is_pk);
-    map
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FkRelation {
+    #[serde(rename = "tableName")]
+    table_name: String,
+    to: String,
+}
+
+impl FkRelation {
+    pub fn new(table_name: String, to: String) -> Self {
+        FkRelation { table_name, to }
+    }
 }

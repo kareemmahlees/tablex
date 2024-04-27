@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde_json::Value::{Bool as JsonBool, String as JsonString};
 use sqlx::{any::AnyRow, AnyPool, Row};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
-use tx_lib::ColumnProps;
+use tx_lib::{ColumnProps, FkRelation};
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -30,7 +30,14 @@ impl TableHandler for SQLiteHandler {
     ) -> Result<Vec<ColumnProps>, String> {
         let rows = sqlx::query(
             format!(
-            "select name,type,\"notnull\",dflt_value,pk from pragma_table_info('{table_name}');"
+            "
+            SELECT ti.name,ti.type,ti.\"notnull\",ti.dflt_value,ti.pk,
+            CASE WHEN ti.name in (SELECt \"from\" FROM PRAGMA_FOREIGN_KEY_LIST('{table_name}') WHERE \"from\" = ti.name)
+                THEN 1
+                ELSE 0
+                END AS has_fk_relation
+            FROM PRAGMA_TABLE_INFO('{table_name}') as ti;
+            "
         )
             .as_str(),
         )
@@ -38,23 +45,55 @@ impl TableHandler for SQLiteHandler {
         .await
         .map_err(|err| err.to_string())?;
 
-        let mut columns = Vec::new();
+        let columns = rows
+            .iter()
+            .map(|row| {
+                ColumnProps::new(
+                    row.get(0),
+                    JsonString(row.get(1)),
+                    JsonBool(!row.get::<i16, usize>(2) == 0),
+                    tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
+                    JsonBool(row.get::<i16, usize>(4) == 1),
+                    JsonBool(row.get::<i16, usize>(5) == 1),
+                )
+            })
+            .collect();
 
-        rows.iter().for_each(|row| {
-            let column_props = ColumnProps::new(
-                row.get(0),
-                JsonString(row.get(1)),
-                JsonBool(!row.get::<i16, usize>(2) == 0),
-                tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-                JsonBool(row.get::<i16, usize>(4) == 1),
-                false,
-            );
-
-            columns.push(column_props);
-        });
         Ok(columns)
     }
 }
 
 #[async_trait]
-impl RowHandler for SQLiteHandler {}
+impl RowHandler for SQLiteHandler {
+    async fn fk_relations(
+        &self,
+        pool: &AnyPool,
+        table_name: String,
+    ) -> Result<Option<Vec<FkRelation>>, String> {
+        let rows =
+            sqlx::query("SELECT \"table\",\"to\" FROM pragma_foreign_key_list('{table_name}');")
+                .fetch_all(pool)
+                .await
+                .map_err(|err| err.to_string())?;
+
+        if rows.is_empty() {
+            return Ok(None);
+        }
+
+        let fk_relations = rows
+            .iter()
+            .map(|row| FkRelation::new(row.get(0), row.get(1)))
+            .collect();
+
+        Ok(Some(fk_relations))
+    }
+}
+
+/*
+SELECT ti.name,ti.type,ti."notnull",ti.dflt_value,ti.pk,
+CASE WHEN ti.name in (SELECt "from" FROM PRAGMA_FOREIGN_KEY_LIST('test_table') WHERE "from" = ti.name)
+       THEN 1
+       ELSE 0
+       END AS has_fk_relation
+FROM PRAGMA_TABLE_INFO('test_table') as ti;
+ */

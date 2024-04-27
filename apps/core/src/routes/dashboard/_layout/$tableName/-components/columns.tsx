@@ -7,14 +7,15 @@ export const generateColumnsDefs = async (
   tableName: string
 ): Promise<ColumnDef<any>[]> => {
   const columns = await getColsProps(tableName)
-
+  console.log(columns)
   const columnsDefinition: ColumnDef<any>[] = columns.map(
-    ({ columnName, isPK }) => {
+    ({ columnName, isPK, hasFkRelations }) => {
       const columnDefinition: ColumnDef<any> = {
         accessorKey: columnName,
         // types for `meta` come from env.d.ts
         meta: {
-          name: columnName
+          name: columnName,
+          hasFkRelations
         },
         header: ({ column }: { column: Column<any> }) => {
           return <SortingButton column={column} title={columnName} />
@@ -27,8 +28,14 @@ export const generateColumnsDefs = async (
     }
   )
 
-  // add the select box column in the beginning of columns
-  columnsDefinition.unshift({
+  appendCheckboxColumn(columnsDefinition)
+
+  return columnsDefinition
+}
+
+// Appends an extra checkbox column at the beginning of all columns
+const appendCheckboxColumn = (columns: ColumnDef<any>[]) => {
+  columns.unshift({
     id: "select",
     header: ({ table }: { table: Table<any> }) => (
       <Checkbox
@@ -58,5 +65,4 @@ export const generateColumnsDefs = async (
     enableSorting: false,
     enableHiding: false
   })
-  return columnsDefinition
 }
