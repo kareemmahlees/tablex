@@ -3,7 +3,7 @@ pub mod fs;
 pub mod handler;
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JsonValue;
+use serde_json::{Map as JsonMap, Value as JsonValue};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -25,20 +25,20 @@ pub struct ConnConfig {
     conn_name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, sqlx::FromRow)]
 pub struct ColumnProps {
     #[serde(rename = "columnName")]
     pub column_name: String,
     #[serde(rename = "type")]
-    pub data_type: JsonValue,
+    pub data_type: sqlx::types::JsonValue,
     #[serde(rename = "isNullable")]
-    pub is_nullable: JsonValue,
+    pub is_nullable: sqlx::types::JsonValue,
     #[serde(rename = "defaultValue")]
-    pub default_value: JsonValue,
+    pub default_value: sqlx::types::JsonValue,
     #[serde(rename = "isPK")]
-    pub is_pk: JsonValue,
+    pub is_pk: sqlx::types::JsonValue,
     #[serde(rename = "hasFkRelations")]
-    pub has_fk_relations: JsonValue,
+    pub has_fk_relations: sqlx::types::JsonValue,
 }
 
 impl ColumnProps {
@@ -61,15 +61,21 @@ impl ColumnProps {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
 pub struct FkRelation {
     #[serde(rename = "tableName")]
-    table_name: String,
-    to: String,
+    pub table: String,
+    pub to: String,
 }
 
-impl FkRelation {
-    pub fn new(table_name: String, to: String) -> Self {
-        FkRelation { table_name, to }
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct FKRows {
+    pub table_name: String,
+    pub rows: Vec<JsonMap<String, JsonValue>>,
+}
+
+impl FKRows {
+    pub fn new(table_name: String, rows: Vec<JsonMap<String, JsonValue>>) -> Self {
+        FKRows { table_name, rows }
     }
 }

@@ -52,3 +52,8 @@ export type ColumnProps = {
   isPK: boolean
   hasFkRelations: boolean
 }
+
+export type FkRows = {
+  tableName: string
+  rows: Record<string, any>[]
+}

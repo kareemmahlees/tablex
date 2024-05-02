@@ -12,7 +12,7 @@ use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
 };
-use row::{create_row, delete_rows, get_paginated_rows, update_row};
+use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
 use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
@@ -63,6 +63,7 @@ fn main() {
             get_columns_props,
             create_row,
             update_row,
+            get_fk_relations
         ])
         .on_window_event(move |event| {
             if let WindowEvent::Destroyed = event.event() {

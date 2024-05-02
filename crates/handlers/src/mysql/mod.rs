@@ -1,8 +1,8 @@
 use async_trait::async_trait;
-use serde_json::Value::{Bool as JsonBool, String as JsonString};
+use serde_json::Value::{self as JsonValue, Bool as JsonBool, String as JsonString};
 use sqlx::{any::AnyRow, AnyPool, Row};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
-use tx_lib::{ColumnProps, FkRelation};
+use tx_lib::{ColumnProps, FKRows, FkRelation};
 
 #[derive(Debug)]
 pub struct MySQLHandler;
@@ -63,12 +63,14 @@ impl TableHandler for MySQLHandler {
 
 #[async_trait]
 impl RowHandler for MySQLHandler {
-    // TODO remove
+    // TODO refactor
     async fn fk_relations(
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<Option<Vec<FkRelation>>, String> {
+        column_name: String,
+        cell_value: JsonValue,
+    ) -> Result<Option<Vec<FKRows>>, String> {
         Ok(None)
     }
 }

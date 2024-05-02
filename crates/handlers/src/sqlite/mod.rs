@@ -1,8 +1,8 @@
 use async_trait::async_trait;
-use serde_json::Value::{Bool as JsonBool, String as JsonString};
+use serde_json::Value::{self as JsonValue, Bool as JsonBool, String as JsonString};
 use sqlx::{any::AnyRow, AnyPool, Row};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
-use tx_lib::{ColumnProps, FkRelation};
+use tx_lib::{ColumnProps, FKRows, FkRelation};
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -69,23 +69,44 @@ impl RowHandler for SQLiteHandler {
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<Option<Vec<FkRelation>>, String> {
-        let rows =
-            sqlx::query("SELECT \"table\",\"to\" FROM pragma_foreign_key_list('{table_name}');")
-                .fetch_all(pool)
-                .await
-                .map_err(|err| err.to_string())?;
+        column_name: String,
+        cell_value: JsonValue,
+    ) -> Result<Option<Vec<FKRows>>, String> {
+        let fk_relations = sqlx::query_as::<_, FkRelation>(
+            "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;",
+        )
+        .bind(&table_name)
+        .bind(&column_name)
+        .fetch_all(pool)
+        .await
+        .map_err(|err| err.to_string())?;
 
-        if rows.is_empty() {
+        if fk_relations.is_empty() {
             return Ok(None);
         }
 
-        let fk_relations = rows
-            .iter()
-            .map(|row| FkRelation::new(row.get(0), row.get(1)))
-            .collect();
+        let mut result = Vec::new();
 
-        Ok(Some(fk_relations))
+        for relation in fk_relations.iter() {
+            let rows = sqlx::query(
+                format!(
+                    "SELECT * from {table_name} where {to} = {column_value};",
+                    table_name = relation.table,
+                    to = relation.to,
+                    column_value = cell_value,
+                )
+                .as_str(),
+            )
+            .fetch_all(pool)
+            .await
+            .map_err(|err| err.to_string())?;
+
+            let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
+
+            result.push(FKRows::new(table_name.clone(), decoded_row_data));
+        }
+
+        Ok(Some(result))
     }
 }
 
@@ -96,4 +117,15 @@ CASE WHEN ti.name in (SELECt "from" FROM PRAGMA_FOREIGN_KEY_LIST('test_table') W
        ELSE 0
        END AS has_fk_relation
 FROM PRAGMA_TABLE_INFO('test_table') as ti;
+ */
+
+/*
+SELECT * from {table_name} where {to} = {from};
+
+WITH v1 AS (SELECt "table","from","to" FROM PRAGMA_FOREIGN_KEY_LIST('{table_name}') WHERE "from" = {column_name}),
+SELECT * FROM {table_name} where v1.from = v1.to;
+
+
+WITH v1 AS (SELECt "table","from","to" FROM PRAGMA_FOREIGN_KEY_LIST('test_table') WHERE "from" = 'person_id')
+SELECT * FROM "test_table" where v1."from" = v1."to";
  */

@@ -4,7 +4,7 @@ use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool, Column, Row};
 use std::fmt::Debug;
 
-use crate::{ColumnProps, FkRelation};
+use crate::{ColumnProps, FKRows};
 
 /// **Handler** must be implemented by any logic handling service, which is
 /// therefore persisted in `SharedState`.
@@ -130,5 +130,7 @@ pub trait RowHandler {
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<Option<Vec<FkRelation>>, String>;
+        column_name: String,
+        cell_value: JsonValue,
+    ) -> Result<Option<Vec<FKRows>>, String>;
 }
