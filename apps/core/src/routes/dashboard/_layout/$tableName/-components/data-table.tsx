@@ -58,7 +58,6 @@ import {
   type SetStateAction
 } from "react"
 import EditRowSheet from "./edit-row-sheet"
-import ForeignKeyDropdown from "./fk-dropdown"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -157,21 +156,21 @@ const DataTable = <TData, TValue>({
                           <TableCell key={cell.id}>
                             <div className="flex items-center gap-x-2">
                               {cell.column.columnDef.meta?.hasFkRelations ? (
-                                <ForeignKeyDropdown>
-                                  <Link
-                                    className="md:h-3 md:w-3 lg:h-4 lg:w-4"
-                                    role="button"
-                                    onClick={() =>
-                                      getFkRelations(
-                                        tableName,
-                                        cell.column.columnDef.meta
-                                          ?.name as string,
-                                        cell.getValue()
-                                      )
-                                    }
-                                  />
-                                </ForeignKeyDropdown>
-                              ) : null}
+                                // <ForeignKeyDropdown>
+                                <Link
+                                  className="md:h-3 md:w-3 lg:h-4 lg:w-4"
+                                  role="button"
+                                  onClick={() =>
+                                    getFkRelations(
+                                      tableName,
+                                      cell.column.columnDef.meta
+                                        ?.name as string,
+                                      cell.getValue()
+                                    )
+                                  }
+                                />
+                              ) : // </ForeignKeyDropdown>
+                              null}
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
