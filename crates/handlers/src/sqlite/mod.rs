@@ -109,23 +109,3 @@ impl RowHandler for SQLiteHandler {
         Ok(Some(result))
     }
 }
-
-/*
-SELECT ti.name,ti.type,ti."notnull",ti.dflt_value,ti.pk,
-CASE WHEN ti.name in (SELECt "from" FROM PRAGMA_FOREIGN_KEY_LIST('test_table') WHERE "from" = ti.name)
-       THEN 1
-       ELSE 0
-       END AS has_fk_relation
-FROM PRAGMA_TABLE_INFO('test_table') as ti;
- */
-
-/*
-SELECT * from {table_name} where {to} = {from};
-
-WITH v1 AS (SELECt "table","from","to" FROM PRAGMA_FOREIGN_KEY_LIST('{table_name}') WHERE "from" = {column_name}),
-SELECT * FROM {table_name} where v1.from = v1.to;
-
-
-WITH v1 AS (SELECt "table","from","to" FROM PRAGMA_FOREIGN_KEY_LIST('test_table') WHERE "from" = 'person_id')
-SELECT * FROM "test_table" where v1."from" = v1."to";
- */
