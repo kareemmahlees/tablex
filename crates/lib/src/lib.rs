@@ -4,6 +4,7 @@ pub mod handler;
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
+use sqlx::{any::AnyRow, Error, FromRow, Row};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -25,39 +26,47 @@ pub struct ConnConfig {
     conn_name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ColumnProps {
     #[serde(rename = "columnName")]
     pub column_name: String,
     #[serde(rename = "type")]
-    pub data_type: sqlx::types::JsonValue,
+    pub data_type: String,
     #[serde(rename = "isNullable")]
-    pub is_nullable: sqlx::types::JsonValue,
+    pub is_nullable: bool,
     #[serde(rename = "defaultValue")]
-    pub default_value: sqlx::types::JsonValue,
+    pub default_value: JsonValue,
     #[serde(rename = "isPK")]
-    pub is_pk: sqlx::types::JsonValue,
+    pub is_pk: bool,
     #[serde(rename = "hasFkRelations")]
-    pub has_fk_relations: sqlx::types::JsonValue,
+    pub has_fk_relations: bool,
 }
+impl<'r> FromRow<'r, AnyRow> for ColumnProps {
+    fn from_row(row: &'r AnyRow) -> Result<Self, Error> {
+        let column_name = row.try_get::<String, &str>("column_name")?;
+        let data_type = row.try_get::<String, &str>("data_type")?;
+        let is_nullable = match row.try_get::<i16, &str>("is_nullable") {
+            Ok(val) => val == 1,
+            Err(_) => row.try_get::<bool, &str>("is_nullable")?,
+        };
+        let default_value: JsonValue = decode::to_json(row.try_get_raw("default_value")?).unwrap();
+        let is_pk = match row.try_get::<i16, &str>("is_pk") {
+            Ok(val) => val == 1,
+            Err(_) => row.try_get::<bool, &str>("is_pk")?,
+        };
+        let has_fk_relations: bool = match row.try_get::<i16, &str>("has_fk_relations") {
+            Ok(val) => val == 1,
+            Err(_) => row.try_get::<bool, &str>("has_fk_relations")?,
+        };
 
-impl ColumnProps {
-    pub fn new(
-        column_name: String,
-        data_type: JsonValue,
-        is_nullable: JsonValue,
-        default_value: JsonValue,
-        is_pk: JsonValue,
-        has_fk_relations: JsonValue,
-    ) -> Self {
-        ColumnProps {
+        Ok(ColumnProps {
             column_name,
             data_type,
             is_nullable,
             default_value,
             is_pk,
             has_fk_relations,
-        }
+        })
     }
 }
 

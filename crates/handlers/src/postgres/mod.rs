@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use serde_json::Value::{self as JsonValue, Bool as JsonBool, String as JsonString};
-use sqlx::{any::AnyRow, AnyPool, Row};
+use serde_json::Value::{self as JsonValue};
+use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
 use tx_lib::{ColumnProps, FKRows, FkRelation};
 
@@ -28,21 +28,22 @@ impl TableHandler for PostgresHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>, String> {
-        let rows = sqlx::query(
-            format!("SELECT col.column_name,
+        let result = sqlx::query_as::<_,ColumnProps>(
+            "
+            SELECT col.column_name,
                     col.data_type,
                     CASE
                                     WHEN col.is_nullable = 'YES' THEN TRUE
                                     ELSE FALSE
                     END is_nullable,
-                    col.column_default,
+                    col.column_default AS default_value,
                     CASE
                                     WHEN col.column_name in
                                                             (SELECT ccu.column_name
                                                                 FROM information_schema.constraint_column_usage AS ccu
                                                                 LEFT JOIN information_schema.table_constraints AS tc ON ccu.constraint_name = tc.constraint_name
                                                                 AND tc.constraint_type = 'PRIMARY KEY'
-                                                                WHERE ccu.table_name = '{table_name}' ) THEN TRUE
+                                                                WHERE ccu.table_name = $1 ) THEN TRUE
                                     ELSE FALSE
                     END is_pk,
                     CASE
@@ -57,35 +58,20 @@ impl TableHandler for PostgresHandler {
                                                                 ON ccu.constraint_name = tc.constraint_name
                                                             WHERE tc.constraint_type = 'FOREIGN KEY'
                                                                 AND tc.table_schema='public'
-                                                                AND tc.table_name= '{table_name}'
+                                                                AND tc.table_name= $1
                                                 ) THEN TRUE
                                     ELSE FALSE
                     END has_fk_relations
             FROM information_schema.columns AS COL
-            WHERE col.table_name = '{table_name}' ORDER BY col.ordinal_position;").as_str()
+            WHERE col.table_name = $1 ORDER BY col.ordinal_position;
+            "
         )
+        .bind(&table_name)
         .fetch_all(pool)
         .await
         .map_err(|err| err.to_string())?;
 
-        let mut columns = Vec::new();
-
-        rows.iter().for_each(|row| {
-            let column_name = row.get::<String, usize>(0);
-
-            let column_props = ColumnProps::new(
-                column_name,
-                JsonString(row.get(1)),
-                JsonBool(row.get::<bool, usize>(2)),
-                tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-                JsonBool(row.get::<bool, usize>(4)),
-                // TODO change
-                JsonBool(row.get::<bool, usize>(5)),
-            );
-
-            columns.push(column_props);
-        });
-        Ok(columns)
+        Ok(result)
     }
 }
 

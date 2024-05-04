@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use serde_json::Value::{self as JsonValue, Bool as JsonBool, String as JsonString};
-use sqlx::{any::AnyRow, AnyPool, Row};
+use serde_json::Value::{self as JsonValue};
+use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
 use tx_lib::{ColumnProps, FKRows, FkRelation};
 
@@ -23,13 +23,13 @@ impl TableHandler for MySQLHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>, String> {
-        let rows = sqlx::query(
-                "SELECT cols.column_name,
-                        cols.data_type,
+        let result = sqlx::query_as::<_,ColumnProps>(
+                "SELECT cols.column_name AS column_name,
+                        cols.data_type AS data_type,
                         cols.is_nullable = \"YES\" AS is_nullable,
-                        cols.column_default,
+                        cols.column_default AS default_value,
                         GROUP_CONCAT(tc.constraint_type) LIKE '%PRIMARY KEY%' AS is_pk,
-                        GROUP_CONCAT(tc.constraint_type) LIKE '%FOREIGN KEY%' AS has_fk_relation
+                        GROUP_CONCAT(tc.constraint_type) LIKE '%FOREIGN KEY%' AS has_fk_relations
                 FROM information_schema.columns AS cols
                 LEFT JOIN information_schema.key_column_usage AS kcu ON kcu.column_name = cols.column_name
                 LEFT JOIN information_schema.table_constraints AS tc ON tc.constraint_name = kcu.constraint_name
@@ -41,23 +41,23 @@ impl TableHandler for MySQLHandler {
         .await
         .map_err(|err| err.to_string())?;
 
-        let mut columns = Vec::new();
+        // let mut columns = Vec::new();
 
-        rows.iter().for_each(|row| {
-            let column_name = row.get::<String, usize>(0);
+        // rows.iter().for_each(|row| {
+        //     let column_name = row.get::<String, usize>(0);
 
-            let column_props = ColumnProps::new(
-                column_name,
-                JsonString(row.get(1)),
-                JsonBool(row.get::<i16, usize>(2) == 1),
-                tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-                JsonBool(row.get::<i16, usize>(4) == 1),
-                JsonBool(row.get::<i16, usize>(5) == 1),
-            );
+        //     let column_props = ColumnProps::new(
+        //         column_name,
+        //         JsonString(row.get(1)),
+        //         JsonBool(row.get::<i16, usize>(2) == 1),
+        //         tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
+        //         JsonBool(row.get::<i16, usize>(4) == 1),
+        //         JsonBool(row.get::<i16, usize>(5) == 1),
+        //     );
 
-            columns.push(column_props);
-        });
-        Ok(columns)
+        //     columns.push(column_props);
+        // });
+        Ok(result)
     }
 }
 

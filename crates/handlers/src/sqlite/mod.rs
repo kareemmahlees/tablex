@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use serde_json::Value::{self as JsonValue, Bool as JsonBool, String as JsonString};
-use sqlx::{any::AnyRow, AnyPool, Row};
+use serde_json::Value::{self as JsonValue};
+use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
 use tx_lib::{ColumnProps, FKRows, FkRelation};
 
@@ -28,38 +28,29 @@ impl TableHandler for SQLiteHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>, String> {
-        let rows = sqlx::query(
-            format!(
+        let result = sqlx::query_as::<_,ColumnProps>(
             "
-            SELECT ti.name,ti.type,ti.\"notnull\",ti.dflt_value,ti.pk,
-            CASE WHEN ti.name in (SELECt \"from\" FROM PRAGMA_FOREIGN_KEY_LIST('{table_name}') WHERE \"from\" = ti.name)
+            SELECT ti.name AS column_name,
+                    ti.type AS data_type,
+                    CASE WHEN ti.\"notnull\" = 1
+                        THEN 0
+                        ELSE 1
+                        END AS is_nullable,
+                    ti.dflt_value AS default_value,
+                    ti.pk AS is_pk,
+            CASE WHEN ti.name in (SELECt \"from\" FROM PRAGMA_FOREIGN_KEY_LIST($1) WHERE \"from\" = ti.name)
                 THEN 1
                 ELSE 0
-                END AS has_fk_relation
-            FROM PRAGMA_TABLE_INFO('{table_name}') as ti;
+                END AS has_fk_relations
+            FROM PRAGMA_TABLE_INFO($1) as ti;
             "
         )
-            .as_str(),
-        )
+        .bind(&table_name)
         .fetch_all(pool)
         .await
         .map_err(|err| err.to_string())?;
 
-        let columns = rows
-            .iter()
-            .map(|row| {
-                ColumnProps::new(
-                    row.get(0),
-                    JsonString(row.get(1)),
-                    JsonBool(!row.get::<i16, usize>(2) == 0),
-                    tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-                    JsonBool(row.get::<i16, usize>(4) == 1),
-                    JsonBool(row.get::<i16, usize>(5) == 1),
-                )
-            })
-            .collect();
-
-        Ok(columns)
+        Ok(result)
     }
 }
 
