@@ -1,4 +1,4 @@
-import { getFkRelations } from "@/commands/row"
+import { getFkRelations, getPaginatedRows } from "@/commands/row"
 import { useQuery } from "@tanstack/react-query"
 
 /**
@@ -16,5 +16,16 @@ export const useGetFKRelations = (
     queryFn: async () => await getFkRelations(tableName, columnName, cellValue),
     enabled: false,
     placeholderData: [{ tableName: "", rows: [{ "": "" }] }]
+  })
+}
+
+export const useGetPaginatedRows = (
+  tableName: string,
+  pageIndex: number,
+  pageSize: number
+) => {
+  return useQuery({
+    queryKey: ["table_rows", tableName, { pageIndex, pageSize }],
+    queryFn: async () => await getPaginatedRows(tableName, pageIndex, pageSize)
   })
 }
