@@ -1,10 +1,12 @@
 use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
-use serde_json::{Map as JsonMap, Value as JsonValue};
-use sqlx::{any::AnyRow, AnyPool, Column, Row};
+use serde_json::Value as JsonValue;
+use sqlx::{any::AnyRow, AnyPool, Row};
 use std::fmt::Debug;
 
-use crate::{ColumnProps, FKRows};
+use crate::{
+    decode,
+    types::{ColumnProps, FKRows, PaginatedRows},
+};
 
 /// **Handler** must be implemented by any logic handling service, which is
 /// therefore persisted in `SharedState`.
@@ -19,13 +21,6 @@ pub trait TableHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>, String>;
-}
-
-#[derive(Serialize, Deserialize, Default, Debug)]
-pub struct PaginatedRows {
-    data: Vec<JsonMap<String, JsonValue>>,
-    #[serde(rename = "pageCount")]
-    page_count: i64,
 }
 
 #[async_trait]
@@ -51,28 +46,14 @@ pub trait RowHandler {
         .await
         .unwrap();
 
-        let mut paginated_rows = PaginatedRows::default();
-
-        for row in rows {
-            let mut row_data = JsonMap::default();
-            for (i, column) in row.columns().iter().enumerate() {
-                let v = row.try_get_raw(i).unwrap();
-
-                let v = crate::decode::to_json(v)?;
-
-                row_data.insert(column.name().to_string(), v);
-            }
-
-            paginated_rows.data.push(row_data);
-        }
         let page_count_result =
             sqlx::query(format!("SELECT COUNT(*) from {}", table_name).as_str())
                 .fetch_one(pool)
                 .await
-                .unwrap();
+                .map_err(|e| e.to_string())?;
         let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() / page_size as i64;
 
-        paginated_rows.page_count = page_count;
+        let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
 
         Ok(paginated_rows)
     }
@@ -132,5 +113,5 @@ pub trait RowHandler {
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
-    ) -> Result<Option<Vec<FKRows>>, String>;
+    ) -> Result<Vec<FKRows>, String>;
 }

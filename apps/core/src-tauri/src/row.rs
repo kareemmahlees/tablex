@@ -4,8 +4,7 @@ use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use tauri::async_runtime::Mutex;
 use tauri::State;
-use tx_lib::handler::PaginatedRows;
-use tx_lib::FKRows;
+use tx_lib::types::{FKRows, PaginatedRows};
 
 #[tauri::command]
 pub async fn get_paginated_rows(
@@ -110,7 +109,7 @@ pub async fn get_fk_relations(
     table_name: String,
     column_name: String,
     cell_value: JsonValue,
-) -> Result<Option<Vec<FKRows>>, String> {
+) -> Result<Vec<FKRows>, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();

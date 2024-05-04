@@ -1,7 +1,7 @@
 use crate::state::SharedState;
 use sqlx::Row;
 use tauri::{async_runtime::Mutex, State};
-use tx_lib::ColumnProps;
+use tx_lib::types::ColumnProps;
 
 #[tauri::command]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>, String> {

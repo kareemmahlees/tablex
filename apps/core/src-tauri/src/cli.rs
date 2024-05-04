@@ -4,7 +4,7 @@ use clap::Command;
 use clap::{error::ErrorKind, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, Manager};
 use tauri::{AppHandle, Window};
-use tx_lib::Drivers;
+use tx_lib::types::Drivers;
 
 #[derive(Parser, Debug)]
 #[command(version, about)]

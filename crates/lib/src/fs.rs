@@ -1,4 +1,4 @@
-use crate::{ConnConfig, Drivers};
+use crate::types::{ConnConfig, Drivers};
 use std::fs::OpenOptions;
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::PathBuf;

@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
-use tx_lib::{ColumnProps, FKRows, FkRelation};
+use tx_lib::types::{ColumnProps, FKRows, FkRelation};
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -62,7 +62,7 @@ impl RowHandler for SQLiteHandler {
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
-    ) -> Result<Option<Vec<FKRows>>, String> {
+    ) -> Result<Vec<FKRows>, String> {
         let fk_relations = sqlx::query_as::<_, FkRelation>(
             "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;",
         )
@@ -71,10 +71,6 @@ impl RowHandler for SQLiteHandler {
         .fetch_all(pool)
         .await
         .map_err(|err| err.to_string())?;
-
-        if fk_relations.is_empty() {
-            return Ok(None);
-        }
 
         let mut result = Vec::new();
 
@@ -97,6 +93,6 @@ impl RowHandler for SQLiteHandler {
             result.push(FKRows::new(relation.table.clone(), decoded_row_data));
         }
 
-        Ok(Some(result))
+        Ok(result)
     }
 }

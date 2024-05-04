@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
-use tx_lib::{ColumnProps, FKRows, FkRelation};
+use tx_lib::types::{ColumnProps, FKRows, FkRelation};
 
 #[derive(Debug)]
 pub struct MySQLHandler;
@@ -41,22 +41,6 @@ impl TableHandler for MySQLHandler {
         .await
         .map_err(|err| err.to_string())?;
 
-        // let mut columns = Vec::new();
-
-        // rows.iter().for_each(|row| {
-        //     let column_name = row.get::<String, usize>(0);
-
-        //     let column_props = ColumnProps::new(
-        //         column_name,
-        //         JsonString(row.get(1)),
-        //         JsonBool(row.get::<i16, usize>(2) == 1),
-        //         tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-        //         JsonBool(row.get::<i16, usize>(4) == 1),
-        //         JsonBool(row.get::<i16, usize>(5) == 1),
-        //     );
-
-        //     columns.push(column_props);
-        // });
         Ok(result)
     }
 }
@@ -69,8 +53,7 @@ impl RowHandler for MySQLHandler {
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
-    ) -> Result<Option<Vec<FKRows>>, String> {
-        dbg!(&table_name);
+    ) -> Result<Vec<FKRows>, String> {
         let fk_relations = sqlx::query_as::<_, FkRelation>(
             "
             SELECT referenced_table_name AS \"table\",
@@ -87,10 +70,6 @@ impl RowHandler for MySQLHandler {
         .fetch_all(pool)
         .await
         .map_err(|err| err.to_string())?;
-
-        if fk_relations.is_empty() {
-            return Ok(None);
-        }
 
         let mut result = Vec::new();
 
@@ -113,6 +92,6 @@ impl RowHandler for MySQLHandler {
             result.push(FKRows::new(relation.table.clone(), decoded_row_data));
         }
 
-        Ok(Some(result))
+        Ok(result)
     }
 }
