@@ -10,12 +10,12 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
+  VirtualTable
 } from "@/components/ui/table"
 
 import {
@@ -25,11 +25,7 @@ import {
   PaginationLink
 } from "@/components/ui/pagination"
 
-import {
-  copyRowIntoClipboard,
-  deleteRows,
-  getFkRelations
-} from "@/commands/row"
+import { copyRowIntoClipboard, deleteRows } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -48,8 +44,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight,
-  Link
+  ChevronsRight
 } from "lucide-react"
 import {
   useLayoutEffect,
@@ -58,6 +53,7 @@ import {
   type SetStateAction
 } from "react"
 import EditRowSheet from "./edit-row-sheet"
+import ForeignKeyDropdown from "./fk-dropdown"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -110,7 +106,7 @@ const DataTable = <TData, TValue>({
         <LoadingSpinner />
       ) : (
         <ContextMenu>
-          <Table
+          <VirtualTable
             ref={tableRef}
             virtualizer={virtualizer}
             virtualizerRef={parentRef}
@@ -148,7 +144,7 @@ const DataTable = <TData, TValue>({
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
-                        onClick={() => row.toggleSelected(!row.getIsSelected())}
+                        // onClick={() => row.toggleSelected(!row.getIsSelected())}
                         className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
                         onContextMenu={() => setContextMenuRow(row)}
                       >
@@ -156,21 +152,12 @@ const DataTable = <TData, TValue>({
                           <TableCell key={cell.id}>
                             <div className="flex items-center gap-x-2">
                               {cell.column.columnDef.meta?.hasFkRelations ? (
-                                // <ForeignKeyDropdown>
-                                <Link
-                                  className="md:h-3 md:w-3 lg:h-4 lg:w-4"
-                                  role="button"
-                                  onClick={() =>
-                                    getFkRelations(
-                                      tableName,
-                                      cell.column.columnDef.meta
-                                        ?.name as string,
-                                      cell.getValue()
-                                    )
-                                  }
+                                <ForeignKeyDropdown
+                                  tableName={tableName}
+                                  columnName={cell.column.columnDef.meta.name}
+                                  cellValue={cell.getValue()}
                                 />
-                              ) : // </ForeignKeyDropdown>
-                              null}
+                              ) : null}
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
@@ -200,7 +187,7 @@ const DataTable = <TData, TValue>({
                 />
               </TableBody>
             </ContextMenuTrigger>
-          </Table>
+          </VirtualTable>
         </ContextMenu>
       )}
       <EditRowSheet

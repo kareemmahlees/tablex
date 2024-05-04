@@ -69,6 +69,7 @@ pub struct FkRelation {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct FKRows {
     pub table_name: String,
     pub rows: Vec<JsonMap<String, JsonValue>>,

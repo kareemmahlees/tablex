@@ -70,6 +70,7 @@ impl RowHandler for MySQLHandler {
         column_name: String,
         cell_value: JsonValue,
     ) -> Result<Option<Vec<FKRows>>, String> {
+        dbg!(&table_name);
         let fk_relations = sqlx::query_as::<_, FkRelation>(
             "
             SELECT referenced_table_name AS \"table\",
@@ -109,7 +110,7 @@ impl RowHandler for MySQLHandler {
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 
-            result.push(FKRows::new(table_name.clone(), decoded_row_data));
+            result.push(FKRows::new(relation.table.clone(), decoded_row_data));
         }
 
         Ok(Some(result))

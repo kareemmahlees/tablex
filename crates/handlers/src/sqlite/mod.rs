@@ -103,7 +103,7 @@ impl RowHandler for SQLiteHandler {
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 
-            result.push(FKRows::new(table_name.clone(), decoded_row_data));
+            result.push(FKRows::new(relation.table.clone(), decoded_row_data));
         }
 
         Ok(Some(result))

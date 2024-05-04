@@ -143,10 +143,9 @@ impl RowHandler for PostgresHandler {
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 
-            result.push(FKRows::new(table_name.clone(), decoded_row_data));
+            result.push(FKRows::new(relation.table.clone(), decoded_row_data));
         }
 
-        dbg!(&result);
         Ok(Some(result))
     }
 }

@@ -146,11 +146,9 @@ export const getFkRelations = async (
   columnName: string,
   cellValue: any
 ) => {
-  const result = await invoke<FkRows[]>("get_fk_relations", {
+  return await invoke<FkRows[]>("get_fk_relations", {
     tableName,
     columnName,
     cellValue
   })
-  console.log(result)
-  return result
 }
