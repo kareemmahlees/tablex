@@ -6,7 +6,7 @@
   ],
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [["@tablex/core", "@tablex/lib", "@tablex/tailwind"]],
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
