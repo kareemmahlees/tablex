@@ -43,6 +43,12 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 
 ## Announcements 🎉
 
+### v0.3.6
+
+- TableX now supports Foreign key relations 🔗.
+
+### v0.3.5
+
 - TableX now ships with a little CLI tool that helps you to create & save `on the fly` connections with ease from your terminal ⭐, checkout the [CLI](./docs/CLI.md) documentation.
 - TableX bundle size is now roughly 30% smaller 🚀
 
