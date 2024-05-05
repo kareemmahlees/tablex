@@ -115,7 +115,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
       driver: driver,
       ...values
     })
-    await createConnectionRecord(values.connName, connString, Drivers.SQLite)
+    await createConnectionRecord(values.connName, connString, driver)
     navigate({ to: "/connections" })
   }
 
