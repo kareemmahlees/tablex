@@ -1,5 +1,30 @@
 # @tablex/core
 
+## 0.3.6
+
+### Patch Changes
+
+- [#59](https://github.com/kareemmahlees/tablex/pull/59) [`cae2fbe`](https://github.com/kareemmahlees/tablex/commit/cae2fbe86124fd076c692b191c5fc2045eec7ab9) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - ## Backend Changes
+
+  ### New
+
+  - `ColumnProps` returns a new prop `has_fk_relations`.
+  - A new Tauri command `fk_relations`.
+
+  ### Refactor
+
+  - gather all enums and structs into `types.rs`.
+
+  ## Frontend Changes
+
+  ### New
+
+  - Dropdown menu with tabs for table names and a Table for related rows.
+
+  ### Refactor
+
+  - Split `useQuery` hooks into custom hooks.
+
 ## 0.3.5
 
 ### Patch Changes
