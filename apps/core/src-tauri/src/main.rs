@@ -13,9 +13,13 @@ use connection::{
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
+#[cfg(debug_assertions)]
+use specta::collect_types;
 use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
+#[cfg(debug_assertions)]
+use tauri_specta::ts;
 
 #[tauri::command]
 fn close_splashscreen(window: Window) {
@@ -31,6 +35,9 @@ fn close_splashscreen(window: Window) {
 }
 
 fn main() {
+    #[cfg(debug_assertions)]
+    ts::export(collect_types![], "../src/bindings.ts").unwrap();
+
     let (args, cmd) = cli::parse_cli_args();
 
     tauri::Builder::default()

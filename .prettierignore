@@ -9,3 +9,4 @@ pnpm-lock.yaml
 **/components/ui
 **/*.gen.ts
 .all-contributorsrc
+apps/core/src/bindings.ts
