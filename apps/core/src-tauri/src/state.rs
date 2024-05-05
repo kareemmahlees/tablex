@@ -1,5 +1,5 @@
 use sqlx::AnyPool;
-#[cfg(not(debug_assertions))]
+#[cfg(feature = "metax")]
 use tauri::api::process::CommandChild;
 use tx_lib::handler::Handler;
 
@@ -8,7 +8,7 @@ pub struct SharedState {
     pub handler: Option<Box<dyn Handler>>,
     /// `pool` is passed to the Handler
     pub pool: Option<AnyPool>,
-    #[cfg(not(debug_assertions))]
+    #[cfg(feature = "metax")]
     pub metax: Option<CommandChild>,
 }
 
@@ -18,7 +18,7 @@ impl SharedState {
             pool.close().await
         }
 
-        #[cfg(not(debug_assertions))]
+        #[cfg(feature = "metax")]
         {
             if let Some(metax) = self.metax.take() {
                 metax.kill().expect("unable to kill sidecar")

@@ -1,7 +1,7 @@
 use crate::state::SharedState;
 use sqlx::{AnyConnection, Connection};
 use std::path::PathBuf;
-#[cfg(not(debug_assertions))]
+#[cfg(feature = "metax")]
 use tauri::api::process::{Command, CommandChild};
 use tauri::{async_runtime::Mutex, Runtime, State};
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
@@ -50,7 +50,7 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<(), String> {
-    #[cfg(not(debug_assertions))]
+    #[cfg(feature = "metax")]
     {
         if let Some(sidecar) = state.lock().await.metax.take() {
             sidecar.kill().expect("failed to kill sidecar")
@@ -68,7 +68,7 @@ pub async fn establish_connection(
 
     state.pool = Some(pool);
     state.handler = Some(handler);
-    #[cfg(not(debug_assertions))]
+    #[cfg(feature = "metax")]
     {
         let child = spawn_sidecar(driver, conn_string);
         state.metax = Some(child);
@@ -77,7 +77,7 @@ pub async fn establish_connection(
     Ok(())
 }
 
-#[cfg(not(debug_assertions))]
+#[cfg(feature = "metax")]
 fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
     let args = match driver {
         Drivers::SQLite => {

@@ -69,7 +69,6 @@ jobs:
       - name: Prepare MetaX (mac, linux)
         if: matrix.platform != 'windows-latest'
         run: |
-          rustc -Vv
           chmod +x ./scripts/suffex_metax.sh
           ./scripts/suffex_metax.sh
 
@@ -80,4 +79,4 @@ jobs:
           releaseId: ${{ github.event.release.id || github.event.inputs.release-id }}
           projectPath: ./apps/core
           tauriScript: pnpm tauri
-          args: --config src-tauri/tauri.conf.sidecar.json
+          args: --config src-tauri/tauri.conf.sidecar.json --features metax
