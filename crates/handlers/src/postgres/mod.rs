@@ -1,9 +1,8 @@
 use async_trait::async_trait;
-use serde_json::Value as JsonValue;
-use serde_json::Value::{Bool as JsonBool, String as JsonString};
-use sqlx::{any::AnyRow, AnyPool, Row};
-use std::collections::HashMap;
+use serde_json::Value::{self as JsonValue};
+use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::handler::{Handler, RowHandler, TableHandler};
+use tx_lib::types::{ColumnProps, FKRows, FkRelation};
 
 #[derive(Debug)]
 pub struct PostgresHandler;
@@ -15,58 +14,120 @@ impl TableHandler for PostgresHandler {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
         sqlx::query(
             "SELECT \"table_name\"
-            FROM INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_TYPE = 'BASE TABLE'
-                AND TABLE_SCHEMA = 'public';",
+            FROM information_schema.tables
+            WHERE table_type = 'BASE TABLE'
+                AND table_schema = 'public';",
         )
         .fetch_all(pool)
         .await
         .map_err(|err| err.to_string())
     }
 
-    async fn get_columns_definition(
+    async fn get_columns_props(
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<HashMap<String, HashMap<String, JsonValue>>, String> {
-        let rows = sqlx::query(
-        format!(
-            "SELECT COL.COLUMN_NAME,
-                COL.DATA_TYPE,
-                CASE
-                                WHEN COL.IS_NULLABLE = 'YES' THEN TRUE
-                                ELSE FALSE
-                END IS_NULLABLE,
-                COL.COLUMN_DEFAULT,
-                CASE
-                                WHEN TC.CONSTRAINT_TYPE = 'PRIMARY KEY' THEN TRUE
-                                ELSE FALSE
-                END IS_PK
-            FROM INFORMATION_SCHEMA.COLUMNS AS COL
-            LEFT JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS CCU ON COL.COLUMN_NAME = CCU.COLUMN_NAME
-            LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME
-            WHERE COL.TABLE_NAME = '{table_name}';"
+    ) -> Result<Vec<ColumnProps>, String> {
+        let result = sqlx::query_as::<_,ColumnProps>(
+            "
+            SELECT col.column_name,
+                    col.data_type,
+                    CASE
+                                    WHEN col.is_nullable = 'YES' THEN TRUE
+                                    ELSE FALSE
+                    END is_nullable,
+                    col.column_default AS default_value,
+                    CASE
+                                    WHEN col.column_name in
+                                                            (SELECT ccu.column_name
+                                                                FROM information_schema.constraint_column_usage AS ccu
+                                                                LEFT JOIN information_schema.table_constraints AS tc ON ccu.constraint_name = tc.constraint_name
+                                                                AND tc.constraint_type = 'PRIMARY KEY'
+                                                                WHERE ccu.table_name = $1 ) THEN TRUE
+                                    ELSE FALSE
+                    END is_pk,
+                    CASE
+                                    WHEN col.column_name in
+                                                            (SELECT
+                                                                kcu.column_name
+                                                            FROM information_schema.table_constraints AS tc
+                                                            JOIN information_schema.key_column_usage AS kcu
+                                                                ON tc.constraint_name = kcu.constraint_name
+                                                                AND tc.table_schema = kcu.table_schema
+                                                            JOIN information_schema.constraint_column_usage AS ccu
+                                                                ON ccu.constraint_name = tc.constraint_name
+                                                            WHERE tc.constraint_type = 'FOREIGN KEY'
+                                                                AND tc.table_schema='public'
+                                                                AND tc.table_name= $1
+                                                ) THEN TRUE
+                                    ELSE FALSE
+                    END has_fk_relations
+            FROM information_schema.columns AS COL
+            WHERE col.table_name = $1 ORDER BY col.ordinal_position;
+            "
         )
-        .as_str(),
-    )
-    .fetch_all(pool)
-    .await
-    .map_err(|err| err.to_string())?;
+        .bind(&table_name)
+        .fetch_all(pool)
+        .await
+        .map_err(|err| err.to_string())?;
 
-        let mut result = HashMap::<String, HashMap<String, JsonValue>>::new();
-
-        rows.iter().for_each(|row| {
-            let column_props = tx_lib::create_column_definition_map(
-                JsonString(row.get(1)),
-                JsonBool(row.get::<bool, usize>(2)),
-                tx_lib::decode::to_json(row.try_get_raw(3).unwrap()).unwrap(),
-                JsonBool(row.get::<bool, usize>(4)),
-            );
-            result.insert(row.get(0), column_props);
-        });
         Ok(result)
     }
 }
 
 #[async_trait]
-impl RowHandler for PostgresHandler {}
+impl RowHandler for PostgresHandler {
+    async fn fk_relations(
+        &self,
+        pool: &AnyPool,
+        table_name: String,
+        column_name: String,
+        cell_value: JsonValue,
+    ) -> Result<Vec<FKRows>, String> {
+        let fk_relations = sqlx::query_as::<_, FkRelation>(
+            "
+            SELECT
+                ccu.table_name AS table,
+                ccu.column_name AS to
+            FROM information_schema.table_constraints AS tc
+            JOIN information_schema.key_column_usage AS kcu
+                ON tc.constraint_name = kcu.constraint_name
+                AND tc.table_schema = kcu.table_schema
+            JOIN information_schema.constraint_column_usage AS ccu
+                ON ccu.constraint_name = tc.constraint_name
+            WHERE tc.constraint_type = 'FOREIGN KEY'
+                AND  kcu.column_name = $1
+                AND tc.table_schema='public'
+                AND tc.table_name= $2;
+            ",
+        )
+        .bind(&column_name)
+        .bind(&table_name)
+        .fetch_all(pool)
+        .await
+        .map_err(|err| err.to_string())?;
+
+        let mut result = Vec::new();
+
+        for relation in fk_relations.iter() {
+            let rows = sqlx::query(
+                format!(
+                    "SELECT * from {table_name} where {to} = {column_value};",
+                    table_name = relation.table,
+                    to = relation.to,
+                    column_value = cell_value,
+                )
+                .as_str(),
+            )
+            .fetch_all(pool)
+            .await
+            .map_err(|err| err.to_string())?;
+
+            let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
+
+            result.push(FKRows::new(relation.table.clone(), decoded_row_data));
+        }
+
+        Ok(result)
+    }
+}

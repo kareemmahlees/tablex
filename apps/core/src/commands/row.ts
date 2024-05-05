@@ -1,4 +1,4 @@
-import type { PaginatedRows } from "@tablex/lib/types"
+import type { FkRows, PaginatedRows } from "@tablex/lib/types"
 import { customToast } from "@tablex/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Router } from "@tanstack/react-router"
@@ -139,4 +139,16 @@ export const copyRowIntoClipboard = async (
         .join("\n")
     )
   }
+}
+
+export const getFkRelations = async (
+  tableName: string,
+  columnName: string,
+  cellValue: any
+) => {
+  return await invoke<FkRows[]>("get_fk_relations", {
+    tableName,
+    columnName,
+    cellValue
+  })
 }

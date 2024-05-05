@@ -27,8 +27,8 @@ tauri = { version = "1.6.1", features = [
     "process-command-api",
 ] }
 sqlx = { workspace = true }
-tokio = { version = "1", features = ["full"] }
 clap = { version = "4.5.1", features = ["derive"] }
+tokio = { workspace = true }
 regex = "1.10.3"
 
 [features]

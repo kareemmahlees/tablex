@@ -11,9 +11,8 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 
-import { getZodSchemaFromCols } from "@/commands/columns"
 import { createRow } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
@@ -26,6 +25,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useGetZodSchema } from "@/hooks/table"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useState, type Dispatch, type SetStateAction } from "react"
@@ -77,11 +77,7 @@ type AddRowFormProps = {
 
 const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
   const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery({
-    queryKey: [tableName],
-    queryFn: async () => await getZodSchemaFromCols(tableName)
-  })
-
+  const { data, isLoading } = useGetZodSchema(tableName)
   const form = useForm<z.infer<NonNullable<typeof data>>>({
     resolver: zodResolver(data!)
   })

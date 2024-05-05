@@ -1,4 +1,4 @@
-import { getColsDefinitions } from "@/commands/columns"
+import { getColsProps } from "@/commands/columns"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { Column, ColumnDef, Row, Table } from "@tanstack/react-table"
 import SortingButton from "./sorting-btn"
@@ -6,29 +6,35 @@ import SortingButton from "./sorting-btn"
 export const generateColumnsDefs = async (
   tableName: string
 ): Promise<ColumnDef<any>[]> => {
-  const columns = await getColsDefinitions(tableName)
-
-  const columnsDefinition: ColumnDef<any>[] = Object.entries(columns).map(
-    ([colName, colProps]) => {
+  const columns = await getColsProps(tableName)
+  const columnsDefinition: ColumnDef<any>[] = columns.map(
+    ({ columnName, isPK, hasFkRelations }) => {
       const columnDefinition: ColumnDef<any> = {
-        accessorKey: colName,
+        accessorKey: columnName,
         // types for `meta` come from env.d.ts
         meta: {
-          name: colName
+          name: columnName,
+          hasFkRelations
         },
         header: ({ column }: { column: Column<any> }) => {
-          return <SortingButton column={column} title={colName} />
+          return <SortingButton column={column} title={columnName} />
         }
       }
-      columnDefinition.id = colProps.isPK
+      columnDefinition.id = isPK
         ? "pk"
         : (columnDefinition.accessorKey as string)
       return columnDefinition
     }
   )
 
-  // add the select box column in the beginning of columns
-  columnsDefinition.unshift({
+  appendCheckboxColumn(columnsDefinition)
+
+  return columnsDefinition
+}
+
+// Appends an extra checkbox column at the beginning of all columns
+const appendCheckboxColumn = (columns: ColumnDef<any>[]) => {
+  columns.unshift({
     id: "select",
     header: ({ table }: { table: Table<any> }) => (
       <Checkbox
@@ -58,5 +64,4 @@ export const generateColumnsDefs = async (
     enableSorting: false,
     enableHiding: false
   })
-  return columnsDefinition
 }

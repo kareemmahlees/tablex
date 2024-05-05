@@ -8,7 +8,7 @@ use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLite
 use tx_lib::{
     fs::{delete_from_connections_file, read_from_connections_file, write_into_connections_file},
     handler::Handler,
-    Drivers,
+    types::Drivers,
 };
 
 #[tauri::command]

@@ -10,12 +10,12 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
+  VirtualTable
 } from "@/components/ui/table"
 
 import {
@@ -53,6 +53,7 @@ import {
   type SetStateAction
 } from "react"
 import EditRowSheet from "./edit-row-sheet"
+import ForeignKeyDropdown from "./fk-dropdown"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -84,7 +85,7 @@ const DataTable = <TData, TValue>({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50, //* I reached to this number by trial and error
     overscan: 10,
-    debug: process.env.NODE_ENV === "development" ? true : false
+    debug: import.meta.env.DEV
   })
 
   useLayoutEffect(() => {
@@ -105,7 +106,7 @@ const DataTable = <TData, TValue>({
         <LoadingSpinner />
       ) : (
         <ContextMenu>
-          <Table
+          <VirtualTable
             ref={tableRef}
             virtualizer={virtualizer}
             virtualizerRef={parentRef}
@@ -143,16 +144,25 @@ const DataTable = <TData, TValue>({
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
-                        onClick={() => row.toggleSelected(!row.getIsSelected())}
+                        // onClick={() => row.toggleSelected(!row.getIsSelected())}
                         className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
                         onContextMenu={() => setContextMenuRow(row)}
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            <div className="flex items-center gap-x-2">
+                              {cell.column.columnDef.meta?.hasFkRelations ? (
+                                <ForeignKeyDropdown
+                                  tableName={tableName}
+                                  columnName={cell.column.columnDef.meta.name}
+                                  cellValue={cell.getValue()}
+                                />
+                              ) : null}
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </div>
                           </TableCell>
                         ))}
                       </TableRow>
@@ -177,7 +187,7 @@ const DataTable = <TData, TValue>({
                 />
               </TableBody>
             </ContextMenuTrigger>
-          </Table>
+          </VirtualTable>
         </ContextMenu>
       )}
       <EditRowSheet

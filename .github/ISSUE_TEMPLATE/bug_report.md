@@ -3,8 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: "[BUG]"
 labels: bug
-assignees: ''
-
+assignees: ""
 ---
 
 **Describe the bug**
@@ -20,8 +19,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **System Info (please complete the following information):**
- - TableX Release: [e.g. Latest]
- - Output of `pnpm tauri:info` [e.g. 22]
+
+- TableX Release: [e.g. Latest]
+- Output of `pnpm tauri:info` [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.

@@ -1,8 +1,7 @@
 use crate::state::SharedState;
-use serde_json::Value as JsonValue;
 use sqlx::Row;
-use std::collections::HashMap;
 use tauri::{async_runtime::Mutex, State};
+use tx_lib::types::ColumnProps;
 
 #[tauri::command]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>, String> {
@@ -23,14 +22,14 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
 }
 
 #[tauri::command]
-pub async fn get_columns_definition(
+pub async fn get_columns_props(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
-) -> Result<HashMap<String, HashMap<String, JsonValue>>, String> {
+) -> Result<Vec<ColumnProps>, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_ref().unwrap();
-    let cols_defs = handler.get_columns_definition(pool, table_name).await?;
+    let cols_defs = handler.get_columns_props(pool, table_name).await?;
 
     Ok(cols_defs)
 }

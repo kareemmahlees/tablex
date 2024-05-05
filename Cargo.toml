@@ -22,6 +22,7 @@ strip = true
 [workspace.dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
 # sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "time"] }
 sqlx = { version = "0.6.3", features = [
     "runtime-tokio-native-tls",

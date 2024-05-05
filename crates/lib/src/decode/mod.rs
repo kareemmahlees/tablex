@@ -1,8 +1,11 @@
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use serde_json::Value as JsonValue;
-use sqlx::{any::AnyValueRef, TypeInfo, Value, ValueRef};
+use serde_json::{Map as JsonMap, Value as JsonValue};
+use sqlx::{
+    any::{AnyRow, AnyValueRef},
+    Column, Row, TypeInfo, Value, ValueRef,
+};
 
-/// Utility to decode *most* of db types into rust types.
+/// Utility to decode *most* of db types into serializable rust types.
 /// this code was taken from [here] (https://github.com/tauri-apps/tauri-plugin-sql/blob/v1/src/decode)
 pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
     if v.is_null() {
@@ -102,4 +105,25 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
     };
 
     Ok(res)
+}
+
+/// Transform/Decode a `Vec<AnyRow>` into a serializable datastructure.
+///
+/// Typically used with `SELECT *`.
+pub fn decode_raw_rows(rows: Vec<AnyRow>) -> Result<Vec<JsonMap<String, JsonValue>>, String> {
+    let mut result = Vec::new();
+
+    for row in rows {
+        let mut row_data = JsonMap::default();
+        for (i, column) in row.columns().iter().enumerate() {
+            let v = row.try_get_raw(i).unwrap();
+
+            let v = to_json(v)?;
+
+            row_data.insert(column.name().to_string(), v);
+        }
+
+        result.push(row_data);
+    }
+    Ok(result)
 }

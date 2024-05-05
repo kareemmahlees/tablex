@@ -1,4 +1,5 @@
-import { getPaginatedRows } from "@/commands/row"
+import { getZodSchemaFromCols } from "@/commands/columns"
+import { generateColumnsDefs } from "@/routes/dashboard/_layout/$tableName/-components/columns"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
@@ -10,6 +11,21 @@ import {
   type SortingState
 } from "@tanstack/react-table"
 import { useMemo, useRef, useState } from "react"
+import { useGetPaginatedRows } from "./row"
+
+export const useGetTableColumns = (tableName: string) => {
+  return useQuery({
+    queryKey: ["table_columns", tableName],
+    queryFn: async () => await generateColumnsDefs(tableName)
+  })
+}
+
+export const useGetZodSchema = (tableName: string) => {
+  return useQuery({
+    queryKey: [tableName],
+    queryFn: async () => await getZodSchemaFromCols(tableName)
+  })
+}
 
 type SetupReactTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
@@ -23,11 +39,11 @@ export const useSetupReactTable = <TData, TValue>({
   const { defaultData, pagination, setPagination, pageIndex, pageSize } =
     useSetupPagination()
 
-  const { data: rows, isLoading: isRowsLoading } = useQuery({
-    queryKey: ["table_rows", tableName, { pageIndex, pageSize }],
-    queryFn: async () => await getPaginatedRows(tableName, pageIndex, pageSize)
-  })
-
+  const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
+    tableName,
+    pageIndex,
+    pageSize
+  )
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [sorting, setSorting] = useState<SortingState>([])

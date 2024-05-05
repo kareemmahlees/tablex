@@ -7,8 +7,21 @@ interface TableProps extends   React.HTMLAttributes<HTMLTableElement>   {
   virtualizerRef:React.RefObject<HTMLDivElement>
   virtualizer:Virtualizer<any,any>
 }
-
 const Table = React.forwardRef<
+  HTMLTableElement,
+  React.HTMLAttributes<HTMLTableElement>
+>(({ className, ...props }, ref) => (
+  <div className="relative w-full overflow-auto">
+    <table
+      ref={ref}
+      className={cn("w-full caption-bottom text-sm", className)}
+      {...props}
+    />
+  </div>
+))
+Table.displayName = "Table"
+
+const VirtualTable = React.forwardRef<
   HTMLTableElement,
   TableProps
 >(({ className,virtualizerRef,virtualizer, ...props }, ref) => (
@@ -22,7 +35,7 @@ const Table = React.forwardRef<
     </div>
   </div>
 ))
-Table.displayName = "Table"
+VirtualTable.displayName = "VirtualTable"
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
@@ -118,6 +131,6 @@ export {
   TableFooter,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow, VirtualTable
 }
 

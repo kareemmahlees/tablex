@@ -3,24 +3,21 @@ import {
   NUMERIC_DATA_TYPE,
   STRING_DATA_TYPES
 } from "@tablex/lib/constants"
-import { ColumnProps } from "@tablex/lib/types"
+import type { ColumnProps } from "@tablex/lib/types"
 import { invoke } from "@tauri-apps/api/tauri"
 import { z } from "zod"
 
-export const getColsDefinitions = async (tableName: string) => {
-  const result = await invoke<Record<string, ColumnProps>>(
-    "get_columns_definition",
-    {
-      tableName
-    }
-  )
+export const getColsProps = async (tableName: string) => {
+  const result = await invoke<ColumnProps[]>("get_columns_props", {
+    tableName
+  })
   return result
 }
 
 export const getZodSchemaFromCols = async (tableName: string) => {
-  const cols = await getColsDefinitions(tableName)
+  const cols = await getColsProps(tableName)
   const schemaObject: z.ZodRawShape = {}
-  Object.entries(cols).forEach(([colName, colProps]) => {
+  cols.forEach((colProps) => {
     let validationRule: z.ZodTypeAny
 
     switch (true) {
@@ -64,7 +61,7 @@ export const getZodSchemaFromCols = async (tableName: string) => {
       validationRule = validationRule.optional()
     }
 
-    schemaObject[colName] = validationRule
+    schemaObject[colProps.columnName] = validationRule
   })
 
   return z.object(schemaObject)
