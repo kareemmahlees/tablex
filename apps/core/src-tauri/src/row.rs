@@ -7,6 +7,7 @@ use tauri::State;
 use tx_lib::types::{FKRows, PaginatedRows};
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_paginated_rows(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
@@ -23,6 +24,7 @@ pub async fn get_paginated_rows(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn delete_rows(
     state: State<'_, Mutex<SharedState>>,
     pk_col_name: String,
@@ -50,6 +52,7 @@ pub async fn delete_rows(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn create_row(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
@@ -78,6 +81,7 @@ pub async fn create_row(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn update_row(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
@@ -104,6 +108,7 @@ pub async fn update_row(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_fk_relations(
     state: tauri::State<'_, Mutex<SharedState>>,
     table_name: String,

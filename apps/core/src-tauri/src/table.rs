@@ -4,6 +4,7 @@ use tauri::{async_runtime::Mutex, State};
 use tx_lib::types::ColumnProps;
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
@@ -22,6 +23,7 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_columns_props(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,

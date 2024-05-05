@@ -12,6 +12,7 @@ use tx_lib::{
 };
 
 #[tauri::command]
+#[specta::specta]
 pub async fn test_connection(conn_string: String) -> Result<String, String> {
     let mut con = AnyConnection::connect(conn_string.as_str())
         .await
@@ -26,6 +27,7 @@ pub async fn test_connection(conn_string: String) -> Result<String, String> {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn create_connection_record(
     app: tauri::AppHandle,
     conn_string: String,
@@ -38,6 +40,7 @@ pub fn create_connection_record(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<(), String> {
     let mut connections_file_path = get_connections_file_path(&app)?;
     delete_from_connections_file(&mut connections_file_path, conn_id)?;
@@ -45,6 +48,7 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn establish_connection(
     state: State<'_, Mutex<SharedState>>,
     conn_string: String,
@@ -109,6 +113,7 @@ fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
@@ -120,6 +125,7 @@ pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn get_connections(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
@@ -127,6 +133,7 @@ pub fn get_connections(app: tauri::AppHandle) -> Result<serde_json::Value, Strin
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn get_connection_details(
     app: tauri::AppHandle,
     conn_id: String,

@@ -22,6 +22,7 @@ use tauri::{Manager, Window, WindowEvent};
 use tauri_specta::ts;
 
 #[tauri::command]
+#[specta::specta]
 fn close_splashscreen(window: Window) {
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
@@ -36,7 +37,27 @@ fn close_splashscreen(window: Window) {
 
 fn main() {
     #[cfg(debug_assertions)]
-    ts::export(collect_types![], "../src/bindings.ts").unwrap();
+    ts::export(
+        collect_types![
+            close_splashscreen,
+            test_connection,
+            create_connection_record,
+            delete_connection_record,
+            establish_connection,
+            connections_exist,
+            get_connections,
+            get_connection_details,
+            get_tables,
+            get_paginated_rows,
+            delete_rows,
+            get_columns_props,
+            create_row,
+            update_row,
+            get_fk_relations
+        ],
+        "../src/bindings.ts",
+    )
+    .unwrap();
 
     let (args, cmd) = cli::parse_cli_args();
 

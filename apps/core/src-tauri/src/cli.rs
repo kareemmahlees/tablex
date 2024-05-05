@@ -111,21 +111,10 @@ async fn establish_on_the_fly_connection(
 
     let state = app.state::<Mutex<SharedState>>();
 
-    let mut driver: Drivers = Drivers::default();
-
-    match prefix {
-        "sqlite" | "sqlite3" => {
-            driver = Drivers::SQLite;
-            Ok(())
-        }
-        "postgresql" | "postgres" => {
-            driver = Drivers::PostgreSQL;
-            Ok(())
-        }
-        "mysql" => {
-            driver = Drivers::MySQL;
-            Ok(())
-        }
+    let driver = match prefix {
+        "sqlite" | "sqlite3" => Ok(Drivers::SQLite),
+        "postgresql" | "postgres" => Ok(Drivers::PostgreSQL),
+        "mysql" => Ok(Drivers::MySQL),
         _ => Err(format!("Unsupported driver {prefix}")),
     }?;
     establish_connection(state, conn_string.into(), driver.clone()).await?;
