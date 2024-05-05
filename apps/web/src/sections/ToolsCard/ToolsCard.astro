@@ -1,47 +1,45 @@
 ---
-import Card from "@/components/Card.astro";
-import Tools from "./tools";
+import Card from "@/components/Card.astro"
+import Tools from "./tools"
 
-  const tools: { src: string; alt: string; content: string }[] = [
-    {
-      src: "https://cdn.simpleicons.org/nextdotjs/white",
-      alt: "nextjs",
-      content: "Nextjs"
-    },
-    {
-      src: "https://cdn.simpleicons.org/rust/white",
-      alt: "rust",
-      content: "Rust"
-    },
-    {
-      src: "https://cdn.simpleicons.org/tauri/white",
-      alt: "tauri",
-      content: "Tauri"
-    },
-    {
-      src: "https://cdn.simpleicons.org/tailwindcss/white",
-      alt: "tailwind",
-      content: "Tailwind"
-    },
-    {
-      src: "https://cdn.simpleicons.org/vercel/white",
-      alt: "vercel",
-      content: "Vercel"
-    },{
-      src: "https://cdn.simpleicons.org/shadcnui/white",
-      alt: "shadcn/ui",
-      content: "shadcn/ui"
-    }
-  ]
+const tools: { src: string; alt: string; content: string }[] = [
+  {
+    src: "https://cdn.simpleicons.org/react/white",
+    alt: "react",
+    content: "React"
+  },
+  {
+    src: "https://cdn.simpleicons.org/rust/white",
+    alt: "rust",
+    content: "Rust"
+  },
+  {
+    src: "https://cdn.simpleicons.org/tauri/white",
+    alt: "tauri",
+    content: "Tauri"
+  },
+  {
+    src: "https://cdn.simpleicons.org/tailwindcss/white",
+    alt: "tailwind",
+    content: "Tailwind"
+  },
+  {
+    src: "https://cdn.simpleicons.org/go/white",
+    alt: "go",
+    content: "GoLang"
+  },
+  {
+    src: "https://cdn.simpleicons.org/shadcnui/white",
+    alt: "shadcn/ui",
+    content: "shadcn/ui"
+  }
+]
 ---
-  <Card
-    id="tools"
-    header="Built with the tools you love"
-  >
-    <p slot="content">
-    <span class="text-foreground font-semibold">TableX</span> utilizes
-    modern tooling to provide a delightful developer experience and an
-    Immersive user experience.
+
+<Card id="tools" header="Built with the tools you love">
+  <p slot="content">
+    <span class="text-foreground font-semibold">TableX</span> utilizes modern tooling
+    to provide a delightful developer experience and an Immersive user experience.
   </p>
-    <Tools tools={tools} client:visible />
-  </Card>
+  <Tools tools={tools} client:visible />
+</Card>
