@@ -1,4 +1,5 @@
 use crate::state::SharedState;
+use serde_json::{Map, Value};
 use sqlx::{AnyConnection, Connection};
 use std::path::PathBuf;
 #[cfg(feature = "metax")]
@@ -117,16 +118,15 @@ fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
 pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
-    if !connections.as_object().unwrap().is_empty() {
-        Ok(true)
-    } else {
-        Ok(false)
+    if connections.is_empty() {
+        return Ok(false);
     }
+    Ok(true)
 }
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connections(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+pub fn get_connections(app: tauri::AppHandle) -> Result<Map<String, Value>, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
     Ok(connections)
@@ -134,14 +134,11 @@ pub fn get_connections(app: tauri::AppHandle) -> Result<serde_json::Value, Strin
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connection_details(
-    app: tauri::AppHandle,
-    conn_id: String,
-) -> Result<serde_json::Value, String> {
+pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<Value, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
     let connection_details = connections
-        .get(conn_id)
+        .get(&conn_id)
         .ok_or("Couldn't find the specified connection".to_string())?
         .to_owned();
     Ok(connection_details)

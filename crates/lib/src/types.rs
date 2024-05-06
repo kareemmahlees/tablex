@@ -27,11 +27,11 @@ pub struct ConnConfig {
 #[serde(rename_all = "camelCase")]
 pub struct PaginatedRows {
     data: Vec<JsonMap<String, JsonValue>>,
-    page_count: i64,
+    page_count: i32,
 }
 
 impl PaginatedRows {
-    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: i64) -> Self {
+    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: i32) -> Self {
         PaginatedRows { data, page_count }
     }
 }

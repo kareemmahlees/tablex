@@ -51,7 +51,7 @@ pub trait RowHandler {
                 .fetch_one(pool)
                 .await
                 .map_err(|e| e.to_string())?;
-        let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() / page_size as i64;
+        let page_count = page_count_result.try_get::<i32, usize>(0).unwrap() / page_size;
 
         let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
 
@@ -64,13 +64,13 @@ pub trait RowHandler {
         pk_col_name: String,
         table_name: String,
         params: String,
-    ) -> Result<u64, String> {
+    ) -> Result<u32, String> {
         let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});");
         let result = sqlx::query(&query_str)
             .execute(pool)
             .await
             .map_err(|_| "Failed to delete rows".to_string())?;
-        Ok(result.rows_affected())
+        Ok(result.rows_affected() as u32)
     }
     async fn create_row(
         &self,
@@ -78,13 +78,13 @@ pub trait RowHandler {
         table_name: String,
         columns: String,
         values: String,
-    ) -> Result<u64, String> {
+    ) -> Result<u32, String> {
         let res =
             sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
                 .execute(pool)
                 .await
                 .map_err(|err| err.to_string())?;
-        Ok(res.rows_affected())
+        Ok(res.rows_affected() as u32)
     }
     async fn update_row(
         &self,
@@ -93,7 +93,7 @@ pub trait RowHandler {
         set_condition: String,
         pk_col_name: String,
         pk_col_value: JsonValue,
-    ) -> Result<u64, String> {
+    ) -> Result<u32, String> {
         let res = sqlx::query(
             format!(
                 "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
@@ -104,7 +104,7 @@ pub trait RowHandler {
         .execute(pool)
         .await
         .map_err(|_| "Failed to update row".to_string())?;
-        Ok(res.rows_affected())
+        Ok(res.rows_affected() as u32)
     }
 
     async fn fk_relations(
