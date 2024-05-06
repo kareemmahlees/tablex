@@ -1,5 +1,10 @@
 "use client"
-import { deleteConnection, getConnections } from "@/commands/connection"
+import {
+  deleteConnection,
+  establishConnection,
+  getConnectionDetails,
+  getConnections
+} from "@/commands/connection"
 import CreateConnectionBtn from "@/components/create-connection-btn"
 import LoadingSpinner from "@/components/loading-spinner"
 import {
@@ -9,9 +14,10 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
-import { Link, createFileRoute, useRouter } from "@tanstack/react-router"
+import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
+import toast from "react-hot-toast"
 
 export const Route = createFileRoute("/connections")({
   loader: async ({ navigate }) => {
@@ -27,26 +33,33 @@ function ConnectionsPage() {
   const router = useRouter()
   const connections = Route.useLoaderData()
 
+  const onClick = async (connectionId: string) => {
+    const connDetails = await getConnectionDetails(connectionId)
+    try {
+      await establishConnection(connDetails.connString, connDetails.driver)
+      router.navigate({
+        to: "/dashboard/layout/land",
+        search: { connectionName: connDetails.connName }
+      })
+    } catch (error) {
+      toast.error(error as string, { id: "connection_error" })
+    }
+  }
+
   return (
     <main className="flex h-full items-start">
       <ul className="flex h-full flex-[0.5] flex-col justify-start gap-y-5 overflow-y-auto p-5 lg:p-7">
         <Suspense fallback={<LoadingSpinner />}>
           {Object.entries(connections).map(([id, config]) => {
             return (
-              <li key={id}>
+              <li key={id} onClick={() => onClick(id)} role="button">
                 <div className="flex justify-between">
-                  <Link
-                    to="/dashboard/layout/land"
-                    search={{ connectionId: id }}
-                    className="w-full"
-                    role="button"
-                    preload={false}
-                  >
+                  <div className="w-full">
                     <p className="font-medium lg:text-lg">{config.connName}</p>
                     <p className="text-muted-foreground text-sm lg:text-lg">
                       {config.driver}
                     </p>
-                  </Link>
+                  </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <MoreHorizontal className="h-5 w-5 lg:h-6 lg:w-6" />

@@ -1,12 +1,8 @@
-import {
-  establishConnection,
-  getConnectionDetails
-} from "@/commands/connection"
 import { getTables } from "@/commands/table"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@tablex/lib/utils"
 import { registerShortcuts } from "@/shortcuts"
+import { cn } from "@tablex/lib/utils"
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
 import { useState, type KeyboardEvent } from "react"
@@ -18,34 +14,18 @@ import AddRowBtn from "./_layout/-components/create-row-sheet"
 
 const dashboardConnectionSchema = z.object({
   connectionName: z.string().optional(),
-  connectionId: z.string().uuid().optional(),
   tableName: z.string().optional()
 })
 
 export const Route = createFileRoute("/dashboard/_layout")({
   validateSearch: dashboardConnectionSchema,
-  loaderDeps: ({ search: { connectionId, tableName, connectionName } }) => ({
+  loaderDeps: ({ search: { tableName, connectionName } }) => ({
     connectionName,
-    connectionId,
     tableName
   }),
-  loader: async ({ deps: { connectionId, connectionName }, navigate }) => {
+  loader: async ({ deps: { connectionName } }) => {
     await registerShortcuts({ "CommandOrControl+S": [] })
-    let connName: string
-
-    if (connectionId) {
-      const connDetails = await getConnectionDetails(connectionId)
-      try {
-        await establishConnection(connDetails.connString, connDetails.driver)
-      } catch (error) {
-        toast.error(error as string)
-        navigate({ to: "/connections" })
-      }
-      connName = connDetails.connName
-    } else {
-      // * useful for `on the fly` connections
-      connName = connectionName || "Temp Connection"
-    }
+    const connName = connectionName || "Temp Connection"
 
     let tables: string[] = []
     try {
@@ -121,7 +101,6 @@ function DashboardLayout() {
                       tableName: table
                     }}
                     search={{
-                      connectionId: deps.connectionId,
                       connectionName: deps.connectionName,
                       tableName: table
                     }}
