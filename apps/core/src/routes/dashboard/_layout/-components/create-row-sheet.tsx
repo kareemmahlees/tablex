@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useQueryClient } from "@tanstack/react-query"
 
-import { createRow } from "@/commands/row"
+import { createRowCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -82,7 +82,7 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
     resolver: zodResolver(data!)
   })
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
-    await createRow(tableName, values, setOpenSheet, queryClient)
+    await createRowCmd(tableName, values, setOpenSheet, queryClient)
   }
 
   if (isLoading) return <LoadingSpinner />

@@ -13,11 +13,16 @@ use connection::{
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
+#[cfg(debug_assertions)]
+use specta::ts::{BigIntExportBehavior, ExportConfiguration};
 use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
+#[cfg(debug_assertions)]
+use tauri_specta::ts;
 
 #[tauri::command]
+#[specta::specta]
 fn close_splashscreen(window: Window) {
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
@@ -31,6 +36,34 @@ fn close_splashscreen(window: Window) {
 }
 
 fn main() {
+    #[cfg(debug_assertions)]
+    {
+        let res = specta::collect_types![
+            close_splashscreen,
+            test_connection,
+            create_connection_record,
+            delete_connection_record,
+            establish_connection,
+            connections_exist,
+            get_connections,
+            get_connection_details,
+            get_tables,
+            get_paginated_rows,
+            delete_rows,
+            get_columns_props,
+            create_row,
+            update_row,
+            get_fk_relations
+        ]
+        .expect("Failed to collect tauri commands types");
+        ts::export_with_cfg(
+            res,
+            ExportConfiguration::default().bigint(BigIntExportBehavior::Number),
+            "../src/bindings.ts",
+        )
+        .expect("Failed to export specta bindings");
+    }
+
     let (args, cmd) = cli::parse_cli_args();
 
     tauri::Builder::default()

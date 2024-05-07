@@ -1,9 +1,10 @@
 use crate::decode;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
+use specta::Type;
 use sqlx::{any::AnyRow, Error, FromRow, Row};
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, Type)]
 #[serde(rename_all = "lowercase")]
 /// Supported drivers, stored inside connection config in `connections.json`.
 pub enum Drivers {
@@ -13,7 +14,7 @@ pub enum Drivers {
     MySQL,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Type, Clone)]
 /// Connection Config Stored inside `connections.json` file
 #[serde(rename_all = "camelCase")]
 pub struct ConnConfig {
@@ -22,20 +23,20 @@ pub struct ConnConfig {
     pub(crate) conn_name: String,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PaginatedRows {
     data: Vec<JsonMap<String, JsonValue>>,
-    page_count: i64,
+    page_count: i32,
 }
 
 impl PaginatedRows {
-    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: i64) -> Self {
+    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: i32) -> Self {
         PaginatedRows { data, page_count }
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Type)]
 pub struct ColumnProps {
     #[serde(rename = "columnName")]
     pub column_name: String,
@@ -79,14 +80,14 @@ impl<'r> FromRow<'r, AnyRow> for ColumnProps {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug, sqlx::FromRow, Type)]
 pub struct FkRelation {
     #[serde(rename = "tableName")]
     pub table: String,
     pub to: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct FKRows {
     pub table_name: String,

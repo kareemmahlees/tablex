@@ -1,9 +1,7 @@
-import { customToast } from "@tablex/lib/utils"
+import { deleteRowsCmd } from "@/commands/row"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/api/clipboard"
-import { invoke } from "@tauri-apps/api/tauri"
-import toast from "react-hot-toast"
 
 export const deleteRowsHandler = async (
   table: Table<any>,
@@ -11,44 +9,7 @@ export const deleteRowsHandler = async (
   queryClient: QueryClient,
   contextMenuRow?: Row<any>
 ) => {
-  const column = table.getColumn("pk")
-  if (!column)
-    return toast.error("Table Doesn't have a primary key", {
-      id: "table_pk_error"
-    })
-
-  const command_options: { [k: string]: any } = {
-    pkColName: column.columnDef.meta?.name,
-    tableName
-  }
-
-  if (table.getIsSomeRowsSelected()) {
-    const rows = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.getValue(column.id))
-
-    if (rows.length <= 0) return
-
-    command_options.rowPkValues = rows
-  } else if (contextMenuRow) {
-    command_options.rowPkValues = [contextMenuRow.getValue("pk")]
-  }
-
-  const command = invoke<number>("delete_rows", command_options)
-  customToast(
-    command,
-    {
-      success: (rowsAffected) => {
-        queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-        return `Successfully deleted ${
-          rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-        }`
-      },
-      error: (err: string) => err
-    },
-    "delete_row"
-  )
-  table.toggleAllRowsSelected(false)
+  return deleteRowsCmd(table, tableName, queryClient, contextMenuRow)
 }
 
 export const selectAllRowsHandler = (table: Table<any>) => {

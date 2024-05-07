@@ -25,7 +25,7 @@ import {
   PaginationLink
 } from "@/components/ui/pagination"
 
-import { copyRowIntoClipboard, deleteRows } from "@/commands/row"
+import { copyRowIntoClipboard, deleteRowsCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -38,8 +38,7 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { registerShortcuts } from "@/shortcuts"
-import { useQueryClient } from "@tanstack/react-query"
-import { Router, useRouter } from "@tanstack/react-router"
+import { useQueryClient, type QueryClient } from "@tanstack/react-query"
 import {
   ChevronLeft,
   ChevronRight,
@@ -73,7 +72,6 @@ const DataTable = <TData, TValue>({
     table,
     tableRef
   } = useSetupReactTable({ columns, tableName })
-  const router = useRouter()
   const queryClient = useQueryClient()
 
   const { rows } = table.getRowModel()
@@ -182,7 +180,7 @@ const DataTable = <TData, TValue>({
                   tableName={tableName}
                   table={table}
                   setIsSheetOpen={setIsSheetOpen}
-                  router={router}
+                  queryClient={queryClient}
                   contextMenuRow={contextMenuRow}
                 />
               </TableBody>
@@ -206,14 +204,14 @@ interface TableContextMenuContentProps {
   table: TableType<any>
   contextMenuRow?: Row<any>
   tableName: string
-  router: Router
+  queryClient: QueryClient
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
 const TableContextMenuContent = ({
   table,
   tableName,
-  router,
+  queryClient,
   setIsSheetOpen,
   contextMenuRow
 }: TableContextMenuContentProps) => {
@@ -225,7 +223,7 @@ const TableContextMenuContent = ({
     >
       <ContextMenuItem
         onSelect={async () =>
-          await deleteRows(table, tableName, router, contextMenuRow)
+          await deleteRowsCmd(table, tableName, queryClient, contextMenuRow)
         }
       >
         Delete

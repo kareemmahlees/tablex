@@ -1,52 +1,34 @@
-import type { FkRows, PaginatedRows } from "@tablex/lib/types"
+import { createRow, deleteRows, updateRow } from "@/bindings"
 import { customToast } from "@tablex/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
-import type { Router } from "@tanstack/react-router"
 import type { Row, Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/api/clipboard"
-import { invoke } from "@tauri-apps/api/tauri"
 import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
-export const getPaginatedRows = async (
-  tableName: string,
-  pageIndex: number,
-  pageSize: number
-) => {
-  const result = await invoke<PaginatedRows>("get_paginated_rows", {
-    tableName,
-    pageIndex,
-    pageSize
-  })
-  return result
-}
-
-export const createRow = async (
+export const createRowCmd = async (
   tableName: string,
   data: Record<string, any>,
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>,
   queryClient: QueryClient
 ) => {
-  const command = invoke<number>("create_row", { tableName, data })
+  const command = createRow(tableName, data)
 
   customToast(
     command,
-    {
-      success: (s) => {
-        setIsSheetOpen(false)
-        queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-        return `Successfully created ${s} row`
-      },
-      error: (e: string) => e
+    (s) => {
+      setIsSheetOpen(false)
+      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+      return `Successfully created ${s} row`
     },
     "create_row"
   )
 }
 
-export const deleteRows = async (
+export const deleteRowsCmd = async (
   table: Table<any>,
   tableName: string,
-  router: Router,
+  queryClient: QueryClient,
   contextMenuRow?: Row<any>
 ) => {
   const column = table.getColumn("pk")
@@ -55,10 +37,7 @@ export const deleteRows = async (
       id: "table_pk_error"
     })
 
-  const command_options: { [k: string]: any } = {
-    pkColName: column.columnDef.meta?.name,
-    tableName
-  }
+  let rowPkValues: any[] = []
 
   if (table.getIsSomeRowsSelected()) {
     const rows = table
@@ -67,49 +46,43 @@ export const deleteRows = async (
 
     if (rows.length <= 0) return
 
-    command_options.rowPkValues = rows
+    rowPkValues = rows
   } else if (contextMenuRow) {
-    command_options.rowPkValues = [contextMenuRow.getValue("pk")]
+    rowPkValues = [contextMenuRow.getValue("pk")]
   }
 
-  const command = invoke<number>("delete_rows", command_options)
+  const command = deleteRows(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    column.columnDef.meta?.name!,
+    rowPkValues,
+    tableName
+  )
   customToast(
     command,
-    {
-      success: (rowsAffected) => {
-        router.invalidate()
-        return `Successfully deleted ${
-          rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-        }`
-      },
-      error: (err: string) => err
+    (rowsAffected) => {
+      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+      return `Successfully deleted ${
+        rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
+      }`
     },
     "delete_row"
   )
   table.toggleAllRowsSelected(false)
 }
 
-export const updateRow = async (
+export const updateRowCmd = async (
   tableName: string,
   pkColName: string,
   pkColValue: string | number,
   data: Record<string, any>,
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 ) => {
-  const command = invoke("update_row", {
-    tableName,
-    pkColName,
-    pkColValue,
-    data
-  })
+  const command = updateRow(tableName, pkColName, pkColValue, data)
   customToast(
     command,
-    {
-      success: () => {
-        setIsSheetOpen(false)
-        return `Successfully updated rows`
-      },
-      error: (e: string) => e
+    () => {
+      setIsSheetOpen(false)
+      return `Successfully updated rows`
     },
     "update_row"
   )
@@ -139,16 +112,4 @@ export const copyRowIntoClipboard = async (
         .join("\n")
     )
   }
-}
-
-export const getFkRelations = async (
-  tableName: string,
-  columnName: string,
-  cellValue: any
-) => {
-  return await invoke<FkRows[]>("get_fk_relations", {
-    tableName,
-    columnName,
-    cellValue
-  })
 }

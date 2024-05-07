@@ -1,8 +1,9 @@
+import type { Drivers } from "@/bindings"
 import {
   createConnectionRecord,
   establishConnection,
   testConnection
-} from "@/commands/connection"
+} from "@/bindings"
 import {
   Form,
   FormControl,
@@ -15,7 +16,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Drivers, type SupportedDrivers } from "@tablex/lib/types"
 import { constructConnectionString, customToast } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
@@ -24,7 +24,7 @@ import { z } from "zod"
 import ConnectionActions from "./connection-actions"
 
 interface ConnectionParamsProps {
-  driver: Exclude<SupportedDrivers, typeof Drivers.SQLite>
+  driver: Exclude<Drivers, "sqlite">
 }
 
 const PgMySQLConnection = ({ driver }: ConnectionParamsProps) => {
@@ -68,7 +68,7 @@ const PgMySQLConnection = ({ driver }: ConnectionParamsProps) => {
 export default PgMySQLConnection
 
 type ConnectionParamsFormProps = {
-  driver: Exclude<SupportedDrivers, typeof Drivers.SQLite>
+  driver: Exclude<Drivers, "sqlite">
 }
 
 const connectionParamsFormSchema = z.object({
@@ -92,17 +92,14 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     const connString = constructConnectionString({ ...values, driver })
     customToast(
       establishConnection(connString, driver),
-      {
-        success: () => {
-          navigate({
-            to: "/dashboard/layout/land",
-            search: {
-              connectionName: values.connName
-            }
-          })
-          return "Successfully established connection"
-        },
-        error: (e: string) => e
+      () => {
+        navigate({
+          to: "/dashboard/layout/land",
+          search: {
+            connectionName: values.connName
+          }
+        })
+        return "Successfully established connection"
       },
       "establish_connection"
     )
@@ -123,7 +120,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    await testConnection(connString, driver)
+    await testConnection(connString)
   }
   return (
     <Form {...form}>
@@ -222,7 +219,7 @@ const connectionStringFormSchema = z.object({
 })
 
 type ConnectionStringFormProps = {
-  driver: Exclude<SupportedDrivers, typeof Drivers.SQLite>
+  driver: Exclude<Drivers, "sqlite">
 }
 
 const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
@@ -236,17 +233,14 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   ) => {
     customToast(
       establishConnection(values.connString, driver),
-      {
-        success: () => {
-          navigate({
-            to: "/dashboard/layout/land",
-            search: {
-              connectionName: values.connName
-            }
-          })
-          return "Successfully established connection"
-        },
-        error: (e) => e
+      () => {
+        navigate({
+          to: "/dashboard/layout/land",
+          search: {
+            connectionName: values.connName
+          }
+        })
+        return "Successfully established connection"
       },
       "establish_connection"
     )
@@ -262,7 +256,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   const onClickTest = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    await testConnection(values.connString, driver)
+    await testConnection(values.connString)
   }
 
   return (

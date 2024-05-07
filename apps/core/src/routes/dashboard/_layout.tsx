@@ -1,4 +1,4 @@
-import { getTables } from "@/commands/table"
+import { getTables } from "@/bindings"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { registerShortcuts } from "@/shortcuts"

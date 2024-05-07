@@ -51,7 +51,7 @@ pub trait RowHandler {
                 .fetch_one(pool)
                 .await
                 .map_err(|e| e.to_string())?;
-        let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() / page_size as i64;
+        let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() as i32 / page_size;
 
         let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
 

@@ -1,17 +1,18 @@
 use crate::state::SharedState;
 use sqlx::{AnyConnection, Connection};
-use std::path::PathBuf;
-#[cfg(not(debug_assertions))]
+use std::{collections::HashMap, path::PathBuf};
+#[cfg(feature = "metax")]
 use tauri::api::process::{Command, CommandChild};
 use tauri::{async_runtime::Mutex, Runtime, State};
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
     fs::{delete_from_connections_file, read_from_connections_file, write_into_connections_file},
     handler::Handler,
-    types::Drivers,
+    types::{ConnConfig, Drivers},
 };
 
 #[tauri::command]
+#[specta::specta]
 pub async fn test_connection(conn_string: String) -> Result<String, String> {
     let mut con = AnyConnection::connect(conn_string.as_str())
         .await
@@ -26,6 +27,7 @@ pub async fn test_connection(conn_string: String) -> Result<String, String> {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn create_connection_record(
     app: tauri::AppHandle,
     conn_string: String,
@@ -38,6 +40,7 @@ pub fn create_connection_record(
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<(), String> {
     let mut connections_file_path = get_connections_file_path(&app)?;
     delete_from_connections_file(&mut connections_file_path, conn_id)?;
@@ -45,12 +48,13 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn establish_connection(
     state: State<'_, Mutex<SharedState>>,
     conn_string: String,
     driver: Drivers,
 ) -> Result<(), String> {
-    #[cfg(not(debug_assertions))]
+    #[cfg(feature = "metax")]
     {
         if let Some(sidecar) = state.lock().await.metax.take() {
             sidecar.kill().expect("failed to kill sidecar")
@@ -68,7 +72,7 @@ pub async fn establish_connection(
 
     state.pool = Some(pool);
     state.handler = Some(handler);
-    #[cfg(not(debug_assertions))]
+    #[cfg(feature = "metax")]
     {
         let child = spawn_sidecar(driver, conn_string);
         state.metax = Some(child);
@@ -77,7 +81,7 @@ pub async fn establish_connection(
     Ok(())
 }
 
-#[cfg(not(debug_assertions))]
+#[cfg(feature = "metax")]
 fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
     let args = match driver {
         Drivers::SQLite => {
@@ -109,35 +113,36 @@ fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
-    if !connections.as_object().unwrap().is_empty() {
-        Ok(true)
-    } else {
-        Ok(false)
+    if connections.is_empty() {
+        return Ok(false);
     }
+    Ok(true)
 }
 
 #[tauri::command]
-pub fn get_connections(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+#[specta::specta]
+pub fn get_connections(app: tauri::AppHandle) -> Result<HashMap<String, ConnConfig>, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
     Ok(connections)
 }
 
 #[tauri::command]
+#[specta::specta]
 pub fn get_connection_details(
     app: tauri::AppHandle,
     conn_id: String,
-) -> Result<serde_json::Value, String> {
+) -> Result<ConnConfig, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
     let connection_details = connections
-        .get(conn_id)
-        .ok_or("Couldn't find the specified connection".to_string())?
-        .to_owned();
-    Ok(connection_details)
+        .get(&conn_id)
+        .ok_or("Couldn't find the specified connection".to_string())?;
+    Ok(connection_details.clone())
 }
 
 /// Get the file path to `connections.json`.

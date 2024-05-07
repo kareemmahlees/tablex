@@ -38,22 +38,3 @@ export type ConnectionStringParams =
       port: number
       db: string
     }
-
-export type PaginatedRows = {
-  data: Record<string, any>[]
-  pageCount: number
-}
-
-export type ColumnProps = {
-  columnName: string
-  type: string
-  isNullable: boolean
-  defaultValue?: any
-  isPK: boolean
-  hasFkRelations: boolean
-}
-
-export type FkRows = {
-  tableName: string
-  rows: Record<string, any>[]
-}
