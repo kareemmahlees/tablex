@@ -35,11 +35,11 @@ export function connectionsExist() {
 }
 
 export function getConnections() {
-    return invoke()<{ [key: string]: any }>("get_connections")
+    return invoke()<{ [key: string]: ConnConfig }>("get_connections")
 }
 
 export function getConnectionDetails(connId: string) {
-    return invoke()<any>("get_connection_details", { connId })
+    return invoke()<ConnConfig>("get_connection_details", { connId })
 }
 
 export function getTables() {
@@ -77,3 +77,7 @@ export type Drivers = "sqlite" | "postgresql" | "mysql"
 export type FKRows = { tableName: string; rows: { [key: string]: any }[] }
 export type ColumnProps = { columnName: string; type: string; isNullable: boolean; defaultValue: any; isPK: boolean; hasFkRelations: boolean }
 export type PaginatedRows = { data: { [key: string]: any }[]; pageCount: number }
+/**
+ * Connection Config Stored inside `connections.json` file
+ */
+export type ConnConfig = { driver: Drivers; connString: string; connName: string }

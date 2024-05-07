@@ -14,7 +14,7 @@ pub enum Drivers {
     MySQL,
 }
 
-#[derive(Serialize, Deserialize, Debug, Type)]
+#[derive(Serialize, Deserialize, Debug, Type, Clone)]
 /// Connection Config Stored inside `connections.json` file
 #[serde(rename_all = "camelCase")]
 pub struct ConnConfig {

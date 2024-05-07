@@ -1,7 +1,6 @@
 use crate::state::SharedState;
-use serde_json::{Map, Value};
 use sqlx::{AnyConnection, Connection};
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 #[cfg(feature = "metax")]
 use tauri::api::process::{Command, CommandChild};
 use tauri::{async_runtime::Mutex, Runtime, State};
@@ -9,7 +8,7 @@ use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLite
 use tx_lib::{
     fs::{delete_from_connections_file, read_from_connections_file, write_into_connections_file},
     handler::Handler,
-    types::Drivers,
+    types::{ConnConfig, Drivers},
 };
 
 #[tauri::command]
@@ -126,7 +125,7 @@ pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connections(app: tauri::AppHandle) -> Result<Map<String, Value>, String> {
+pub fn get_connections(app: tauri::AppHandle) -> Result<HashMap<String, ConnConfig>, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
     Ok(connections)
@@ -134,14 +133,16 @@ pub fn get_connections(app: tauri::AppHandle) -> Result<Map<String, Value>, Stri
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<Value, String> {
+pub fn get_connection_details(
+    app: tauri::AppHandle,
+    conn_id: String,
+) -> Result<ConnConfig, String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_connections_file(&connections_file_path)?;
     let connection_details = connections
         .get(&conn_id)
-        .ok_or("Couldn't find the specified connection".to_string())?
-        .to_owned();
-    Ok(connection_details)
+        .ok_or("Couldn't find the specified connection".to_string())?;
+    Ok(connection_details.clone())
 }
 
 /// Get the file path to `connections.json`.

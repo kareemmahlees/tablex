@@ -1,5 +1,5 @@
 use crate::types::{ConnConfig, Drivers};
-use serde_json::{Map, Value};
+use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::PathBuf;
@@ -28,7 +28,7 @@ pub fn write_into_connections_file(
 
     let id = Uuid::new_v4().to_string();
 
-    contents.insert(id, serde_json::to_value(connection).unwrap());
+    contents.insert(id, connection).unwrap();
     serde_json::to_writer(&mut writer, &contents)
         .map_err(|_| "Failed to write connection record".to_string())?;
     writer.flush().unwrap();
@@ -61,7 +61,7 @@ pub fn delete_from_connections_file(
 /// Get all connections from `connections.json`.
 pub fn read_from_connections_file(
     connections_file_path: &PathBuf,
-) -> Result<Map<String, Value>, String> {
+) -> Result<HashMap<String, ConnConfig>, String> {
     let prefix = connections_file_path.parent().unwrap();
     std::fs::create_dir_all(prefix)
         .map_err(|_| "Couldn't create config directory for TableX".to_string())?;
@@ -80,11 +80,7 @@ pub fn read_from_connections_file(
 
     let _ = file.seek(SeekFrom::Start(0));
     let reader = BufReader::new(file);
-    let content: Value = serde_json::from_reader(reader).map_err(|e| e.to_string())?;
-    let parsed = content
-        .as_object()
-        .ok_or("Invalid JSON file format")?
-        .clone();
-
-    Ok(parsed)
+    let content: HashMap<String, ConnConfig> =
+        serde_json::from_reader(reader).map_err(|e| e.to_string())?;
+    Ok(content)
 }
