@@ -12,8 +12,6 @@ repository = "https://github.com/kareemmahlees/tablex"
 rust-version = "1.60"
 edition = "2021"
 
-[workspace.features]
-metax = []
 
 [profile.release]
 panic = "abort"
