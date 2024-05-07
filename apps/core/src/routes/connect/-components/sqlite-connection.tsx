@@ -2,7 +2,7 @@ import {
   createConnectionRecord,
   establishConnection,
   testConnection
-} from "@/commands/connection"
+} from "@/bindings"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -73,17 +73,14 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
     })
     customToast(
       establishConnection(connString, Drivers.SQLite),
-      {
-        success: () => {
-          navigate({
-            to: "/dashboard/layout/land",
-            search: {
-              connectionName: values.connName
-            }
-          })
-          return "Successfully established connection"
-        },
-        error: (e: string) => e
+      () => {
+        navigate({
+          to: "/dashboard/layout/land",
+          search: {
+            connectionName: values.connName
+          }
+        })
+        return "Successfully established connection"
       },
       "create_connection"
     )
@@ -103,7 +100,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    await testConnection(connString, Drivers.SQLite)
+    await testConnection(connString)
   }
 
   return (

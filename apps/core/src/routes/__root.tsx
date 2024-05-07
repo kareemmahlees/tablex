@@ -1,4 +1,4 @@
-import { closeSplashScreen } from "@/commands/splash-screen"
+import { closeSplashscreen } from "@/bindings"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import React, { Suspense } from "react"
 import { Toaster } from "react-hot-toast"
@@ -14,7 +14,7 @@ const TanStackRouterDevtools =
       )
 
 export const Route = createRootRoute({
-  onEnter: closeSplashScreen,
+  onEnter: closeSplashscreen,
   component: () => {
     return (
       <main className="dark h-full w-full">

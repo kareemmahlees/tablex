@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
-import toast from "react-hot-toast"
+import { toast, type Renderable, type ValueOrFunction } from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 import { Drivers, type ConnectionStringParams } from "./types"
 
@@ -29,14 +29,15 @@ export function constructConnectionString(params: ConnectionStringParams) {
 
 export function customToast<T>(
   promise: Promise<T>,
-  callbacks: Omit<Parameters<typeof toast.promise<T>>["1"], "loading">,
-  id: string | undefined = undefined
+  onSuccess: ValueOrFunction<Renderable, T>,
+  id?: string
 ) {
   toast.promise(
     promise,
     {
       loading: "Loading..",
-      ...callbacks
+      success: onSuccess,
+      error: (e) => e
     },
     {
       id

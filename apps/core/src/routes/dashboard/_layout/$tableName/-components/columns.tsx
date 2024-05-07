@@ -1,4 +1,4 @@
-import { getColsProps } from "@/commands/columns"
+import { getColumnsProps } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { Column, ColumnDef, Row, Table } from "@tanstack/react-table"
 import SortingButton from "./sorting-btn"
@@ -6,7 +6,7 @@ import SortingButton from "./sorting-btn"
 export const generateColumnsDefs = async (
   tableName: string
 ): Promise<ColumnDef<any>[]> => {
-  const columns = await getColsProps(tableName)
+  const columns = await getColumnsProps(tableName)
   const columnsDefinition: ColumnDef<any>[] = columns.map(
     ({ columnName, isPK, hasFkRelations }) => {
       const columnDefinition: ColumnDef<any> = {

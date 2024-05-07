@@ -1,4 +1,4 @@
-import { getFkRelations, getPaginatedRows } from "@/commands/row"
+import { getFkRelations, getPaginatedRows } from "@/bindings"
 import { useQuery } from "@tanstack/react-query"
 
 /**

@@ -1,5 +1,6 @@
 "use client"
-import { deleteConnection, getConnections } from "@/commands/connection"
+import { getConnections } from "@/bindings"
+import { deleteConnectionCmd } from "@/commands/connection"
 import CreateConnectionBtn from "@/components/create-connection-btn"
 import LoadingSpinner from "@/components/loading-spinner"
 import {
@@ -54,7 +55,7 @@ function ConnectionsPage() {
                     <DropdownMenuContent>
                       <DropdownMenuItem
                         onSelect={async () =>
-                          await deleteConnection(router, id)
+                          await deleteConnectionCmd(router, id)
                         }
                       >
                         <Trash className="mr-2 h-4 w-4" />

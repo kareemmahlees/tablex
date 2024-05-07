@@ -1,21 +1,13 @@
+import { getColumnsProps } from "@/bindings"
 import {
   DATE_DATA_TYPES,
   NUMERIC_DATA_TYPE,
   STRING_DATA_TYPES
 } from "@tablex/lib/constants"
-import type { ColumnProps } from "@tablex/lib/types"
-import { invoke } from "@tauri-apps/api/tauri"
 import { z } from "zod"
 
-export const getColsProps = async (tableName: string) => {
-  const result = await invoke<ColumnProps[]>("get_columns_props", {
-    tableName
-  })
-  return result
-}
-
 export const getZodSchemaFromCols = async (tableName: string) => {
-  const cols = await getColsProps(tableName)
+  const cols = await getColumnsProps(tableName)
   const schemaObject: z.ZodRawShape = {}
   cols.forEach((colProps) => {
     let validationRule: z.ZodTypeAny

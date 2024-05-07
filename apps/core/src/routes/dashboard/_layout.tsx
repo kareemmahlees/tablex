@@ -1,12 +1,12 @@
 import {
   establishConnection,
-  getConnectionDetails
-} from "@/commands/connection"
-import { getTables } from "@/commands/table"
+  getConnectionDetails,
+  getTables
+} from "@/bindings"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { cn } from "@tablex/lib/utils"
 import { registerShortcuts } from "@/shortcuts"
+import { cn } from "@tablex/lib/utils"
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
 import { useState, type KeyboardEvent } from "react"

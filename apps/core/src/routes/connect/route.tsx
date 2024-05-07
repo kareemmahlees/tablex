@@ -1,3 +1,4 @@
+import { Drivers } from "@/bindings"
 import { Button } from "@/components/ui/button"
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command"
 import {
@@ -5,11 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import {
-  Drivers,
-  MappedDrivers,
-  type SupportedDrivers
-} from "@tablex/lib/types"
+import { MappedDrivers } from "@tablex/lib/types"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute } from "@tanstack/react-router"
 import { Check, ChevronsUpDown } from "lucide-react"
@@ -23,9 +20,7 @@ export const Route = createFileRoute("/connect")({
 
 function CreateConnection() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [selectedDriver, setSelectedDriver] = useState<SupportedDrivers | null>(
-    null
-  )
+  const [selectedDriver, setSelectedDriver] = useState<Drivers | null>(null)
   return (
     <section className="flex h-full flex-col items-center justify-center gap-y-9 overflow-hidden">
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -53,7 +48,7 @@ function CreateConnection() {
                     setSelectedDriver(
                       currentValue === selectedDriver
                         ? null
-                        : (currentValue as SupportedDrivers)
+                        : (currentValue as Drivers)
                     )
                     setIsPopoverOpen(false)
                   }}
@@ -73,7 +68,7 @@ function CreateConnection() {
           </Command>
         </PopoverContent>
       </Popover>
-      {selectedDriver === Drivers.SQLite ? (
+      {selectedDriver === "sqlite" ? (
         <SqliteConnection />
       ) : (
         selectedDriver && <PgMySQLConnection driver={selectedDriver} />

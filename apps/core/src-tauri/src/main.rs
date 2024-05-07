@@ -14,7 +14,7 @@ use connection::{
 };
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
 #[cfg(debug_assertions)]
-use specta::collect_types;
+use specta::ts::{BigIntExportBehavior, ExportConfiguration};
 use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
@@ -37,8 +37,8 @@ fn close_splashscreen(window: Window) {
 
 fn main() {
     #[cfg(debug_assertions)]
-    ts::export(
-        collect_types![
+    {
+        let res = specta::collect_types![
             close_splashscreen,
             test_connection,
             create_connection_record,
@@ -54,10 +54,15 @@ fn main() {
             create_row,
             update_row,
             get_fk_relations
-        ],
-        "../src/bindings.ts",
-    )
-    .unwrap();
+        ]
+        .expect("Failed to collect tauri commands types");
+        ts::export_with_cfg(
+            res,
+            ExportConfiguration::default().bigint(BigIntExportBehavior::Number),
+            "../src/bindings.ts",
+        )
+        .expect("Failed to export specta bindings");
+    }
 
     let (args, cmd) = cli::parse_cli_args();
 

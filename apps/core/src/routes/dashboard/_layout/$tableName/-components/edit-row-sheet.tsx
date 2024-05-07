@@ -1,5 +1,5 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
-import { updateRow } from "@/commands/row"
+import { updateRowCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { dirtyValues } from "@tablex/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { dirtyValues } from "@tablex/lib/utils"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import type { Dispatch, SetStateAction } from "react"
@@ -52,7 +52,7 @@ const EditRowSheet = ({
       return toast.error("Table Doesn't have a primary key", {
         id: "table_pk_error"
       })
-    await updateRow(
+    await updateRowCmd(
       tableName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
       column.columnDef.meta?.name!,

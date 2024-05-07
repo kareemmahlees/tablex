@@ -15,7 +15,7 @@
     "packages/**"
   ],
   "scripts": {
-    "tauri:dev": "set RUST_BACKTRACE=1 && pnpm --filter @tablex/core exec tauri dev",
+    "tauri:dev": "pnpm --filter @tablex/core exec tauri dev",
     "tauri:debug": "pnpm --filter @tablex/core exec tauri build --debug",
     "tauri:build": "pnpm --filter @tablex/core exec tauri build",
     "tauri:info": "pnpm --filter @tablex/core exec tauri info",
