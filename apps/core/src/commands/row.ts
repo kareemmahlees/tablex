@@ -2,7 +2,7 @@ import { createRow, deleteRows, updateRow } from "@/bindings"
 import { customToast } from "@tablex/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
-import { writeText } from "@tauri-apps/api/clipboard"
+import { writeText } from "@tauri-apps/plugin-clipboard"
 import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 

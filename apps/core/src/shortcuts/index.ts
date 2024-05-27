@@ -2,7 +2,7 @@ import {
   isRegistered,
   register,
   unregister
-} from "@tauri-apps/api/globalShortcut"
+} from "@tauri-apps/plugin-globalShortcut"
 import {
   copyRowsIntoClipboard,
   deleteRowsHandler,

@@ -2,7 +2,7 @@ use crate::decode;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
-use sqlx::{any::AnyRow, Error, FromRow, Row};
+use sqlx::{any::AnyRow, Error, FromRow, Row, Value};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Type)]
 #[serde(rename_all = "lowercase")]
@@ -27,6 +27,7 @@ pub struct ConnConfig {
 #[serde(rename_all = "camelCase")]
 pub struct PaginatedRows {
     data: Vec<JsonMap<String, JsonValue>>,
+    something: JsonValue,
     page_count: i32,
 }
 

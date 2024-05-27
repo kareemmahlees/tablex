@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { open } from "@tauri-apps/api/shell"
+import { open } from "@tauri-apps/plugin-shell"
 import { Globe, PlayCircle } from "lucide-react"
 import { Dispatch, SetStateAction } from "react"
 
