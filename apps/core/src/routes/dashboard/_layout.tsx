@@ -1,4 +1,4 @@
-import { getTables } from "@/bindings"
+import { commands } from "@/bindings"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { registerShortcuts } from "@/shortcuts"
@@ -23,18 +23,17 @@ export const Route = createFileRoute("/dashboard/_layout")({
     connectionName,
     tableName
   }),
-  loader: async ({ deps: { connectionName } }) => {
+  loader: async ({ deps: { connectionName }, navigate }) => {
     await registerShortcuts({ "CommandOrControl+S": [] })
     const connName = connectionName || "Temp Connection"
 
-    let tables: string[] = []
-    try {
-      tables = await getTables()
-    } catch (error) {
-      toast.error(error as string)
+    const tables = await commands.getTables()
+    if (tables.status === "error") {
+      toast.error(tables.error, { id: "get_tables" })
+      return navigate({ to: "../" })
     }
 
-    return { connName, tables }
+    return { connName, tables: tables.data }
   },
   component: DashboardLayout
 })
@@ -42,13 +41,13 @@ export const Route = createFileRoute("/dashboard/_layout")({
 function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
-  const [tables, setTables] = useState<string[]>(data?.tables)
+  const [tables, setTables] = useState<string[]>(data!.tables)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const searchPattern = e.currentTarget.value
-    if (searchPattern === "") return setTables(data.tables)
+    if (searchPattern === "") return setTables(data!.tables)
 
     clearTimeout(timeout)
 
@@ -76,7 +75,7 @@ function DashboardLayout() {
               color="gray"
             />
           </Link>
-          <h1 className="text-lg font-bold text-gray-500">{data.connName}</h1>
+          <h1 className="text-lg font-bold text-gray-500">{data!.connName}</h1>
           <div className="bg-background flex items-center rounded-sm px-1">
             <Search className="h-3 lg:h-5" color="#4a506f" />
             <Input

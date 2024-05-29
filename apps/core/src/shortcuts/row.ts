@@ -1,7 +1,7 @@
 import { deleteRowsCmd } from "@/commands/row"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
-import { writeText } from "@tauri-apps/plugin-clipboard"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 
 export const deleteRowsHandler = async (
   table: Table<any>,

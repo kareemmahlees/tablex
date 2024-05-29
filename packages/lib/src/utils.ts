@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
-import { toast, type Renderable, type ValueOrFunction } from "react-hot-toast"
+import { toast } from "react-hot-toast"
+import type { Renderable, ValueOrFunction } from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 import { Drivers, type ConnectionStringParams } from "./types"
 
@@ -27,22 +28,30 @@ export function constructConnectionString(params: ConnectionStringParams) {
   return connString
 }
 
-export function customToast<T>(
-  promise: Promise<T>,
-  onSuccess: ValueOrFunction<Renderable, T>,
+export type Result<T extends any | null, E extends string> =
+  | { status: "ok"; data: T }
+  | { status: "error"; error: E }
+
+export function customToast<T extends any | null, E extends string>(
+  commandResult: Result<T, E>,
+  onSuccess: (s: T) => Renderable,
   id?: string
 ) {
-  toast.promise(
-    promise,
-    {
-      loading: "Loading..",
-      success: onSuccess,
-      error: (e) => e
-    },
-    {
-      id
-    }
-  )
+  if (commandResult.status === "error") {
+    return toast.error(commandResult.error, { id })
+  }
+  toast.success(onSuccess(commandResult.data), { id })
+  // toast.promise(
+  //   command,
+  //   {
+  //     loading: "Loading..",
+  //     success: onSuccess,
+  //     error: (e) => e
+  //   },
+  //   {
+  //     id
+  //   }
+  // )
 }
 
 /**

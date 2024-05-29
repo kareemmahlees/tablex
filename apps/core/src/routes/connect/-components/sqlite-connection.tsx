@@ -1,8 +1,4 @@
-import {
-  createConnectionRecord,
-  establishConnection,
-  testConnection
-} from "@/bindings"
+import { commands } from "@/bindings"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -22,6 +18,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
+import { testConnectionCmd } from "@/commands/connection"
 
 const SQLiteConnectionForm = () => {
   const [selectedPath, setSelectedPath] = useState<string>()
@@ -31,7 +28,7 @@ const SQLiteConnectionForm = () => {
       <Button
         variant={"secondary"}
         onClick={async () => {
-          const selected = await open({
+          const file = await open({
             multiple: false,
             filters: [
               {
@@ -40,7 +37,7 @@ const SQLiteConnectionForm = () => {
               }
             ]
           })
-          setSelectedPath(selected as string)
+          setSelectedPath(file?.path)
         }}
       >
         Select DB file
@@ -72,7 +69,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       filePath: selectedPath
     })
     customToast(
-      establishConnection(connString, Drivers.SQLite),
+      await commands.establishConnection(connString, Drivers.SQLite),
       () => {
         navigate({
           to: "/dashboard/layout/land",
@@ -91,8 +88,18 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    await createConnectionRecord(values.connName, connString, Drivers.SQLite)
-    navigate({ to: "/connections" })
+    customToast(
+      await commands.createConnectionRecord(
+        values.connName,
+        connString,
+        Drivers.SQLite
+      ),
+      () => {
+        navigate({ to: "/connections" })
+        return "Successfully saved connection"
+      },
+      "save_connection"
+    )
   }
 
   const onClickTest = async () => {
@@ -100,7 +107,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    await testConnection(connString)
+    await testConnectionCmd(connString)
   }
 
   return (

@@ -1,9 +1,11 @@
 use crate::state::SharedState;
 use sqlx::{AnyConnection, Connection};
 use std::{collections::HashMap, path::PathBuf};
+use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime, State};
 #[cfg(feature = "metax")]
-use tauri::api::process::{Command, CommandChild};
-use tauri::{async_runtime::Mutex, Runtime, State};
+use tauri_plugin_shell::process::CommandChild;
+#[cfg(feature = "metax")]
+use tauri_plugin_shell::ShellExt;
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
     fs::{delete_from_connections_file, read_from_connections_file, write_into_connections_file},
@@ -50,6 +52,7 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
 #[tauri::command]
 #[specta::specta]
 pub async fn establish_connection(
+    _app: AppHandle,
     state: State<'_, Mutex<SharedState>>,
     conn_string: String,
     driver: Drivers,
@@ -74,7 +77,7 @@ pub async fn establish_connection(
     state.handler = Some(handler);
     #[cfg(feature = "metax")]
     {
-        let child = spawn_sidecar(driver, conn_string);
+        let child = spawn_sidecar(_app, driver, conn_string);
         state.metax = Some(child);
     }
 
@@ -82,7 +85,7 @@ pub async fn establish_connection(
 }
 
 #[cfg(feature = "metax")]
-fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
+fn spawn_sidecar(app: AppHandle, driver: Drivers, conn_string: String) -> CommandChild {
     let args = match driver {
         Drivers::SQLite => {
             let (_, after) = conn_string.split_once(':').unwrap();
@@ -104,7 +107,9 @@ fn spawn_sidecar(driver: Drivers, conn_string: String) -> CommandChild {
         }
     };
 
-    let (_, child) = Command::new_sidecar("meta-x")
+    let (_, child) = app
+        .shell()
+        .sidecar("meta-x")
         .expect("failed to create `meta-x` binary command")
         .args(args)
         .spawn()
@@ -150,9 +155,9 @@ pub fn get_connection_details(
 /// **Varies by platform**.
 pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf, String> {
     let mut config_dir = app
-        .path_resolver()
+        .path()
         .app_config_dir()
-        .ok_or("Couldn't read config dir path".to_string())?;
+        .map_err(|_| "Couldn't read config dir path".to_string())?;
     config_dir.push("connections.json");
     Ok(config_dir)
 }

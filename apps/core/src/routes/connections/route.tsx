@@ -1,9 +1,5 @@
 "use client"
-import {
-  establishConnection,
-  getConnectionDetails,
-  getConnections
-} from "@/bindings"
+import { commands } from "@/bindings"
 import { deleteConnectionCmd } from "@/commands/connection"
 import CreateConnectionBtn from "@/components/create-connection-btn"
 import LoadingSpinner from "@/components/loading-spinner"
@@ -21,9 +17,13 @@ import toast from "react-hot-toast"
 
 export const Route = createFileRoute("/connections")({
   loader: async ({ navigate }) => {
-    const connections = await getConnections()
-    if (Object.entries(connections).length === 0) navigate({ to: "/" })
-    return connections
+    const commandResult = await commands.getConnections()
+    if (commandResult.status === "error") {
+      toast.error(commandResult.error, { id: "get_connections" })
+      return navigate({ to: "../" })
+    }
+    if (Object.entries(commandResult.data).length === 0) navigate({ to: "/" })
+    return commandResult.data
   },
   staleTime: 0,
   component: ConnectionsPage
@@ -34,23 +34,35 @@ function ConnectionsPage() {
   const connections = Route.useLoaderData()
 
   const onClick = async (connectionId: string) => {
-    const connDetails = await getConnectionDetails(connectionId)
-    try {
-      await establishConnection(connDetails.connString, connDetails.driver)
-      router.navigate({
-        to: "/dashboard/layout/land",
-        search: { connectionName: connDetails.connName }
+    const connectionDetails = await commands.getConnectionDetails(connectionId)
+
+    if (connectionDetails.status === "error") {
+      return toast.error(connectionDetails.error, {
+        id: "get_connection_details"
       })
-    } catch (error) {
-      toast.error(error as string, { id: "connection_error" })
     }
+
+    const establishConnection = await commands.establishConnection(
+      connectionDetails.data.connString,
+      connectionDetails.data.driver
+    )
+    if (establishConnection.status === "error") {
+      return toast.error(establishConnection.error, {
+        id: "establish_connection"
+      })
+    }
+
+    router.navigate({
+      to: "/dashboard/layout/land",
+      search: { connectionName: connectionDetails.data.connName }
+    })
   }
 
   return (
     <main className="flex h-full items-start">
       <ul className="flex h-full flex-[0.5] flex-col justify-start gap-y-5 overflow-y-auto p-5 lg:p-7">
         <Suspense fallback={<LoadingSpinner />}>
-          {Object.entries(connections).map(([id, config]) => {
+          {Object.entries(connections!).map(([id, config]) => {
             return (
               <li key={id} onClick={() => onClick(id)} role="button">
                 <div className="flex justify-between">

@@ -1,9 +1,5 @@
 import type { Drivers } from "@/bindings"
-import {
-  createConnectionRecord,
-  establishConnection,
-  testConnection
-} from "@/bindings"
+import { commands } from "@/bindings"
 import {
   Form,
   FormControl,
@@ -22,6 +18,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
+import { toast } from "react-hot-toast"
 
 interface ConnectionParamsProps {
   driver: Exclude<Drivers, "sqlite">
@@ -91,7 +88,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
   ) => {
     const connString = constructConnectionString({ ...values, driver })
     customToast(
-      establishConnection(connString, driver),
+      await commands.establishConnection(connString, driver),
       () => {
         navigate({
           to: "/dashboard/layout/land",
@@ -112,15 +109,24 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
       driver: driver,
       ...values
     })
-    await createConnectionRecord(values.connName, connString, driver)
-    navigate({ to: "/connections" })
+    customToast(
+      await commands.createConnectionRecord(
+        values.connName,
+        connString,
+        driver
+      ),
+      () => {
+        navigate({ to: "/connections" })
+        return "Successfully created connection"
+      }
+    )
   }
 
   const onClickTest = async (
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    await testConnection(connString)
+    customToast(await commands.testConnection(connString), (s) => s)
   }
   return (
     <Form {...form}>
@@ -232,7 +238,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
     customToast(
-      establishConnection(values.connString, driver),
+      await commands.establishConnection(values.connString, driver),
       () => {
         navigate({
           to: "/dashboard/layout/land",
@@ -249,14 +255,24 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   const onClickSave = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    await createConnectionRecord(values.connName, values.connString, driver)
+    const commandResult = await commands.createConnectionRecord(
+      values.connName,
+      values.connString,
+      driver
+    )
+    if (commandResult.status === "error") {
+      return toast.error(commandResult.error)
+    }
     navigate({ to: "/connections" })
   }
 
   const onClickTest = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    await testConnection(values.connString)
+    const commandResult = await commands.testConnection(values.connString)
+    if (commandResult.status === "error") {
+      return toast.error(commandResult.error)
+    }
   }
 
   return (

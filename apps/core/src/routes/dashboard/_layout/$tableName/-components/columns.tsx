@@ -1,13 +1,18 @@
-import { getColumnsProps } from "@/bindings"
+import { commands } from "@/bindings"
+import { toast } from "react-hot-toast"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { Column, ColumnDef, Row, Table } from "@tanstack/react-table"
 import SortingButton from "./sorting-btn"
 
 export const generateColumnsDefs = async (
   tableName: string
-): Promise<ColumnDef<any>[]> => {
-  const columns = await getColumnsProps(tableName)
-  const columnsDefinition: ColumnDef<any>[] = columns.map(
+): Promise<ColumnDef<any>[] | undefined> => {
+  const columns = await commands.getColumnsProps(tableName)
+  if (columns.status === "error") {
+    toast.error(columns.error, { id: "get_columns_props" })
+    return
+  }
+  const columnsDefinition: ColumnDef<any>[] = columns.data.map(
     ({ columnName, isPK, hasFkRelations }) => {
       const columnDefinition: ColumnDef<any> = {
         accessorKey: columnName,

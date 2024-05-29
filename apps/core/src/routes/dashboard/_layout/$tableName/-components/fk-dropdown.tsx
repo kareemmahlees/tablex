@@ -71,7 +71,7 @@ const ForeignKeyDropdown = ({
                     {fkRow.rows.map((row) => (
                       <TableRow>
                         {Object.values(row).map((rowValue) => (
-                          <TableCell>{rowValue}</TableCell>
+                          <TableCell>{rowValue?.toString()}</TableCell>
                         ))}
                       </TableRow>
                     ))}

@@ -3,7 +3,7 @@ use crate::state::SharedState;
 use clap::Command;
 use clap::{error::ErrorKind, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, Manager};
-use tauri::{AppHandle, Window};
+use tauri::{AppHandle, WebviewWindow};
 use tx_lib::types::Drivers;
 
 #[derive(Parser, Debug)]
@@ -61,8 +61,8 @@ pub fn parse_cli_args() -> (Args, Command) {
 /// - If the driver is invalid.
 /// - If `--save` is set without `-c`.
 pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
-    let main_window = app.get_window("main").unwrap();
-    let splash_screen = app.get_window("splashscreen").unwrap();
+    let main_window = app.get_webview_window("main").unwrap();
+    let splash_screen = app.get_webview_window("splashscreen").unwrap();
 
     if let Some(conn_string) = args.conn_string {
         #[cfg(all(windows, not(dev)))]
@@ -117,13 +117,13 @@ async fn establish_on_the_fly_connection(
         "mysql" => Ok(Drivers::MySQL),
         _ => Err(format!("Unsupported driver {prefix}")),
     }?;
-    establish_connection(state, conn_string.into(), driver.clone()).await?;
+    establish_connection(app.to_owned(), state, conn_string.into(), driver.clone()).await?;
 
     Ok(driver)
 }
 
 /// If the app is ran without CLI args
-fn normal_navigation(app: &AppHandle, main_window: Window) {
+fn normal_navigation(app: &AppHandle, main_window: WebviewWindow) {
     let exist = connections_exist(app.clone()).unwrap();
 
     if exist {

@@ -1,8 +1,8 @@
-import { createRow, deleteRows, updateRow } from "@/bindings"
+import { commands } from "@/bindings"
 import { customToast } from "@tablex/lib/utils"
 import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
-import { writeText } from "@tauri-apps/plugin-clipboard"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
@@ -12,10 +12,10 @@ export const createRowCmd = async (
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>,
   queryClient: QueryClient
 ) => {
-  const command = createRow(tableName, data)
+  const commandResult = await commands.createRow(tableName, data)
 
   customToast(
-    command,
+    commandResult,
     (s) => {
       setIsSheetOpen(false)
       queryClient.invalidateQueries({ queryKey: ["table_rows"] })
@@ -51,7 +51,7 @@ export const deleteRowsCmd = async (
     rowPkValues = [contextMenuRow.getValue("pk")]
   }
 
-  const command = deleteRows(
+  const command = await commands.deleteRows(
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     column.columnDef.meta?.name!,
     rowPkValues,
@@ -77,7 +77,12 @@ export const updateRowCmd = async (
   data: Record<string, any>,
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 ) => {
-  const command = updateRow(tableName, pkColName, pkColValue, data)
+  const command = await commands.updateRow(
+    tableName,
+    pkColName,
+    pkColValue,
+    data
+  )
   customToast(
     command,
     () => {

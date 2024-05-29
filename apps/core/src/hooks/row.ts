@@ -1,4 +1,5 @@
-import { getFkRelations, getPaginatedRows } from "@/bindings"
+import { commands } from "@/bindings"
+import { toast } from "react-hot-toast"
 import { useQuery } from "@tanstack/react-query"
 
 /**
@@ -13,7 +14,19 @@ export const useGetFKRelations = (
 ) => {
   return useQuery({
     queryKey: ["fk_rows"],
-    queryFn: async () => await getFkRelations(tableName, columnName, cellValue),
+    queryFn: async () => {
+      const commandResult = await commands.getFkRelations(
+        tableName,
+        columnName,
+        cellValue
+      )
+      if (commandResult.status === "error") {
+        toast.error(commandResult.error, { id: "fk_relations" })
+        return undefined
+      }
+
+      return commandResult.data
+    },
     enabled: false,
     placeholderData: [{ tableName: "", rows: [{ "": "" }] }]
   })
@@ -26,6 +39,19 @@ export const useGetPaginatedRows = (
 ) => {
   return useQuery({
     queryKey: ["table_rows", tableName, { pageIndex, pageSize }],
-    queryFn: async () => await getPaginatedRows(tableName, pageIndex, pageSize)
+    queryFn: async () => {
+      const commandResult = await commands.getPaginatedRows(
+        tableName,
+        pageIndex,
+        pageSize
+      )
+
+      if (commandResult.status === "error") {
+        toast.error(commandResult.error, { id: "paginated_rows" })
+        return undefined
+      }
+
+      return commandResult.data
+    }
   })
 }
