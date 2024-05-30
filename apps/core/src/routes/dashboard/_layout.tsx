@@ -95,7 +95,7 @@ function DashboardLayout() {
               {tables.map((table, index) => {
                 return (
                   <Link
-                    to="/dashboard/layout/$tableName"
+                    to="/dashboard/$tableName"
                     params={{
                       tableName: table
                     }}

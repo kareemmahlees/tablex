@@ -89,7 +89,7 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
         splash_screen.show().unwrap();
 
         let url = format!(
-            "/dashboard/layout/land?connectionName={}",
+            "/dashboard/land?connectionName={}",
             &args.conn_name.unwrap_or("Temp".into())
         );
         let _ = main_window.eval(format!("window.location.replace('{url}')").as_str());

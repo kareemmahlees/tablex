@@ -47,7 +47,7 @@ function ConnectionsPage() {
       unwrapResult(establishConnectionResult)
 
       router.navigate({
-        to: "/dashboard/layout/land",
+        to: "/dashboard/land",
         search: { connectionName: connectionDetails.connName }
       })
     } catch (e) {

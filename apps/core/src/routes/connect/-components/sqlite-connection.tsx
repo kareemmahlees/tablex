@@ -1,4 +1,5 @@
 import { commands } from "@/bindings"
+import { testConnectionCmd } from "@/commands/connection"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -18,7 +19,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
-import { testConnectionCmd } from "@/commands/connection"
 
 const SQLiteConnectionForm = () => {
   const [selectedPath, setSelectedPath] = useState<string>()
@@ -72,7 +72,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       await commands.establishConnection(connString, Drivers.SQLite),
       () => {
         navigate({
-          to: "/dashboard/layout/land",
+          to: "/dashboard/land",
           search: {
             connectionName: values.connName
           }

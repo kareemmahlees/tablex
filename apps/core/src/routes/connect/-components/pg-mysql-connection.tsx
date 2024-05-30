@@ -16,9 +16,9 @@ import { constructConnectionString, customToast } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
-import { toast } from "react-hot-toast"
 
 interface ConnectionParamsProps {
   driver: Exclude<Drivers, "sqlite">
@@ -91,7 +91,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
       await commands.establishConnection(connString, driver),
       () => {
         navigate({
-          to: "/dashboard/layout/land",
+          to: "/dashboard/land",
           search: {
             connectionName: values.connName
           }
@@ -241,7 +241,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
       await commands.establishConnection(values.connString, driver),
       () => {
         navigate({
-          to: "/dashboard/layout/land",
+          to: "/dashboard/land",
           search: {
             connectionName: values.connName
           }
