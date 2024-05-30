@@ -8,12 +8,13 @@ export const testConnectionCmd = async (connString: string) => {
 }
 
 export const deleteConnectionCmd = async (router: Router, connId: string) => {
+  console.log("delete")
   const commandResult = await commands.deleteConnectionRecord(connId)
   customToast(
     commandResult,
-    () => {
+    (s) => {
       router.invalidate()
-      return "Successfully deleted connection"
+      return s
     },
     "delete_connection"
   )

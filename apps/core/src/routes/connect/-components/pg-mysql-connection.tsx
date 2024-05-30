@@ -111,13 +111,13 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     })
     customToast(
       await commands.createConnectionRecord(
-        values.connName,
         connString,
+        values.connName,
         driver
       ),
-      () => {
+      (s) => {
         navigate({ to: "/connections" })
-        return "Successfully created connection"
+        return s
       }
     )
   }
@@ -256,14 +256,18 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
     const commandResult = await commands.createConnectionRecord(
-      values.connName,
       values.connString,
+      values.connName,
       driver
     )
-    if (commandResult.status === "error") {
-      return toast.error(commandResult.error)
-    }
-    navigate({ to: "/connections" })
+    customToast(
+      commandResult,
+      (s) => {
+        navigate({ to: "/connections" })
+        return s
+      },
+      "create_connection"
+    )
   }
 
   const onClickTest = async (

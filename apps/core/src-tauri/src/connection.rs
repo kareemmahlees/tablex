@@ -25,7 +25,7 @@ pub async fn test_connection(conn_string: String) -> Result<String, String> {
 
     let _ = con.close().await;
 
-    Ok("Connection is healthy".to_string())
+    Ok("Connection is healthy".into())
 }
 
 #[tauri::command]
@@ -35,18 +35,18 @@ pub fn create_connection_record(
     conn_string: String,
     conn_name: String,
     driver: Drivers,
-) -> Result<(), String> {
+) -> Result<String, String> {
     let mut connections_file_path = get_connections_file_path(&app)?;
     write_into_connections_file(&mut connections_file_path, driver, conn_string, conn_name)?;
-    Ok(())
+    Ok(String::from("Successfully created connection"))
 }
 
 #[tauri::command]
 #[specta::specta]
-pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<(), String> {
+pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String, String> {
     let mut connections_file_path = get_connections_file_path(&app)?;
     delete_from_connections_file(&mut connections_file_path, conn_id)?;
-    Ok(())
+    Ok(String::from("Successfully deleted connection"))
 }
 
 #[tauri::command]

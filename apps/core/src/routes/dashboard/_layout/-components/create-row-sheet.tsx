@@ -48,7 +48,7 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
               role="button"
               className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1 "
             >
-              <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
+              <Plus className="h-3 w-3 lg:h-4 lg:w-4" />
             </TooltipTrigger>
           </SheetTrigger>
           <SheetContent className="overflow-y-auto">

@@ -30,7 +30,7 @@ pub async fn delete_rows(
     pk_col_name: String,
     row_pk_values: Vec<JsonValue>,
     table_name: String,
-) -> Result<u64, String> {
+) -> Result<String, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -57,7 +57,7 @@ pub async fn create_row(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     data: HashMap<String, JsonValue>,
-) -> Result<u64, String> {
+) -> Result<String, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -88,13 +88,13 @@ pub async fn update_row(
     pk_col_name: String,
     pk_col_value: JsonValue,
     data: Map<String, JsonValue>,
-) -> Result<u64, String> {
+) -> Result<String, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
 
     if data.is_empty() {
-        return Ok(0);
+        return Ok(String::new());
     }
     let mut set_condition: String = Default::default();
     for (key, value) in data.iter() {

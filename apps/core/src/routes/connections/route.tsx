@@ -34,7 +34,7 @@ function ConnectionsPage() {
   const router = useRouter()
   const connections = Route.useLoaderData()
 
-  const onClick = async (connectionId: string) => {
+  const onClickConnect = async (connectionId: string) => {
     try {
       const connectionDetailsResult =
         await commands.getConnectionDetails(connectionId)
@@ -64,9 +64,13 @@ function ConnectionsPage() {
         <Suspense fallback={<LoadingSpinner />}>
           {Object.entries(connections!).map(([id, config]) => {
             return (
-              <li key={id} onClick={() => onClick(id)} role="button">
+              <li key={id}>
                 <div className="flex justify-between">
-                  <div className="w-full">
+                  <div
+                    className="w-full"
+                    onClick={() => onClickConnect(id)}
+                    role="button"
+                  >
                     <p className="font-medium lg:text-lg">{config.connName}</p>
                     <p className="text-muted-foreground text-sm lg:text-lg">
                       {config.driver}

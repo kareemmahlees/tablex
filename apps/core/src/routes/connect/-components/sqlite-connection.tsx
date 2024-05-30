@@ -90,15 +90,15 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
     })
     customToast(
       await commands.createConnectionRecord(
-        values.connName,
         connString,
+        values.connName,
         Drivers.SQLite
       ),
-      () => {
+      (s) => {
         navigate({ to: "/connections" })
-        return "Successfully saved connection"
+        return s
       },
-      "save_connection"
+      "create_connection"
     )
   }
 

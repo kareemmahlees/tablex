@@ -12,7 +12,7 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
-async createConnectionRecord(connString: string, connName: string, driver: Drivers) : Promise<Result<null, string>> {
+async createConnectionRecord(connString: string, connName: string, driver: Drivers) : Promise<Result<string, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("create_connection_record", { connString, connName, driver }) };
 } catch (e) {
@@ -20,7 +20,7 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
-async deleteConnectionRecord(connId: string) : Promise<Result<null, string>> {
+async deleteConnectionRecord(connId: string) : Promise<Result<string, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("delete_connection_record", { connId }) };
 } catch (e) {
@@ -76,7 +76,7 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
-async deleteRows(pkColName: string, rowPkValues: JsonValue[], tableName: string) : Promise<Result<number, string>> {
+async deleteRows(pkColName: string, rowPkValues: JsonValue[], tableName: string) : Promise<Result<string, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("delete_rows", { pkColName, rowPkValues, tableName }) };
 } catch (e) {
@@ -92,7 +92,7 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
-async createRow(tableName: string, data: { [key in string]: JsonValue }) : Promise<Result<number, string>> {
+async createRow(tableName: string, data: { [key in string]: JsonValue }) : Promise<Result<string, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("create_row", { tableName, data }) };
 } catch (e) {
@@ -100,7 +100,7 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
-async updateRow(tableName: string, pkColName: string, pkColValue: JsonValue, data: { [key in string]: JsonValue }) : Promise<Result<number, string>> {
+async updateRow(tableName: string, pkColName: string, pkColValue: JsonValue, data: { [key in string]: JsonValue }) : Promise<Result<string, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("update_row", { tableName, pkColName, pkColValue, data }) };
 } catch (e) {

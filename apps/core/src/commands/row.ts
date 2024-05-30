@@ -16,10 +16,9 @@ export const createRowCmd = async (
 
   customToast(
     commandResult,
-    (s) => {
+    () => {
       setIsSheetOpen(false)
       queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-      return `Successfully created ${s} row`
     },
     "create_row"
   )
@@ -59,12 +58,7 @@ export const deleteRowsCmd = async (
   )
   customToast(
     command,
-    (rowsAffected) => {
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-      return `Successfully deleted ${
-        rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-      }`
-    },
+    () => queryClient.invalidateQueries({ queryKey: ["table_rows"] }),
     "delete_row"
   )
   table.toggleAllRowsSelected(false)
@@ -83,14 +77,7 @@ export const updateRowCmd = async (
     pkColValue,
     data
   )
-  customToast(
-    command,
-    () => {
-      setIsSheetOpen(false)
-      return `Successfully updated rows`
-    },
-    "update_row"
-  )
+  customToast(command, () => setIsSheetOpen(false), "update_row")
 }
 
 export const copyRowIntoClipboard = async (
