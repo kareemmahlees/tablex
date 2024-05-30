@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
+import type { Renderable } from "react-hot-toast"
 import { toast } from "react-hot-toast"
-import type { Renderable, ValueOrFunction } from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 import { Drivers, type ConnectionStringParams } from "./types"
 
@@ -41,17 +41,20 @@ export function customToast<T extends any | null, E extends string>(
     return toast.error(commandResult.error, { id })
   }
   toast.success(onSuccess(commandResult.data), { id })
-  // toast.promise(
-  //   command,
-  //   {
-  //     loading: "Loading..",
-  //     success: onSuccess,
-  //     error: (e) => e
-  //   },
-  //   {
-  //     id
-  //   }
-  // )
+}
+
+/**
+ * Accepts a result returning the inner data or throws an Error.
+ * @param result Result of executing a Tauri command.
+ * @returns The inner data of the `Ok`
+ */
+export function unwrapResult<T extends any | null, E extends string>(
+  result: Result<T, E>
+) {
+  if (result.status === "error") {
+    throw new Error(result.error)
+  }
+  return result.data
 }
 
 /**
@@ -65,6 +68,7 @@ export function dirtyValues(
   return Object.fromEntries(
     Object.keys(dirtyFields).map((key) => [
       key,
+      // @ts-expect-error
       dirtyValues(dirtyFields[key], allValues[key])
     ])
   )

@@ -62,11 +62,9 @@ fn main() {
 
     let (args, cmd) = cli::parse_cli_args();
 
-    tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
+    let tauri_builder = tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-        .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
@@ -95,7 +93,12 @@ fn main() {
                 rt.block_on(stt.cleanup());
                 rt.shutdown_background();
             }
-        })
+        });
+
+    #[cfg(feature = "metax")]
+    tauri_builder.plugin(tauri_plugin_shell::init());
+
+    tauri_builder
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

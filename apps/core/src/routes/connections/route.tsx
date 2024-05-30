@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
+import { unwrapResult } from "@tablex/lib/utils"
 import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
@@ -34,28 +35,27 @@ function ConnectionsPage() {
   const connections = Route.useLoaderData()
 
   const onClick = async (connectionId: string) => {
-    const connectionDetails = await commands.getConnectionDetails(connectionId)
+    try {
+      const connectionDetailsResult =
+        await commands.getConnectionDetails(connectionId)
+      const connectionDetails = unwrapResult(connectionDetailsResult)
 
-    if (connectionDetails.status === "error") {
-      return toast.error(connectionDetails.error, {
-        id: "get_connection_details"
+      const establishConnectionResult = await commands.establishConnection(
+        connectionDetails.connString,
+        connectionDetails.driver
+      )
+      unwrapResult(establishConnectionResult)
+
+      router.navigate({
+        to: "/dashboard/layout/land",
+        search: { connectionName: connectionDetails.connName }
       })
+    } catch (e) {
+      if (e instanceof Error)
+        return toast.error(e.message, {
+          id: "establish_connection"
+        })
     }
-
-    const establishConnection = await commands.establishConnection(
-      connectionDetails.data.connString,
-      connectionDetails.data.driver
-    )
-    if (establishConnection.status === "error") {
-      return toast.error(establishConnection.error, {
-        id: "establish_connection"
-      })
-    }
-
-    router.navigate({
-      to: "/dashboard/layout/land",
-      search: { connectionName: connectionDetails.data.connName }
-    })
   }
 
   return (

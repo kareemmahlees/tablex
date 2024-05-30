@@ -4,16 +4,14 @@ import {
   NUMERIC_DATA_TYPE,
   STRING_DATA_TYPES
 } from "@tablex/lib/constants"
-import toast from "react-hot-toast"
+import { unwrapResult } from "@tablex/lib/utils"
 import { z } from "zod"
 
 export const getZodSchemaFromCols = async (tableName: string) => {
-  const cols = await commands.getColumnsProps(tableName)
-  if (cols.status === "error") {
-    return toast.error(cols.error, { id: "get_columns_props" })
-  }
+  const result = await commands.getColumnsProps(tableName)
+  const cols = unwrapResult(result)
   const schemaObject: z.ZodRawShape = {}
-  cols.data.forEach((colProps) => {
+  cols.forEach((colProps) => {
     let validationRule: z.ZodTypeAny
 
     switch (true) {

@@ -30,6 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useState, type Dispatch, type SetStateAction } from "react"
 import { useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 import { z } from "zod"
 
 type AddRowBtnProps = {
@@ -45,7 +46,7 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
           <SheetTrigger>
             <TooltipTrigger
               role="button"
-              className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1 lg:m-6"
+              className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1 "
             >
               <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
             </TooltipTrigger>
@@ -77,7 +78,7 @@ type AddRowFormProps = {
 
 const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
   const queryClient = useQueryClient()
-  const { data, isLoading } = useGetZodSchema(tableName)
+  const { data, isLoading, error } = useGetZodSchema(tableName)
   const form = useForm<z.infer<NonNullable<typeof data>>>({
     resolver: zodResolver(data!)
   })
@@ -86,6 +87,8 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
   }
 
   if (isLoading) return <LoadingSpinner />
+
+  if (error) return toast.error(error.message, { id: "get_zod_schema" })
 
   return (
     <Form {...form}>
