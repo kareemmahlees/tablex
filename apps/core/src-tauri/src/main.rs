@@ -13,10 +13,12 @@ use connection::{
     get_connection_details, get_connections, test_connection,
 };
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
-use specta::ts::ExportConfig;
+use specta::ts::{BigIntExportBehavior, ExportConfig};
 use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
+use tauri_specta::{collect_commands, collect_events};
+use tx_lib::types::{ConnectionsChangedEvent, TableContentsChangedEvent};
 
 #[tauri::command]
 #[specta::specta]
@@ -33,29 +35,33 @@ fn close_splashscreen(window: Window) {
 }
 
 fn main() {
-    let invoke_handler = {
-        let builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![
-            close_splashscreen,
-            test_connection,
-            create_connection_record,
-            delete_connection_record,
-            establish_connection,
-            connections_exist,
-            get_connections,
-            get_connection_details,
-            get_tables,
-            get_paginated_rows,
-            delete_rows,
-            get_columns_props,
-            create_row,
-            update_row,
-            get_fk_relations
-        ]);
+    let (invoke_handler, register_events) = {
+        let builder = tauri_specta::ts::builder()
+            .commands(collect_commands![
+                close_splashscreen,
+                test_connection,
+                create_connection_record,
+                delete_connection_record,
+                establish_connection,
+                connections_exist,
+                get_connections,
+                get_connection_details,
+                get_tables,
+                get_paginated_rows,
+                delete_rows,
+                get_columns_props,
+                create_row,
+                update_row,
+                get_fk_relations
+            ])
+            .events(collect_events![
+                ConnectionsChangedEvent,
+                TableContentsChangedEvent
+            ]);
 
         #[cfg(debug_assertions)]
         let builder = builder.path("../src/bindings.ts");
-        let builder = builder
-            .config(ExportConfig::default().bigint(specta::ts::BigIntExportBehavior::Number));
+        let builder = builder.config(ExportConfig::default().bigint(BigIntExportBehavior::Number));
 
         builder.build().unwrap()
     };
@@ -68,6 +74,8 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
+            register_events(app);
+
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(app.app_handle(), args, cmd));
 

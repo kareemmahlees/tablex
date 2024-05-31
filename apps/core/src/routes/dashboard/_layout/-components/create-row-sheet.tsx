@@ -11,7 +11,6 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { useQueryClient } from "@tanstack/react-query"
 
 import { createRowCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
@@ -77,13 +76,12 @@ type AddRowFormProps = {
 }
 
 const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
-  const queryClient = useQueryClient()
   const { data, isLoading, error } = useGetZodSchema(tableName)
   const form = useForm<z.infer<NonNullable<typeof data>>>({
     resolver: zodResolver(data!)
   })
   const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
-    await createRowCmd(tableName, values, setOpenSheet, queryClient)
+    await createRowCmd(tableName, values, setOpenSheet)
   }
 
   if (isLoading) return <LoadingSpinner />

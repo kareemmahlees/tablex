@@ -11,19 +11,22 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { unwrapResult } from "@tablex/lib/utils"
-import { createFileRoute, useRouter } from "@tanstack/react-router"
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
 import toast from "react-hot-toast"
 
 export const Route = createFileRoute("/connections")({
-  loader: async ({ navigate }) => {
+  loader: async ({ abortController }) => {
     const commandResult = await commands.getConnections()
     if (commandResult.status === "error") {
       toast.error(commandResult.error, { id: "get_connections" })
-      return navigate({ to: "../" })
+      return abortController.abort(
+        `error while getting connections: ${commandResult.error}`
+      )
     }
-    if (Object.entries(commandResult.data).length === 0) navigate({ to: "/" })
+    if (Object.entries(commandResult.data).length === 0)
+      throw redirect({ to: "/" })
     return commandResult.data
   },
   staleTime: 0,
@@ -82,9 +85,10 @@ function ConnectionsPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem
-                        onSelect={async () =>
-                          await deleteConnectionCmd(router, id)
-                        }
+                        onSelect={async () => {
+                          await deleteConnectionCmd(id)
+                          router.invalidate()
+                        }}
                       >
                         <Trash className="mr-2 h-4 w-4" />
                         Delete

@@ -5210,6 +5210,7 @@ dependencies = [
  "serde_json",
  "specta",
  "sqlx",
+ "tauri-specta",
  "uuid",
 ]
 

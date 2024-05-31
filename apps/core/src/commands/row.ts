@@ -1,6 +1,5 @@
 import { commands } from "@/bindings"
 import { customToast } from "@tablex/lib/utils"
-import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 import { Dispatch, SetStateAction } from "react"
@@ -9,25 +8,16 @@ import toast from "react-hot-toast"
 export const createRowCmd = async (
   tableName: string,
   data: Record<string, any>,
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>,
-  queryClient: QueryClient
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 ) => {
   const commandResult = await commands.createRow(tableName, data)
 
-  customToast(
-    commandResult,
-    () => {
-      setIsSheetOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-    },
-    "create_row"
-  )
+  customToast(commandResult, () => setIsSheetOpen(false), "create_row")
 }
 
 export const deleteRowsCmd = async (
   table: Table<any>,
   tableName: string,
-  queryClient: QueryClient,
   contextMenuRow?: Row<any>
 ) => {
   const column = table.getColumn("pk")
@@ -56,11 +46,7 @@ export const deleteRowsCmd = async (
     rowPkValues,
     tableName
   )
-  customToast(
-    command,
-    () => queryClient.invalidateQueries({ queryKey: ["table_rows"] }),
-    "delete_row"
-  )
+  customToast(command, () => {}, "delete_row")
   table.toggleAllRowsSelected(false)
 }
 

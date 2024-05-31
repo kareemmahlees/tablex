@@ -25,6 +25,7 @@ import {
   PaginationLink
 } from "@/components/ui/pagination"
 
+import { events } from "@/bindings"
 import { copyRowIntoClipboard, deleteRowsCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
@@ -38,7 +39,7 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { registerShortcuts } from "@/shortcuts"
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   ChevronLeft,
   ChevronRight,
@@ -74,6 +75,10 @@ const DataTable = <TData, TValue>({
   } = useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
 
+  events.tableContentsChangedEvent.listen(() => {
+    queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+  })
+
   const { rows } = table.getRowModel()
 
   const parentRef = useRef<HTMLDivElement>(null)
@@ -90,7 +95,7 @@ const DataTable = <TData, TValue>({
     registerShortcuts({
       "CommandOrControl+A": [table],
       "CommandOrControl+C": [table, contextMenuRow],
-      Delete: [table, tableName, queryClient, contextMenuRow]
+      Delete: [table, tableName, contextMenuRow]
     })
   })
 
@@ -180,7 +185,6 @@ const DataTable = <TData, TValue>({
                   tableName={tableName}
                   table={table}
                   setIsSheetOpen={setIsSheetOpen}
-                  queryClient={queryClient}
                   contextMenuRow={contextMenuRow}
                 />
               </TableBody>
@@ -204,14 +208,12 @@ interface TableContextMenuContentProps {
   table: TableType<any>
   contextMenuRow?: Row<any>
   tableName: string
-  queryClient: QueryClient
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
 const TableContextMenuContent = ({
   table,
   tableName,
-  queryClient,
   setIsSheetOpen,
   contextMenuRow
 }: TableContextMenuContentProps) => {
@@ -223,7 +225,7 @@ const TableContextMenuContent = ({
     >
       <ContextMenuItem
         onSelect={async () =>
-          await deleteRowsCmd(table, tableName, queryClient, contextMenuRow)
+          await deleteRowsCmd(table, tableName, contextMenuRow)
         }
       >
         Delete

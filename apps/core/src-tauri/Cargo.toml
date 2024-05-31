@@ -24,7 +24,7 @@ clap = { version = "4.5.1", features = ["derive"] }
 tokio = { workspace = true }
 regex = "1.10.3"
 specta = { workspace = true }
-tauri-specta = { version = "2.0.0-rc.5", features = ["typescript"] }
+tauri-specta = { workspace = true }
 tauri-plugin-dialog = "2.0.0-beta.7"
 tauri-plugin-clipboard-manager = "2.1.0-beta.2"
 tauri-plugin-shell = "2.0.0-beta.5"

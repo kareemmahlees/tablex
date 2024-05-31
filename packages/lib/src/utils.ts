@@ -27,7 +27,7 @@ export function constructConnectionString(params: ConnectionStringParams) {
   return connString
 }
 
-export type Result<T extends string, E extends string> =
+export type Result<T extends any, E extends string> =
   | { status: "ok"; data: T }
   | { status: "error"; error: E }
 
@@ -49,7 +49,7 @@ export function customToast<T extends string, E extends string>(
  * @param result Result of executing a Tauri command.
  * @returns The inner data of the `Ok`
  */
-export function unwrapResult<T extends string, E extends string>(
+export function unwrapResult<T extends any, E extends string>(
   result: Result<T, E>
 ) {
   if (result.status === "error") {

@@ -118,7 +118,13 @@ try {
 }
 }
 
-
+export const events = __makeEvents__<{
+connectionsChangedEvent: ConnectionsChangedEvent,
+tableContentsChangedEvent: TableContentsChangedEvent
+}>({
+connectionsChangedEvent: "connections-changed-event",
+tableContentsChangedEvent: "table-contents-changed-event"
+})
 
 /** user-defined types **/
 
@@ -127,6 +133,7 @@ export type ColumnProps = { columnName: string; type: string; isNullable: boolea
  * Connection Config Stored inside `connections.json` file
  */
 export type ConnConfig = { driver: Drivers; connString: string; connName: string }
+export type ConnectionsChangedEvent = null
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */
@@ -134,6 +141,7 @@ export type Drivers = "sqlite" | "postgresql" | "mysql"
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
+export type TableContentsChangedEvent = null
 
 /** tauri-specta globals **/
 
