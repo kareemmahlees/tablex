@@ -102,7 +102,7 @@ const DataTable = <TData, TValue>({
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <div className="flex items-center justify-between p-4">
-        <h1 className="w-full  text-2xl font-bold ">{tableName}</h1>
+        <h1 className="w-full text-2xl font-bold">{tableName}</h1>
         <PaginationControls table={table} />
       </div>
       {isRowsLoading ? (

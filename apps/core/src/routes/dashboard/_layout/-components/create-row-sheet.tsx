@@ -45,7 +45,7 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
           <SheetTrigger>
             <TooltipTrigger
               role="button"
-              className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1 "
+              className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1"
             >
               <Plus className="h-3 w-3 lg:h-4 lg:w-4" />
             </TooltipTrigger>

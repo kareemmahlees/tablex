@@ -61,7 +61,7 @@ function DashboardLayout() {
 
   return (
     <main className="flex h-full w-full">
-      <aside className="flex w-56 flex-col items-start justify-between  bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
+      <aside className="flex w-56 flex-col items-start justify-between bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
         <div className="mb-4 flex flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
           <Link
             to="/connections"

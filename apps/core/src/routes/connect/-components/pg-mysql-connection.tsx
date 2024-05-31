@@ -130,7 +130,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
   }
   return (
     <Form {...form}>
-      <form className="grid grid-cols-2 gap-x-7 gap-y-7 lg:gap-x-14 lg:gap-y-14 ">
+      <form className="grid grid-cols-2 gap-x-7 gap-y-7 lg:gap-x-14 lg:gap-y-14">
         <FormField
           control={form.control}
           name="connName"
