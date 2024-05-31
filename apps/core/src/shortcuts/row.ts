@@ -1,15 +1,13 @@
 import { deleteRowsCmd } from "@/commands/row"
-import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
-import { writeText } from "@tauri-apps/api/clipboard"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 
 export const deleteRowsHandler = async (
   table: Table<any>,
   tableName: string,
-  queryClient: QueryClient,
   contextMenuRow?: Row<any>
 ) => {
-  return deleteRowsCmd(table, tableName, queryClient, contextMenuRow)
+  return deleteRowsCmd(table, tableName, contextMenuRow)
 }
 
 export const selectAllRowsHandler = (table: Table<any>) => {

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { dirtyValues } from "@tablex/lib/utils"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
 import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
@@ -34,7 +34,6 @@ const EditRowSheet = ({
   table,
   tableName
 }: EditRowSheetProps) => {
-  const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: [tableName],
     queryFn: async () => (await getZodSchemaFromCols(tableName)).partial()
@@ -60,7 +59,6 @@ const EditRowSheet = ({
       dirtyValues(form.formState.dirtyFields, values),
       setIsSheetOpen
     )
-    queryClient.invalidateQueries({ queryKey: ["table_rows"] })
   }
 
   if (isLoading) return <LoadingSpinner />

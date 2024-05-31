@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
-import { toast, type Renderable, type ValueOrFunction } from "react-hot-toast"
+import { toast } from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 import { Drivers, type ConnectionStringParams } from "./types"
 
@@ -27,22 +27,35 @@ export function constructConnectionString(params: ConnectionStringParams) {
   return connString
 }
 
-export function customToast<T>(
-  promise: Promise<T>,
-  onSuccess: ValueOrFunction<Renderable, T>,
+export type Result<T extends any | null, E extends string> =
+  | { status: "ok"; data: T }
+  | { status: "error"; error: E }
+
+export function customToast<T extends string, E extends string>(
+  commandResult: Result<T, E>,
+  onSuccess: () => void,
   id?: string
 ) {
-  toast.promise(
-    promise,
-    {
-      loading: "Loading..",
-      success: onSuccess,
-      error: (e) => e
-    },
-    {
-      id
-    }
-  )
+  if (commandResult.status === "error") {
+    return toast.error(commandResult.error, { id })
+  }
+  onSuccess()
+
+  toast.success(commandResult.data, { id })
+}
+
+/**
+ * Accepts a result returning the inner data or throws an Error.
+ * @param result Result of executing a Tauri command.
+ * @returns The inner data of the `Ok`
+ */
+export function unwrapResult<T extends any, E extends string>(
+  result: Result<T, E>
+) {
+  if (result.status === "error") {
+    throw new Error(result.error)
+  }
+  return result.data
 }
 
 /**

@@ -64,13 +64,20 @@ pub trait RowHandler {
         pk_col_name: String,
         table_name: String,
         params: String,
-    ) -> Result<u64, String> {
+    ) -> Result<String, String> {
         let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});");
         let result = sqlx::query(&query_str)
             .execute(pool)
             .await
             .map_err(|_| "Failed to delete rows".to_string())?;
-        Ok(result.rows_affected())
+
+        let mut message = String::from("Successfully deleted ");
+        if result.rows_affected() == 1 {
+            message.push_str("1 row")
+        } else {
+            message.push_str(format!("{} rows", result.rows_affected()).as_str())
+        }
+        Ok(message)
     }
     async fn create_row(
         &self,
@@ -78,13 +85,13 @@ pub trait RowHandler {
         table_name: String,
         columns: String,
         values: String,
-    ) -> Result<u64, String> {
+    ) -> Result<String, String> {
         let res =
             sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
                 .execute(pool)
                 .await
                 .map_err(|err| err.to_string())?;
-        Ok(res.rows_affected())
+        Ok(format!("Successfully created {} row", res.rows_affected()))
     }
     async fn update_row(
         &self,
@@ -93,8 +100,8 @@ pub trait RowHandler {
         set_condition: String,
         pk_col_name: String,
         pk_col_value: JsonValue,
-    ) -> Result<u64, String> {
-        let res = sqlx::query(
+    ) -> Result<String, String> {
+        let _ = sqlx::query(
             format!(
                 "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
                 pk_col_value
@@ -104,7 +111,7 @@ pub trait RowHandler {
         .execute(pool)
         .await
         .map_err(|_| "Failed to update row".to_string())?;
-        Ok(res.rows_affected())
+        Ok(String::from("Successfully updated row"))
     }
 
     async fn fk_relations(

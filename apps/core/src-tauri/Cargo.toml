@@ -11,28 +11,23 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.1", features = [] }
+tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 tx_lib = { path = "../../../crates/lib" }
 tx_handlers = { path = "../../../crates/handlers" }
 serde_json = { workspace = true }
 serde = { workspace = true }
-tauri = { version = "1.6.1", features = [
-    "shell-open",
-    "os-all",
-    "clipboard-write-text",
-    "global-shortcut-all",
-    "dialog-open",
-    "test",
-    "process-command-api",
-] }
+tauri = { version = "2.0.0-beta.19", features = [] }
 sqlx = { workspace = true }
 clap = { version = "4.5.1", features = ["derive"] }
 tokio = { workspace = true }
 regex = "1.10.3"
 specta = { workspace = true }
-tauri-specta = { version = "1", features = ["typescript"] }
+tauri-specta = { workspace = true }
+tauri-plugin-dialog = "2.0.0-beta.7"
+tauri-plugin-clipboard-manager = "2.1.0-beta.2"
+tauri-plugin-shell = "2.0.0-beta.5"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
@@ -46,3 +41,6 @@ windows = { version = "0.54.0", features = [
     "Win32_System_Console",
     "Win32_Foundation",
 ] }
+
+[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
+tauri-plugin-global-shortcut = "2.0.0-beta.4"

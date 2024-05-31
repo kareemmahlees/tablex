@@ -28,7 +28,7 @@ pub fn write_into_connections_file(
 
     let id = Uuid::new_v4().to_string();
 
-    contents.insert(id, connection).unwrap();
+    contents.insert(id, connection);
     serde_json::to_writer(&mut writer, &contents)
         .map_err(|_| "Failed to write connection record".to_string())?;
     writer.flush().unwrap();

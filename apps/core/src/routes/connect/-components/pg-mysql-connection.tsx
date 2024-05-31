@@ -1,9 +1,5 @@
 import type { Drivers } from "@/bindings"
-import {
-  createConnectionRecord,
-  establishConnection,
-  testConnection
-} from "@/bindings"
+import { commands } from "@/bindings"
 import {
   Form,
   FormControl,
@@ -20,6 +16,7 @@ import { constructConnectionString, customToast } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
 
@@ -90,19 +87,17 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    customToast(
-      establishConnection(connString, driver),
-      () => {
-        navigate({
-          to: "/dashboard/layout/land",
-          search: {
-            connectionName: values.connName
-          }
-        })
-        return "Successfully established connection"
-      },
-      "establish_connection"
-    )
+    const result = await commands.establishConnection(connString, driver)
+    if (result.status === "error") {
+      return toast.error(result.error, { id: "establish_connection" })
+    }
+
+    navigate({
+      to: "/dashboard/land",
+      search: {
+        connectionName: values.connName
+      }
+    })
   }
 
   const onClickSave = async (
@@ -112,19 +107,25 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
       driver: driver,
       ...values
     })
-    await createConnectionRecord(values.connName, connString, driver)
-    navigate({ to: "/connections" })
+    customToast(
+      await commands.createConnectionRecord(
+        connString,
+        values.connName,
+        driver
+      ),
+      () => navigate({ to: "/connections" })
+    )
   }
 
   const onClickTest = async (
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    await testConnection(connString)
+    customToast(await commands.testConnection(connString), () => {})
   }
   return (
     <Form {...form}>
-      <form className="grid grid-cols-2 gap-x-7 gap-y-7 lg:gap-x-14 lg:gap-y-14 ">
+      <form className="grid grid-cols-2 gap-x-7 gap-y-7 lg:gap-x-14 lg:gap-y-14">
         <FormField
           control={form.control}
           name="connName"
@@ -231,32 +232,40 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   const onClickConnect = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    customToast(
-      establishConnection(values.connString, driver),
-      () => {
-        navigate({
-          to: "/dashboard/layout/land",
-          search: {
-            connectionName: values.connName
-          }
-        })
-        return "Successfully established connection"
-      },
-      "establish_connection"
-    )
+    const result = await commands.establishConnection(values.connString, driver)
+    if (result.status === "error") {
+      return toast.error(result.error, { id: "establish_connection" })
+    }
+    navigate({
+      to: "/dashboard/land",
+      search: {
+        connectionName: values.connName
+      }
+    })
   }
 
   const onClickSave = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    await createConnectionRecord(values.connName, values.connString, driver)
-    navigate({ to: "/connections" })
+    const commandResult = await commands.createConnectionRecord(
+      values.connString,
+      values.connName,
+      driver
+    )
+    customToast(
+      commandResult,
+      () => navigate({ to: "/connections" }),
+      "create_connection"
+    )
   }
 
   const onClickTest = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    await testConnection(values.connString)
+    const commandResult = await commands.testConnection(values.connString)
+    if (commandResult.status === "error") {
+      return toast.error(commandResult.error)
+    }
   }
 
   return (

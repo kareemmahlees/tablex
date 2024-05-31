@@ -1,34 +1,23 @@
-import { createRow, deleteRows, updateRow } from "@/bindings"
+import { commands } from "@/bindings"
 import { customToast } from "@tablex/lib/utils"
-import type { QueryClient } from "@tanstack/react-query"
 import type { Row, Table } from "@tanstack/react-table"
-import { writeText } from "@tauri-apps/api/clipboard"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
 export const createRowCmd = async (
   tableName: string,
   data: Record<string, any>,
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>,
-  queryClient: QueryClient
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 ) => {
-  const command = createRow(tableName, data)
+  const commandResult = await commands.createRow(tableName, data)
 
-  customToast(
-    command,
-    (s) => {
-      setIsSheetOpen(false)
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-      return `Successfully created ${s} row`
-    },
-    "create_row"
-  )
+  customToast(commandResult, () => setIsSheetOpen(false), "create_row")
 }
 
 export const deleteRowsCmd = async (
   table: Table<any>,
   tableName: string,
-  queryClient: QueryClient,
   contextMenuRow?: Row<any>
 ) => {
   const column = table.getColumn("pk")
@@ -51,22 +40,13 @@ export const deleteRowsCmd = async (
     rowPkValues = [contextMenuRow.getValue("pk")]
   }
 
-  const command = deleteRows(
+  const command = await commands.deleteRows(
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     column.columnDef.meta?.name!,
     rowPkValues,
     tableName
   )
-  customToast(
-    command,
-    (rowsAffected) => {
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-      return `Successfully deleted ${
-        rowsAffected === 1 ? "1 row" : rowsAffected + " rows"
-      }`
-    },
-    "delete_row"
-  )
+  customToast(command, () => {}, "delete_row")
   table.toggleAllRowsSelected(false)
 }
 
@@ -77,15 +57,13 @@ export const updateRowCmd = async (
   data: Record<string, any>,
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 ) => {
-  const command = updateRow(tableName, pkColName, pkColValue, data)
-  customToast(
-    command,
-    () => {
-      setIsSheetOpen(false)
-      return `Successfully updated rows`
-    },
-    "update_row"
+  const command = await commands.updateRow(
+    tableName,
+    pkColName,
+    pkColValue,
+    data
   )
+  customToast(command, () => setIsSheetOpen(false), "update_row")
 }
 
 export const copyRowIntoClipboard = async (

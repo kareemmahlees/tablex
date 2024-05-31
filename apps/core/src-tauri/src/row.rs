@@ -2,8 +2,9 @@ use crate::state::SharedState;
 use serde_json::Map;
 use serde_json::Value as JsonValue;
 use std::collections::HashMap;
-use tauri::async_runtime::Mutex;
-use tauri::State;
+use tauri::{async_runtime::Mutex, AppHandle, State};
+use tauri_specta::Event;
+use tx_lib::types::TableContentsChangedEvent;
 use tx_lib::types::{FKRows, PaginatedRows};
 
 #[tauri::command]
@@ -26,11 +27,12 @@ pub async fn get_paginated_rows(
 #[tauri::command]
 #[specta::specta]
 pub async fn delete_rows(
+    app: AppHandle,
     state: State<'_, Mutex<SharedState>>,
     pk_col_name: String,
     row_pk_values: Vec<JsonValue>,
     table_name: String,
-) -> Result<u64, String> {
+) -> Result<String, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -46,18 +48,23 @@ pub async fn delete_rows(
     }
     params.pop(); // to remove the last trailing comma
 
-    handler
+    let result = handler
         .delete_rows(pool, pk_col_name, table_name, params)
-        .await
+        .await;
+    if result.is_ok() {
+        TableContentsChangedEvent.emit(&app).unwrap()
+    }
+    result
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn create_row(
+    app: AppHandle,
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     data: HashMap<String, JsonValue>,
-) -> Result<u64, String> {
+) -> Result<String, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -77,24 +84,29 @@ pub async fn create_row(
 
     values = values.replace('\"', "'");
 
-    handler.create_row(pool, table_name, columns, values).await
+    let result = handler.create_row(pool, table_name, columns, values).await;
+    if result.is_ok() {
+        TableContentsChangedEvent.emit(&app).unwrap();
+    }
+    result
 }
 
 #[tauri::command]
 #[specta::specta]
 pub async fn update_row(
+    app: AppHandle,
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     pk_col_name: String,
     pk_col_value: JsonValue,
     data: Map<String, JsonValue>,
-) -> Result<u64, String> {
+) -> Result<String, String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
 
     if data.is_empty() {
-        return Ok(0);
+        return Ok(String::new());
     }
     let mut set_condition: String = Default::default();
     for (key, value) in data.iter() {
@@ -102,9 +114,13 @@ pub async fn update_row(
     }
     set_condition.pop(); // to remove the trailing comma
 
-    handler
+    let result = handler
         .update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
-        .await
+        .await;
+    if result.is_ok() {
+        TableContentsChangedEvent.emit(&app).unwrap();
+    }
+    result
 }
 
 #[tauri::command]

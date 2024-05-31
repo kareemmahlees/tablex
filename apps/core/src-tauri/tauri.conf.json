@@ -3,65 +3,44 @@
   "build": {
     "beforeBuildCommand": "pnpm build",
     "beforeDevCommand": "pnpm dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173"
   },
-  "package": {
-    "productName": "TableX",
-    "version": "../package.json"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "dialog": {
-        "open": true
-      },
-      "globalShortcut": {
-        "all": true
-      },
-      "clipboard": {
-        "writeText": true
-      },
-      "os": {
-        "all": true
-      },
-      "shell": {
-        "open": true
-      }
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
     },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": ["icons/icon.ico"],
-      "identifier": "tablex",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
+    }
+  },
+  "productName": "TableX",
+  "version": "../package.json",
+  "identifier": "tablex",
+  "plugins": {},
+  "app": {
     "windows": [
       {
         "fullscreen": false,
@@ -73,14 +52,17 @@
         "visible": false
       },
       {
-      "width": 600,
-      "height": 350,
-      "decorations": false,
-      "url": "splashscreen.html",
-      "label": "splashscreen",
-      "center": true,
-      "visible": false
+        "width": 600,
+        "height": 350,
+        "decorations": false,
+        "url": "splashscreen.html",
+        "label": "splashscreen",
+        "center": true,
+        "visible": false
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

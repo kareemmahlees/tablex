@@ -16,7 +16,7 @@ interface ToolsTooltipProps {
 const Tools = ({ tools }: ToolsTooltipProps) => {
   return (
     <TooltipProvider>
-      <div className="mx-auto mt-7  grid w-full grid-cols-3 gap-5 md:gap-y-8">
+      <div className="mx-auto mt-7 grid w-full grid-cols-3 gap-5 md:gap-y-8">
         {tools.map(({ src, alt, content }, idx) => {
           return (
             <Tooltip key={idx}>

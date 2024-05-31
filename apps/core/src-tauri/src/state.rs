@@ -1,6 +1,6 @@
 use sqlx::AnyPool;
 #[cfg(feature = "metax")]
-use tauri::api::process::CommandChild;
+use tauri_plugin_shell::process::CommandChild;
 use tx_lib::handler::Handler;
 
 #[derive(Default, Debug)]

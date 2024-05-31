@@ -16,7 +16,7 @@ const BundleSizeChart = () => {
 
   return (
     <BarChart data={data} width={400} height={250} layout="horizontal">
-      <XAxis dataKey="app" className="text-sm " />
+      <XAxis dataKey="app" className="text-sm" />
       <YAxis />
       <Tooltip
         wrapperClassName="rounded-md text-muted-foreground"

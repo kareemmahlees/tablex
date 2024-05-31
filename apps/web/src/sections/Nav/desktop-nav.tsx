@@ -11,7 +11,7 @@ import {
 const DesktopNav = () => {
   return (
     <Dialog>
-      <ul className="hidden items-end text-sm md:flex md:gap-x-4 lg:gap-x-5 ">
+      <ul className="hidden items-end text-sm md:flex md:gap-x-4 lg:gap-x-5">
         <Button
           variant={"ghost"}
           size={"sm"}

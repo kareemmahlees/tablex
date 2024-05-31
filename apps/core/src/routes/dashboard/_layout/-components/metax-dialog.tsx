@@ -10,9 +10,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { open } from "@tauri-apps/api/shell"
+import { open } from "@tauri-apps/plugin-shell"
 import { Globe, PlayCircle } from "lucide-react"
-import { Dispatch, SetStateAction } from "react"
+import type { Dispatch, SetStateAction } from "react"
 
 interface APIDocsDialog {
   isDialogOpen: boolean
@@ -37,7 +37,7 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
                 >
                   <Globe className="h-12 w-12" strokeWidth={1.2} />
                   <Globe
-                    className="absolute left-1/2 top-1/2 hidden h-12  w-12 -translate-x-[50%] -translate-y-[50%] blur-lg group-hover/globe:block"
+                    className="absolute left-1/2 top-1/2 hidden h-12 w-12 -translate-x-[50%] -translate-y-[50%] blur-lg group-hover/globe:block"
                     strokeWidth={1}
                   />
                 </div>
@@ -87,7 +87,7 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
                 >
                   <PlayCircle className="h-12 w-12" strokeWidth={1.2} />
                   <PlayCircle
-                    className="absolute left-1/2 top-1/2 hidden h-12  w-12 -translate-x-[50%] -translate-y-[50%] blur-lg group-hover/play:block"
+                    className="absolute left-1/2 top-1/2 hidden h-12 w-12 -translate-x-[50%] -translate-y-[50%] blur-lg group-hover/play:block"
                     strokeWidth={1.2}
                   />
                 </div>

@@ -15,7 +15,7 @@ const HomeBtn = () => {
       <img
         src="/logo.svg"
         alt="icon"
-        className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 "
+        className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7"
       />
     </Button>
   )

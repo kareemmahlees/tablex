@@ -1,13 +1,15 @@
-import { getColumnsProps } from "@/bindings"
+import { commands } from "@/bindings"
 import {
   DATE_DATA_TYPES,
   NUMERIC_DATA_TYPE,
   STRING_DATA_TYPES
 } from "@tablex/lib/constants"
+import { unwrapResult } from "@tablex/lib/utils"
 import { z } from "zod"
 
 export const getZodSchemaFromCols = async (tableName: string) => {
-  const cols = await getColumnsProps(tableName)
+  const result = await commands.getColumnsProps(tableName)
+  const cols = unwrapResult(result)
   const schemaObject: z.ZodRawShape = {}
   cols.forEach((colProps) => {
     let validationRule: z.ZodTypeAny

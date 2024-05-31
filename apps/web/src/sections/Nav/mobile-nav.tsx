@@ -18,10 +18,10 @@ const MobileNav = () => {
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerTrigger asChild>
           <Button size={"sm"} className="px-2 py-1 md:hidden" variant={"ghost"}>
-            <Menu className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 " />
+            <Menu className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="flex items-center justify-center ">
+        <DrawerContent className="flex items-center justify-center">
           <div className="grid h-full w-full grid-cols-3 p-5">
             <Button
               variant={"ghost"}

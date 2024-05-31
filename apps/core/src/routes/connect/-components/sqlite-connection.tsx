@@ -1,8 +1,5 @@
-import {
-  createConnectionRecord,
-  establishConnection,
-  testConnection
-} from "@/bindings"
+import { commands } from "@/bindings"
+import { testConnectionCmd } from "@/commands/connection"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -17,9 +14,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Drivers } from "@tablex/lib/types"
 import { constructConnectionString, customToast } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
-import { open } from "@tauri-apps/api/dialog"
+import { open } from "@tauri-apps/plugin-dialog"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
 
@@ -31,7 +29,7 @@ const SQLiteConnectionForm = () => {
       <Button
         variant={"secondary"}
         onClick={async () => {
-          const selected = await open({
+          const file = await open({
             multiple: false,
             filters: [
               {
@@ -40,7 +38,7 @@ const SQLiteConnectionForm = () => {
               }
             ]
           })
-          setSelectedPath(selected as string)
+          setSelectedPath(file?.path)
         }}
       >
         Select DB file
@@ -71,19 +69,19 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    customToast(
-      establishConnection(connString, Drivers.SQLite),
-      () => {
-        navigate({
-          to: "/dashboard/layout/land",
-          search: {
-            connectionName: values.connName
-          }
-        })
-        return "Successfully established connection"
-      },
-      "create_connection"
+    const result = await commands.establishConnection(
+      connString,
+      Drivers.SQLite
     )
+    if (result.status === "error") {
+      return toast.error(result.error, { id: "establish_connection" })
+    }
+    navigate({
+      to: "/dashboard/land",
+      search: {
+        connectionName: values.connName
+      }
+    })
   }
 
   const onClickSave = async (values: z.infer<typeof formSchema>) => {
@@ -91,8 +89,15 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    await createConnectionRecord(values.connName, connString, Drivers.SQLite)
-    navigate({ to: "/connections" })
+    customToast(
+      await commands.createConnectionRecord(
+        connString,
+        values.connName,
+        Drivers.SQLite
+      ),
+      () => navigate({ to: "/connections" }),
+      "create_connection"
+    )
   }
 
   const onClickTest = async () => {
@@ -100,7 +105,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       driver: Drivers.SQLite,
       filePath: selectedPath
     })
-    await testConnection(connString)
+    await testConnectionCmd(connString)
   }
 
   return (

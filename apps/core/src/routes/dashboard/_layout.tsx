@@ -1,4 +1,4 @@
-import { getTables } from "@/bindings"
+import { commands } from "@/bindings"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { registerShortcuts } from "@/shortcuts"
@@ -8,9 +8,9 @@ import { ArrowLeft, Search, Table } from "lucide-react"
 import { useState, type KeyboardEvent } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import APIDocsDialog from "./_layout/-components/api-docs-dialog"
+import AddRowBtn from "../../components/sheets/create-row-sheet"
 import CommandPalette from "./_layout/-components/command-palette"
-import AddRowBtn from "./_layout/-components/create-row-sheet"
+import APIDocsDialog from "./_layout/-components/metax-dialog"
 
 const dashboardConnectionSchema = z.object({
   connectionName: z.string().optional(),
@@ -23,18 +23,17 @@ export const Route = createFileRoute("/dashboard/_layout")({
     connectionName,
     tableName
   }),
-  loader: async ({ deps: { connectionName } }) => {
+  loader: async ({ deps: { connectionName }, navigate }) => {
     await registerShortcuts({ "CommandOrControl+S": [] })
     const connName = connectionName || "Temp Connection"
 
-    let tables: string[] = []
-    try {
-      tables = await getTables()
-    } catch (error) {
-      toast.error(error as string)
+    const tables = await commands.getTables()
+    if (tables.status === "error") {
+      toast.error(tables.error, { id: "get_tables" })
+      return navigate({ to: "../" })
     }
 
-    return { connName, tables }
+    return { connName, tables: tables.data }
   },
   component: DashboardLayout
 })
@@ -42,13 +41,13 @@ export const Route = createFileRoute("/dashboard/_layout")({
 function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
-  const [tables, setTables] = useState<string[]>(data?.tables)
+  const [tables, setTables] = useState<string[]>(data!.tables)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const searchPattern = e.currentTarget.value
-    if (searchPattern === "") return setTables(data.tables)
+    if (searchPattern === "") return setTables(data!.tables)
 
     clearTimeout(timeout)
 
@@ -62,7 +61,7 @@ function DashboardLayout() {
 
   return (
     <main className="flex h-full w-full">
-      <aside className="flex w-56 flex-col items-start justify-between  bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
+      <aside className="flex w-56 flex-col items-start justify-between bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
         <div className="mb-4 flex flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
           <Link
             to="/connections"
@@ -76,7 +75,7 @@ function DashboardLayout() {
               color="gray"
             />
           </Link>
-          <h1 className="text-lg font-bold text-gray-500">{data.connName}</h1>
+          <h1 className="text-lg font-bold text-gray-500">{data!.connName}</h1>
           <div className="bg-background flex items-center rounded-sm px-1">
             <Search className="h-3 lg:h-5" color="#4a506f" />
             <Input
@@ -96,7 +95,7 @@ function DashboardLayout() {
               {tables.map((table, index) => {
                 return (
                   <Link
-                    to="/dashboard/layout/$tableName"
+                    to="/dashboard/$tableName"
                     params={{
                       tableName: table
                     }}

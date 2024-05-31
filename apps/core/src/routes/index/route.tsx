@@ -7,9 +7,9 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="relative flex h-full flex-col items-center justify-center gap-y-20 ">
+    <div className="relative flex h-full flex-col items-center justify-center gap-y-20">
       <div className="flex items-end">
-        <h1 className="z-20 text-6xl font-bold text-white ">Table</h1>
+        <h1 className="z-20 text-6xl font-bold text-white">Table</h1>
         <img
           src={"/logo.svg"}
           alt="logo"

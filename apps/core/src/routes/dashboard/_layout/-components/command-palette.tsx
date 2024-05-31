@@ -8,8 +8,7 @@ import {
 } from "@/components/ui/command"
 import { useNavigate } from "@tanstack/react-router"
 import { FileText, Globe2, Link } from "lucide-react"
-
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
 
 interface CommandPaletteProps {
   setIsDialogOpen: Dispatch<SetStateAction<boolean>>

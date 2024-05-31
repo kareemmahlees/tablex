@@ -18,16 +18,10 @@ import {
   VirtualTable
 } from "@/components/ui/table"
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink
-} from "@/components/ui/pagination"
-
+import { events } from "@/bindings"
 import { copyRowIntoClipboard, deleteRowsCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
-import { Button } from "@/components/ui/button"
+import EditRowSheet from "@/components/sheets/edit-row-sheet"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -38,21 +32,15 @@ import {
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { registerShortcuts } from "@/shortcuts"
-import { useQueryClient, type QueryClient } from "@tanstack/react-query"
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight
-} from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   useLayoutEffect,
   useRef,
   type Dispatch,
   type SetStateAction
 } from "react"
-import EditRowSheet from "./edit-row-sheet"
 import ForeignKeyDropdown from "./fk-dropdown"
+import TableActions from "./table-actions"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -74,6 +62,10 @@ const DataTable = <TData, TValue>({
   } = useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
 
+  events.tableContentsChangedEvent.listen(() => {
+    queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+  })
+
   const { rows } = table.getRowModel()
 
   const parentRef = useRef<HTMLDivElement>(null)
@@ -90,16 +82,13 @@ const DataTable = <TData, TValue>({
     registerShortcuts({
       "CommandOrControl+A": [table],
       "CommandOrControl+C": [table, contextMenuRow],
-      Delete: [table, tableName, queryClient, contextMenuRow]
+      Delete: [table, tableName, contextMenuRow]
     })
   })
 
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-      <div className="flex items-center justify-between p-4">
-        <h1 className="w-full  text-2xl font-bold ">{tableName}</h1>
-        <PaginationControls table={table} />
-      </div>
+      <TableActions table={table} tableName={tableName} />
       {isRowsLoading ? (
         <LoadingSpinner />
       ) : (
@@ -180,7 +169,6 @@ const DataTable = <TData, TValue>({
                   tableName={tableName}
                   table={table}
                   setIsSheetOpen={setIsSheetOpen}
-                  queryClient={queryClient}
                   contextMenuRow={contextMenuRow}
                 />
               </TableBody>
@@ -204,14 +192,12 @@ interface TableContextMenuContentProps {
   table: TableType<any>
   contextMenuRow?: Row<any>
   tableName: string
-  queryClient: QueryClient
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
 const TableContextMenuContent = ({
   table,
   tableName,
-  queryClient,
   setIsSheetOpen,
   contextMenuRow
 }: TableContextMenuContentProps) => {
@@ -223,7 +209,7 @@ const TableContextMenuContent = ({
     >
       <ContextMenuItem
         onSelect={async () =>
-          await deleteRowsCmd(table, tableName, queryClient, contextMenuRow)
+          await deleteRowsCmd(table, tableName, contextMenuRow)
         }
       >
         Delete
@@ -239,65 +225,5 @@ const TableContextMenuContent = ({
         <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>
       </ContextMenuItem>
     </ContextMenuContent>
-  )
-}
-
-interface PaginationControlsProps {
-  table: TableType<any>
-}
-
-const PaginationControls = ({ table }: PaginationControlsProps) => {
-  return (
-    <Pagination className="justify-end">
-      <PaginationContent>
-        <PaginationItem>
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-        </PaginationItem>
-        <PaginationItem>
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeft className="mr-1 h-4 w-4 p-0" />
-            Previous
-          </Button>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink>
-            {table.getState().pagination.pageIndex + 1}
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-            <ChevronRight className="ml-1 h-4 w-4 p-0" />
-          </Button>
-        </PaginationItem>
-        <PaginationItem>
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
   )
 }
