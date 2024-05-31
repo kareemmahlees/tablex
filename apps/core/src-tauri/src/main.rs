@@ -104,7 +104,7 @@ fn main() {
         });
 
     #[cfg(feature = "metax")]
-    tauri_builder.plugin(tauri_plugin_shell::init());
+    let tauri_builder = tauri_builder.plugin(tauri_plugin_shell::init());
 
     tauri_builder
         .run(tauri::generate_context!())
