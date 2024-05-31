@@ -44,7 +44,7 @@ jobs:
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf glib-2.0
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libglib2.0-dev
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
