@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/tooltip"
 import { open } from "@tauri-apps/plugin-shell"
 import { Globe, PlayCircle } from "lucide-react"
-import { Dispatch, SetStateAction } from "react"
+import type { Dispatch, SetStateAction } from "react"
 
 interface APIDocsDialog {
   isDialogOpen: boolean

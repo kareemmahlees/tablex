@@ -27,7 +27,7 @@ export function constructConnectionString(params: ConnectionStringParams) {
   return connString
 }
 
-export type Result<T extends any, E extends string> =
+export type Result<T extends any | null, E extends string> =
   | { status: "ok"; data: T }
   | { status: "error"; error: E }
 

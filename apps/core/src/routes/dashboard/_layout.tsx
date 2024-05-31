@@ -8,9 +8,9 @@ import { ArrowLeft, Search, Table } from "lucide-react"
 import { useState, type KeyboardEvent } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import APIDocsDialog from "./_layout/-components/api-docs-dialog"
+import AddRowBtn from "../../components/sheets/create-row-sheet"
 import CommandPalette from "./_layout/-components/command-palette"
-import AddRowBtn from "./_layout/-components/create-row-sheet"
+import APIDocsDialog from "./_layout/-components/metax-dialog"
 
 const dashboardConnectionSchema = z.object({
   connectionName: z.string().optional(),

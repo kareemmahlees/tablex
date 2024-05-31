@@ -87,19 +87,17 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    customToast(
-      await commands.establishConnection(connString, driver),
-      () => {
-        navigate({
-          to: "/dashboard/land",
-          search: {
-            connectionName: values.connName
-          }
-        })
-        return "Successfully established connection"
-      },
-      "establish_connection"
-    )
+    const result = await commands.establishConnection(connString, driver)
+    if (result.status === "error") {
+      return toast.error(result.error, { id: "establish_connection" })
+    }
+
+    navigate({
+      to: "/dashboard/land",
+      search: {
+        connectionName: values.connName
+      }
+    })
   }
 
   const onClickSave = async (
@@ -115,10 +113,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
         values.connName,
         driver
       ),
-      (s) => {
-        navigate({ to: "/connections" })
-        return s
-      }
+      () => navigate({ to: "/connections" })
     )
   }
 
@@ -126,7 +121,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    customToast(await commands.testConnection(connString), (s) => s)
+    customToast(await commands.testConnection(connString), () => {})
   }
   return (
     <Form {...form}>
@@ -237,19 +232,16 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   const onClickConnect = async (
     values: z.infer<typeof connectionStringFormSchema>
   ) => {
-    customToast(
-      await commands.establishConnection(values.connString, driver),
-      () => {
-        navigate({
-          to: "/dashboard/land",
-          search: {
-            connectionName: values.connName
-          }
-        })
-        return "Successfully established connection"
-      },
-      "establish_connection"
-    )
+    const result = await commands.establishConnection(values.connString, driver)
+    if (result.status === "error") {
+      return toast.error(result.error, { id: "establish_connection" })
+    }
+    navigate({
+      to: "/dashboard/land",
+      search: {
+        connectionName: values.connName
+      }
+    })
   }
 
   const onClickSave = async (
@@ -262,10 +254,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
     )
     customToast(
       commandResult,
-      (s) => {
-        navigate({ to: "/connections" })
-        return s
-      },
+      () => navigate({ to: "/connections" }),
       "create_connection"
     )
   }
