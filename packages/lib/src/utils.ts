@@ -69,7 +69,6 @@ export function dirtyValues(
   return Object.fromEntries(
     Object.keys(dirtyFields).map((key) => [
       key,
-      // @ts-expect-error
       dirtyValues(dirtyFields[key], allValues[key])
     ])
   )
