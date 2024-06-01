@@ -70,7 +70,7 @@ jobs:
           go-version: "stable"
 
       - name: Build MetaX
-        run: go build -C ./apps/meta-x/ -o ../bin/ -ldflags "-w -s"
+        run: go build -C ./apps/meta-x/ -o ../bin/meta-x -ldflags "-w -s"
 
       - name: Prepare MetaX (windows)
         if: matrix.platform == 'windows-latest'
