@@ -74,13 +74,13 @@ jobs:
 
       - name: Prepare MetaX (windows)
         if: matrix.platform == 'windows-latest'
-        run: ./scripts/suffex_metax.ps1
+        run: ./scripts/prepare_metax.ps1
 
       - name: Prepare MetaX (mac, linux)
         if: matrix.platform != 'windows-latest'
         run: |
-          chmod +x ./scripts/suffex_metax.sh
-          ./scripts/suffex_metax.sh
+          chmod +x ./scripts/prepare_metax.sh
+          ./scripts/prepare_metax.sh
 
       - uses: tauri-apps/tauri-action@v0
         env:
