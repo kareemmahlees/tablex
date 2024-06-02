@@ -62,7 +62,7 @@ const DataTable = <TData, TValue>({
   } = useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
 
-  events.tableContentsChangedEvent.listen(() => {
+  events.tableContentsChanged.listen(() => {
     queryClient.invalidateQueries({ queryKey: ["table_rows"] })
   })
 

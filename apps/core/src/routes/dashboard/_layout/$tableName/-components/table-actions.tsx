@@ -1,3 +1,4 @@
+import { events } from "@/bindings"
 import { Button } from "@/components/ui/button"
 import {
   Pagination,
@@ -10,8 +11,10 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Terminal
 } from "lucide-react"
+import SQLDialog from "./sql-dialog"
 
 type TableActionsProps = {
   tableName: string
@@ -20,10 +23,23 @@ type TableActionsProps = {
 
 const TableActions = ({ tableName, table }: TableActionsProps) => {
   return (
-    <div className="flex items-center justify-between p-4">
-      <h1 className="w-full text-2xl font-bold">{tableName}</h1>
-      <PaginationControls table={table} />
-    </div>
+    <>
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-start gap-x-2">
+          <h1 className="w-full text-2xl font-bold">{tableName}</h1>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => events.sqlDialogOpen.emit()}
+            className="hidden lg:block"
+          >
+            <Terminal className="h-5 w-5" />
+          </Button>
+        </div>
+        <PaginationControls table={table} />
+      </div>
+      <SQLDialog />
+    </>
   )
 }
 

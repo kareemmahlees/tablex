@@ -1,3 +1,4 @@
+import { events } from "@/bindings"
 import {
   Dialog,
   DialogContent,
@@ -10,18 +11,17 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { open } from "@tauri-apps/plugin-shell"
+import { open as openInBrowser } from "@tauri-apps/plugin-shell"
 import { Globe, PlayCircle } from "lucide-react"
-import type { Dispatch, SetStateAction } from "react"
+import { useState } from "react"
 
-interface APIDocsDialog {
-  isDialogOpen: boolean
-  setIsDialogOpen: Dispatch<SetStateAction<boolean>>
-}
+const MetaXDialog = () => {
+  const [open, setOpen] = useState(false)
 
-const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
+  events.metaXDialogOpen.listen(() => setOpen(true))
+
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Navigate to your liking</DialogTitle>
@@ -33,7 +33,7 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
                 <div
                   className="group/globe brightness-50 transition-all hover:brightness-100"
                   role="button"
-                  onClick={() => open("http://localhost:5522")}
+                  onClick={() => openInBrowser("http://localhost:5522")}
                 >
                   <Globe className="h-12 w-12" strokeWidth={1.2} />
                   <Globe
@@ -49,7 +49,7 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
                 <div
                   className="group/swagger relative h-12 w-12 opacity-50 invert hover:opacity-100"
                   role="button"
-                  onClick={() => open("http://localhost:5522/swagger")}
+                  onClick={() => openInBrowser("http://localhost:5522/swagger")}
                 >
                   <img src={"/icons/swagger.svg"} alt="swagger" />
                   <img
@@ -66,7 +66,7 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
                 <div
                   className="group/graphql relative h-12 w-12 opacity-50 invert hover:opacity-100"
                   role="button"
-                  onClick={() => open("http://localhost:5522/graphql")}
+                  onClick={() => openInBrowser("http://localhost:5522/graphql")}
                 >
                   <img src={"/icons/graphql.svg"} alt="graphql" />
                   <img
@@ -83,7 +83,9 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
                 <div
                   className="group/play brightness-50 hover:brightness-100"
                   role="button"
-                  onClick={() => open("http://localhost:5522/playground")}
+                  onClick={() =>
+                    openInBrowser("http://localhost:5522/playground")
+                  }
                 >
                   <PlayCircle className="h-12 w-12" strokeWidth={1.2} />
                   <PlayCircle
@@ -101,4 +103,4 @@ const APIDocsDialog = ({ isDialogOpen, setIsDialogOpen }: APIDocsDialog) => {
   )
 }
 
-export default APIDocsDialog
+export default MetaXDialog

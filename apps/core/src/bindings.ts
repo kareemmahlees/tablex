@@ -119,29 +119,38 @@ try {
 }
 
 export const events = __makeEvents__<{
-connectionsChangedEvent: ConnectionsChangedEvent,
-tableContentsChangedEvent: TableContentsChangedEvent
+connectionsChanged: ConnectionsChanged,
+tableContentsChanged: TableContentsChanged,
+commandPaletteOpen: CommandPaletteOpen,
+metaXDialogOpen: MetaXDialogOpen,
+sqlDialogOpen: SQLDialogOpen
 }>({
-connectionsChangedEvent: "connections-changed-event",
-tableContentsChangedEvent: "table-contents-changed-event"
+connectionsChanged: "connections-changed",
+tableContentsChanged: "table-contents-changed",
+commandPaletteOpen: "command-palette-open",
+metaXDialogOpen: "meta-x-dialog-open",
+sqlDialogOpen: "sql-dialog-open"
 })
 
 /** user-defined types **/
 
 export type ColumnProps = { columnName: string; type: string; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
+export type CommandPaletteOpen = null
 /**
  * Connection Config Stored inside `connections.json` file
  */
 export type ConnConfig = { driver: Drivers; connString: string; connName: string }
-export type ConnectionsChangedEvent = null
+export type ConnectionsChanged = null
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */
 export type Drivers = "sqlite" | "postgresql" | "mysql"
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
+export type MetaXDialogOpen = null
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
-export type TableContentsChangedEvent = null
+export type SQLDialogOpen = null
+export type TableContentsChanged = null
 
 /** tauri-specta globals **/
 

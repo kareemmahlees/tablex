@@ -18,7 +18,9 @@ use table::{get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
 use tauri_specta::{collect_commands, collect_events};
-use tx_lib::types::{ConnectionsChangedEvent, TableContentsChangedEvent};
+use tx_lib::events::{
+    CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
+};
 
 #[tauri::command]
 #[specta::specta]
@@ -55,8 +57,11 @@ fn main() {
                 get_fk_relations
             ])
             .events(collect_events![
-                ConnectionsChangedEvent,
-                TableContentsChangedEvent
+                ConnectionsChanged,
+                TableContentsChanged,
+                CommandPaletteOpen,
+                MetaXDialogOpen,
+                SQLDialogOpen
             ]);
 
         #[cfg(debug_assertions)]
