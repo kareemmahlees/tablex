@@ -1,7 +1,7 @@
-import { commands } from "@/bindings"
+import { commands, events } from "@/bindings"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { registerShortcuts } from "@/shortcuts"
+import { focusSearch } from "@/shortcuts"
 import { cn } from "@tablex/lib/utils"
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
@@ -24,7 +24,6 @@ export const Route = createFileRoute("/dashboard/_layout")({
     tableName
   }),
   loader: async ({ deps: { connectionName }, navigate }) => {
-    await registerShortcuts({ "CommandOrControl+S": [] })
     const connName = connectionName || "Temp Connection"
 
     const tables = await commands.getTables()
@@ -57,6 +56,12 @@ function DashboardLayout() {
       setTables(filteredTables)
     }, 100)
   }
+
+  events.shortcut.listen((shortcut) => {
+    if (shortcut.payload === "FocusSearch") {
+      focusSearch()
+    }
+  })
 
   return (
     <main className="flex h-full w-full">

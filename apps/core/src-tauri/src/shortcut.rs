@@ -3,8 +3,10 @@ use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut};
 use tauri_specta::Event;
 use tx_lib::events::{Shortcut as ShortcutEvent, ShortcutAction};
 
-const SHORTCUTS: &[(Modifiers, Code, ShortcutAction)] =
-    &[(Modifiers::CONTROL, Code::KeyC, ShortcutAction::Copy)];
+const SHORTCUTS: &[(Modifiers, Code, ShortcutAction)] = &[
+    (Modifiers::CONTROL, Code::KeyS, ShortcutAction::FocusSearch),
+    (Modifiers::CONTROL, Code::KeyC, ShortcutAction::Copy),
+];
 
 pub struct ShortcutHandler<'a> {
     app: &'a AppHandle,

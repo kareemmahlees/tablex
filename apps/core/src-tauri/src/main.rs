@@ -87,7 +87,7 @@ fn main() {
 
             app.handle().plugin(
                 tauri_plugin_global_shortcut::Builder::new()
-                    .with_shortcuts(["ctrl+c"])?
+                    .with_shortcuts(["ctrl+c", "ctrl+s"])?
                     .with_handler(|app, shortcut, event| {
                         let shortcut_handler = ShortcutHandler::new(app);
                         if event.state == ShortcutState::Pressed {
