@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
 use sqlx::{any::AnyRow, Error, FromRow, Row};
-use tauri_specta::Event;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Type)]
 #[serde(rename_all = "lowercase")]
@@ -100,9 +99,3 @@ impl FKRows {
         FKRows { table_name, rows }
     }
 }
-
-#[derive(Clone, Serialize, Deserialize, Type, Event)]
-pub struct ConnectionsChangedEvent;
-
-#[derive(Clone, Serialize, Deserialize, Type, Event)]
-pub struct TableContentsChangedEvent;

@@ -9,9 +9,10 @@ use tauri_plugin_shell::ShellExt;
 use tauri_specta::Event;
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
+    events::ConnectionsChanged,
     fs::{delete_from_connections_file, read_from_connections_file, write_into_connections_file},
     handler::Handler,
-    types::{ConnConfig, ConnectionsChangedEvent, Drivers},
+    types::{ConnConfig, Drivers},
 };
 
 #[tauri::command]
@@ -47,7 +48,7 @@ pub fn create_connection_record(
 pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String, String> {
     let mut connections_file_path = get_connections_file_path(&app)?;
     delete_from_connections_file(&mut connections_file_path, conn_id)?;
-    ConnectionsChangedEvent.emit(&app).unwrap();
+    ConnectionsChanged.emit(&app).unwrap();
     Ok(String::from("Successfully deleted connection"))
 }
 

@@ -1,4 +1,5 @@
 use crate::state::SharedState;
+use serde_json::{Map, Value};
 use sqlx::Row;
 use tauri::{async_runtime::Mutex, State};
 use tx_lib::types::ColumnProps;
@@ -34,4 +35,19 @@ pub async fn get_columns_props(
     let cols_defs = handler.get_columns_props(pool, table_name).await?;
 
     Ok(cols_defs)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn execute_raw_query(
+    state: State<'_, Mutex<SharedState>>,
+    query: String,
+) -> Result<Vec<Map<String, Value>>, String> {
+    let state = state.lock().await;
+    let pool = state.pool.as_ref().unwrap();
+    let handler = state.handler.as_ref().unwrap();
+
+    let result = handler.execute_raw_query(pool, query).await?;
+
+    Ok(result)
 }

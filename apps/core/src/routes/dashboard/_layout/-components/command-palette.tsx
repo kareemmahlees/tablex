@@ -1,3 +1,4 @@
+import { events } from "@/bindings"
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,14 +8,10 @@ import {
   CommandList
 } from "@/components/ui/command"
 import { useNavigate } from "@tanstack/react-router"
-import { FileText, Globe2, Link } from "lucide-react"
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
+import { FileText, Globe2, Link, Terminal } from "lucide-react"
+import { useEffect, useState } from "react"
 
-interface CommandPaletteProps {
-  setIsDialogOpen: Dispatch<SetStateAction<boolean>>
-}
-
-const CommandPalette = ({ setIsDialogOpen }: CommandPaletteProps) => {
+const CommandPalette = () => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
@@ -36,29 +33,31 @@ const CommandPalette = ({ setIsDialogOpen }: CommandPaletteProps) => {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Connections">
-          <CommandItem
-            className="flex items-center gap-x-2"
-            onSelect={() => navigate({ to: "/connections" })}
-          >
+          <CommandItem onSelect={() => navigate({ to: "/connections" })}>
             <Globe2 />
             Go to Connections
           </CommandItem>
-          <CommandItem
-            className="flex items-center gap-x-2"
-            onSelect={() => navigate({ to: "/connect" })}
-          >
+          <CommandItem onSelect={() => navigate({ to: "/connect" })}>
             <Link className="h-4 w-4" />
             Create Connection
           </CommandItem>
           <CommandItem
-            className="flex items-center gap-x-2"
             onSelect={() => {
               setOpen(false)
-              setIsDialogOpen(true)
+              events.metaXDialogOpen.emit()
             }}
           >
             <FileText className="h-4 w-4" />
             Show API Docs
+          </CommandItem>
+          <CommandItem
+            onSelect={() => {
+              setOpen(false)
+              events.sqlDialogOpen.emit()
+            }}
+          >
+            <Terminal className="h-4 w-4" />
+            SQL Editor
           </CommandItem>
         </CommandGroup>
       </CommandList>

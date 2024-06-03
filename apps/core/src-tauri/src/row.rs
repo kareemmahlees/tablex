@@ -4,7 +4,7 @@ use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use tauri::{async_runtime::Mutex, AppHandle, State};
 use tauri_specta::Event;
-use tx_lib::types::TableContentsChangedEvent;
+use tx_lib::events::TableContentsChanged;
 use tx_lib::types::{FKRows, PaginatedRows};
 
 #[tauri::command]
@@ -52,7 +52,7 @@ pub async fn delete_rows(
         .delete_rows(pool, pk_col_name, table_name, params)
         .await;
     if result.is_ok() {
-        TableContentsChangedEvent.emit(&app).unwrap()
+        TableContentsChanged.emit(&app).unwrap()
     }
     result
 }
@@ -86,7 +86,7 @@ pub async fn create_row(
 
     let result = handler.create_row(pool, table_name, columns, values).await;
     if result.is_ok() {
-        TableContentsChangedEvent.emit(&app).unwrap();
+        TableContentsChanged.emit(&app).unwrap();
     }
     result
 }
@@ -118,7 +118,7 @@ pub async fn update_row(
         .update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
         .await;
     if result.is_ok() {
-        TableContentsChangedEvent.emit(&app).unwrap();
+        TableContentsChanged.emit(&app).unwrap();
     }
     result
 }

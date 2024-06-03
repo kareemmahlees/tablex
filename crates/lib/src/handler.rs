@@ -1,10 +1,10 @@
 use async_trait::async_trait;
-use serde_json::Value as JsonValue;
+use serde_json::{Map, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool, Row};
 use std::fmt::Debug;
 
 use crate::{
-    decode,
+    decode::{self, decode_raw_rows},
     types::{ColumnProps, FKRows, PaginatedRows},
 };
 
@@ -21,6 +21,20 @@ pub trait TableHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>, String>;
+
+    async fn execute_raw_query(
+        &self,
+        pool: &AnyPool,
+        query: String,
+    ) -> Result<Vec<Map<String, JsonValue>>, String> {
+        dbg!(&query);
+        let res = sqlx::query(&query)
+            .fetch_all(pool)
+            .await
+            .map_err(|e| e.to_string())?;
+        let decoded = decode_raw_rows(res).unwrap();
+        Ok(decoded)
+    }
 }
 
 #[async_trait]

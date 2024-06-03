@@ -10,7 +10,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import AddRowBtn from "../../components/sheets/create-row-sheet"
 import CommandPalette from "./_layout/-components/command-palette"
-import APIDocsDialog from "./_layout/-components/metax-dialog"
+import MetaXDialog from "./_layout/-components/metax-dialog"
 
 const dashboardConnectionSchema = z.object({
   connectionName: z.string().optional(),
@@ -42,7 +42,6 @@ function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
   const [tables, setTables] = useState<string[]>(data!.tables)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -119,11 +118,8 @@ function DashboardLayout() {
       </aside>
       {deps.tableName && <AddRowBtn tableName={deps.tableName} />}
       {tables.length > 0 && <Outlet />}
-      <CommandPalette setIsDialogOpen={setIsDialogOpen} />
-      <APIDocsDialog
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
-      />
+      <CommandPalette />
+      <MetaXDialog />
     </main>
   )
 }
