@@ -2,6 +2,11 @@ import { commands, events, JsonValue, Result } from "@/bindings"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup
+} from "@/components/ui/resizable"
+import {
   Table,
   TableBody,
   TableCell,
@@ -39,36 +44,41 @@ const SQLDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="h-5/6 w-5/6 max-w-full p-0">
         <div className="flex flex-col overflow-auto">
-          <div className="relative h-1/2">
-            <Editor
-              defaultLanguage="sql"
-              theme="vs-dark"
-              options={{
-                minimap: { enabled: false },
-                scrollbar: { vertical: "hidden" },
-                padding: { top: 10 },
-                lineNumbersMinChars: 3,
-                lineDecorationsWidth: 3,
-                fontSize: 18,
-                overviewRulerBorder: false,
-                hideCursorInOverviewRuler: true,
-                cursorBlinking: "smooth"
-              }}
-              onMount={handleEditorDidMount}
-            />
-            {editorMounted && editorRef.current && (
-              <RunBtn
-                editor={editorRef.current}
-                setQueryResult={setQueryResult}
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel className="relative">
+              <Editor
+                defaultLanguage="sql"
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: false },
+                  scrollbar: { vertical: "hidden" },
+                  padding: { top: 10 },
+                  lineNumbersMinChars: 3,
+                  lineDecorationsWidth: 3,
+                  fontSize: 18,
+                  overviewRulerBorder: false,
+                  hideCursorInOverviewRuler: true,
+                  cursorBlinking: "smooth"
+                }}
+                onMount={handleEditorDidMount}
               />
-            )}
-          </div>
-          {queryResult &&
-            (queryResult.status === "error" ? (
-              <pre className="m-4">{queryResult.error}</pre>
-            ) : (
-              <ResultTable result={queryResult.data} />
-            ))}
+              {editorMounted && editorRef.current && (
+                <RunBtn
+                  editor={editorRef.current}
+                  setQueryResult={setQueryResult}
+                />
+              )}
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel>
+              {queryResult &&
+                (queryResult.status === "error" ? (
+                  <pre className="m-4">{queryResult.error}</pre>
+                ) : (
+                  <ResultTable result={queryResult.data} />
+                ))}
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </DialogContent>
     </Dialog>
