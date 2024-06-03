@@ -14,7 +14,7 @@ use connection::{
 };
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
 use specta::ts::{BigIntExportBehavior, ExportConfig};
-use table::{get_columns_props, get_tables};
+use table::{execute_raw_query, get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
 use tauri_specta::{collect_commands, collect_events};
@@ -49,6 +49,7 @@ fn main() {
                 get_connections,
                 get_connection_details,
                 get_tables,
+                execute_raw_query,
                 get_paginated_rows,
                 delete_rows,
                 get_columns_props,
@@ -62,7 +63,8 @@ fn main() {
                 CommandPaletteOpen,
                 MetaXDialogOpen,
                 SQLDialogOpen
-            ]);
+            ])
+            .header("// @ts-nocheck\n");
 
         #[cfg(debug_assertions)]
         let builder = builder.path("../src/bindings.ts");
