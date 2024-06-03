@@ -4,11 +4,7 @@ import {
   register,
   unregister
 } from "@tauri-apps/plugin-global-shortcut"
-import {
-  copyRowsIntoClipboard,
-  deleteRowsHandler,
-  selectAllRowsHandler
-} from "./row"
+import { copyRows, deleteRowsHandler, selectAllRowsHandler } from "./row"
 
 const focusSearchBarHandler = () => {
   const inputElem = document.getElementById("search_input")
@@ -21,7 +17,7 @@ const availableShortcuts = {
   "CommandOrControl+S": focusSearchBarHandler,
   Delete: deleteRowsHandler,
   "CommandOrControl+A": selectAllRowsHandler,
-  "CommandOrControl+C": copyRowsIntoClipboard
+  "CommandOrControl+C": copyRows
 } as const
 
 type Shortcuts = {
