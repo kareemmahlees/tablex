@@ -1,5 +1,11 @@
 # @tablex/core
 
+## 0.3.7
+
+### Patch Changes
+
+- [#64](https://github.com/kareemmahlees/tablex/pull/64) [`b88d833`](https://github.com/kareemmahlees/tablex/commit/b88d8333b4f7ca1ebff392b4eb12c49104795d0f) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - SQL dialog for in-app queries
+
 ## 0.3.6
 
 ### Patch Changes
