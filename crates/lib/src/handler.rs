@@ -27,7 +27,6 @@ pub trait TableHandler {
         pool: &AnyPool,
         query: String,
     ) -> Result<Vec<Map<String, JsonValue>>, String> {
-        dbg!(&query);
         let res = sqlx::query(&query)
             .fetch_all(pool)
             .await

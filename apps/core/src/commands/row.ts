@@ -1,7 +1,6 @@
 import { commands } from "@/bindings"
 import { customToast } from "@tablex/lib/utils"
 import type { Row, Table } from "@tanstack/react-table"
-import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
@@ -18,7 +17,7 @@ export const createRowCmd = async (
 export const deleteRowsCmd = async (
   table: Table<any>,
   tableName: string,
-  contextMenuRow?: Row<any>
+  rows: Row<any>[]
 ) => {
   const column = table.getColumn("pk")
   if (!column)
@@ -26,24 +25,10 @@ export const deleteRowsCmd = async (
       id: "table_pk_error"
     })
 
-  let rowPkValues: any[] = []
-
-  if (table.getIsSomeRowsSelected()) {
-    const rows = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.getValue(column.id))
-
-    if (rows.length <= 0) return
-
-    rowPkValues = rows
-  } else if (contextMenuRow) {
-    rowPkValues = [contextMenuRow.getValue("pk")]
-  }
-
   const command = await commands.deleteRows(
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     column.columnDef.meta?.name!,
-    rowPkValues,
+    rows.map((row) => row.getValue(column.id)),
     tableName
   )
   customToast(command, () => {}, "delete_row")
@@ -64,30 +49,4 @@ export const updateRowCmd = async (
     data
   )
   customToast(command, () => setIsSheetOpen(false), "update_row")
-}
-
-export const copyRowIntoClipboard = async (
-  table: Table<any>,
-  contextMenuRow?: Row<any>
-) => {
-  if (contextMenuRow) {
-    const row_values = contextMenuRow
-      .getAllCells()
-      .slice(1)
-      .map((cell) => cell.getValue())
-    return await writeText(row_values.join("|"))
-  } else if (table.getIsSomeRowsSelected()) {
-    return await writeText(
-      table
-        .getSelectedRowModel()
-        .rows!.map((row) =>
-          row
-            .getAllCells()
-            .slice(1)
-            .map((cell) => cell.getValue())
-            .join("|")
-        )
-        .join("\n")
-    )
-  }
 }
