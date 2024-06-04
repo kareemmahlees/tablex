@@ -33,7 +33,7 @@ import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { copyRows } from "@/shortcuts/row"
 import { useQueryClient } from "@tanstack/react-query"
-import { useRef, type Dispatch, type SetStateAction } from "react"
+import { useEffect, useRef, type Dispatch, type SetStateAction } from "react"
 import ForeignKeyDropdown from "./fk-dropdown"
 import TableActions from "./table-actions"
 
@@ -57,16 +57,31 @@ const DataTable = <TData, TValue>({
   } = useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
 
-  events.tableContentsChanged.listen(() => {
-    queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-  })
+  useEffect(() => {
+    const unlisten = events.tableContentsChanged.listen(() => {
+      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
+    })
 
-  events.shortcut.listen((shortcut) => {
-    switch (shortcut.payload) {
-      case "Copy":
-        copyRows(table.getSelectedRowModel().rows)
+    return () => {
+      unlisten.then((f) => f())
     }
-  })
+  }, [queryClient])
+
+  useEffect(() => {
+    const unlisten = events.shortcut.listen((shortcut) => {
+      switch (shortcut.payload) {
+        case "Copy":
+          copyRows(table.getSelectedRowModel().rows)
+          break
+        case "Delete":
+          deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
+      }
+    })
+
+    return () => {
+      unlisten.then((f) => f())
+    }
+  }, [table, tableName])
 
   const { rows } = table.getRowModel()
 
@@ -203,7 +218,7 @@ const TableContextMenuContent = ({
     >
       <ContextMenuItem
         onSelect={async () =>
-          await deleteRowsCmd(table, tableName, contextMenuRow)
+          await deleteRowsCmd(table, tableName, [contextMenuRow])
         }
       >
         Delete

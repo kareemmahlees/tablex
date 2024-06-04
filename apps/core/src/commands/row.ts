@@ -17,7 +17,7 @@ export const createRowCmd = async (
 export const deleteRowsCmd = async (
   table: Table<any>,
   tableName: string,
-  contextMenuRow?: Row<any>
+  rows: Row<any>[]
 ) => {
   const column = table.getColumn("pk")
   if (!column)
@@ -25,24 +25,10 @@ export const deleteRowsCmd = async (
       id: "table_pk_error"
     })
 
-  let rowPkValues: any[] = []
-
-  if (table.getIsSomeRowsSelected()) {
-    const rows = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.getValue(column.id))
-
-    if (rows.length <= 0) return
-
-    rowPkValues = rows
-  } else if (contextMenuRow) {
-    rowPkValues = [contextMenuRow.getValue("pk")]
-  }
-
   const command = await commands.deleteRows(
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     column.columnDef.meta?.name!,
-    rowPkValues,
+    rows.map((row) => row.getValue(column.id)),
     tableName
   )
   customToast(command, () => {}, "delete_row")
