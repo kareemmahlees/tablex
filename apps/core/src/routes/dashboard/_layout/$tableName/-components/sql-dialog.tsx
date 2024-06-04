@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/tooltip"
 
 import { Editor, OnMount } from "@monaco-editor/react"
-import { Dispatch, SetStateAction, useRef, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 
 type RawQueryResult = Result<{ [x: string]: JsonValue }[], string>
 type MonakoEditor = Parameters<OnMount>[0]
@@ -38,7 +38,13 @@ const SQLDialog = () => {
     editorRef.current = editor
   }
 
-  events.sqlDialogOpen.listen(() => setOpen(true))
+  useEffect(() => {
+    const unlisten = events.sqlDialogOpen.listen(() => setOpen(true))
+
+    return () => {
+      unlisten.then((f) => f())
+    }
+  })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -70,7 +76,11 @@ const SQLDialog = () => {
               )}
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel>
+            <ResizablePanel
+              style={{
+                overflow: "auto"
+              }}
+            >
               {queryResult &&
                 (queryResult.status === "error" ? (
                   <pre className="m-4">{queryResult.error}</pre>
@@ -93,6 +103,20 @@ type RunBtnProps = {
 }
 
 const RunBtn = ({ editor, setQueryResult }: RunBtnProps) => {
+  const runQuery = async () => {
+    let value: string
+
+    const selection = editor.getSelection()
+    if (selection && !selection.isEmpty()) {
+      value = editor.getModel()!.getValueInRange(selection)
+    } else {
+      value = editor.getValue()
+    }
+
+    const result = await commands.executeRawQuery(value)
+    setQueryResult(result)
+  }
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -101,10 +125,7 @@ const RunBtn = ({ editor, setQueryResult }: RunBtnProps) => {
             className="absolute bottom-0 right-0 m-3 origin-bottom-right"
             variant={"secondary"}
             size={"sm"}
-            onClick={async () => {
-              const result = await commands.executeRawQuery(editor.getValue())
-              setQueryResult(result)
-            }}
+            onClick={runQuery}
           >
             Run
           </Button>

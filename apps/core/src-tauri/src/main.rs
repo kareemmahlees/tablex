@@ -4,10 +4,11 @@
 mod cli;
 mod connection;
 mod row;
+mod shortcut;
 mod state;
 mod table;
 
-use crate::state::SharedState;
+use crate::{shortcut::ShortcutHandler, state::SharedState};
 use connection::{
     connections_exist, create_connection_record, delete_connection_record, establish_connection,
     get_connection_details, get_connections, test_connection,
@@ -17,9 +18,11 @@ use specta::ts::{BigIntExportBehavior, ExportConfig};
 use table::{execute_raw_query, get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{Manager, Window, WindowEvent};
+use tauri_plugin_global_shortcut::ShortcutState;
 use tauri_specta::{collect_commands, collect_events};
 use tx_lib::events::{
-    CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
+    CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, Shortcut,
+    TableContentsChanged,
 };
 
 #[tauri::command]
@@ -35,7 +38,6 @@ fn close_splashscreen(window: Window) {
             .unwrap();
     }
 }
-
 fn main() {
     let (invoke_handler, register_events) = {
         let builder = tauri_specta::ts::builder()
@@ -62,7 +64,8 @@ fn main() {
                 TableContentsChanged,
                 CommandPaletteOpen,
                 MetaXDialogOpen,
-                SQLDialogOpen
+                SQLDialogOpen,
+                Shortcut
             ])
             .header("// @ts-nocheck\n");
 
@@ -77,11 +80,22 @@ fn main() {
 
     let tauri_builder = tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
             register_events(app);
+
+            app.handle().plugin(
+                tauri_plugin_global_shortcut::Builder::new()
+                    .with_shortcuts(["ctrl+c", "ctrl+s", "delete"])?
+                    .with_handler(|app, shortcut, event| {
+                        let shortcut_handler = ShortcutHandler::new(app);
+                        if event.state == ShortcutState::Pressed {
+                            shortcut_handler.handle_shortcut(shortcut);
+                        }
+                    })
+                    .build(),
+            )?;
 
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(app.app_handle(), args, cmd));
