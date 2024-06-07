@@ -1,0 +1,19 @@
+---
+import Card from "@/components/Card.astro"
+import { Image } from "astro:assets"
+import SQLEditorPreivew from "../../../public/sql-editor.png"
+---
+
+<Card header="Built-in SQL Editor.">
+  <p slot="content">
+    For Complex queries, joins and filterations we provide you with a built in
+    SQL editor .
+
+    <Image
+      alt="github icon"
+      src={SQLEditorPreivew}
+      loading={"eager"}
+      class="mt-7 rounded-md"
+    />
+  </p>
+</Card>
