@@ -98,4 +98,4 @@ jobs:
           releaseId: ${{ github.event.release.id || github.event.inputs.release-id }}
           projectPath: ./apps/core
           tauriScript: pnpm tauri
-          args: --config src-tauri/tauri.conf.sidecar.json --features metax --target ${{matrix.target}}
+          args: --config src-tauri/tauri.conf.sidecar.json --features metax --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis'}}
