@@ -1,13 +1,19 @@
 ---
-import DownloadTabs from "./tabs-list"
+import { version as packageVersion } from "@tablex/core/package.json"
 ---
 
 <section class="mt-[100px] w-full">
   <h3
-    class="text-center text-2xl font-bold underline underline-offset-4 md:text-3xl"
+    class="text-center text-2xl font-bold md:text-3xl lg:text-4xl"
     id="download"
   >
     Download
   </h3>
-  <DownloadTabs client:visible />
+  <p class="text-center mt-3 text-muted-foreground">
+    Latest version: v{packageVersion}
+  </p>
 </section>
+
+<script>
+  const userAgent = window.navigator.userAgent
+</script>
