@@ -80,6 +80,7 @@ fn main() {
 
     let tauri_builder = tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
@@ -123,9 +124,6 @@ fn main() {
                 rt.shutdown_background();
             }
         });
-
-    #[cfg(feature = "metax")]
-    let tauri_builder = tauri_builder.plugin(tauri_plugin_shell::init());
 
     tauri_builder
         .run(tauri::generate_context!())

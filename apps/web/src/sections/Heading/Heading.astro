@@ -1,10 +1,11 @@
 ---
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@tablex/lib/utils"
-import AnimatedStar from "./animated-star"
 import { Image } from "astro:assets"
-import Overview from "../../../public/overview.png"
 import { ArrowRight } from "lucide-react"
+import Overview from "../../../public/overview.png"
+import AnimatedStar from "./animated-star"
+import DownloadBtn from "./download-btn"
 ---
 
 <header
@@ -26,13 +27,13 @@ import { ArrowRight } from "lucide-react"
   </div>
 
   <h1 class="text-center text-4xl font-bold md:text-5xl lg:text-6xl">
-    Table viewer for modern developers
+    Cross-Platform Table viewer written in Rust
   </h1>
   <p class="text-muted-foreground text-center md:text-lg lg:text-xl">
-    Database browsing experience like never before
+    Secure, Tiny, Fast and Ergonomic Database browsing experience
   </p>
   <div class="flex items-center gap-x-7">
-    <Button id="download-btn" className="font-semi">Download Now</Button>
+    <DownloadBtn client:only />
     <a
       href="https://github.com/kareemmahlees/tablex"
       target="_blank"
@@ -63,8 +64,10 @@ import { ArrowRight } from "lucide-react"
   />
 </header>
 
-<script>
-  document.getElementById("download-btn")?.addEventListener("click", () => {
+<!-- <script lang="ts" is:inline>
+  const downloadBtn = document.getElementById("download-btn")
+
+  downloadBtn?.addEventListener("click", () => {
     document.getElementById("download")?.scrollIntoView({ block: "center" })
   })
-</script>
+</script> -->

@@ -1,13 +1,19 @@
 ---
-import DownloadTabs from "./tabs-list"
+import { version as packageVersion } from "@tablex/core/package.json"
+import DownloadTable from "./DownloadTable.astro"
 ---
 
-<section class="mt-[100px] w-full">
-  <h3
-    class="text-center text-2xl font-bold underline underline-offset-4 md:text-3xl"
-    id="download"
-  >
-    Download
-  </h3>
-  <DownloadTabs client:visible />
+<section class="mt-[100px] w-full space-y-20 flex flex-col items-center">
+  <div>
+    <h3
+      class="text-center text-2xl font-bold md:text-3xl lg:text-4xl"
+      id="download"
+    >
+      Download
+    </h3>
+    <p class="text-center mt-3 text-muted-foreground">
+      Latest version: v{packageVersion}
+    </p>
+  </div>
+  <DownloadTable />
 </section>
