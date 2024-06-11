@@ -1,0 +1,122 @@
+---
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table"
+import { version } from "@tablex/core/package.json"
+import { Download } from "lucide-react"
+
+type Platform = "Windows" | "macOS" | "Debian" | "Fedora"
+type Extension = "exe" | "msi" | "app" | "dmg" | "deb" | "rpm"
+
+const baseUrl =
+  "https://github.com/kareemmahlees/tablex/releases/latest/download"
+
+const links: {
+  platform: Platform
+  extension: Extension
+  link: { x64: string | undefined; arm: string | undefined }
+}[] = [
+  {
+    platform: "Windows",
+    extension: "exe",
+    link: {
+      x64: `${baseUrl}/TableX_${version}_x64-setup.exe`,
+      arm: `${baseUrl}/TableX_${version}_arm64-setup.exe`
+    }
+  },
+  {
+    platform: "Windows",
+    extension: "msi",
+    link: {
+      x64: `${baseUrl}/TableX_${version}_x64_en-US.msi`,
+      arm: ""
+    }
+  },
+  {
+    platform: "macOS",
+    extension: "app",
+    link: {
+      x64: `${baseUrl}/TableX_x64.app.tar.gz`,
+      arm: `${baseUrl}/TableX_aarch64.app.tar.gz`
+    }
+  },
+  {
+    platform: "macOS",
+    extension: "dmg",
+    link: {
+      x64: `${baseUrl}/TableX_${version}_x64.dmg`,
+      arm: `${baseUrl}/TableX_${version}_aarch64.dmg`
+    }
+  },
+  {
+    platform: "Debian",
+    extension: "deb",
+    link: {
+      x64: `${baseUrl}/table-x_${version}_amd64.deb`,
+      arm: ""
+    }
+  },
+  {
+    platform: "Fedora",
+    extension: "rpm",
+    link: {
+      x64: `${baseUrl}/table-x-${version}-1.x86_64.rpm`,
+      arm: ""
+    }
+  }
+]
+---
+
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead />
+      <TableHead className="text-center font-bold">64-bit</TableHead>
+      <TableHead className="text-center font-bold">arm64</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {
+      links.map((link) => {
+        return (
+          <TableRow>
+            <TableCell className="font-bold flex items-center gap-x-1">
+              {link.platform}{" "}
+              <p class="text-sm text-muted-foreground">(.{link.extension})</p>
+            </TableCell>
+            <TableCell className="text-center">
+              {link.link.x64 ? (
+                <a
+                  href={link.link.x64}
+                  class="flex items-center justify-center gap-x-2"
+                >
+                  <Download className="w-4 h-4" />{" "}
+                  <p class="text-center">v{version}</p>
+                </a>
+              ) : (
+                <p>N/A</p>
+              )}
+            </TableCell>
+            <TableCell className="text-center">
+              {link.link.arm ? (
+                <a
+                  href={link.link.arm}
+                  class="flex items-center justify-center gap-x-2"
+                >
+                  <Download className="w-4 h-4" /> <p>v{version}</p>
+                </a>
+              ) : (
+                <p>N/A</p>
+              )}
+            </TableCell>
+          </TableRow>
+        )
+      })
+    }
+  </TableBody>
+</Table>
