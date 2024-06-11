@@ -1,4 +1,3 @@
-"use client"
 import { commands } from "@/bindings"
 import { deleteConnectionCmd } from "@/commands/connection"
 import CreateConnectionBtn from "@/components/create-connection-btn"
@@ -17,6 +16,13 @@ import { Suspense } from "react"
 import toast from "react-hot-toast"
 
 export const Route = createFileRoute("/connections")({
+  beforeLoad: async () => {
+    const result = await commands.connectionsExist()
+    const connectionExist = unwrapResult(result)
+    if (!connectionExist) {
+      throw redirect({ to: "/" })
+    }
+  },
   loader: async ({ abortController }) => {
     const commandResult = await commands.getConnections()
     if (commandResult.status === "error") {
@@ -25,8 +31,6 @@ export const Route = createFileRoute("/connections")({
         `error while getting connections: ${commandResult.error}`
       )
     }
-    if (Object.entries(commandResult.data).length === 0)
-      throw redirect({ to: "/" })
     return commandResult.data
   },
   staleTime: 0,
