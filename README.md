@@ -43,14 +43,13 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 
 ## Announcements 🎉
 
+### v0.3.7
+
+- You can now write Raw SQL withing TableX directly.
+
 ### v0.3.6
 
 - TableX now supports Foreign key relations 🔗.
-
-### v0.3.5
-
-- TableX now ships with a little CLI tool that helps you to create & save `on the fly` connections with ease from your terminal ⭐, checkout the [CLI](./docs/CLI.md) documentation.
-- TableX bundle size is now roughly 30% smaller 🚀
 
 ## Tech Stack ⌨️
 
@@ -65,15 +64,15 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
 - [Changesets](https://github.com/changesets/changesets): Versioning and Changelogs
 - [Vercel](https://vercel.com/) : Deployment
 
-## Keyboard Shortcuts
+<!-- ## Keyboard Shortcuts -->
 
-| Shortcut                       | Description                       |
+<!-- | Shortcut                       | Description                       |
 | ------------------------------ | --------------------------------- |
 | <kbd>Ctrl</kbd> + <kbd>k</kbd> | open command palette              |
 | <kbd>Ctrl</kbd> + <kbd>s</kbd> | focus search input                |
 | <kbd>Ctrl</kbd> + <kbd>a</kbd> | select or deselect all            |
 | <kbd>Ctrl</kbd> + <kbd>c</kbd> | copy selected rows into clipboard |
-| <kbd>Delete</kbd>              | delete selected rows              |
+| <kbd>Delete</kbd>              | delete selected rows              | -->
 
 ## Contributing 🫱🏻‍🫲🏻
 
