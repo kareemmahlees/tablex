@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "pnpm build",
-    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "bun build",
+    "beforeDevCommand": "bun dev",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173"
   },
@@ -12,9 +12,7 @@
     "copyright": "",
     "targets": "all",
     "externalBin": [],
-    "icon": [
-      "icons/icon.ico"
-    ],
+    "icon": ["icons/icon.ico"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
@@ -67,3 +65,4 @@
     }
   }
 }
+
