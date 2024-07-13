@@ -16,16 +16,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node & PNPM
-        uses: ./.github/actions/setup-node-pnpm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lock
+        run: bun install --frozen-lock
 
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
           commit: "chore: version pump 🔖"
-          publish: pnpm changeset tag
+          publish: bunx changeset tag
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

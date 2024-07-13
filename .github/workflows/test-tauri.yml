@@ -55,7 +55,6 @@ jobs:
             apps/core
             crates
             packages
-            .github/actions
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'
@@ -71,18 +70,19 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
 
-      - name: Setup Node & PNPM
-        uses: ./.github/actions/setup-node-pnpm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lock
+        run: bun install --frozen-lock
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: ./apps/core
-          tauriScript: pnpm tauri
+          tauriScript: bunx tauri
           includeRelease: false
           includeDebug: true
           args: --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}
