@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "bun build",
+    "beforeBuildCommand": "bun run build",
     "beforeDevCommand": "bun dev",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173"
@@ -27,7 +27,7 @@
       "signingIdentity": null
     },
     "resources": [],
-    "shortDescription": "",
+    "shortDescription": "Cross-Platform table viewer written in rust",
     "linux": {
       "deb": {
         "depends": []
