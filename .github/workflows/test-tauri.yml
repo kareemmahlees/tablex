@@ -50,11 +50,6 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            apps/core
-            crates
-            packages
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-22.04'

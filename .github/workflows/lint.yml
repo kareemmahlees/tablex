@@ -27,7 +27,7 @@ jobs:
 
       - name: Install commitlint
         run: |
-          bun add -w @commitlint/{cli,config-conventional}
+          bun add  @commitlint/{cli,config-conventional}
       - name: Validate latest commit
         if: github.event_name == 'push'
         run: bunx commitlint --from HEAD~1 --to HEAD --verbose
