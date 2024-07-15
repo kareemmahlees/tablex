@@ -18,7 +18,7 @@
   "scripts": {
     "tauri:dev": "bunx tauri dev",
     "tauri:debug": "bunx tauri build --debug",
-    "tauri:build": "bunx exec tauri build",
+    "tauri:build": "bunx tauri build",
     "tauri:info": "bunx tauri info",
     "astro:dev": "bun --filter @tablex/web dev",
     "astro:check": "bun --filter @tablex/web check",
