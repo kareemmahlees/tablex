@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::decode;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
@@ -15,13 +17,15 @@ pub enum Drivers {
 }
 
 #[derive(Serialize, Deserialize, Debug, Type, Clone)]
-/// Connection Config Stored inside `connections.json` file
 #[serde(rename_all = "camelCase")]
+/// Connection Config Stored inside `connections.json` file.
 pub struct ConnConfig {
-    pub(crate) driver: Drivers,
-    pub(crate) conn_string: String,
-    pub(crate) conn_name: String,
+    pub driver: Drivers,
+    pub conn_string: String,
+    pub conn_name: String,
 }
+
+pub type ConnectionsFileSchema = HashMap<String, ConnConfig>;
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
 #[serde(rename_all = "camelCase")]
@@ -53,8 +57,8 @@ pub struct ColumnProps {
 }
 impl<'r> FromRow<'r, AnyRow> for ColumnProps {
     fn from_row(row: &'r AnyRow) -> Result<Self, Error> {
-        let column_name = row.try_get::<String, &str>("column_name")?;
-        let data_type = row.try_get::<String, &str>("data_type")?;
+        let column_name: String = row.try_get("column_name")?;
+        let data_type: String = row.try_get("data_type")?;
         let is_nullable = match row.try_get::<i16, &str>("is_nullable") {
             Ok(val) => val == 1,
             Err(_) => row.try_get::<bool, &str>("is_nullable")?,

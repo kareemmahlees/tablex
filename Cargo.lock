@@ -2269,6 +2269,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "keybindings"
+version = "0.3.4"
+
+[[package]]
 name = "keyboard-types"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4432,6 +4436,7 @@ dependencies = [
  "tokio",
  "tx_handlers",
  "tx_lib",
+ "uuid",
  "windows 0.54.0",
 ]
 
@@ -5211,7 +5216,6 @@ dependencies = [
  "specta",
  "sqlx",
  "tauri-specta",
- "uuid",
 ]
 
 [[package]]
