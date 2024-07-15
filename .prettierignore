@@ -9,4 +9,5 @@ pnpm-lock.yaml
 **/components/ui
 **/*.gen.ts
 .all-contributorsrc
+.astro
 apps/core/src/bindings.ts

@@ -28,9 +28,8 @@ Inside the [package.json](../package.json) file, you will find all the scripts y
 
 To start playing around with TableX locally, you will need the following requirements:
 
-- Node v20.9.0 or later ( you can use the .nvmrc )
 - Cargo 1.74.1 or later
-- pnpm 8.13.1 or later
+- Bun 1.1.20 or later
 
 > [!IMPORTANT]
 > some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
@@ -44,19 +43,19 @@ git clone https://github.com/kareemmahlees/tablex.git --depth=1
 then, install necessary dependencies:
 
 ```shell
-pnpm install
+bun install
 ```
 
 Install husky git hooks:
 
 ```bash
-pnpm husky install
+bunx husky install
 ```
 
 and you are good to go 💫, you can start your development server by running:
 
 ```bash
-pnpm tauri:dev
+bun tauri:dev
 ```
 
 > [!IMPORTANT]
@@ -65,7 +64,7 @@ pnpm tauri:dev
 Want to test how your modification will look like at the final executable? run this:
 
 ```shell
-pnpm tauri:debug
+bun tauri:debug
 ```
 
 this will create a debug build/executable, which you don't have to install in order to see your changes, just run the file located under `apps\core\src-tauri\target\debug\TableX.exe` :partying_face:.
@@ -73,7 +72,7 @@ this will create a debug build/executable, which you don't have to install in or
 If you want to create a release build, run the following:
 
 ```shell
-pnpm tauri:build
+bun tauri:build
 ```
 
 The same steps are applied as the debug build if you want to run the release build without installing it, just make sure to replace `target\debug` with `target\release` :rocket:.
@@ -81,7 +80,7 @@ The same steps are applied as the debug build if you want to run the release bui
 If you are interested in playing around with the website, run the following:
 
 ```shell
-pnpm astro:dev
+bun astro:dev
 ```
 
 ## Developing the CLI
@@ -99,7 +98,7 @@ $ apps/core/src-tauri/target/{{release,debug}}/TableX.exe {{ARGS_OR_FLAGS_HERE}}
 If you wish to run in dev mode, make sure to run the following command:
 
 ```shell
-$ pnpm tauri:dev -- -- -- [CONN_NAME] [FLAGS]
+$ bun tauri:dev -- -- -- [CONN_NAME] [FLAGS]
 ```
 
 ## Some Guidelines to follow
@@ -136,7 +135,7 @@ We use [Changesets Bot](https://github.com/changesets/bot) to check for changese
 Generally after making changes you'll run
 
 ```shell
-pnpm changeset
+bunx changeset
 ```
 
 and fill in the blanks to create a temporary changeset file with metadata about what you've changed that will be submitted to the repo along with your changes. Example: https://github.com/kareemmahlees/tablex/commit/6806384
@@ -146,7 +145,7 @@ The Changesets Bot will expect each PR to include such a file, and then after th
 If your changes don't affect any major component of the repo (such as changes in the website, which we don't version tag), you may need to create an empty changeset to make the bot happy:
 
 ```shell
-pnpm changeset add --empty
+bunx changeset add --empty
 ```
 
 Please refer to [changesets](https://github.com/changesets/changesets) documentation for more info.

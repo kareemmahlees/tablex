@@ -27,13 +27,13 @@ jobs:
             apps/web
             apps/core/package.json
             packages
-            .github/actions
 
-      - name: Setup Node & PNPM
-        uses: ./.github/actions/setup-node-pnpm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lock
+        run: bun install --frozen-lock
 
       - name: Run Astro build
-        run: pnpm astro:build
+        run: bun astro:build

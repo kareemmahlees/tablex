@@ -21,7 +21,7 @@ If applicable, add screenshots to help explain your problem.
 **System Info (please complete the following information):**
 
 - TableX Release: [e.g. Latest]
-- Output of `pnpm tauri:info` [e.g. 22]
+- Output of `bun tauri:info` [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.

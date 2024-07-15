@@ -43,7 +43,6 @@ jobs:
             crates
             packages
             scripts
-            .github/actions
 
       - name: Checkout MetaX's repo
         uses: actions/checkout@v4
@@ -65,11 +64,12 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
 
-      - name: Setup Node & PNPM
-        uses: ./.github/actions/setup-node-pnpm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lock
+        run: bun install --frozen-lock
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -97,5 +97,5 @@ jobs:
         with:
           releaseId: ${{ github.event.release.id || github.event.inputs.release-id }}
           projectPath: ./apps/core
-          tauriScript: pnpm tauri
+          tauriScript: bunx tauri
           args: --config src-tauri/tauri.conf.sidecar.json --features metax --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}
