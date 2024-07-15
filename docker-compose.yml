@@ -1,5 +1,14 @@
 version: "3"
 services:
+  tablex:
+    build: .
+    container_name: tablex
+    restart: always
+    network_mode: host
+    # volumes:
+    #   - ${HOME}/.Xauthority:/root/.Xauthority:rw
+    environment:
+      - DISPLAY=:0
   tablex_mysql:
     image: mysql
     container_name: tablex_mysql
