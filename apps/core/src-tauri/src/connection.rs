@@ -10,7 +10,7 @@ use tauri_specta::Event;
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
     events::ConnectionsChanged,
-    fs::{delete_from_connections_file, read_from_json, write_into_json},
+    fs::{read_from_json, write_into_json},
     handler::Handler,
     types::{ConnConfig, ConnectionsFileSchema, Drivers},
 };
@@ -56,8 +56,14 @@ pub fn create_connection_record(
 #[tauri::command]
 #[specta::specta]
 pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String, String> {
-    let mut connections_file_path = get_connections_file_path(&app)?;
-    delete_from_connections_file(&mut connections_file_path, conn_id)?;
+    let connections_file_path = get_connections_file_path(&app)?;
+    let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
+
+    contents
+        .remove(&conn_id)
+        .ok_or("Couldn't delete specified connection".to_string())?;
+
+    write_into_json(&connections_file_path, contents)?;
     ConnectionsChanged.emit(&app).unwrap();
     Ok(String::from("Successfully deleted connection"))
 }

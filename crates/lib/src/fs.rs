@@ -5,29 +5,6 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter, Seek, SeekFrom, Write};
 use std::path::PathBuf;
 
-/// Delete connection record from `connections.json`.
-pub fn delete_from_connections_file(
-    connections_file_path: &mut PathBuf,
-    conn_id: String,
-) -> Result<(), String> {
-    let mut contents = read_from_json::<ConnectionsFileSchema>(connections_file_path)?;
-
-    let file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(connections_file_path)
-        .map_err(|e| e.to_string())?;
-    let mut writer = BufWriter::new(file);
-
-    contents
-        .remove(&conn_id)
-        .ok_or("Couldn't delete specified connection".to_string())?;
-    serde_json::to_writer(&mut writer, &contents)
-        .map_err(|_| "Failed to delete connection record".to_string())?;
-    writer.flush().unwrap();
-    Ok(())
-}
-
 /// Write into _any_ json file (e.g `connections.json`, `keybindings.json`).
 pub fn write_into_json<S>(path: &PathBuf, contents: S) -> Result<(), String>
 where
