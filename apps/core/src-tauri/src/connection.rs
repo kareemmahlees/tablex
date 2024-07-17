@@ -10,11 +10,13 @@ use tauri_specta::Event;
 use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
 use tx_lib::{
     events::ConnectionsChanged,
-    fs::{read_from_json, write_into_json},
+    fs::{create_json_file_recursively, read_from_json, write_into_json},
     handler::Handler,
     types::{ConnConfig, ConnectionsFileSchema, Drivers},
 };
 use uuid::Uuid;
+
+const CONNECTIONS_FILE_NAME: &str = "connections.json";
 
 #[tauri::command]
 #[specta::specta]
@@ -169,14 +171,25 @@ pub fn get_connection_details(
     Ok(connection_details.clone())
 }
 
+/// Make sure `connections.json` file exist, if not will create an empty json file for it.
+pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<(), String> {
+    if path.exists() {
+        return Ok(());
+    }
+    create_json_file_recursively(path)?;
+    Ok(())
+}
+
 /// Get the file path to `connections.json`.
 ///
 /// **Varies by platform**.
-pub fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf, String> {
+pub(crate) fn get_connections_file_path<R: Runtime>(
+    app: &tauri::AppHandle<R>,
+) -> Result<PathBuf, String> {
     let mut config_dir = app
         .path()
         .app_config_dir()
         .map_err(|_| "Couldn't read config dir path".to_string())?;
-    config_dir.push("connections.json");
+    config_dir.push(CONNECTIONS_FILE_NAME);
     Ok(config_dir)
 }

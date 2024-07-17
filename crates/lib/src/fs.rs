@@ -1,4 +1,3 @@
-use crate::types::ConnectionsFileSchema;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::fs::{File, OpenOptions};
@@ -12,6 +11,7 @@ where
 {
     let file = OpenOptions::new()
         .write(true)
+        .truncate(true)
         .open(path)
         .map_err(|e| e.to_string())?;
     let mut writer = BufWriter::new(file);
@@ -29,7 +29,7 @@ pub fn read_from_json<D>(path: &PathBuf) -> Result<D, String>
 where
     D: DeserializeOwned,
 {
-    let mut file = open_or_create_file(path)?;
+    let mut file = create_json_file_recursively(path)?;
 
     let _ = file.seek(SeekFrom::Start(0));
     let reader = BufReader::new(file);
@@ -38,29 +38,26 @@ where
 }
 
 #[allow(clippy::incompatible_msrv)]
-/// Tries to open the specified path in `read` and `write` mode, if doesn't exist then will create
-/// the file and it's parent directories _recursively_.
-fn open_or_create_file(path: &PathBuf) -> Result<File, String> {
+/// Creates an empty json file with all parent directories recursively if it doesn't exist and
+/// write to it and empty object ( `{}` ),
+/// otherwise opens the file and returns it.
+pub fn create_json_file_recursively(path: &PathBuf) -> Result<File, String> {
     let file_name = path.file_name().unwrap().to_str().unwrap();
-    if !path.exists() {
-        let parent = path.parent().unwrap();
-        if !parent.exists() {
-            std::fs::create_dir_all(parent)
-                .map_err(|_| "Couldn't create config directory for TableX".to_string())?;
-        }
-        let mut file =
-            File::create_new(path).map_err(|_| format!("Failed to create {file_name}"))?;
-
-        if file.metadata().unwrap().len() == 0 {
-            write!(file, "{{}}")
-                .map_err(|_| format!("Couldn't write initial content into {file_name}"))?;
-        }
+    if path.exists() {
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path)
+            .map_err(|_| format!("Couldn't open {file_name}"))?;
         return Ok(file);
-    };
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(path)
-        .map_err(|_| format!("Couldn't open {file_name}"))?;
+    }
+    let parent = path.parent().unwrap();
+    if !parent.exists() {
+        std::fs::create_dir_all(parent)
+            .map_err(|_| "Couldn't create config directory for TableX".to_string())?;
+    }
+    let mut file = File::create_new(path).map_err(|_| format!("Failed to create {file_name}"))?;
+
+    write!(file, "{{}}").map_err(|_| format!("Couldn't write initial content into {file_name}"))?;
     Ok(file)
 }
