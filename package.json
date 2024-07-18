@@ -11,7 +11,8 @@
   },
   "private": true,
   "workspaces": [
-    "apps/**",
+    "apps/core",
+    "apps/web",
     "packages/**"
   ],
   "scripts": {
