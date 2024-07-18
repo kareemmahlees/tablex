@@ -1,9 +1,10 @@
-import { commands, events } from "@/bindings"
+import { commands } from "@/bindings"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { focusSearch } from "@/shortcuts"
+import { focusSearch } from "@/keybindings"
+import { useKeybindingsManager } from "@/keybindings/manager"
 import { cn } from "@tablex/lib/utils"
-import { Link, Outlet, createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
 import { useState, type KeyboardEvent } from "react"
 import toast from "react-hot-toast"
@@ -37,10 +38,33 @@ export const Route = createFileRoute("/dashboard/_layout")({
   component: DashboardLayout
 })
 
+// const loadKeybindings = () => {
+//   readTextFile("keybindings.json", {
+//     baseDir: BaseDirectory.AppConfig
+//   }).then((data) => {
+//     const jsonData: Keybinding[] = JSON.parse(data)
+
+//     jsonData.forEach((binding) => {
+//       hotkeys(binding.shortcuts.join(","), () => {
+//         //@ts-expect-error i think this is a bug with tauri-specta
+//         events.keybindingEvent.emit(binding.command)
+//       })
+//     })
+//   })
+// }
+
 function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
+  const keybindingsManager = useKeybindingsManager()
   const [tables, setTables] = useState<string[]>(data!.tables)
+
+  keybindingsManager.registerKeybindings([
+    {
+      command: "focusSearch",
+      handler: () => focusSearch()
+    }
+  ])
 
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -56,12 +80,6 @@ function DashboardLayout() {
       setTables(filteredTables)
     }, 100)
   }
-
-  events.shortcut.listen((shortcut) => {
-    if (shortcut.payload === "FocusSearch") {
-      focusSearch()
-    }
-  })
 
   return (
     <main className="flex h-full w-full">

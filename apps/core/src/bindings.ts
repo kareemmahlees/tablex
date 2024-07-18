@@ -132,15 +132,13 @@ connectionsChanged: ConnectionsChanged,
 tableContentsChanged: TableContentsChanged,
 commandPaletteOpen: CommandPaletteOpen,
 metaXDialogOpen: MetaXDialogOpen,
-sqlDialogOpen: SQLDialogOpen,
-shortcut: Shortcut
+sqlDialogOpen: SQLDialogOpen
 }>({
 connectionsChanged: "connections-changed",
 tableContentsChanged: "table-contents-changed",
 commandPaletteOpen: "command-palette-open",
 metaXDialogOpen: "meta-x-dialog-open",
-sqlDialogOpen: "sql-dialog-open",
-shortcut: "shortcut"
+sqlDialogOpen: "sql-dialog-open"
 })
 
 /** user-defined types **/
@@ -148,7 +146,7 @@ shortcut: "shortcut"
 export type ColumnProps = { columnName: string; type: string; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
 export type CommandPaletteOpen = null
 /**
- * Connection Config Stored inside `connections.json` file
+ * Connection Config Stored inside `connections.json` file.
  */
 export type ConnConfig = { driver: Drivers; connString: string; connName: string }
 export type ConnectionsChanged = null
@@ -158,11 +156,19 @@ export type ConnectionsChanged = null
 export type Drivers = "sqlite" | "postgresql" | "mysql"
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
+/**
+ * Represents a keybinding record in the keybindings json file.
+ * 
+ * It's only used as a type on the frontend and to generate default keybindings, beside that it doesn't have
+ * any backend logic involved.
+ */
+export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
+export type KeybindingCommand = Sidebar | Table
 export type MetaXDialogOpen = null
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
 export type SQLDialogOpen = null
-export type Shortcut = ShortcutAction
-export type ShortcutAction = "Delete" | "Copy" | "SelectAll" | "FocusSearch"
+export type Sidebar = "focusSearch"
+export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null
 
 /** tauri-specta globals **/

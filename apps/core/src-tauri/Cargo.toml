@@ -16,9 +16,11 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 [dependencies]
 tx_lib = { path = "../../../crates/lib" }
 tx_handlers = { path = "../../../crates/handlers" }
+tx_keybindings = { path = "../../../crates/keybindings" }
+uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 serde_json = { workspace = true }
 serde = { workspace = true }
-tauri = { version = "2.0.0-beta.19", features = [] }
+tauri = { workspace = true }
 sqlx = { workspace = true }
 clap = { version = "4.5.1", features = ["derive"] }
 tokio = { workspace = true }
@@ -28,6 +30,7 @@ tauri-specta = { workspace = true }
 tauri-plugin-dialog = "2.0.0-beta.7"
 tauri-plugin-clipboard-manager = "2.1.0-beta.2"
 tauri-plugin-shell = "2.0.0-beta.5"
+tauri-plugin-fs = "2.0.0-beta"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

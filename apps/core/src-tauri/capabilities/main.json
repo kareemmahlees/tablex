@@ -1,15 +1,21 @@
 {
-    "$schema": "../gen/schemas/desktop-schema.json",
-    "identifier": "main-capability",
-    "description": "Capability for the main window",
-    "windows": ["main"],
-    "permissions": [
-        "shell:allow-open",
-        "event:allow-listen",
-        "event:allow-unlisten",
-        "event:allow-emit",
-        "dialog:allow-open",
-        "global-shortcut:allow-register",
-        "clipboard-manager:allow-write-text"
-    ]
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main-capability",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "shell:allow-open",
+    "event:allow-listen",
+    "event:allow-unlisten",
+    "event:allow-emit",
+    "dialog:allow-open",
+    "global-shortcut:allow-register",
+    "clipboard-manager:allow-write-text",
+{
+     "identifier": "fs:allow-read-text-file",
+      "allow": [{ "path": "$APPDATA/**" }]
+    }
+  ]
 }
