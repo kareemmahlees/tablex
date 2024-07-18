@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/context-menu"
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
-import { copyRows } from "@/shortcuts/row"
+import { useKeybindingsManager } from "@/keybindings/manager"
+import { copyRows } from "@/keybindings/row"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef, type Dispatch, type SetStateAction } from "react"
 import ForeignKeyDropdown from "./fk-dropdown"
@@ -56,6 +57,7 @@ const DataTable = <TData, TValue>({
     tableRef
   } = useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
+  const keybindingsManager = useKeybindingsManager()
 
   useEffect(() => {
     const unlisten = events.tableContentsChanged.listen(() => {
@@ -67,21 +69,17 @@ const DataTable = <TData, TValue>({
     }
   }, [queryClient])
 
-  useEffect(() => {
-    const unlisten = events.shortcut.listen((shortcut) => {
-      switch (shortcut.payload) {
-        case "Copy":
-          copyRows(table.getSelectedRowModel().rows)
-          break
-        case "Delete":
-          deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
-      }
-    })
-
-    return () => {
-      unlisten.then((f) => f())
+  keybindingsManager.registerKeybindings([
+    {
+      command: "copyRow",
+      handler: () => copyRows(table.getSelectedRowModel().rows)
+    },
+    {
+      command: "deleteRow",
+      handler: () =>
+        deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
     }
-  }, [table, tableName])
+  ])
 
   const { rows } = table.getRowModel()
 

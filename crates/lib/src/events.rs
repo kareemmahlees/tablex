@@ -16,14 +16,3 @@ pub struct CommandPaletteOpen;
 
 #[derive(Clone, Serialize, Deserialize, Type, Event)]
 pub struct MetaXDialogOpen;
-
-#[derive(Clone, Serialize, Deserialize, Type)]
-pub enum ShortcutAction {
-    Delete,
-    Copy,
-    SelectAll,
-    FocusSearch,
-}
-
-#[derive(Clone, Serialize, Deserialize, Type, Event)]
-pub struct Shortcut(pub ShortcutAction);

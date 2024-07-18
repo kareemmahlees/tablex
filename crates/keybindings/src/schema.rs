@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 #[derive(Serialize, Deserialize, Type)]
-#[serde(rename_all = "camelCase")]
 /// Represents a keybinding record in the keybindings json file.
 ///
 /// It's only used as a type on the frontend and to generate default keybindings, beside that it doesn't have
@@ -18,23 +17,22 @@ impl Keybinding {
     }
 }
 
-#[derive(Serialize, Deserialize, Type)]
-#[serde(rename_all = "camelCase")]
-#[serde(untagged)]
+#[derive(Clone, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase", untagged)]
 pub enum KeybindingCommand {
     Sidebar(Sidebar),
     Table(Table),
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum Sidebar {
     FocusSearch,
 }
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum Table {
     DeleteRow,
-    UpdateRow,
+    CopyRow,
     SelectAll,
 }

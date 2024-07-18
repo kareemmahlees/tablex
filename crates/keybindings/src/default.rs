@@ -6,6 +6,7 @@ use crate::schema::{Keybinding, KeybindingCommand, Sidebar, Table};
 /// from the start.
 pub fn get_default_keybindings() -> Vec<Keybinding> {
     let mut result = Vec::<Keybinding>::with_capacity(4);
+    // TODO: refactor the modifier key out to be platform dependent instead of registering both.
     let default_keybindings = [
         (
             vec![String::from("ctrl+s"), String::from("command+s")],
@@ -16,8 +17,8 @@ pub fn get_default_keybindings() -> Vec<Keybinding> {
             KeybindingCommand::Table(Table::DeleteRow),
         ),
         (
-            vec![String::from("f2")],
-            KeybindingCommand::Table(Table::UpdateRow),
+            vec![String::from("ctrl+c"), String::from("command+c")],
+            KeybindingCommand::Table(Table::CopyRow),
         ),
         (
             vec![String::from("ctrl+a"), String::from("command+a")],

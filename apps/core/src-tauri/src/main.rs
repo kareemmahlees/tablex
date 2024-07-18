@@ -4,11 +4,10 @@
 mod cli;
 mod connection;
 mod row;
-mod shortcut;
 mod state;
 mod table;
 
-use crate::{shortcut::ShortcutHandler, state::SharedState};
+use crate::state::SharedState;
 use connection::{
     connections_exist, create_connection_record, delete_connection_record,
     ensure_connections_file_exist, establish_connection, get_connection_details, get_connections,
@@ -20,12 +19,10 @@ use specta::TypeCollection;
 use table::{execute_raw_query, get_columns_props, get_tables};
 use tauri::async_runtime::Mutex;
 use tauri::{AppHandle, Manager, Window, WindowEvent};
-// use tauri_plugin_global_shortcut::ShortcutState;
 use tauri_specta::{collect_commands, collect_events};
-use tx_keybindings::{ensure_keybindings_file_exist, get_keybindings_file_path, KeybindingCommand};
+use tx_keybindings::{ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding};
 use tx_lib::events::{
-    CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, Shortcut,
-    TableContentsChanged,
+    CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
 };
 
 #[tauri::command]
@@ -50,7 +47,7 @@ fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
 
 fn main() {
     let mut custom_types = TypeCollection::default();
-    custom_types.register::<KeybindingCommand>();
+    custom_types.register::<Keybinding>();
 
     let (invoke_handler, register_events) = {
         let builder = tauri_specta::ts::builder()
@@ -79,7 +76,6 @@ fn main() {
                 CommandPaletteOpen,
                 MetaXDialogOpen,
                 SQLDialogOpen,
-                Shortcut
             ])
             .header("// @ts-nocheck\n");
 
@@ -93,6 +89,7 @@ fn main() {
     let (args, cmd) = cli::parse_cli_args();
 
     let tauri_builder = tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
