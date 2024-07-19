@@ -98,18 +98,6 @@ fn main() {
             ensure_config_files_exist(app.app_handle())?;
             register_events(app);
 
-            // app.handle().plugin(
-            //     tauri_plugin_global_shortcut::Builder::new()
-            //         .with_shortcuts(["ctrl+c", "ctrl+s", "delete"])?
-            //         .with_handler(|app, shortcut, event| {
-            //             let shortcut_handler = ShortcutHandler::new(app);
-            //             if event.state == ShortcutState::Pressed {
-            //                 shortcut_handler.handle_shortcut(shortcut);
-            //             }
-            //         })
-            //         .build(),
-            // )?;
-
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(app.app_handle(), args, cmd));
 
