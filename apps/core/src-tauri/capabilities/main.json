@@ -13,9 +13,13 @@
     "dialog:allow-open",
     "global-shortcut:allow-register",
     "clipboard-manager:allow-write-text",
-{
+    {
+      "identifier":"fs:allow-read-file",
+      "allow": [{"path": "*/*.(db|db3|s3db|sl3|sqlite|sqlite3)"}]
+    },
+    {
      "identifier": "fs:allow-read-text-file",
-      "allow": [{ "path": "$APPDATA/**" }]
+      "allow": [{ "path": "$APPDATA/keybindings.json" }]
     }
   ]
 }
