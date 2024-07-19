@@ -1,3 +1,8 @@
+//! # TableX Handlers
+//! 
+//! This crate contains the logic for interacting with the database ( i.e performing queries ) for `sqlite`, `postgres`,
+//! and `mysql`..
+
 use sqlx::{any::AnyPoolOptions, AnyPool};
 use std::time::Duration;
 
