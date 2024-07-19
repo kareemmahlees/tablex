@@ -4413,7 +4413,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "table_x"
+name = "tablex"
 version = "0.3.4"
 dependencies = [
  "clap",
@@ -5226,6 +5226,10 @@ dependencies = [
  "sqlx",
  "tauri-specta",
 ]
+
+[[package]]
+name = "tx_settings"
+version = "0.3.4"
 
 [[package]]
 name = "typenum"

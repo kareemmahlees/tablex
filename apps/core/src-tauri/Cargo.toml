@@ -1,10 +1,10 @@
 [package]
-name = "table_x"
+name = "tablex"
 version.workspace = true
 description.workspace = true
 license.workspace = true
 repository.workspace = true
-default-run = "table_x"
+default-run = "tablex"
 edition.workspace = true
 
 

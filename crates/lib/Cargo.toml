@@ -1,6 +1,6 @@
 [package]
 name = "tx_lib"
-description.workspace = true
+description = "TableX Lib for handling common/shared logic"
 version.workspace = true
 license.workspace = true
 authors.workspace = true
