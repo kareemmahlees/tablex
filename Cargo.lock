@@ -4434,6 +4434,7 @@ dependencies = [
  "tx_handlers",
  "tx_keybindings",
  "tx_lib",
+ "tx_settings",
  "uuid",
  "windows 0.54.0",
 ]
@@ -5230,6 +5231,13 @@ dependencies = [
 [[package]]
 name = "tx_settings"
 version = "0.3.4"
+dependencies = [
+ "serde",
+ "serde_json",
+ "specta",
+ "tauri",
+ "tx_lib",
+]
 
 [[package]]
 name = "typenum"

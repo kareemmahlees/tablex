@@ -16,7 +16,7 @@ where
         .map_err(|e| e.to_string())?;
     let mut writer = BufWriter::new(file);
 
-    serde_json::to_writer(&mut writer, &contents)
+    serde_json::to_writer_pretty(&mut writer, &contents)
         .map_err(|_| "Failed to write connection record".to_string())?;
     writer.flush().unwrap();
     Ok(())
