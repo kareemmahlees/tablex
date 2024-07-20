@@ -4417,6 +4417,7 @@ name = "tablex"
 version = "0.3.4"
 dependencies = [
  "clap",
+ "open",
  "regex",
  "serde",
  "serde_json",

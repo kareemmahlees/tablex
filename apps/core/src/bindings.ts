@@ -45,6 +45,14 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
+async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
+try {
+    return { status: "ok", data: await TAURI_INVOKE("open_in_external_editor", { file }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("get_connections") };
@@ -145,6 +153,7 @@ sqlDialogOpen: "sql-dialog-open"
 
 export type ColumnProps = { columnName: string; type: string; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
 export type CommandPaletteOpen = null
+export type ConfigFile = "settings" | "keybindings"
 /**
  * Connection Config Stored inside `connections.json` file.
  */

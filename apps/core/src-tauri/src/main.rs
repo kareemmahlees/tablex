@@ -3,6 +3,7 @@
 
 mod cli;
 mod connection;
+mod fs;
 mod row;
 mod state;
 mod table;
@@ -13,6 +14,7 @@ use connection::{
     ensure_connections_file_exist, establish_connection, get_connection_details, get_connections,
     get_connections_file_path, test_connection,
 };
+use fs::open_in_external_editor;
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
 use specta::ts::{BigIntExportBehavior, ExportConfig};
 use specta::TypeCollection;
@@ -62,6 +64,7 @@ fn main() {
                 delete_connection_record,
                 establish_connection,
                 connections_exist,
+                open_in_external_editor,
                 get_connections,
                 get_connection_details,
                 get_tables,

@@ -18,6 +18,7 @@ tx_lib = { path = "../../../crates/lib" }
 tx_handlers = { path = "../../../crates/handlers" }
 tx_keybindings = { path = "../../../crates/keybindings" }
 tx_settings = { path = "../../../crates/settings" }
+open = "5"
 uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 serde_json = { workspace = true }
 serde = { workspace = true }
