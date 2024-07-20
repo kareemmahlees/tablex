@@ -167,6 +167,7 @@ export type KeybindingCommand = Sidebar | Table
 export type MetaXDialogOpen = null
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
 export type SQLDialogOpen = null
+export type Settings = { pageSize: number }
 export type Sidebar = "focusSearch"
 export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null

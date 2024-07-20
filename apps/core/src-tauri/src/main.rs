@@ -24,7 +24,7 @@ use tx_keybindings::{ensure_keybindings_file_exist, get_keybindings_file_path, K
 use tx_lib::events::{
     CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
 };
-use tx_settings::{ensure_settings_file_exist, get_settings_file_path};
+use tx_settings::{ensure_settings_file_exist, get_settings_file_path, Settings};
 
 #[tauri::command]
 #[specta::specta]
@@ -50,6 +50,7 @@ fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
 fn main() {
     let mut custom_types = TypeCollection::default();
     custom_types.register::<Keybinding>();
+    custom_types.register::<Settings>();
 
     let (invoke_handler, register_events) = {
         let builder = tauri_specta::ts::builder()

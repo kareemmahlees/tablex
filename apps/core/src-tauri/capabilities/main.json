@@ -19,7 +19,7 @@
     },
     {
      "identifier": "fs:allow-read-text-file",
-      "allow": [{ "path": "$APPDATA/keybindings.json" }]
+      "allow": [{ "path": "$APPDATA/*.json" }]
     }
   ]
 }
