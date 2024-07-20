@@ -1,4 +1,7 @@
 import { commands } from "@/bindings"
+import CommandPalette from "@/components/dialogs/command-palette-dialog"
+import MetaXDialog from "@/components/dialogs/metax-dialog"
+import AddRowBtn from "@/components/sheets/create-row-sheet"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { focusSearch } from "@/keybindings"
@@ -9,9 +12,6 @@ import { ArrowLeft, Search, Table } from "lucide-react"
 import { useState, type KeyboardEvent } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import AddRowBtn from "../../components/sheets/create-row-sheet"
-import CommandPalette from "./_layout/-components/command-palette"
-import MetaXDialog from "./_layout/-components/metax-dialog"
 
 const dashboardConnectionSchema = z.object({
   connectionName: z.string().optional(),
@@ -38,21 +38,6 @@ export const Route = createFileRoute("/dashboard/_layout")({
   component: DashboardLayout
 })
 
-// const loadKeybindings = () => {
-//   readTextFile("keybindings.json", {
-//     baseDir: BaseDirectory.AppConfig
-//   }).then((data) => {
-//     const jsonData: Keybinding[] = JSON.parse(data)
-
-//     jsonData.forEach((binding) => {
-//       hotkeys(binding.shortcuts.join(","), () => {
-//         //@ts-expect-error i think this is a bug with tauri-specta
-//         events.keybindingEvent.emit(binding.command)
-//       })
-//     })
-//   })
-// }
-
 function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
@@ -73,6 +58,7 @@ function DashboardLayout() {
 
     clearTimeout(timeout)
 
+    // @ts-expect-error idk what's the problem yet.
     timeout = setTimeout(() => {
       const filteredTables = tables.filter((table) =>
         table.includes(searchPattern)
