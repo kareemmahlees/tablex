@@ -3,7 +3,7 @@ use crate::schema::{
 };
 
 const SCHEMA_URL: &str =
-    "https://github.com/kareemmahlees/tablex/blob/master/crates/settings/schema.json";
+    "https://raw.githubusercontent.com/kareemmahlees/tablex/master/crates/settings/schema.json";
 
 pub fn get_default_settings() -> Settings {
     let editor_scrollbar_visibility =
