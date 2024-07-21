@@ -159,12 +159,26 @@ export type ConfigFile = "settings" | "keybindings"
  */
 export type ConnConfig = { driver: Drivers; connString: string; connName: string }
 export type ConnectionsChanged = null
+/**
+ * Behavior of the cursor blinking style.
+ */
 export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "phase"
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */
 export type Drivers = "sqlite" | "postgresql" | "mysql"
-export type EditorScrollBarVisibility = { vertical: Visibility; horizontal: Visibility }
+/**
+ * Vertical/Horizontal scrollbar visibility.
+ */
+export type EditorScrollBarVisibility = { 
+/**
+ * Toggle vertical scrollbar visibility.
+ */
+vertical: Visibility; 
+/**
+ * Toggle horizontal scrollbar visibility.
+ */
+horizontal: Visibility }
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
 /**
@@ -178,11 +192,48 @@ export type KeybindingCommand = Sidebar | Table
 export type MetaXDialogOpen = null
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
 export type SQLDialogOpen = null
-export type SQLEditorSettings = { minimap: boolean; scrollbar: EditorScrollBarVisibility; fontSize: number; cursorBlinking: CursorBlinkingStyle }
-export type Settings = { pageSize: number; sqlEditor: SQLEditorSettings }
+/**
+ * Configuration for the SQL editor.
+ */
+export type SQLEditorSettings = { 
+/**
+ * Visibility of the right-hand-side minimap.
+ */
+minimap: boolean; 
+/**
+ * Vertical/Horizontal scrollbar visibility.
+ */
+scrollbar: EditorScrollBarVisibility; 
+/**
+ * Editor font size.
+ */
+fontSize: number; 
+/**
+ * Behavior of the cursor blinking style.
+ */
+cursorBlinking: CursorBlinkingStyle }
+/**
+ * The configuration object for TableX's settings.
+ */
+export type Settings = { 
+/**
+ * Remote schema url for autocompletion.
+ */
+$schema: string | null; 
+/**
+ * Number of rows to be fetched per page.
+ */
+pageSize: number; 
+/**
+ * Configuration for the SQL editor.
+ */
+sqlEditor: SQLEditorSettings }
 export type Sidebar = "focusSearch"
 export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null
+/**
+ * General visibility settings.
+ */
 export type Visibility = "hidden" | "visible" | "auto"
 
 /** tauri-specta globals **/

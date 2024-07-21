@@ -11,3 +11,4 @@ pnpm-lock.yaml
 .all-contributorsrc
 .astro
 apps/core/src/bindings.ts
+crates/settings/schema.json

@@ -1,0 +1,5 @@
+[alias]
+gen_schema = "r --package tx_settings"
+
+[cargo-new]
+vcs = "none"

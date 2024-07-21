@@ -5233,6 +5233,7 @@ dependencies = [
 name = "tx_settings"
 version = "0.3.4"
 dependencies = [
+ "schemars",
  "serde",
  "serde_json",
  "specta",

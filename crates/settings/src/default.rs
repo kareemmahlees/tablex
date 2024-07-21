@@ -2,6 +2,9 @@ use crate::schema::{
     CursorBlinkingStyle, EditorScrollBarVisibility, SQLEditorSettings, Settings, Visibility,
 };
 
+const SCHEMA_URL: &str =
+    "https://github.com/kareemmahlees/tablex/blob/master/crates/settings/schema.json";
+
 pub fn get_default_settings() -> Settings {
     let editor_scrollbar_visibility =
         EditorScrollBarVisibility::new(Visibility::Hidden, Visibility::Visible);
@@ -11,5 +14,5 @@ pub fn get_default_settings() -> Settings {
         CursorBlinkingStyle::Smooth,
         editor_scrollbar_visibility,
     );
-    Settings::new(500, sql_editor_settings)
+    Settings::new(Some(SCHEMA_URL.to_string()), 500, sql_editor_settings)
 }
