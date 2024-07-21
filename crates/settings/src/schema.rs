@@ -1,23 +1,31 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
+    #[serde(rename = "$schema")]
+    schema: Option<String>,
     page_size: u32,
     sql_editor: SQLEditorSettings,
 }
 
 impl Settings {
-    pub fn new(page_size: u32, sql_editor_settings: SQLEditorSettings) -> Self {
+    pub fn new(
+        schema: Option<String>,
+        page_size: u32,
+        sql_editor_settings: SQLEditorSettings,
+    ) -> Self {
         Self {
+            schema,
             page_size,
             sql_editor: sql_editor_settings,
         }
     }
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct SQLEditorSettings {
     minimap: bool,
@@ -42,7 +50,7 @@ impl SQLEditorSettings {
     }
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, JsonSchema)]
 pub struct EditorScrollBarVisibility {
     vertical: Visibility,
     horizontal: Visibility,
@@ -57,7 +65,7 @@ impl EditorScrollBarVisibility {
     }
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, JsonSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum CursorBlinkingStyle {
     Blink,
@@ -67,7 +75,7 @@ pub enum CursorBlinkingStyle {
     Phase,
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, JsonSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum Visibility {
     Hidden,

@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Settings",
+  "type": "object",
+  "required": [
+    "pageSize",
+    "sqlEditor"
+  ],
+  "properties": {
+    "pageSize": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
+    },
+    "sqlEditor": {
+      "$ref": "#/definitions/SQLEditorSettings"
+    }
+  },
+  "definitions": {
+    "SQLEditorSettings": {
+      "type": "object",
+      "required": [
+        "cursorBlinking",
+        "fontSize",
+        "minimap",
+        "scrollbar"
+      ],
+      "properties": {
+        "minimap": {
+          "type": "boolean"
+        },
+        "scrollbar": {
+          "$ref": "#/definitions/EditorScrollBarVisibility"
+        },
+        "fontSize": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 0.0
+        },
+        "cursorBlinking": {
+          "$ref": "#/definitions/CursorBlinkingStyle"
+        }
+      }
+    },
+    "EditorScrollBarVisibility": {
+      "type": "object",
+      "required": [
+        "horizontal",
+        "vertical"
+      ],
+      "properties": {
+        "vertical": {
+          "$ref": "#/definitions/Visibility"
+        },
+        "horizontal": {
+          "$ref": "#/definitions/Visibility"
+        }
+      }
+    },
+    "Visibility": {
+      "type": "string",
+      "enum": [
+        "hidden",
+        "visible",
+        "auto"
+      ]
+    },
+    "CursorBlinkingStyle": {
+      "type": "string",
+      "enum": [
+        "blink",
+        "expand",
+        "smooth",
+        "solid",
+        "phase"
+      ]
+    }
+  }
+}
