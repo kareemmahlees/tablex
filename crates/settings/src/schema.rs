@@ -6,8 +6,8 @@ use specta::Type;
 #[serde(rename_all = "camelCase")]
 /// The configuration object for TableX's settings.
 pub struct Settings {
-    #[serde(rename = "$schema")]
     /// Remote schema url for autocompletion.
+    #[serde(rename = "$schema")]
     schema: Option<String>,
     /// Number of rows to be fetched per page.
     page_size: u32,
