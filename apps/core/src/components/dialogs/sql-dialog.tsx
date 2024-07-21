@@ -20,9 +20,16 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip"
+import { useSettingsManager } from "@/settings/manager"
 
-import { Editor, OnMount } from "@monaco-editor/react"
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import { Editor, type OnMount } from "@monaco-editor/react"
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState
+} from "react"
 
 type RawQueryResult = Result<{ [x: string]: JsonValue }[], string>
 type MonakoEditor = Parameters<OnMount>[0]
@@ -32,6 +39,9 @@ const SQLDialog = () => {
   const [queryResult, setQueryResult] = useState<RawQueryResult>()
   const [editorMounted, setEditorMounted] = useState(false)
   const editorRef = useRef<MonakoEditor>()
+  const {
+    settings: { sqlEditor: editorSettings }
+  } = useSettingsManager()
 
   const handleEditorDidMount: OnMount = (editor) => {
     setEditorMounted(true)
@@ -56,15 +66,15 @@ const SQLDialog = () => {
                 defaultLanguage="sql"
                 theme="vs-dark"
                 options={{
-                  minimap: { enabled: false },
-                  scrollbar: { vertical: "hidden" },
+                  minimap: { enabled: editorSettings.minimap },
+                  scrollbar: editorSettings.scrollbar,
                   padding: { top: 10 },
                   lineNumbersMinChars: 3,
                   lineDecorationsWidth: 3,
-                  fontSize: 18,
+                  fontSize: editorSettings.fontSize,
                   overviewRulerBorder: false,
                   hideCursorInOverviewRuler: true,
-                  cursorBlinking: "smooth"
+                  cursorBlinking: editorSettings.cursorBlinking
                 }}
                 onMount={handleEditorDidMount}
               />

@@ -3,7 +3,7 @@ import {
   KeybindingsManager,
   KeybindingsManagerContext
 } from "@/keybindings/manager"
-import { SettingsManager, SettingsManagerContext } from "@/settings/manager"
+import { SettingsContext, SettingsManager } from "@/settings/manager"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import React, { Suspense } from "react"
 import { Toaster } from "react-hot-toast"
@@ -26,7 +26,7 @@ export const Route = createRootRoute({
   component: () => {
     return (
       <main className="dark h-full w-full">
-        <SettingsManagerContext.Provider value={settingsManager}>
+        <SettingsContext.Provider value={settingsManager}>
           <KeybindingsManagerContext.Provider value={keybindingsManager}>
             <Toaster position="top-right" />
             <Outlet />
@@ -34,7 +34,7 @@ export const Route = createRootRoute({
               <TanStackRouterDevtools position="bottom-right" />
             </Suspense>
           </KeybindingsManagerContext.Provider>
-        </SettingsManagerContext.Provider>
+        </SettingsContext.Provider>
       </main>
     )
   }
