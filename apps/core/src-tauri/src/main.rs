@@ -3,6 +3,7 @@
 
 mod cli;
 mod connection;
+mod fs;
 mod row;
 mod state;
 mod table;
@@ -13,6 +14,7 @@ use connection::{
     ensure_connections_file_exist, establish_connection, get_connection_details, get_connections,
     get_connections_file_path, test_connection,
 };
+use fs::open_in_external_editor;
 use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
 use specta::ts::{BigIntExportBehavior, ExportConfig};
 use specta::TypeCollection;
@@ -24,6 +26,7 @@ use tx_keybindings::{ensure_keybindings_file_exist, get_keybindings_file_path, K
 use tx_lib::events::{
     CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
 };
+use tx_settings::{ensure_settings_file_exist, get_settings_file_path, Settings};
 
 #[tauri::command]
 #[specta::specta]
@@ -40,6 +43,7 @@ fn close_splashscreen(window: Window) {
 }
 
 fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
+    ensure_settings_file_exist(&get_settings_file_path(app)?)?;
     ensure_keybindings_file_exist(&get_keybindings_file_path(app)?)?;
     ensure_connections_file_exist(&get_connections_file_path(app)?)?;
     Ok(())
@@ -48,6 +52,7 @@ fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
 fn main() {
     let mut custom_types = TypeCollection::default();
     custom_types.register::<Keybinding>();
+    custom_types.register::<Settings>();
 
     let (invoke_handler, register_events) = {
         let builder = tauri_specta::ts::builder()
@@ -59,6 +64,7 @@ fn main() {
                 delete_connection_record,
                 establish_connection,
                 connections_exist,
+                open_in_external_editor,
                 get_connections,
                 get_connection_details,
                 get_tables,
@@ -97,18 +103,6 @@ fn main() {
         .setup(|app| {
             ensure_config_files_exist(app.app_handle())?;
             register_events(app);
-
-            // app.handle().plugin(
-            //     tauri_plugin_global_shortcut::Builder::new()
-            //         .with_shortcuts(["ctrl+c", "ctrl+s", "delete"])?
-            //         .with_handler(|app, shortcut, event| {
-            //             let shortcut_handler = ShortcutHandler::new(app);
-            //             if event.state == ShortcutState::Pressed {
-            //                 shortcut_handler.handle_shortcut(shortcut);
-            //             }
-            //         })
-            //         .build(),
-            // )?;
 
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(app.app_handle(), args, cmd));

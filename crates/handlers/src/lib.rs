@@ -1,9 +1,20 @@
+//! # TableX Handlers
+//! 
+//! This crate contains the logic for interacting with the database ( i.e performing queries ) for `sqlite`, `postgres`,
+//! and `mysql`..
+
 use sqlx::{any::AnyPoolOptions, AnyPool};
 use std::time::Duration;
 
-pub mod mysql;
-pub mod postgres;
-pub mod sqlite;
+mod handler;
+mod mysql;
+mod postgres;
+mod sqlite;
+
+pub use handler::{Handler, RowHandler, TableHandler};
+pub use mysql::MySQLHandler;
+pub use postgres::PostgresHandler;
+pub use sqlite::SQLiteHandler;
 
 pub async fn establish_connection(conn_string: &str) -> Result<AnyPool, String> {
     let pool = AnyPoolOptions::new()

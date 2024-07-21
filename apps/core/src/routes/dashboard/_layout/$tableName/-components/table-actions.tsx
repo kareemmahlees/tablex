@@ -1,4 +1,5 @@
 import { events } from "@/bindings"
+import SQLDialog from "@/components/dialogs/sql-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Pagination,
@@ -14,7 +15,6 @@ import {
   ChevronsRight,
   Terminal
 } from "lucide-react"
-import SQLDialog from "./sql-dialog"
 
 type TableActionsProps = {
   tableName: string

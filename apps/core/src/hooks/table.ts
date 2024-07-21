@@ -1,5 +1,6 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/$tableName/-components/columns"
+import { useSettingsManager } from "@/settings/manager"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
@@ -20,6 +21,10 @@ export const useGetTableColumns = (tableName: string) => {
   })
 }
 
+/**
+ * Calls the backend and returns a generated zod schema
+ * representing the column definition for the given table.
+ */
 export const useGetZodSchema = (tableName: string) => {
   return useQuery({
     queryKey: [tableName],
@@ -32,6 +37,10 @@ type SetupReactTableOptions<TData, TValue> = {
   tableName: string
 }
 
+/**
+ * Fetches paginated rows and sets up tanstack table
+ * with all the necessary attachments and logic.
+ */
 export const useSetupReactTable = <TData, TValue>({
   tableName,
   columns
@@ -78,10 +87,15 @@ export const useSetupReactTable = <TData, TValue>({
   }
 }
 
+/**
+ * Sets up the state and memoization for page index & page size
+ * to be used in paginating the rows.
+ */
 const useSetupPagination = () => {
+  const { settings } = useSettingsManager()
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 500 // TODO: hard coded for now
+    pageSize: settings.pageSize
   })
   const defaultData = useMemo(() => [], [])
   const pagination = useMemo(

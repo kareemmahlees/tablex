@@ -7,11 +7,10 @@ use tauri_plugin_shell::process::CommandChild;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
 use tauri_specta::Event;
-use tx_handlers::{mysql::MySQLHandler, postgres::PostgresHandler, sqlite::SQLiteHandler};
+use tx_handlers::{Handler, MySQLHandler, PostgresHandler, SQLiteHandler};
 use tx_lib::{
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},
-    handler::Handler,
     types::{ConnConfig, ConnectionsFileSchema, Drivers},
 };
 use uuid::Uuid;

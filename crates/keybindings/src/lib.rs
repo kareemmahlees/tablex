@@ -1,8 +1,9 @@
-//! # Keybindings
+//! # TableX Keybindings
+//!
 //! This crate contains logic for generating default keybindings
 //! and keybindings commands' types which will be generated for the frontend.
 //!
-//! It doesn't contain in logic regarding tauri commands.
+//! It doesn't contain any logic regarding tauri commands.
 
 mod default;
 mod fs;

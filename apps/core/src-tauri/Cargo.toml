@@ -1,10 +1,10 @@
 [package]
-name = "table_x"
+name = "tablex"
 version.workspace = true
 description.workspace = true
 license.workspace = true
 repository.workspace = true
-default-run = "table_x"
+default-run = "tablex"
 edition.workspace = true
 
 
@@ -17,6 +17,8 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 tx_lib = { path = "../../../crates/lib" }
 tx_handlers = { path = "../../../crates/handlers" }
 tx_keybindings = { path = "../../../crates/keybindings" }
+tx_settings = { path = "../../../crates/settings" }
+open = "5"
 uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 serde_json = { workspace = true }
 serde = { workspace = true }

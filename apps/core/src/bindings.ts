@@ -45,6 +45,14 @@ try {
     else return { status: "error", error: e  as any };
 }
 },
+async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
+try {
+    return { status: "ok", data: await TAURI_INVOKE("open_in_external_editor", { file }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>> {
 try {
     return { status: "ok", data: await TAURI_INVOKE("get_connections") };
@@ -145,15 +153,18 @@ sqlDialogOpen: "sql-dialog-open"
 
 export type ColumnProps = { columnName: string; type: string; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
 export type CommandPaletteOpen = null
+export type ConfigFile = "settings" | "keybindings"
 /**
  * Connection Config Stored inside `connections.json` file.
  */
 export type ConnConfig = { driver: Drivers; connString: string; connName: string }
 export type ConnectionsChanged = null
+export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "phase"
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */
 export type Drivers = "sqlite" | "postgresql" | "mysql"
+export type EditorScrollBarVisibility = { vertical: Visibility; horizontal: Visibility }
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
 /**
@@ -167,9 +178,12 @@ export type KeybindingCommand = Sidebar | Table
 export type MetaXDialogOpen = null
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
 export type SQLDialogOpen = null
+export type SQLEditorSettings = { minimap: boolean; scrollbar: EditorScrollBarVisibility; fontSize: number; cursorBlinking: CursorBlinkingStyle }
+export type Settings = { pageSize: number; sqlEditor: SQLEditorSettings }
 export type Sidebar = "focusSearch"
 export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null
+export type Visibility = "hidden" | "visible" | "auto"
 
 /** tauri-specta globals **/
 
