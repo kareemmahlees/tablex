@@ -2,25 +2,26 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod cli;
-mod connection;
-mod fs;
-mod row;
+mod commands;
 mod state;
-mod table;
 
-use crate::state::SharedState;
-use connection::{
+use commands::{
+    connection::{
     connections_exist, create_connection_record, delete_connection_record,
-    ensure_connections_file_exist, establish_connection, get_connection_details, get_connections,
-    get_connections_file_path, test_connection,
+    ensure_connections_file_exist, establish_connection, get_connection_details,
+        get_connections, get_connections_file_path, test_connection,
+},
+    fs::open_in_external_editor,
+    row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
+    table::{execute_raw_query, get_columns_props, get_tables},
 };
-use fs::open_in_external_editor;
-use row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row};
-use specta::ts::{BigIntExportBehavior, ExportConfig};
-use specta::TypeCollection;
-use table::{execute_raw_query, get_columns_props, get_tables};
-use tauri::async_runtime::Mutex;
-use tauri::{AppHandle, Manager, Window, WindowEvent};
+
+use specta::{
+    ts::{BigIntExportBehavior, ExportConfig},
+    TypeCollection,
+};
+use state::SharedState;
+use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
 use tauri_specta::{collect_commands, collect_events};
 use tx_keybindings::{ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding};
 use tx_lib::events::{
