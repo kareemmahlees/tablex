@@ -1,23 +1,38 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Settings",
+  "description": "The configuration object for TableX's settings.",
   "type": "object",
   "required": [
     "pageSize",
     "sqlEditor"
   ],
   "properties": {
+    "$schema": {
+      "description": "Remote schema url for autocompletion.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "pageSize": {
+      "description": "Number of rows to be fetched per page.",
       "type": "integer",
       "format": "uint32",
       "minimum": 0.0
     },
     "sqlEditor": {
-      "$ref": "#/definitions/SQLEditorSettings"
+      "description": "Configuration for the SQL editor.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/SQLEditorSettings"
+        }
+      ]
     }
   },
   "definitions": {
     "SQLEditorSettings": {
+      "description": "Configuration for the SQL editor.",
       "type": "object",
       "required": [
         "cursorBlinking",
@@ -27,22 +42,35 @@
       ],
       "properties": {
         "minimap": {
+          "description": "Visibility of the right-hand-side minimap.",
           "type": "boolean"
         },
         "scrollbar": {
-          "$ref": "#/definitions/EditorScrollBarVisibility"
+          "description": "Vertical/Horizontal scrollbar visibility.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/EditorScrollBarVisibility"
+            }
+          ]
         },
         "fontSize": {
+          "description": "Editor font size.",
           "type": "integer",
           "format": "uint8",
           "minimum": 0.0
         },
         "cursorBlinking": {
-          "$ref": "#/definitions/CursorBlinkingStyle"
+          "description": "Behavior of the cursor blinking style.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CursorBlinkingStyle"
+            }
+          ]
         }
       }
     },
     "EditorScrollBarVisibility": {
+      "description": "Vertical/Horizontal scrollbar visibility.",
       "type": "object",
       "required": [
         "horizontal",
@@ -50,14 +78,25 @@
       ],
       "properties": {
         "vertical": {
-          "$ref": "#/definitions/Visibility"
+          "description": "Toggle vertical scrollbar visibility.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Visibility"
+            }
+          ]
         },
         "horizontal": {
-          "$ref": "#/definitions/Visibility"
+          "description": "Toggle horizontal scrollbar visibility.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Visibility"
+            }
+          ]
         }
       }
     },
     "Visibility": {
+      "description": "General visibility settings.",
       "type": "string",
       "enum": [
         "hidden",
@@ -66,6 +105,7 @@
       ]
     },
     "CursorBlinkingStyle": {
+      "description": "Behavior of the cursor blinking style.",
       "type": "string",
       "enum": [
         "blink",
