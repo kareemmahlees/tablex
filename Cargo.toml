@@ -24,7 +24,7 @@ strip = true
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
-tauri = { version = "2.0.0-beta.19" }
+tauri = { version = "2.0.0-beta.24" }
 # sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "time"] }
 sqlx = { version = "0.6.3", features = [
     "runtime-tokio-native-tls",
@@ -37,4 +37,6 @@ sqlx = { version = "0.6.3", features = [
 ] }
 async-trait = "0.1.80"
 specta = { version = "2.0.0-rc.12", features = ["serde", "serde_json"] }
-tauri-specta = { version = "2.0.0-rc.5", features = ["typescript"] }
+tauri-specta = { git = "https://github.com/kareemmahlees/tauri-specta", branch = "feat/tauri-v2", features = [
+    "typescript",
+] }

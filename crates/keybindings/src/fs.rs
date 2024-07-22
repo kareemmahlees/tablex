@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use tauri::{Manager, Runtime};
 use tx_lib::fs::{create_json_file_recursively, write_into_json};
 
-const KEYBINDINGS_FILE_NAME: &str = "keybindings.json";
+pub const KEYBINDINGS_FILE_NAME: &str = "keybindings.json";
 
 /// make sure that `keybindings.json` file exist and if not will create it
 /// with the default keybindings.
