@@ -1,5 +1,22 @@
 # @tablex/core
 
+## 0.3.8
+
+### Patch Changes
+
+- [#68](https://github.com/kareemmahlees/tablex/pull/68) [`755ac00`](https://github.com/kareemmahlees/tablex/commit/755ac00db527e0f6d7b431409f5fdbd0fb30d46c) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Use bun for everything:
+
+  - For running package scripts
+  - For bundling
+  - In CI
+  - For future testing purposes
+
+- [#73](https://github.com/kareemmahlees/tablex/pull/73) [`04686a2`](https://github.com/kareemmahlees/tablex/commit/04686a28410b9be7a25d9c8aaed1b1ccee314d19) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Adds support for updater
+
+- [#70](https://github.com/kareemmahlees/tablex/pull/70) [`ce5d13b`](https://github.com/kareemmahlees/tablex/commit/ce5d13b134b681184dcf412701ed4e569c65c8cb) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Keybindings are registered locally rather than globally + keybindings.json + nicer architecture
+
+- [#71](https://github.com/kareemmahlees/tablex/pull/71) [`fee7fae`](https://github.com/kareemmahlees/tablex/commit/fee7fae1b83bbb56aefecaf54d56684f6388f8e3) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Add settings support + opening config files in external editor
+
 ## 0.3.7
 
 ### Patch Changes
