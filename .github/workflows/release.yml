@@ -40,6 +40,7 @@ jobs:
         with:
           sparse-checkout: |
             apps/core
+            apps/web
             crates
             packages
             scripts
