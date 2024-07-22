@@ -8,7 +8,6 @@
   },
   "bundle": {
     "active": true,
-    "createUpdaterArtifacts": true,
     "publisher":"Kareem Ebrahim",
     "licenseFile":"../../../LICENSE",
     "category": "DeveloperTool",
@@ -40,17 +39,7 @@
   "productName": "TableX",
   "version": "../package.json",
   "identifier": "tablex",
-  "plugins": {
-    "updater": {
-      "windows": {
-        "installMode": "basicUi"
-      },
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUxMDhDREE3QjJBQUFFNjIKUldSaXJxcXlwODBJVVI3cnVUR2h2cGhRZ2NoS25iN1hBcmowN3VWelRtL1N0RjVDZ0dJMVJLR1QK",
-      "endpoints": [
-        "https://github.com/kareemmahlees/tablex/releases/latest/download/latest.json"
-      ]
-    }
-  },
+  "plugins": {},
   "app": {
     "windows": [
       {
