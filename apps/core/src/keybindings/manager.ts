@@ -1,4 +1,8 @@
-import { Keybinding, KeybindingCommand } from "@/bindings"
+import {
+  Keybinding,
+  KeybindingCommand,
+  KEYBINDINGS_FILE_NAME
+} from "@/bindings"
 import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs"
 import hotkeys from "hotkeys-js"
 import { createContext, useContext } from "react"
@@ -13,8 +17,7 @@ export class KeybindingsManager {
   private bindings: Keybinding[] = []
 
   constructor() {
-    // TODO: export this as constant from the backend.
-    readTextFile("keybindings.json", {
+    readTextFile(KEYBINDINGS_FILE_NAME, {
       baseDir: BaseDirectory.AppConfig
     }).then((bindings) => (this.bindings = JSON.parse(bindings)))
   }

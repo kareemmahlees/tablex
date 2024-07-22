@@ -7,10 +7,10 @@ mod state;
 
 use commands::{
     connection::{
-    connections_exist, create_connection_record, delete_connection_record,
-    ensure_connections_file_exist, establish_connection, get_connection_details,
+        connections_exist, create_connection_record, delete_connection_record,
+        ensure_connections_file_exist, establish_connection, get_connection_details,
         get_connections, get_connections_file_path, test_connection,
-},
+    },
     fs::open_in_external_editor,
     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
     table::{execute_raw_query, get_columns_props, get_tables},
@@ -22,12 +22,16 @@ use specta::{
 };
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
-use tauri_specta::{collect_commands, collect_events};
-use tx_keybindings::{ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding};
+use tauri_specta::{collect_commands, collect_events, StaticCollection};
+use tx_keybindings::{
+    ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding, KEYBINDINGS_FILE_NAME,
+};
 use tx_lib::events::{
     CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
 };
-use tx_settings::{ensure_settings_file_exist, get_settings_file_path, Settings};
+use tx_settings::{
+    ensure_settings_file_exist, get_settings_file_path, Settings, SETTINGS_FILE_NAME,
+};
 
 #[tauri::command]
 #[specta::specta]
@@ -55,9 +59,14 @@ fn main() {
     custom_types.register::<Keybinding>();
     custom_types.register::<Settings>();
 
+    let mut constants = StaticCollection::default();
+    constants.register("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME);
+    constants.register("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME);
+
     let (invoke_handler, register_events) = {
         let builder = tauri_specta::ts::builder()
             .types(custom_types)
+            .statics(constants)
             .commands(collect_commands![
                 close_splashscreen,
                 test_connection,

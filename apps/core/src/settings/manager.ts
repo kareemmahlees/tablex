@@ -1,4 +1,4 @@
-import { Settings } from "@/bindings"
+import { Settings, SETTINGS_FILE_NAME } from "@/bindings"
 import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs"
 import { createContext, useContext } from "react"
 
@@ -11,8 +11,7 @@ export class SettingsManager {
   settings: Settings
 
   constructor() {
-    // TODO: export this as a constant from the backend.
-    readTextFile("settings.json", {
+    readTextFile(SETTINGS_FILE_NAME, {
       baseDir: BaseDirectory.AppConfig
     }).then((settings) => (this.settings = JSON.parse(settings)))
   }

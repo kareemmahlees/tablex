@@ -5,7 +5,7 @@ use tx_lib::fs::{create_json_file_recursively, write_into_json};
 
 use crate::default::get_default_settings;
 
-const SETTINGS_FILE_NAME: &str = "settings.json";
+pub const SETTINGS_FILE_NAME: &str = "settings.json";
 
 /// make sure that `settings.json` file exist and if not will create it
 /// with the default settings.
