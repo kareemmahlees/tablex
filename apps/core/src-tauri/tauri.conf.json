@@ -8,6 +8,8 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
+    "publisher":"Kareem Ebrahim",
     "category": "DeveloperTool",
     "copyright": "",
     "targets": "all",
@@ -18,7 +20,7 @@
       "digestAlgorithm": "sha256",
       "timestampUrl": ""
     },
-    "longDescription": "",
+    "longDescription": "SuperCharge your database experience with a handful of toolkit designed for developers",
     "macOS": {
       "entitlements": null,
       "exceptionDomain": "",
@@ -27,7 +29,7 @@
       "signingIdentity": null
     },
     "resources": [],
-    "shortDescription": "Cross-Platform table viewer written in rust",
+    "shortDescription": "Cross-Platform table viewer written in Rust",
     "linux": {
       "deb": {
         "depends": []
@@ -37,7 +39,17 @@
   "productName": "TableX",
   "version": "../package.json",
   "identifier": "tablex",
-  "plugins": {},
+  "plugins": {
+    "updater": {
+      "windows": {
+        "installMode": "basicUi"
+      },
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUxMDhDREE3QjJBQUFFNjIKUldSaXJxcXlwODBJVVI3cnVUR2h2cGhRZ2NoS25iN1hBcmowN3VWelRtL1N0RjVDZ0dJMVJLR1QK",
+      "endpoints": [
+        "https://github.com/kareemmahlees/tablex/releases/latest/download/latest.json"
+      ]
+    }
+  },
   "app": {
     "windows": [
       {
