@@ -1,5 +1,5 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "../../../node_modules/@tauri-apps/cli/schema.json",
   "build": {
     "beforeBuildCommand": "bun run build",
     "beforeDevCommand": "bun dev",
@@ -10,6 +10,7 @@
     "active": true,
     "createUpdaterArtifacts": true,
     "publisher":"Kareem Ebrahim",
+    "licenseFile":"../../../LICENSE",
     "category": "DeveloperTool",
     "copyright": "",
     "targets": "all",
