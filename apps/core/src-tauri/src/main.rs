@@ -4,6 +4,7 @@
 mod cli;
 mod commands;
 mod state;
+mod updater;
 
 use commands::{
     connection::{
@@ -15,6 +16,7 @@ use commands::{
     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
     table::{execute_raw_query, get_columns_props, get_tables},
 };
+use updater::check_for_update;
 
 use specta::{
     ts::{BigIntExportBehavior, ExportConfig},
@@ -109,6 +111,7 @@ fn main() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
             ensure_config_files_exist(app.app_handle())?;
@@ -123,6 +126,7 @@ fn main() {
                 main_window.open_devtools();
                 main_window.close_devtools();
             }
+            check_for_update(app.app_handle().clone())?;
 
             Ok(())
         })

@@ -11,6 +11,7 @@
     "event:allow-unlisten",
     "event:allow-emit",
     "dialog:allow-open",
+    "updater:allow-check",
     "clipboard-manager:allow-write-text",
     {
       "identifier":"fs:allow-read-file",
