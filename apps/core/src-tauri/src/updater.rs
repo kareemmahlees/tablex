@@ -5,8 +5,11 @@ use tauri::{Env, Manager};
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
+/// Button actions displayed in the new update dialog.
 enum NewUpdate {
+    /// If the user would like to install the new update.
     Yes,
+    /// If the user don't want to install the new update.
     No,
 }
 
@@ -19,9 +22,10 @@ impl From<NewUpdate> for String {
     }
 }
 
-/// Checks if there is a version later than the current version.
+/// Checks if there is a version later than the current version, if the user
+/// wan't to install the new update, it downloads and installs it.
 ///
-/// taken from [here](https://github.com/i-c-b/example-tauri-v2-updater-action/blob/master/src-tauri/src/main.rs)
+/// Inspired from [here](https://github.com/i-c-b/example-tauri-v2-updater-action/blob/master/src-tauri/src/main.rs)
 pub fn check_for_update(app_handle: AppHandle) -> tauri::Result<()> {
     app_handle.plugin(tauri_plugin_updater::Builder::new().build())?;
 
@@ -60,6 +64,9 @@ pub fn check_for_update(app_handle: AppHandle) -> tauri::Result<()> {
     Ok(())
 }
 
+/// Dialog displayed when there is a new update, with `yes` and `no` actions to direct the behavior.
+///
+/// If the user selects `yes` it downloads, installs the new update and restart the application.
 async fn show_update_dialog(app_handle: AppHandle, update: Update) {
     let error_dialog = app_handle
         .dialog()
