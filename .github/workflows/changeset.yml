@@ -26,6 +26,7 @@ jobs:
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
+          title: "chore: version pump 🔖"
           commit: "chore: version pump 🔖"
           publish: bunx changeset tag
         env:
