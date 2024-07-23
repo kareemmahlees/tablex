@@ -4,6 +4,7 @@
 mod cli;
 mod commands;
 mod state;
+#[cfg(not(debug_assertions))]
 mod updater;
 
 use commands::{
@@ -16,6 +17,7 @@ use commands::{
     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
     table::{execute_raw_query, get_columns_props, get_tables},
 };
+#[cfg(not(debug_assertions))]
 use updater::check_for_update;
 
 use specta::{
@@ -114,11 +116,13 @@ fn main() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(Mutex::new(SharedState::default()))
         .setup(|app| {
-            ensure_config_files_exist(app.app_handle())?;
+            let app_handle = app.app_handle();
+
+            ensure_config_files_exist(app_handle)?;
             register_events(app);
 
             let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(cli::handle_cli_args(app.app_handle(), args, cmd));
+            rt.block_on(cli::handle_cli_args(app_handle, args, cmd));
 
             #[cfg(debug_assertions)]
             {
@@ -126,7 +130,12 @@ fn main() {
                 main_window.open_devtools();
                 main_window.close_devtools();
             }
-            check_for_update(app.app_handle().clone())?;
+
+            #[cfg(not(debug_assertions))]
+            {
+                app_handle.plugin(tauri_plugin_updater::Builder::new().build())?;
+                check_for_update(app_handle.clone())?;
+            }
 
             Ok(())
         })
