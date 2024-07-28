@@ -156,12 +156,12 @@ sqlDialogOpen: "sql-dialog-open"
 
          /** user-defined statics **/
 
-         export const SETTINGS_FILE_NAME = "settings.json" as const;
-export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+         export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
-export type ColumnProps = { columnName: string; type: string; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
+export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
 export type CommandPaletteOpen = null
 export type ConfigFile = "settings" | "keybindings"
 /**
@@ -173,6 +173,10 @@ export type ConnectionsChanged = null
  * Behavior of the cursor blinking style.
  */
 export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "phase"
+/**
+ * Representation for database columns data types.
+ */
+export type DataType = "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "unsupported" | "null"
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */

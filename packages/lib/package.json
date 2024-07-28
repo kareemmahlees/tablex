@@ -9,7 +9,6 @@
   },
   "exports": {
     ".": "./src/index",
-    "./constants": "./src/constants.ts",
     "./utils": "./src/utils.ts",
     "./types": "./src/types.ts"
   }
