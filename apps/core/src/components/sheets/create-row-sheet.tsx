@@ -5,12 +5,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 import { createRowCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
@@ -31,6 +26,7 @@ import { useState, type Dispatch, type SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
+import CustomTooltip from "../custom-tooltip"
 
 type AddRowBtnProps = {
   tableName: string
@@ -40,30 +36,26 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
   const [open, setOpen] = useState(false)
   return (
     <TooltipProvider>
-      <Tooltip>
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger>
-            <TooltipTrigger
-              role="button"
-              className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1"
-            >
-              <Plus className="h-3 w-3 lg:h-4 lg:w-4" />
-            </TooltipTrigger>
-          </SheetTrigger>
-          <SheetContent className="overflow-y-auto">
-            <SheetHeader className="mb-4">
-              <SheetTitle>Add new row</SheetTitle>
-            </SheetHeader>
-            <AddRowForm setOpenSheet={setOpen} tableName={tableName} />
-          </SheetContent>
-        </Sheet>
-        <TooltipContent
-          side="right"
-          className="mr-1 p-1 text-xs lg:mr-2 lg:px-2 lg:py-1 lg:text-sm"
-        >
-          <p>Add new row</p>
-        </TooltipContent>
-      </Tooltip>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger>
+          <CustomTooltip
+            className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1"
+            side="right"
+            content="Add new row"
+          >
+            <Plus
+              className="h-3 w-3 lg:h-4 lg:w-4"
+              onClick={() => setOpen(true)}
+            />
+          </CustomTooltip>
+        </SheetTrigger>
+        <SheetContent className="overflow-y-auto">
+          <SheetHeader className="mb-4">
+            <SheetTitle>Add new row</SheetTitle>
+          </SheetHeader>
+          <AddRowForm setOpenSheet={setOpen} tableName={tableName} />
+        </SheetContent>
+      </Sheet>
     </TooltipProvider>
   )
 }

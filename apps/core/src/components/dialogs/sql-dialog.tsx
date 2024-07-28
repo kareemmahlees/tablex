@@ -14,12 +14,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { useSettingsManager } from "@/settings/manager"
 
 import { Editor, type OnMount } from "@monaco-editor/react"
@@ -30,6 +25,7 @@ import {
   useRef,
   useState
 } from "react"
+import CustomTooltip from "../custom-tooltip"
 
 type RawQueryResult = Result<{ [x: string]: JsonValue }[], string>
 type MonakoEditor = Parameters<OnMount>[0]
@@ -129,21 +125,16 @@ const RunBtn = ({ editor, setQueryResult }: RunBtnProps) => {
 
   return (
     <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            className="absolute bottom-0 right-0 m-3 origin-bottom-right"
-            variant={"secondary"}
-            size={"sm"}
-            onClick={runQuery}
-          >
-            Run
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <kbd>Shift</kbd> + <kbd>Enter</kbd>
-        </TooltipContent>
-      </Tooltip>
+      <CustomTooltip side="top" content="Shift + Enter" asChild>
+        <Button
+          className="absolute bottom-0 right-0 m-3 origin-bottom-right"
+          variant={"secondary"}
+          size={"sm"}
+          onClick={runQuery}
+        >
+          Run
+        </Button>
+      </CustomTooltip>
     </TooltipProvider>
   )
 }
