@@ -12,15 +12,13 @@ import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { useGetGeneralColsData } from "@/hooks/row"
-import { isUnsupported } from "@/lib/utils"
+import { findColumn, isUnsupported } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useState, type Dispatch, type SetStateAction } from "react"
@@ -28,6 +26,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import CustomTooltip from "../custom-tooltip"
+import DynamicInput from "../dynamic-input"
 
 type AddRowBtnProps = {
   tableName: string
@@ -108,17 +107,16 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
             control={form.control}
             name={colName}
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="flex flex-col">
                 <FormLabel>{colName}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled={isUnsupported(columnsProps, colName)}
-                    placeholder={
-                      isUnsupported(columnsProps, colName) ? "Unsupported" : ""
-                    }
-                  />
-                </FormControl>
+                <DynamicInput
+                  colDataType={findColumn(columnsProps, colName)?.type}
+                  field={field}
+                  disabled={isUnsupported(columnsProps, colName)}
+                  defaultValue={
+                    isUnsupported(columnsProps, colName) ? "Unsupported" : ""
+                  }
+                />
                 <FormMessage />
               </FormItem>
             )}

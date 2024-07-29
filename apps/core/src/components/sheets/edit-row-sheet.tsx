@@ -3,13 +3,11 @@ import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues, isUnsupported } from "@/lib/utils"
@@ -19,6 +17,7 @@ import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
+import DynamicFormInput from "../dynamic-input"
 
 interface EditRowSheetProps {
   tableName: string
@@ -99,27 +98,25 @@ const EditRowSheet = ({
                 name={cell.column.id}
                 defaultValue={cell.getValue()}
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>{cell.column.columnDef.meta?.name}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isUnsupported(
+                    <DynamicFormInput
+                      field={field}
+                      disabled={isUnsupported(
+                        columnsProps,
+                        (cell.column.columnDef.meta as ColumnMeta<any, any>)
+                          .name
+                      )}
+                      defaultValue={
+                        isUnsupported(
                           columnsProps,
                           (cell.column.columnDef.meta as ColumnMeta<any, any>)
                             .name
-                        )}
-                        placeholder={
-                          isUnsupported(
-                            columnsProps,
-                            (cell.column.columnDef.meta as ColumnMeta<any, any>)
-                              .name
-                          )
-                            ? "Unsupported"
-                            : ""
-                        }
-                      />
-                    </FormControl>
+                        )
+                          ? "Unsupported"
+                          : ""
+                      }
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

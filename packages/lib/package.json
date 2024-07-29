@@ -9,7 +9,6 @@
   },
   "exports": {
     ".": "./src/index",
-    "./utils": "./src/utils.ts",
-    "./types": "./src/types.ts"
+    "./utils": "./src/utils.ts"
   }
 }

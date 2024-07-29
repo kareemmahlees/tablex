@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { MappedDrivers } from "@tablex/lib/types"
+import { MappedDrivers } from "@/lib/types"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute } from "@tanstack/react-router"
 import { Check, ChevronsUpDown } from "lucide-react"

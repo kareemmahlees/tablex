@@ -1,5 +1,5 @@
 import { commands } from "@/bindings"
-import { unwrapResult } from "@tablex/lib/utils"
+import { unwrapResult } from "@/lib/utils"
 import { z } from "zod"
 
 export const getZodSchemaFromCols = async (tableName: string) => {

@@ -20,6 +20,7 @@ pub enum DataType {
     Integer,
     Date,
     DateTime,
+    Time,
     Unsupported,
     Null,
 }
@@ -133,9 +134,13 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
         return DataType::Null;
     }
 
-    match v.type_info().name() {
-        "CHAR" | "VARCHAR" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT" | "LONGTEXT" | "ENUM" | "NAME"
-        | "TIME" => DataType::Text,
+    let value = AnyValueRef::to_owned(&v);
+    let column_type = value.decode::<&str>();
+
+    match column_type.to_uppercase().as_str() {
+        "CHAR" | "VARCHAR" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT" | "LONGTEXT" | "ENUM" | "NAME" => {
+            DataType::Text
+        }
 
         "UUID" => DataType::Uuid,
 
@@ -151,7 +156,11 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
 
         "DATE" => DataType::Date,
 
-        "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" => DataType::DateTime,
+        "TIME" => DataType::Time,
+
+        "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" | "TIMESTAMP WITHOUT TIME ZONE" => {
+            DataType::DateTime
+        }
 
         "TINIYBLOB" | "MEDIUMBLOB" | "BLOB" | "BYTEA" | "LONGBLOB" => DataType::Unsupported,
 

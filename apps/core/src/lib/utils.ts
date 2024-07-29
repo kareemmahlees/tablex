@@ -70,8 +70,10 @@ export function dirtyValues(
 /**
  * Determine wether the given column's data type is supported or not.
  */
-export const isUnsupported = (columnsProps: ColumnProps[], colName: string) => {
-  return (
-    columnsProps.find((col) => col.columnName == colName)?.type == "unsupported"
-  )
+export const isUnsupported = (columns: ColumnProps[], colName: string) => {
+  return findColumn(columns, colName)?.type == "unsupported"
+}
+
+export const findColumn = (columns: ColumnProps[], colName: string) => {
+  return columns.find((col) => (col.columnName = colName))
 }

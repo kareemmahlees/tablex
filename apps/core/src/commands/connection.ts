@@ -1,5 +1,5 @@
 import { commands } from "@/bindings"
-import { customToast } from "@tablex/lib/utils"
+import { customToast } from "@/lib/utils"
 
 export const testConnectionCmd = async (connString: string) => {
   const commandResult = await commands.testConnection(connString)
