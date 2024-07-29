@@ -73,7 +73,7 @@ export const useSetupReactTable = <TData, TValue>({
       pagination
     },
     manualPagination: true,
-    debugTable: process.env.NODE_ENV === "development" ? true : false
+    debugTable: import.meta.env.DEV
   })
 
   return {
