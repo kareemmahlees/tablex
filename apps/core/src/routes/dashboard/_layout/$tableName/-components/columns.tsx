@@ -1,6 +1,6 @@
 import { type ColumnProps, commands } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
-import { unwrapResult } from "@tablex/lib/utils"
+import { unwrapResult } from "@/lib/utils"
 import type { ColumnDef } from "@tanstack/react-table"
 import SortingButton from "./sorting-btn"
 

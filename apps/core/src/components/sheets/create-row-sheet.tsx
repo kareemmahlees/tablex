@@ -19,7 +19,8 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useGetZodSchema } from "@/hooks/table"
+import { useGetGeneralColsData } from "@/hooks/row"
+import { isUnsupported } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useState, type Dispatch, type SetStateAction } from "react"
@@ -68,22 +69,40 @@ type AddRowFormProps = {
 }
 
 const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
-  const { data, isLoading, error } = useGetZodSchema(tableName)
-  const form = useForm<z.infer<NonNullable<typeof data>>>({
-    resolver: zodResolver(data!)
+  const {
+    "0": {
+      data: zodSchema,
+      isLoading: isZodSchemaLoading,
+      isSuccess: isZodSchemaSuccess,
+      error: zodSchemaError
+    },
+    "1": {
+      data: columnsProps,
+      isLoading: isColumnsPropsLoading,
+      isSuccess: isColumnsPropsSuccess,
+      error: columnsPropsError
+    }
+  } = useGetGeneralColsData(tableName)
+
+  const form = useForm<z.infer<NonNullable<typeof zodSchema>>>({
+    resolver: zodResolver(zodSchema!)
   })
-  const onSubmit = async (values: z.infer<NonNullable<typeof data>>) => {
+
+  if (isZodSchemaLoading || isColumnsPropsLoading) return <LoadingSpinner />
+
+  if (!isZodSchemaSuccess)
+    return toast.error(zodSchemaError!.message, { id: "get_zod_schema" })
+  if (!isColumnsPropsSuccess)
+    return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
+
+  const onSubmit = async (values: z.infer<typeof zodSchema>) => {
     await createRowCmd(tableName, values, setOpenSheet)
   }
-
-  if (isLoading) return <LoadingSpinner />
-
-  if (error) return toast.error(error.message, { id: "get_zod_schema" })
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {Object.entries(data!.shape).map(([colName], idx) => (
+        {Object.entries(zodSchema.shape).map(([colName], idx) => (
           <FormField
             key={idx}
             control={form.control}
@@ -92,7 +111,13 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
               <FormItem>
                 <FormLabel>{colName}</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    {...field}
+                    disabled={isUnsupported(columnsProps, colName)}
+                    placeholder={
+                      isUnsupported(columnsProps, colName) ? "Unsupported" : ""
+                    }
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
