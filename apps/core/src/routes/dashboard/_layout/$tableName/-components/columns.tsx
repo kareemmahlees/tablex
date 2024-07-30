@@ -1,44 +1,40 @@
-import { commands } from "@/bindings"
+import { type ColumnProps, commands } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
-import { unwrapResult } from "@tablex/lib/utils"
-import type { Column, ColumnDef, Row, Table } from "@tanstack/react-table"
+import { unwrapResult } from "@/lib/utils"
+import type { ColumnDef } from "@tanstack/react-table"
 import SortingButton from "./sorting-btn"
 
-export const generateColumnsDefs = async (
-  tableName: string
-): Promise<ColumnDef<any>[] | undefined> => {
+export const generateColumnsDefs = async (tableName: string) => {
   const columnsResult = await commands.getColumnsProps(tableName)
   const columns = unwrapResult(columnsResult)
-  const columnsDefinition: ColumnDef<any>[] = columns.map(
+  const columnsDefinitions = columns.map(
     ({ columnName, isPK, hasFkRelations }) => {
-      const columnDefinition: ColumnDef<any> = {
+      const columnDefinition: ColumnDef<ColumnProps> = {
         accessorKey: columnName,
         // types for `meta` come from env.d.ts
         meta: {
           name: columnName,
           hasFkRelations
         },
-        header: ({ column }: { column: Column<any> }) => {
+        header: ({ column }) => {
           return <SortingButton column={column} title={columnName} />
         }
       }
-      columnDefinition.id = isPK
-        ? "pk"
-        : (columnDefinition.accessorKey as string)
+      columnDefinition.id = isPK ? "pk" : columnDefinition.accessorKey
       return columnDefinition
     }
   )
 
-  appendCheckboxColumn(columnsDefinition)
+  appendCheckboxColumn(columnsDefinitions)
 
-  return columnsDefinition
+  return columnsDefinitions
 }
 
 // Appends an extra checkbox column at the beginning of all columns
-const appendCheckboxColumn = (columns: ColumnDef<any>[]) => {
+const appendCheckboxColumn = (columns: ColumnDef<ColumnProps>[]) => {
   columns.unshift({
     id: "select",
-    header: ({ table }: { table: Table<any> }) => (
+    header: ({ table }) => (
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
@@ -54,7 +50,7 @@ const appendCheckboxColumn = (columns: ColumnDef<any>[]) => {
         aria-label="Select or Deselect all"
       />
     ),
-    cell: ({ row }: { row: Row<any> }) => {
+    cell: ({ row }) => {
       return (
         <Checkbox
           checked={row.getIsSelected()}

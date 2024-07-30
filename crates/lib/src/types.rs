@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::decode;
+use crate::decode::{self, DataType};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
@@ -45,7 +45,7 @@ pub struct ColumnProps {
     #[serde(rename = "columnName")]
     pub column_name: String,
     #[serde(rename = "type")]
-    pub data_type: String,
+    pub data_type: DataType,
     #[serde(rename = "isNullable")]
     pub is_nullable: bool,
     #[serde(rename = "defaultValue")]
@@ -58,7 +58,7 @@ pub struct ColumnProps {
 impl<'r> FromRow<'r, AnyRow> for ColumnProps {
     fn from_row(row: &'r AnyRow) -> Result<Self, Error> {
         let column_name: String = row.try_get("column_name")?;
-        let data_type: String = row.try_get("data_type")?;
+        let data_type: DataType = decode::to_data_type(row.try_get_raw("data_type")?);
         let is_nullable = match row.try_get::<i16, &str>("is_nullable") {
             Ok(val) => val == 1,
             Err(_) => row.try_get::<bool, &str>("is_nullable")?,

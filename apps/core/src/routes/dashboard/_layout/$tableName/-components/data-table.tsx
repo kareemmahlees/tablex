@@ -18,7 +18,7 @@ import {
   VirtualTable
 } from "@/components/ui/table"
 
-import { events } from "@/bindings"
+import { events, type ColumnProps } from "@/bindings"
 import { deleteRowsCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import EditRowSheet from "@/components/sheets/edit-row-sheet"
@@ -38,15 +38,12 @@ import { useEffect, useRef, type Dispatch, type SetStateAction } from "react"
 import ForeignKeyDropdown from "./fk-dropdown"
 import TableActions from "./table-actions"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+interface DataTableProps {
+  columns: ColumnDef<ColumnProps>[]
   tableName: string
 }
 
-const DataTable = <TData, TValue>({
-  columns,
-  tableName
-}: DataTableProps<TData, TValue>) => {
+const DataTable = ({ columns, tableName }: DataTableProps) => {
   const {
     isRowsLoading,
     isSheetOpen,
@@ -81,12 +78,12 @@ const DataTable = <TData, TValue>({
     }
   ])
 
-  const { rows } = table.getRowModel()
-
   const parentRef = useRef<HTMLDivElement>(null)
 
+  const { rows } = table.getRowModel()
+
   const virtualizer = useVirtualizer({
-    count: rows.length,
+    count: table.getRowCount(),
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50, // I reached to this number by trial and error
     overscan: 10,
@@ -138,7 +135,6 @@ const DataTable = <TData, TValue>({
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
-                        // onClick={() => row.toggleSelected(!row.getIsSelected())}
                         className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
                         onContextMenu={() => setContextMenuRow(row)}
                       >

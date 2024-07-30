@@ -1,5 +1,5 @@
 import { commands } from "@/bindings"
-import { customToast } from "@tablex/lib/utils"
+import { customToast } from "@/lib/utils"
 import type { Row, Table } from "@tanstack/react-table"
 import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"

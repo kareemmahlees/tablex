@@ -1,29 +1,40 @@
 import { commands } from "@/bindings"
-import {
-  DATE_DATA_TYPES,
-  NUMERIC_DATA_TYPE,
-  STRING_DATA_TYPES
-} from "@tablex/lib/constants"
-import { unwrapResult } from "@tablex/lib/utils"
+import { unwrapResult } from "@/lib/utils"
 import { z } from "zod"
 
 export const getZodSchemaFromCols = async (tableName: string) => {
   const result = await commands.getColumnsProps(tableName)
   const cols = unwrapResult(result)
   const schemaObject: z.ZodRawShape = {}
+
   cols.forEach((colProps) => {
     let validationRule: z.ZodTypeAny
 
-    switch (true) {
-      case NUMERIC_DATA_TYPE.includes(colProps.type) ||
-        new RegExp("float\\(\\d+.\\d+\\)").test(colProps.type):
+    switch (colProps.type) {
+      case "positiveInteger":
+        validationRule = z.coerce
+          .number({
+            invalid_type_error: "Field must be a valid integer"
+          })
+          .positive({ message: "Field must be a positive integer" })
+        break
+
+      case "integer":
         validationRule = z.coerce.number({
-          invalid_type_error: "Field must be number"
+          invalid_type_error: "Field must be a valid integer"
         })
         break
-      case STRING_DATA_TYPES.includes(colProps.type) ||
-        new RegExp("VARCHAR\\(\\d+\\)").test(colProps.type):
-        // this is done to overcome the fact that input values are always string
+
+      case "float":
+        validationRule = z
+          .number()
+          .refine(
+            (n) => !z.number().int().safeParse(n).success,
+            "Field must be a valid float"
+          )
+        break
+
+      case "text":
         validationRule = z.string().refine(
           (val) => {
             // this is done because IPs fall into the isNaN check
@@ -37,14 +48,15 @@ export const getZodSchemaFromCols = async (tableName: string) => {
           }
         )
         break
-      // only valid in postgres
-      case colProps.type == "uuid":
+
+      case "uuid":
         validationRule = z.string().uuid()
         break
-      case colProps.type == "boolean":
+      case "boolean":
         validationRule = z.boolean()
         break
-      case DATE_DATA_TYPES.includes(colProps.type):
+      case "date":
+      case "dateTime":
         validationRule = z.date()
         break
       default:

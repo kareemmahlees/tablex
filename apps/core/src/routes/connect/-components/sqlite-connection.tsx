@@ -10,9 +10,9 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Drivers } from "@/lib/types"
+import { constructConnectionString, customToast } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Drivers } from "@tablex/lib/types"
-import { constructConnectionString, customToast } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import { open } from "@tauri-apps/plugin-dialog"
 import { useState } from "react"
