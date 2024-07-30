@@ -1,8 +1,8 @@
 import type { ColumnProps } from "@/bindings"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
+import { FormControl } from "../../ui/form"
+import { Input } from "../../ui/input"
 import DatePicker from "./date-picker"
-import { FormControl } from "./ui/form"
-import { Input } from "./ui/input"
 
 type DynamicInputProps<T extends FieldValues> = {
   colDataType?: ColumnProps["type"]

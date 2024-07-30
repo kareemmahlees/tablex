@@ -17,7 +17,7 @@ import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
-import DynamicFormInput from "../dynamic-input"
+import DynamicFormInput from "./components/dynamic-input"
 
 interface EditRowSheetProps {
   tableName: string

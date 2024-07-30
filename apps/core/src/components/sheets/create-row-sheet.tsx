@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import CustomTooltip from "../custom-tooltip"
-import DynamicInput from "../dynamic-input"
+import DynamicInput from "./components/dynamic-input"
 
 type AddRowBtnProps = {
   tableName: string

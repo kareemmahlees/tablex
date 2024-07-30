@@ -8,8 +8,8 @@ import { cn } from "@tablex/lib/utils"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
-import { Button } from "./ui/button"
-import { FormControl } from "./ui/form"
+import { Button } from "../../ui/button"
+import { FormControl } from "../../ui/form"
 
 type DatePickerTypes<T extends FieldValues> = {
   field: ControllerRenderProps<T>
