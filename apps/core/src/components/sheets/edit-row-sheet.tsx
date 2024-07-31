@@ -3,6 +3,7 @@ import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -12,7 +13,8 @@ import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues, isUnsupported } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { ColumnMeta, Row, Table } from "@tanstack/react-table"
+import type { Row, Table } from "@tanstack/react-table"
+import { format } from "date-fns"
 import type { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
@@ -96,27 +98,23 @@ const EditRowSheet = ({
                 key={cell.column.id}
                 control={form.control}
                 name={cell.column.id}
-                defaultValue={cell.getValue()}
+                defaultValue={
+                  new Date(
+                    format(
+                      new Date(cell.getValue() as string),
+                      "yyyy-MM-dd:HH-MM-SS"
+                    )
+                  )
+                }
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>{cell.column.columnDef.meta?.name}</FormLabel>
-                    <DynamicFormInput
-                      field={field}
-                      disabled={isUnsupported(
-                        columnsProps,
-                        (cell.column.columnDef.meta as ColumnMeta<any, any>)
-                          .name
-                      )}
-                      defaultValue={
-                        isUnsupported(
-                          columnsProps,
-                          (cell.column.columnDef.meta as ColumnMeta<any, any>)
-                            .name
-                        )
-                          ? "Unsupported"
-                          : ""
-                      }
-                    />
+                    <FormControl>
+                      <DynamicFormInput
+                        field={field}
+                        disabled={isUnsupported(columnsProps, cell.column.id)}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

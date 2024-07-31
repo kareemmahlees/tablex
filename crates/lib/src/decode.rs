@@ -156,7 +156,7 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
 
         "DATE" => DataType::Date,
 
-        "TIME" => DataType::Time,
+        "TIME" | "TIME WITHOUT TIME ZONE" => DataType::Time,
 
         "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" | "TIMESTAMP WITHOUT TIME ZONE" => {
             DataType::DateTime
