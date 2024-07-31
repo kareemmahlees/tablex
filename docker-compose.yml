@@ -4,11 +4,8 @@ services:
     build: .
     container_name: tablex
     restart: always
-    network_mode: host
-    # volumes:
-    #   - ${HOME}/.Xauthority:/root/.Xauthority:rw
-    environment:
-      - DISPLAY=:0
+    volumes:
+      - tablex_data:/data/tablex
   tablex_mysql:
     image: mysql
     container_name: tablex_mysql
@@ -31,3 +28,6 @@ services:
       POSTGRES_DB: tablex
     ports:
       - 54321:5432
+
+volumes:
+  tablex_data:

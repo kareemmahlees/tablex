@@ -10,7 +10,8 @@ RUN apt-get update -qq && apt-get install -qq -y \
     librsvg2-dev \
     libssl-dev \
     patchelf \
-    unzip
+    wget \
+    build-essential
 
 WORKDIR /usr/src/tablex
 
@@ -29,9 +30,6 @@ RUN bun install --frozen-lock
 COPY . .
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV DISPLAY=:0
+ENV DISPLAY=host.docker.internal:0.0
 
-CMD ["bun", "tauri:dev"]
-
-
-# /usr/local/bin/bun
+CMD [ "bun","tauri:dev" ]
