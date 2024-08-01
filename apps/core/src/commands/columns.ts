@@ -57,7 +57,7 @@ export const getZodSchemaFromCols = async (tableName: string) => {
         break
       case "date":
       case "dateTime":
-        validationRule = z.date()
+        validationRule = z.coerce.date()
         break
       default:
         validationRule = z.any()

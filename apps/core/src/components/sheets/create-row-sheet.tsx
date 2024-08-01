@@ -95,7 +95,6 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
     return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
 
   const onSubmit = async (values: z.infer<typeof zodSchema>) => {
-    console.log(values)
     await createRowCmd(tableName, values, setOpenSheet)
   }
   return (

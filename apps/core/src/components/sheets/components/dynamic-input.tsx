@@ -14,38 +14,41 @@ const normalizeTimezoneOffset = (date: Date) => {
 }
 
 type DynamicInputProps<T extends FieldValues> = {
-  colDataType?: ColumnProps["type"]
+  colDataType: ColumnProps["type"]
   field: ControllerRenderProps<T>
   disabled: boolean
+  defaultTextValue: string
+  defaultDateValue: Date
 }
 
 const DynamicFormInput = <T extends FieldValues>({
   colDataType,
   field,
-  disabled = false
+  disabled = false,
+  defaultTextValue,
+  defaultDateValue
 }: DynamicInputProps<T>) => {
   switch (colDataType) {
     case "time":
-      return <Input {...field} disabled={disabled} />
+      return (
+        <Input
+          {...field}
+          disabled={disabled}
+          placeholder="HH:MM:SS"
+          defaultValue={defaultTextValue}
+        />
+      )
       {
         /**
-         * TODO: data is always sent to the backend in date:time format,
-         * which is not a valid `time` date.
+         * TODO: use a proper <TimePicker/> component instead.
          */
-      }
-      {
-        /* <TimePicker
-            date={field.value}
-            onChange={field.onChange}
-            className="justify-start"
-          /> */
       }
     case "date":
       return (
         <DateTimePicker
           displayFormat={{ hour24: "yyyy/MM/dd" }}
           granularity="day"
-          value={field.value}
+          value={defaultDateValue ?? field.value}
           disabled={disabled}
           onChange={(date) => {
             if (date) {
@@ -57,7 +60,7 @@ const DynamicFormInput = <T extends FieldValues>({
     case "dateTime":
       return (
         <DateTimePicker
-          value={field.value}
+          value={defaultDateValue ?? field.value}
           disabled={disabled}
           onChange={(date) => {
             if (date) {

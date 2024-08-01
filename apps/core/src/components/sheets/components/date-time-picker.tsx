@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@tablex/lib/utils"
 import { add, format } from "date-fns"
-import { enUS, Locale } from "date-fns/locale"
+import { enUS } from "date-fns/locale"
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -230,36 +230,14 @@ function display12HourValue(hours: number) {
   return `0${hours % 12}`
 }
 
-function genMonths(locale: Locale) {
-  return Array.from({ length: 12 }, (_, i) => ({
-    value: i,
-    label: format(new Date(2021, i), "MMMM", { locale })
-  }))
-}
-
-function genYears(yearRange = 50) {
-  const today = new Date()
-  return Array.from({ length: yearRange * 2 + 1 }, (_, i) => ({
-    value: today.getFullYear() - yearRange + i,
-    label: (today.getFullYear() - yearRange + i).toString()
-  }))
-}
-
 // ---------- utils end ----------
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  yearRange = 50,
   ...props
 }: CalendarProps & { yearRange?: number }) {
-  const MONTHS = React.useMemo(
-    () => genMonths(props.locale || enUS),
-    [props.locale]
-  )
-  const YEARS = React.useMemo(() => genYears(yearRange), [yearRange])
-
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -301,54 +279,7 @@ function Calendar({
       }}
       components={{
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-        CaptionLabel: ({ displayMonth }) => {
-          return (
-            <div className="inline-flex gap-2">
-              <Select
-                defaultValue={displayMonth.getMonth().toString()}
-                onValueChange={(value) => {
-                  const newDate = new Date(displayMonth)
-                  newDate.setMonth(parseInt(value, 10))
-                  props.onMonthChange?.(newDate)
-                }}
-              >
-                <SelectTrigger className="focus:bg-accent focus:text-accent-foreground w-fit border-none p-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MONTHS.map((month) => (
-                    <SelectItem
-                      key={month.value}
-                      value={month.value.toString()}
-                    >
-                      {month.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                defaultValue={displayMonth.getFullYear().toString()}
-                onValueChange={(value) => {
-                  const newDate = new Date(displayMonth)
-                  newDate.setFullYear(parseInt(value, 10))
-                  props.onMonthChange?.(newDate)
-                }}
-              >
-                <SelectTrigger className="focus:bg-accent focus:text-accent-foreground w-fit border-none p-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {YEARS.map((year) => (
-                    <SelectItem key={year.value} value={year.value.toString()}>
-                      {year.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )
-        }
+        IconRight: () => <ChevronRight className="h-4 w-4" />
       }}
       {...props}
     />
@@ -732,7 +663,6 @@ const DateTimePicker = React.forwardRef<DateTimePickerRef, DateTimePickerProps>(
             month={month}
             onSelect={(d) => handleSelect(d)}
             onMonthChange={handleSelect}
-            initialFocus
             yearRange={yearRange}
             locale={locale}
             {...props}

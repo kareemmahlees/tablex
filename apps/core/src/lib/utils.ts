@@ -75,5 +75,5 @@ export const isUnsupported = (columns: ColumnProps[], colName: string) => {
 }
 
 export const findColumn = (columns: ColumnProps[], colName: string) => {
-  return columns.find((col) => (col.columnName = colName))
+  return columns.find((col) => col.columnName === colName)
 }
