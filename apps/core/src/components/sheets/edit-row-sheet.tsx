@@ -113,8 +113,7 @@ const EditRowSheet = ({
                           columnsProps,
                           cell.column.columnDef.meta?.name as string
                         )}
-                        defaultDateValue={new Date(cell.getValue() as string)}
-                        defaultTextValue={cell.getValue() as string}
+                        defaultValue={cell.getValue() as string}
                         field={field}
                         disabled={isUnsupported(columnsProps, cell.column.id)}
                       />

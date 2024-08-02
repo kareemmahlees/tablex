@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import CustomTooltip from "../custom-tooltip"
-import DynamicInput from "./components/dynamic-input"
+import DynamicFormInput from "./components/dynamic-input"
 
 type AddRowBtnProps = {
   tableName: string
@@ -111,7 +111,7 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
                 <FormControl
                   defaultValue={type === "unsupported" ? "Unsupported" : ""}
                 >
-                  <DynamicInput
+                  <DynamicFormInput
                     colDataType={type}
                     field={field}
                     disabled={type === "unsupported"}

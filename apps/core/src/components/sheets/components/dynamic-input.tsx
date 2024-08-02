@@ -17,16 +17,14 @@ type DynamicInputProps<T extends FieldValues> = {
   colDataType: ColumnProps["type"]
   field: ControllerRenderProps<T>
   disabled: boolean
-  defaultTextValue: string
-  defaultDateValue: Date
+  defaultValue?: string
 }
 
 const DynamicFormInput = <T extends FieldValues>({
   colDataType,
   field,
   disabled = false,
-  defaultTextValue,
-  defaultDateValue
+  defaultValue
 }: DynamicInputProps<T>) => {
   switch (colDataType) {
     case "time":
@@ -34,8 +32,9 @@ const DynamicFormInput = <T extends FieldValues>({
         <Input
           {...field}
           disabled={disabled}
+          className="w-[280px]"
           placeholder="HH:MM:SS"
-          defaultValue={defaultTextValue}
+          defaultValue={defaultValue}
         />
       )
       {
@@ -48,7 +47,7 @@ const DynamicFormInput = <T extends FieldValues>({
         <DateTimePicker
           displayFormat={{ hour24: "yyyy/MM/dd" }}
           granularity="day"
-          value={defaultDateValue ?? field.value}
+          value={defaultValue ? new Date(defaultValue) : field.value}
           disabled={disabled}
           onChange={(date) => {
             if (date) {
@@ -60,7 +59,7 @@ const DynamicFormInput = <T extends FieldValues>({
     case "dateTime":
       return (
         <DateTimePicker
-          value={defaultDateValue ?? field.value}
+          value={defaultValue ? new Date(defaultValue) : field.value}
           disabled={disabled}
           onChange={(date) => {
             if (date) {
