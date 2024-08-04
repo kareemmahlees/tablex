@@ -1,11 +1,15 @@
 import Editor, { useMonaco } from "@monaco-editor/react"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
 
-const JsonEditor = <T extends FieldValues>({
-  field
-}: {
+type JsonEditorProps<T extends FieldValues> = {
   field: ControllerRenderProps<T>
-}) => {
+  defaultValue?: string
+}
+
+const JsonEditor = <T extends FieldValues>({
+  field,
+  defaultValue
+}: JsonEditorProps<T>) => {
   const monaco = useMonaco()
   monaco?.editor.defineTheme("custom-theme", {
     base: "vs-dark",
@@ -23,6 +27,7 @@ const JsonEditor = <T extends FieldValues>({
         defaultLanguage="json"
         theme="custom-theme"
         value={field.value}
+        defaultValue={defaultValue}
         onChange={field.onChange}
         options={{
           padding: {

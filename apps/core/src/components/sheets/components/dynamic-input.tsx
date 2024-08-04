@@ -66,7 +66,7 @@ const DynamicFormInput = <T extends FieldValues>({
         />
       )
     case "json":
-      return <JsonEditor field={field} />
+      return <JsonEditor field={field} defaultValue={defaultValue} />
     default:
       return <Input {...field} disabled={disabled} />
   }
