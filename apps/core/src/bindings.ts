@@ -176,7 +176,7 @@ export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "pha
 /**
  * Representation for database columns data types.
  */
-export type DataType = "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "time" | "unsupported" | "null"
+export type DataType = "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "time" | "json" | "unsupported" | "null"
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */

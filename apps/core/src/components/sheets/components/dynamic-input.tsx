@@ -2,6 +2,7 @@ import type { ColumnProps } from "@/bindings"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
 import { Input } from "../../ui/input"
 import { DateTimePicker } from "./date-time-picker"
+import JsonEditor from "./json-editor"
 
 /**
  * Remove the effect of timezone differences and return a new date
@@ -27,6 +28,7 @@ const DynamicFormInput = <T extends FieldValues>({
   defaultValue
 }: DynamicInputProps<T>) => {
   switch (colDataType) {
+    // TODO: use a proper <TimePicker/> component instead.
     case "time":
       return (
         <Input
@@ -37,11 +39,6 @@ const DynamicFormInput = <T extends FieldValues>({
           defaultValue={defaultValue}
         />
       )
-      {
-        /**
-         * TODO: use a proper <TimePicker/> component instead.
-         */
-      }
     case "date":
       return (
         <DateTimePicker
@@ -68,6 +65,8 @@ const DynamicFormInput = <T extends FieldValues>({
           }}
         />
       )
+    case "json":
+      return <JsonEditor field={field} />
     default:
       return <Input {...field} disabled={disabled} />
   }

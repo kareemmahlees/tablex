@@ -18,6 +18,15 @@ export const generateColumnsDefs = async (tableName: string) => {
         },
         header: ({ column }) => {
           return <SortingButton column={column} title={columnName} />
+        },
+        cell: (info) => {
+          // Clamp long text.
+          const value = info.getValue() as string
+          let cellContent = value
+          if (value && value.length > 20) {
+            cellContent = value.slice(0, 15) + "..."
+          }
+          return <span>{cellContent}</span>
         }
       }
       columnDefinition.id = isPK ? "pk" : columnDefinition.accessorKey

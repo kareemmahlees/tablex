@@ -75,14 +75,23 @@ pub async fn create_row(
         .collect::<Vec<String>>()
         .join(",")
         .to_string();
-    let mut values = data
+    let values = data
         .values()
-        .map(|value| value.to_string())
+        .map(|value| {
+            // Hack: handle json quotation marks until a better
+            // solution is found.
+            let mut value = value.to_string();
+            if value.starts_with("\"{") && value.ends_with("}\"") {
+                value = serde_json::from_str::<String>(value.as_str()).unwrap();
+                value = format!("'{value}'").to_string();
+            } else {
+                value = value.replace('\"', "'");
+            }
+            value
+        })
         .collect::<Vec<String>>()
         .join(",")
         .to_string();
-
-    values = values.replace('\"', "'");
 
     let result = handler.create_row(pool, table_name, columns, values).await;
     if result.is_ok() {

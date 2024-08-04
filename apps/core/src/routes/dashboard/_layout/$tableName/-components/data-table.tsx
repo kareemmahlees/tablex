@@ -152,6 +152,13 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
                                 cell.column.columnDef.cell,
                                 cell.getContext()
                               )}
+                              {/* <div className="line-clamp-1">
+                                {cell.getValue() &&
+                                (cell.getValue() as string).length > 20
+                                  ? (cell.getValue() as string).slice(0, 10) +
+                                    "..."
+                                  : cell.getValue()}
+                              </div> */}
                             </div>
                           </TableCell>
                         ))}
