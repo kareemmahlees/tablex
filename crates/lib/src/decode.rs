@@ -21,6 +21,7 @@ pub enum DataType {
     Date,
     DateTime,
     Time,
+    Json,
     Unsupported,
     Null,
 }
@@ -120,6 +121,13 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
                 JsonValue::Null
             }
         }
+        "JSON" | "JSONB" => {
+            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode_unchecked::<String>() {
+                JsonValue::String(v)
+            } else {
+                JsonValue::Null
+            }
+        }
         "NULL" | "VOID" => JsonValue::Null,
         _ => return Err("Unsupported Data type".to_string()),
     };
@@ -156,11 +164,13 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
 
         "DATE" => DataType::Date,
 
-        "TIME" => DataType::Time,
+        "TIME" | "TIME WITHOUT TIME ZONE" => DataType::Time,
 
         "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" | "TIMESTAMP WITHOUT TIME ZONE" => {
             DataType::DateTime
         }
+
+        "JSON" | "JSONB" => DataType::Json,
 
         "TINIYBLOB" | "MEDIUMBLOB" | "BLOB" | "BYTEA" | "LONGBLOB" => DataType::Unsupported,
 

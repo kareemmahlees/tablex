@@ -12,13 +12,13 @@ import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
 import { useGetGeneralColsData } from "@/hooks/row"
-import { findColumn, isUnsupported } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useState, type Dispatch, type SetStateAction } from "react"
@@ -26,7 +26,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import CustomTooltip from "../custom-tooltip"
-import DynamicInput from "./components/dynamic-input"
+import DynamicFormInput from "./components/dynamic-input"
 
 type AddRowBtnProps = {
   tableName: string
@@ -97,26 +97,26 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
   const onSubmit = async (values: z.infer<typeof zodSchema>) => {
     await createRowCmd(tableName, values, setOpenSheet)
   }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {Object.entries(zodSchema.shape).map(([colName], idx) => (
+        {columnsProps.map(({ columnName, type }, idx) => (
           <FormField
             key={idx}
             control={form.control}
-            name={colName}
+            name={columnName}
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>{colName}</FormLabel>
-                <DynamicInput
-                  colDataType={findColumn(columnsProps, colName)?.type}
-                  field={field}
-                  disabled={isUnsupported(columnsProps, colName)}
-                  defaultValue={
-                    isUnsupported(columnsProps, colName) ? "Unsupported" : ""
-                  }
-                />
+                <FormLabel>{columnName}</FormLabel>
+                <FormControl
+                  defaultValue={type === "unsupported" ? "Unsupported" : ""}
+                >
+                  <DynamicFormInput
+                    colDataType={type}
+                    field={field}
+                    disabled={type === "unsupported"}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
