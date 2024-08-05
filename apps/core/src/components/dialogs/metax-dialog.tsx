@@ -1,4 +1,3 @@
-import { events } from "@/bindings"
 import {
   Dialog,
   DialogContent,
@@ -6,18 +5,16 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { useMetaXState } from "@/state/dialogState"
 import { open as openInBrowser } from "@tauri-apps/plugin-shell"
 import { Globe, PlayCircle } from "lucide-react"
-import { useState } from "react"
 import CustomTooltip from "../custom-tooltip"
 
 const MetaXDialog = () => {
-  const [open, setOpen] = useState(false)
-
-  events.metaXDialogOpen.listen(() => setOpen(true))
+  const { isOpen, toggleDialog } = useMetaXState()
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={toggleDialog}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Navigate to your liking</DialogTitle>

@@ -7,7 +7,7 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command"
-import { useCommandPaletteState } from "@/state/dialogState"
+import { useCommandPaletteState, useMetaXState } from "@/state/dialogState"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
 import { FileJson2, FileText, Globe2, Link, Terminal } from "lucide-react"
@@ -49,14 +49,15 @@ const ConnectionsGroup = () => {
 }
 
 const UtilitiesGroup = () => {
-  const { toggleDialog } = useCommandPaletteState()
+  const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
+  const { toggleDialog: toggleMetaXDialog } = useMetaXState()
 
   return (
     <CommandGroup heading="Utilities">
       <CommandItem
         onSelect={() => {
-          toggleDialog()
-          events.metaXDialogOpen.emit()
+          toggleCommandPalette()
+          toggleMetaXDialog()
         }}
       >
         <FileText className="h-4 w-4" />
@@ -64,7 +65,7 @@ const UtilitiesGroup = () => {
       </CommandItem>
       <CommandItem
         onSelect={() => {
-          toggleDialog()
+          toggleCommandPalette()
           events.sqlDialogOpen.emit()
         }}
       >

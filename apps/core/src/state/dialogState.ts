@@ -5,11 +5,15 @@ type DialogState = {
   toggleDialog: () => void
 }
 
-const createDialogState = create<DialogState>((set) => ({
-  isOpen: false,
-  toggleDialog: () => set((state) => ({ isOpen: !state.isOpen }))
-}))
+/**
+ * Because all dialogs' states are basically the same, this helper
+ * creates a default state logic for all dialogs.
+ */
+const createDialogState = () =>
+  create<DialogState>((set) => ({
+    isOpen: false,
+    toggleDialog: () => set((state) => ({ isOpen: !state.isOpen }))
+  }))
 
-const useCommandPaletteState = createDialogState
-
-export { useCommandPaletteState }
+export const useCommandPaletteState = createDialogState()
+export const useMetaXState = createDialogState()
