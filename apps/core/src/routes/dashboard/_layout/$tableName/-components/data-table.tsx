@@ -1,5 +1,3 @@
-"use client"
-
 import {
   flexRender,
   type ColumnDef,
@@ -33,8 +31,9 @@ import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { useKeybindingsManager } from "@/keybindings/manager"
 import { copyRows } from "@/keybindings/row"
+import { useEditRowSheetState } from "@/state/sheetState"
 import { useQueryClient } from "@tanstack/react-query"
-import { useEffect, useRef, type Dispatch, type SetStateAction } from "react"
+import { useEffect, useRef } from "react"
 import ForeignKeyDropdown from "./fk-dropdown"
 import TableActions from "./table-actions"
 
@@ -44,17 +43,11 @@ interface DataTableProps {
 }
 
 const DataTable = ({ columns, tableName }: DataTableProps) => {
-  const {
-    isRowsLoading,
-    isSheetOpen,
-    setIsSheetOpen,
-    contextMenuRow,
-    setContextMenuRow,
-    table,
-    tableRef
-  } = useSetupReactTable({ columns, tableName })
+  const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
+    useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
   const keybindingsManager = useKeybindingsManager()
+  const { isOpen, toggleSheet } = useEditRowSheetState()
 
   useEffect(() => {
     const unlisten = events.tableContentsChanged.listen(() => {
@@ -91,7 +84,7 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
   })
 
   return (
-    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+    <Sheet open={isOpen} onOpenChange={toggleSheet}>
       <TableActions table={table} tableName={tableName} />
       {isRowsLoading ? (
         <LoadingSpinner />
@@ -152,13 +145,6 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
                                 cell.column.columnDef.cell,
                                 cell.getContext()
                               )}
-                              {/* <div className="line-clamp-1">
-                                {cell.getValue() &&
-                                (cell.getValue() as string).length > 20
-                                  ? (cell.getValue() as string).slice(0, 10) +
-                                    "..."
-                                  : cell.getValue()}
-                              </div> */}
                             </div>
                           </TableCell>
                         ))}
@@ -178,7 +164,6 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
                 <TableContextMenuContent
                   tableName={tableName}
                   table={table}
-                  setIsSheetOpen={setIsSheetOpen}
                   contextMenuRow={contextMenuRow}
                 />
               </TableBody>
@@ -186,12 +171,7 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
           </VirtualTable>
         </ContextMenu>
       )}
-      <EditRowSheet
-        tableName={tableName}
-        setIsSheetOpen={setIsSheetOpen}
-        row={contextMenuRow}
-        table={table}
-      />
+      <EditRowSheet tableName={tableName} row={contextMenuRow} table={table} />
     </Sheet>
   )
 }
@@ -202,15 +182,15 @@ interface TableContextMenuContentProps {
   table: TableType<any>
   contextMenuRow?: Row<any>
   tableName: string
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
 const TableContextMenuContent = ({
   table,
   tableName,
-  setIsSheetOpen,
   contextMenuRow
 }: TableContextMenuContentProps) => {
+  const { toggleSheet } = useEditRowSheetState()
+
   if (!contextMenuRow) return null
   return (
     <ContextMenuContent
@@ -225,9 +205,7 @@ const TableContextMenuContent = ({
         Delete
         <ContextMenuShortcut>Delete</ContextMenuShortcut>
       </ContextMenuItem>
-      <ContextMenuItem onClick={() => setIsSheetOpen(true)}>
-        Edit
-      </ContextMenuItem>
+      <ContextMenuItem onClick={() => toggleSheet(true)}>Edit</ContextMenuItem>
       <ContextMenuItem onClick={async () => await copyRows([contextMenuRow])}>
         Copy
         <ContextMenuShortcut>Ctrl+C</ContextMenuShortcut>
