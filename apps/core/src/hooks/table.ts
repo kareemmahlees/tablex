@@ -53,7 +53,6 @@ export const useSetupReactTable = <TData, TValue>({
     pageIndex,
     pageSize
   )
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
@@ -78,8 +77,6 @@ export const useSetupReactTable = <TData, TValue>({
 
   return {
     isRowsLoading,
-    isSheetOpen,
-    setIsSheetOpen,
     contextMenuRow,
     setContextMenuRow,
     tableRef,

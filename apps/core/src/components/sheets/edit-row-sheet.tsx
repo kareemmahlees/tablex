@@ -13,9 +13,9 @@ import {
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues, isUnsupported } from "@/lib/utils"
+import { useEditRowSheetState } from "@/state/sheetState"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Row, Table } from "@tanstack/react-table"
-import { type Dispatch, type SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
@@ -31,15 +31,10 @@ interface EditRowSheetProps {
   tableName: string
   table: Table<any>
   row?: Row<any>
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
 }
 
-const EditRowSheet = ({
-  setIsSheetOpen,
-  row,
-  table,
-  tableName
-}: EditRowSheetProps) => {
+const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
+  const { toggleSheet } = useEditRowSheetState()
   const {
     "0": {
       data: zodSchema,
@@ -77,7 +72,7 @@ const EditRowSheet = ({
       column.columnDef.meta?.name!,
       row.getValue("pk"),
       dirtyValues(form.formState.dirtyFields, values),
-      setIsSheetOpen
+      toggleSheet
     )
   }
 

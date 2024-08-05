@@ -1,4 +1,3 @@
-import { events } from "@/bindings"
 import SQLDialog from "@/components/dialogs/sql-dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -7,6 +6,7 @@ import {
   PaginationItem,
   PaginationLink
 } from "@/components/ui/pagination"
+import { useSqlEditorState } from "@/state/dialogState"
 import type { Table } from "@tanstack/react-table"
 import {
   ChevronLeft,
@@ -22,6 +22,7 @@ type TableActionsProps = {
 }
 
 const TableActions = ({ tableName, table }: TableActionsProps) => {
+  const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
   return (
     <>
       <div className="flex items-center justify-between p-4">
@@ -30,7 +31,7 @@ const TableActions = ({ tableName, table }: TableActionsProps) => {
           <Button
             variant={"ghost"}
             size={"sm"}
-            onClick={() => events.sqlDialogOpen.emit()}
+            onClick={toggleSqlEditor}
             className="hidden lg:block"
           >
             <Terminal className="h-5 w-5" />

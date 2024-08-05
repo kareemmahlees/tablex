@@ -19,9 +19,9 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { useGetGeneralColsData } from "@/hooks/row"
+import { useCreateRowSheetState } from "@/state/sheetState"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
-import { useState, type Dispatch, type SetStateAction } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
@@ -33,27 +33,24 @@ type AddRowBtnProps = {
 }
 
 const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
-  const [open, setOpen] = useState(false)
+  const { isOpen, toggleSheet } = useCreateRowSheetState()
   return (
     <TooltipProvider>
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={isOpen} onOpenChange={toggleSheet}>
         <SheetTrigger>
           <CustomTooltip
             className="absolute bottom-0 left-0 m-4 rounded-full bg-zinc-900 p-1"
             side="right"
             content="Add new row"
           >
-            <Plus
-              className="h-3 w-3 lg:h-4 lg:w-4"
-              onClick={() => setOpen(true)}
-            />
+            <Plus className="h-3 w-3 lg:h-4 lg:w-4" />
           </CustomTooltip>
         </SheetTrigger>
         <SheetContent className="overflow-y-auto">
           <SheetHeader className="mb-4">
             <SheetTitle>Add new row</SheetTitle>
           </SheetHeader>
-          <AddRowForm setOpenSheet={setOpen} tableName={tableName} />
+          <AddRowForm tableName={tableName} />
         </SheetContent>
       </Sheet>
     </TooltipProvider>
@@ -62,12 +59,8 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
 
 export default AddRowBtn
 
-type AddRowFormProps = {
-  setOpenSheet: Dispatch<SetStateAction<boolean>>
-  tableName: string
-}
-
-const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
+const AddRowForm = ({ tableName }: { tableName: string }) => {
+  const { toggleSheet } = useCreateRowSheetState()
   const {
     "0": {
       data: zodSchema,
@@ -95,7 +88,7 @@ const AddRowForm = ({ setOpenSheet, tableName }: AddRowFormProps) => {
     return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
 
   const onSubmit = async (values: z.infer<typeof zodSchema>) => {
-    await createRowCmd(tableName, values, setOpenSheet)
+    await createRowCmd(tableName, values, toggleSheet)
   }
   return (
     <Form {...form}>

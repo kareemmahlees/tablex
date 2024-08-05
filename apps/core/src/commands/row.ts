@@ -1,17 +1,16 @@
 import { commands } from "@/bindings"
 import { customToast } from "@/lib/utils"
 import type { Row, Table } from "@tanstack/react-table"
-import { Dispatch, SetStateAction } from "react"
 import toast from "react-hot-toast"
 
 export const createRowCmd = async (
   tableName: string,
   data: Record<string, any>,
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
+  toggleSheet: (open: boolean) => void
 ) => {
   const commandResult = await commands.createRow(tableName, data)
 
-  customToast(commandResult, () => setIsSheetOpen(false), "create_row")
+  customToast(commandResult, () => toggleSheet(false), "create_row")
 }
 
 export const deleteRowsCmd = async (
@@ -40,7 +39,7 @@ export const updateRowCmd = async (
   pkColName: string,
   pkColValue: string | number,
   data: Record<string, any>,
-  setIsSheetOpen: Dispatch<SetStateAction<boolean>>
+  toggleSheet: (open: boolean) => void
 ) => {
   const command = await commands.updateRow(
     tableName,
@@ -48,5 +47,5 @@ export const updateRowCmd = async (
     pkColValue,
     data
   )
-  customToast(command, () => setIsSheetOpen(false), "update_row")
+  customToast(command, () => toggleSheet(false), "update_row")
 }

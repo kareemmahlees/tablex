@@ -142,16 +142,10 @@ try {
 
 export const events = __makeEvents__<{
 connectionsChanged: ConnectionsChanged,
-tableContentsChanged: TableContentsChanged,
-commandPaletteOpen: CommandPaletteOpen,
-metaXDialogOpen: MetaXDialogOpen,
-sqlDialogOpen: SQLDialogOpen
+tableContentsChanged: TableContentsChanged
 }>({
 connectionsChanged: "connections-changed",
-tableContentsChanged: "table-contents-changed",
-commandPaletteOpen: "command-palette-open",
-metaXDialogOpen: "meta-x-dialog-open",
-sqlDialogOpen: "sql-dialog-open"
+tableContentsChanged: "table-contents-changed"
 })
 
          /** user-defined statics **/
@@ -162,7 +156,6 @@ export const SETTINGS_FILE_NAME = "settings.json" as const;
 /** user-defined types **/
 
 export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
-export type CommandPaletteOpen = null
 export type ConfigFile = "settings" | "keybindings"
 /**
  * Connection Config Stored inside `connections.json` file.
@@ -203,9 +196,7 @@ export type JsonValue = null | boolean | number | string | JsonValue[] | { [key 
  */
 export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
 export type KeybindingCommand = Sidebar | Table
-export type MetaXDialogOpen = null
 export type PaginatedRows = { data: { [key in string]: JsonValue }[]; pageCount: number }
-export type SQLDialogOpen = null
 /**
  * Configuration for the SQL editor.
  */

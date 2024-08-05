@@ -1,4 +1,4 @@
-import { commands, events, JsonValue, Result } from "@/bindings"
+import { commands, JsonValue, Result } from "@/bindings"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import {
@@ -17,21 +17,16 @@ import {
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useSettingsManager } from "@/settings/manager"
 
+import { useSqlEditorState } from "@/state/dialogState"
 import { Editor, type OnMount } from "@monaco-editor/react"
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useRef,
-  useState
-} from "react"
+import { type Dispatch, type SetStateAction, useRef, useState } from "react"
 import CustomTooltip from "../custom-tooltip"
 
 type RawQueryResult = Result<{ [x: string]: JsonValue }[], string>
 type MonakoEditor = Parameters<OnMount>[0]
 
 const SQLDialog = () => {
-  const [open, setOpen] = useState(false)
+  const { isOpen, toggleDialog } = useSqlEditorState()
   const [queryResult, setQueryResult] = useState<RawQueryResult>()
   const [editorMounted, setEditorMounted] = useState(false)
   const editorRef = useRef<MonakoEditor>()
@@ -44,16 +39,8 @@ const SQLDialog = () => {
     editorRef.current = editor
   }
 
-  useEffect(() => {
-    const unlisten = events.sqlDialogOpen.listen(() => setOpen(true))
-
-    return () => {
-      unlisten.then((f) => f())
-    }
-  })
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={toggleDialog}>
       <DialogContent className="h-5/6 w-5/6 max-w-full p-0">
         <div className="flex flex-col overflow-auto">
           <ResizablePanelGroup direction="vertical">

@@ -30,9 +30,7 @@ use tauri_specta::{collect_commands, collect_events, StaticCollection};
 use tx_keybindings::{
     ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding, KEYBINDINGS_FILE_NAME,
 };
-use tx_lib::events::{
-    CommandPaletteOpen, ConnectionsChanged, MetaXDialogOpen, SQLDialogOpen, TableContentsChanged,
-};
+use tx_lib::events::{ConnectionsChanged, TableContentsChanged};
 use tx_settings::{
     ensure_settings_file_exist, get_settings_file_path, Settings, SETTINGS_FILE_NAME,
 };
@@ -90,13 +88,7 @@ fn main() {
                 update_row,
                 get_fk_relations
             ])
-            .events(collect_events![
-                ConnectionsChanged,
-                TableContentsChanged,
-                CommandPaletteOpen,
-                MetaXDialogOpen,
-                SQLDialogOpen,
-            ])
+            .events(collect_events![ConnectionsChanged, TableContentsChanged])
             .header("// @ts-nocheck\n");
 
         #[cfg(debug_assertions)]
