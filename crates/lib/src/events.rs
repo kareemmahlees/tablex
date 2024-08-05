@@ -7,9 +7,3 @@ pub struct ConnectionsChanged;
 
 #[derive(Clone, Serialize, Deserialize, Type, Event)]
 pub struct TableContentsChanged;
-
-#[derive(Clone, Serialize, Deserialize, Type, Event)]
-pub struct SQLDialogOpen;
-
-#[derive(Clone, Serialize, Deserialize, Type, Event)]
-pub struct MetaXDialogOpen;
