@@ -1,4 +1,4 @@
-import { commands, events } from "@/bindings"
+import { commands } from "@/bindings"
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,7 +7,11 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command"
-import { useCommandPaletteState, useMetaXState } from "@/state/dialogState"
+import {
+  useCommandPaletteState,
+  useMetaXState,
+  useSqlEditorState
+} from "@/state/dialogState"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
 import { FileJson2, FileText, Globe2, Link, Terminal } from "lucide-react"
@@ -51,6 +55,7 @@ const ConnectionsGroup = () => {
 const UtilitiesGroup = () => {
   const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
   const { toggleDialog: toggleMetaXDialog } = useMetaXState()
+  const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
 
   return (
     <CommandGroup heading="Utilities">
@@ -66,7 +71,7 @@ const UtilitiesGroup = () => {
       <CommandItem
         onSelect={() => {
           toggleCommandPalette()
-          events.sqlDialogOpen.emit()
+          toggleSqlEditor()
         }}
       >
         <Terminal className="h-4 w-4" />
