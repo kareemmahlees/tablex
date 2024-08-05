@@ -7,24 +7,24 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command"
+import { useCommandPaletteState } from "@/state/dialogState"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
 import { FileJson2, FileText, Globe2, Link, Terminal } from "lucide-react"
-import { type Dispatch, type SetStateAction, useState } from "react"
 
 const CommandPalette = () => {
-  const [open, setOpen] = useState(false)
+  const { isOpen, toggleDialog } = useCommandPaletteState()
 
-  hotkeys("ctrl+k,command+k", () => setOpen(true))
+  hotkeys("ctrl+k,command+k", () => toggleDialog())
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <ConnectionsGroup />
-        <UtilitiesGroup setOpen={setOpen} />
-        <ConfigurationGroup setOpen={setOpen} />
+        <UtilitiesGroup />
+        <ConfigurationGroup />
       </CommandList>
     </CommandDialog>
   )
@@ -48,16 +48,14 @@ const ConnectionsGroup = () => {
   )
 }
 
-const UtilitiesGroup = ({
-  setOpen
-}: {
-  setOpen: Dispatch<SetStateAction<boolean>>
-}) => {
+const UtilitiesGroup = () => {
+  const { toggleDialog } = useCommandPaletteState()
+
   return (
     <CommandGroup heading="Utilities">
       <CommandItem
         onSelect={() => {
-          setOpen(false)
+          toggleDialog()
           events.metaXDialogOpen.emit()
         }}
       >
@@ -66,7 +64,7 @@ const UtilitiesGroup = ({
       </CommandItem>
       <CommandItem
         onSelect={() => {
-          setOpen(false)
+          toggleDialog()
           events.sqlDialogOpen.emit()
         }}
       >
@@ -77,17 +75,15 @@ const UtilitiesGroup = ({
   )
 }
 
-const ConfigurationGroup = ({
-  setOpen
-}: {
-  setOpen: Dispatch<SetStateAction<boolean>>
-}) => {
+const ConfigurationGroup = () => {
+  const { toggleDialog } = useCommandPaletteState()
+
   return (
     <CommandGroup heading="Configuration">
       <CommandItem
         onSelect={async () => {
           commands.openInExternalEditor("settings")
-          setOpen(false)
+          toggleDialog()
         }}
       >
         <FileJson2 className="h-4 w-4" />
@@ -96,7 +92,7 @@ const ConfigurationGroup = ({
       <CommandItem
         onSelect={async () => {
           commands.openInExternalEditor("keybindings")
-          setOpen(false)
+          toggleDialog()
         }}
       >
         <FileJson2 className="h-4 w-4" />

@@ -143,13 +143,11 @@ try {
 export const events = __makeEvents__<{
 connectionsChanged: ConnectionsChanged,
 tableContentsChanged: TableContentsChanged,
-commandPaletteOpen: CommandPaletteOpen,
 metaXDialogOpen: MetaXDialogOpen,
 sqlDialogOpen: SQLDialogOpen
 }>({
 connectionsChanged: "connections-changed",
 tableContentsChanged: "table-contents-changed",
-commandPaletteOpen: "command-palette-open",
 metaXDialogOpen: "meta-x-dialog-open",
 sqlDialogOpen: "sql-dialog-open"
 })
@@ -162,7 +160,6 @@ export const SETTINGS_FILE_NAME = "settings.json" as const;
 /** user-defined types **/
 
 export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
-export type CommandPaletteOpen = null
 export type ConfigFile = "settings" | "keybindings"
 /**
  * Connection Config Stored inside `connections.json` file.
