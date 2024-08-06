@@ -1,5 +1,17 @@
 # @tablex/core
 
+## 0.3.9
+
+### Patch Changes
+
+- [#78](https://github.com/kareemmahlees/tablex/pull/78) [`e03b98c`](https://github.com/kareemmahlees/tablex/commit/e03b98cc0070eee146edcf9c310d65de5f01a166) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Use zustand for managing dialogs/sheets state, hence decoupling code.
+
+- [#75](https://github.com/kareemmahlees/tablex/pull/75) [`58304ca`](https://github.com/kareemmahlees/tablex/commit/58304ca7a533e7cd7b242bd023724ac64740ca84) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Add support for date picker in in create/edit row sheets.
+
+- [#79](https://github.com/kareemmahlees/tablex/pull/79) [`be2be03`](https://github.com/kareemmahlees/tablex/commit/be2be033b5a7ccd2ad1f841f3aa85d2e0dca7939) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Bump versions of Bun, tauri, tauri-sepcta and specta with the required new modifications.
+
+- [#77](https://github.com/kareemmahlees/tablex/pull/77) [`a17820d`](https://github.com/kareemmahlees/tablex/commit/a17820dde260ae7425c800266a4762528d5c3ddf) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Adds DateTime picker and Json editor in create/edit rows sheets.
+
 ## 0.3.8
 
 ### Patch Changes
