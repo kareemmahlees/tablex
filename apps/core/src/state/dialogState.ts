@@ -18,3 +18,4 @@ const createDialogState = () =>
 export const useCommandPaletteState = createDialogState()
 export const useMetaXState = createDialogState()
 export const useSqlEditorState = createDialogState()
+export const usePreferencesState = createDialogState()

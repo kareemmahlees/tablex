@@ -151,8 +151,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
@@ -245,7 +245,8 @@ export type Visibility = "hidden" | "visible" | "auto"
 /** tauri-specta globals **/
 
 import {
-    invoke as TAURI_INVOKE
+	invoke as TAURI_INVOKE,
+	Channel as TAURI_CHANNEL,
 } from "@tauri-apps/api/core";
 import * as TAURI_API_EVENT from "@tauri-apps/api/event";
 import { type WebviewWindow as __WebviewWindow__ } from "@tauri-apps/api/webviewWindow";
