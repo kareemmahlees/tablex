@@ -20,13 +20,10 @@ use commands::{
 #[cfg(not(debug_assertions))]
 use updater::check_for_update;
 
-use specta::{
-    ts::{BigIntExportBehavior, ExportConfig},
-    TypeCollection,
-};
+use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
-use tauri_specta::{collect_commands, collect_events, StaticCollection};
+use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::{
     ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding, KEYBINDINGS_FILE_NAME,
 };
@@ -57,46 +54,41 @@ fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
 }
 
 fn main() {
-    let mut custom_types = TypeCollection::default();
-    custom_types.register::<Keybinding>();
-    custom_types.register::<Settings>();
+    let builder = Builder::<tauri::Wry>::new()
+        .ty::<Keybinding>()
+        .ty::<Settings>()
+        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
+        .constant("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME)
+        .commands(collect_commands![
+            close_splashscreen,
+            test_connection,
+            create_connection_record,
+            delete_connection_record,
+            establish_connection,
+            connections_exist,
+            open_in_external_editor,
+            get_connections,
+            get_connection_details,
+            get_tables,
+            execute_raw_query,
+            get_paginated_rows,
+            delete_rows,
+            get_columns_props,
+            create_row,
+            update_row,
+            get_fk_relations
+        ])
+        .events(collect_events![ConnectionsChanged, TableContentsChanged,]);
 
-    let mut constants = StaticCollection::default();
-    constants.register("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME);
-    constants.register("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME);
-
-    let (invoke_handler, register_events) = {
-        let builder = tauri_specta::ts::builder()
-            .types(custom_types)
-            .statics(constants)
-            .commands(collect_commands![
-                close_splashscreen,
-                test_connection,
-                create_connection_record,
-                delete_connection_record,
-                establish_connection,
-                connections_exist,
-                open_in_external_editor,
-                get_connections,
-                get_connection_details,
-                get_tables,
-                execute_raw_query,
-                get_paginated_rows,
-                delete_rows,
-                get_columns_props,
-                create_row,
-                update_row,
-                get_fk_relations
-            ])
-            .events(collect_events![ConnectionsChanged, TableContentsChanged])
-            .header("// @ts-nocheck\n");
-
-        #[cfg(debug_assertions)]
-        let builder = builder.path("../src/bindings.ts");
-        let builder = builder.config(ExportConfig::default().bigint(BigIntExportBehavior::Number));
-
-        builder.build().unwrap()
-    };
+    #[cfg(debug_assertions)]
+    builder
+        .export(
+            Typescript::new()
+                .header("// @ts-nocheck")
+                .bigint(BigIntExportBehavior::Number),
+            "../src/bindings.ts",
+        )
+        .expect("Failed to export typescript bindings");
 
     let (args, cmd) = cli::parse_cli_args();
 
@@ -106,11 +98,12 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Mutex::new(SharedState::default()))
-        .setup(|app| {
+        .invoke_handler(builder.invoke_handler())
+        .setup(move |app| {
             let app_handle = app.app_handle();
 
             ensure_config_files_exist(app_handle)?;
-            register_events(app);
+            builder.mount_events(app);
 
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(app_handle, args, cmd));
@@ -130,7 +123,6 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(invoke_handler)
         .on_window_event(move |window, event| {
             if let WindowEvent::Destroyed = event {
                 // If the destroyed window is for e.g splashscreen then don't cleanup

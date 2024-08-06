@@ -7,9 +7,9 @@
   ],
   "permissions": [
     "shell:allow-open",
-    "event:allow-listen",
-    "event:allow-unlisten",
-    "event:allow-emit",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:event:allow-emit",
     "dialog:allow-open",
     "updater:allow-check",
     "clipboard-manager:allow-write-text",
