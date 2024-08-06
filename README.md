@@ -3,7 +3,7 @@
 </p>
 <div align="center">
   <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/kareemmahlees/tablex/lint.yml">
-  <img alt="Static Badge" src="https://img.shields.io/badge/node-v20.9.0%20-green">
+  <img alt="Static Badge" src="https://img.shields.io/badge/bun-v1.1.21%20-white">
   <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/kareemmahlees/tablex/production?label=production">
 
 <img alt="Static Badge" src="https://img.shields.io/badge/cargo-v1.74.1-orange">
