@@ -2,7 +2,7 @@ import { create } from "zustand"
 
 type DialogState = {
   isOpen: boolean
-  toggleDialog: () => void
+  toggleDialog: (open?: boolean) => void
 }
 
 /**
@@ -12,7 +12,8 @@ type DialogState = {
 const createDialogState = () =>
   create<DialogState>((set) => ({
     isOpen: false,
-    toggleDialog: () => set((state) => ({ isOpen: !state.isOpen }))
+    toggleDialog: (open?: boolean) =>
+      set((state) => ({ isOpen: open || !state.isOpen }))
   }))
 
 export const useCommandPaletteState = createDialogState()
