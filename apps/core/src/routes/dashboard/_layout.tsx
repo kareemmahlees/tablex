@@ -1,6 +1,7 @@
 import { commands } from "@/bindings"
 import CommandPalette from "@/components/dialogs/command-palette-dialog"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
+import PreferencesDialog from "@/components/dialogs/preferences/preferences-dilaog"
 import AddRowBtn from "@/components/sheets/create-row-sheet"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -128,6 +129,7 @@ function DashboardLayout() {
       {deps.tableName && <AddRowBtn tableName={deps.tableName} />}
       {tables.length > 0 && <Outlet />}
       <CommandPalette />
+      <PreferencesDialog />
       <MetaXDialog />
     </main>
   )

@@ -56,6 +56,14 @@ async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async loadSettingsFile() : Promise<Result<Settings, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("load_settings_file") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_connections") };
@@ -231,6 +239,10 @@ $schema: string | null;
  */
 pageSize: number; 
 /**
+ * Wether to automatically check for updates or not.
+ */
+checkForUpdates: boolean; 
+/**
  * Configuration for the SQL editor.
  */
 sqlEditor: SQLEditorSettings }
@@ -245,7 +257,8 @@ export type Visibility = "hidden" | "visible" | "auto"
 /** tauri-specta globals **/
 
 import {
-    invoke as TAURI_INVOKE
+	invoke as TAURI_INVOKE,
+	Channel as TAURI_CHANNEL,
 } from "@tauri-apps/api/core";
 import * as TAURI_API_EVENT from "@tauri-apps/api/event";
 import { type WebviewWindow as __WebviewWindow__ } from "@tauri-apps/api/webviewWindow";

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use tauri::{Manager, Runtime};
 use tx_lib::fs::{create_json_file_recursively, write_into_json};
 
-use crate::default::get_default_settings;
+use crate::Settings;
 
 pub const SETTINGS_FILE_NAME: &str = "settings.json";
 
@@ -14,7 +14,7 @@ pub fn ensure_settings_file_exist(path: &PathBuf) -> Result<(), String> {
         return Ok(());
     }
     create_json_file_recursively(path)?;
-    write_into_json(path, get_default_settings())?;
+    write_into_json(path, Settings::default())?;
     Ok(())
 }
 
