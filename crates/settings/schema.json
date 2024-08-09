@@ -4,6 +4,7 @@
   "description": "The configuration object for TableX's settings.",
   "type": "object",
   "required": [
+    "checkForUpdates",
     "pageSize",
     "sqlEditor"
   ],
@@ -20,6 +21,10 @@
       "type": "integer",
       "format": "uint32",
       "minimum": 0.0
+    },
+    "checkForUpdates": {
+      "description": "Wether to automatically check for updates or not.",
+      "type": "boolean"
     },
     "sqlEditor": {
       "description": "Configuration for the SQL editor.",

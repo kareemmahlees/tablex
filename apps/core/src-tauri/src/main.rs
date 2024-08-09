@@ -13,7 +13,7 @@ use commands::{
         ensure_connections_file_exist, establish_connection, get_connection_details,
         get_connections, get_connections_file_path, test_connection,
     },
-    fs::open_in_external_editor,
+    fs::{load_settings_file, open_in_external_editor},
     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
     table::{execute_raw_query, get_columns_props, get_tables},
 };
@@ -67,6 +67,7 @@ fn main() {
             establish_connection,
             connections_exist,
             open_in_external_editor,
+            load_settings_file,
             get_connections,
             get_connection_details,
             get_tables,

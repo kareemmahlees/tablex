@@ -3,6 +3,7 @@ import { LoadingButton } from "@/components/ui/loading-button"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { TabsContent } from "@/components/ui/tabs"
+import { useSettingsManager } from "@/settings/manager"
 import { useQuery } from "@tanstack/react-query"
 import { getVersion } from "@tauri-apps/api/app"
 import { ask } from "@tauri-apps/plugin-dialog"
@@ -11,12 +12,13 @@ import { useLayoutEffect, useState } from "react"
 
 const GeneralTab = () => {
   const [appVersion, setAppVersion] = useState<string>()
+  const { settings } = useSettingsManager()
   const { isLoading, refetch } = useQuery({
     queryKey: ["check_for_updates"],
     queryFn: async () => {
-      // Only run installer logic in production
+      // Only run updater logic in production
       if (import.meta.env.DEV) {
-        await new Promise((res) => setTimeout(res, 3000))
+        await Bun.sleep(3000)
         return ""
       }
 
@@ -68,7 +70,10 @@ const GeneralTab = () => {
             TableX will regularly check for updates.
           </p>
         </div>
-        <Switch className="data-[state=unchecked]:bg-zinc-700" />
+        <Switch
+          className="data-[state=unchecked]:bg-zinc-700"
+          checked={settings.checkForUpdates}
+        />
       </div>
     </TabsContent>
   )

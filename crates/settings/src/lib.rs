@@ -2,7 +2,6 @@
 //! This crates holds the logic for generating default settings
 //! to be consumed by the frontend.
 
-mod default;
 mod fs;
 mod schema;
 

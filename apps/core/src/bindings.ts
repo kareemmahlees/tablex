@@ -56,6 +56,14 @@ async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async loadSettingsFile() : Promise<Result<Settings, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("load_settings_file") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_connections") };
@@ -151,8 +159,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
 export const SETTINGS_FILE_NAME = "settings.json" as const;
+export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
 
 /** user-defined types **/
 
@@ -230,6 +238,10 @@ $schema: string | null;
  * Number of rows to be fetched per page.
  */
 pageSize: number; 
+/**
+ * Wether to automatically check for updates or not.
+ */
+checkForUpdates: boolean; 
 /**
  * Configuration for the SQL editor.
  */

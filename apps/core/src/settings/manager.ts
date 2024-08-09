@@ -1,5 +1,5 @@
-import { Settings, SETTINGS_FILE_NAME } from "@/bindings"
-import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs"
+import { commands, Settings } from "@/bindings"
+import { unwrapResult } from "@/lib/utils"
 import { createContext, useContext } from "react"
 
 /**
@@ -11,9 +11,11 @@ export class SettingsManager {
   settings: Settings
 
   constructor() {
-    readTextFile(SETTINGS_FILE_NAME, {
-      baseDir: BaseDirectory.AppConfig
-    }).then((settings) => (this.settings = JSON.parse(settings)))
+    commands.loadSettingsFile().then((result) => {
+      const settings = unwrapResult(result)
+      this.settings = settings
+      console.log(this.settings)
+    })
   }
 }
 
