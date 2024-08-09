@@ -7,16 +7,17 @@ mod state;
 #[cfg(not(debug_assertions))]
 mod updater;
 
-use commands::{
-    connection::{
-        connections_exist, create_connection_record, delete_connection_record,
-        ensure_connections_file_exist, establish_connection, get_connection_details,
-        get_connections, get_connections_file_path, test_connection,
-    },
-    fs::{load_settings_file, open_in_external_editor},
-    row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
-    table::{execute_raw_query, get_columns_props, get_tables},
-};
+// use commands::{
+//     connection::{
+//         connections_exist, create_connection_record, delete_connection_record,
+//         ensure_connections_file_exist, establish_connection, get_connection_details,
+//         get_connections, get_connections_file_path, test_connection,
+//     },
+//     fs::{load_settings_file, open_in_external_editor},
+//     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
+//     table::{execute_raw_query, get_columns_props, get_tables},
+// };
+use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(not(debug_assertions))]
 use updater::check_for_update;
 
@@ -24,13 +25,9 @@ use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
 use tauri_specta::{collect_commands, collect_events, Builder};
-use tx_keybindings::{
-    ensure_keybindings_file_exist, get_keybindings_file_path, Keybinding, KEYBINDINGS_FILE_NAME,
-};
-use tx_lib::events::{ConnectionsChanged, TableContentsChanged};
-use tx_settings::{
-    ensure_settings_file_exist, get_settings_file_path, Settings, SETTINGS_FILE_NAME,
-};
+use tx_keybindings::*;
+use tx_lib::events::*;
+use tx_settings::*;
 
 #[tauri::command]
 #[specta::specta]
@@ -61,20 +58,25 @@ fn main() {
         .constant("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME)
         .commands(collect_commands![
             close_splashscreen,
+            // Connection commands.
             test_connection,
             create_connection_record,
             delete_connection_record,
             establish_connection,
             connections_exist,
-            open_in_external_editor,
-            load_settings_file,
             get_connections,
             get_connection_details,
+            // Fs commands.
+            open_in_external_editor,
+            load_settings_file,
+            write_into_settings_file,
+            // Table commands.
             get_tables,
+            get_columns_props,
             execute_raw_query,
+            // Row commands.
             get_paginated_rows,
             delete_rows,
-            get_columns_props,
             create_row,
             update_row,
             get_fk_relations

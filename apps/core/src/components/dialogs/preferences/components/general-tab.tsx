@@ -1,9 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
 import { TabsContent } from "@/components/ui/tabs"
-import { useSettingsManager } from "@/settings/manager"
 import { useQuery } from "@tanstack/react-query"
 import { getVersion } from "@tauri-apps/api/app"
 import { ask } from "@tauri-apps/plugin-dialog"
@@ -12,7 +10,6 @@ import { useLayoutEffect, useState } from "react"
 
 const GeneralTab = () => {
   const [appVersion, setAppVersion] = useState<string>()
-  const settings = useSettingsManager()
   const { isLoading, refetch: check } = useCheckForUpdates()
 
   useLayoutEffect(() => {
@@ -41,19 +38,6 @@ const GeneralTab = () => {
         >
           Check for updates
         </LoadingButton>
-      </div>
-      <Separator className="bg-zinc-700" />
-      <div className="flex w-full items-center justify-between">
-        <div>
-          <p>Automatic Updates</p>
-          <p className="text-muted-foreground text-sm">
-            TableX will regularly check for updates.
-          </p>
-        </div>
-        <Switch
-          className="data-[state=unchecked]:bg-zinc-700"
-          checked={settings.checkForUpdates}
-        />
       </div>
     </TabsContent>
   )

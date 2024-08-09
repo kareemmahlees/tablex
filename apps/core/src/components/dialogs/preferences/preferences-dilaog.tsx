@@ -5,6 +5,7 @@ import { lazy, Suspense } from "react"
 
 import LoadingSpinner from "@/components/loading-spinner"
 import hotkeys from "hotkeys-js"
+import SettingsTab from "./components/settings-tab"
 const GeneralTab = lazy(() => import("./components/general-tab"))
 
 const PreferencesDialog = () => {
@@ -31,10 +32,10 @@ const PreferencesDialog = () => {
               </TabsTrigger>
             </TabsList>
           </aside>
-          <section className="mt-3 h-full w-full px-8 lg:px-10">
+          <section className="relative mt-3 h-full w-full px-8 lg:px-10">
             <Suspense fallback={<LoadingSpinner />}>
               <GeneralTab />
-              <TabsContent value="settings">TODO</TabsContent>
+              <SettingsTab />
               <TabsContent value="keybindings">TODO</TabsContent>
             </Suspense>
           </section>

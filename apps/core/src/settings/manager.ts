@@ -14,7 +14,6 @@ export class SettingsManager {
     commands.loadSettingsFile().then((result) => {
       const settings = unwrapResult(result)
       this.settings = settings
-      console.log(this.settings)
     })
   }
 }

@@ -89,7 +89,7 @@ export const useSetupReactTable = <TData, TValue>({
  * to be used in paginating the rows.
  */
 const useSetupPagination = () => {
-  const { settings } = useSettingsManager()
+  const settings = useSettingsManager()
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: settings.pageSize

@@ -30,9 +30,7 @@ const SQLDialog = () => {
   const [queryResult, setQueryResult] = useState<RawQueryResult>()
   const [editorMounted, setEditorMounted] = useState(false)
   const editorRef = useRef<MonakoEditor>()
-  const {
-    settings: { sqlEditor: editorSettings }
-  } = useSettingsManager()
+  const { sqlEditor: editorSettings } = useSettingsManager()
 
   const handleEditorDidMount: OnMount = (editor) => {
     setEditorMounted(true)
