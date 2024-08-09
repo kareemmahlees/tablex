@@ -26,5 +26,5 @@ export const SettingsContext = createContext(new SettingsManager())
  */
 export const useSettingsManager = () => {
   const settingsManager = useContext(SettingsContext)
-  return { settings: settingsManager.settings }
+  return settingsManager.settings
 }

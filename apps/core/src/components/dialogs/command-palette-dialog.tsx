@@ -27,7 +27,7 @@ import {
 const CommandPalette = () => {
   const { isOpen, toggleDialog } = useCommandPaletteState()
 
-  hotkeys("ctrl+k,command+k", () => toggleDialog())
+  hotkeys("ctrl+k,command+k", () => toggleDialog(!isOpen))
 
   return (
     <CommandDialog open={isOpen} onOpenChange={toggleDialog}>

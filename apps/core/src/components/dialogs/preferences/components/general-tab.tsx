@@ -12,28 +12,8 @@ import { useLayoutEffect, useState } from "react"
 
 const GeneralTab = () => {
   const [appVersion, setAppVersion] = useState<string>()
-  const { settings } = useSettingsManager()
-  const { isLoading, refetch } = useQuery({
-    queryKey: ["check_for_updates"],
-    queryFn: async () => {
-      // Only run updater logic in production
-      if (import.meta.env.DEV) {
-        await Bun.sleep(3000)
-        return ""
-      }
-
-      const update = await check()
-      if (update) {
-        const yes = await ask(
-          `TableX v${update.version} is now available -- you have v${update.currentVersion}.\n\nWould you like to install it now?`
-        )
-        if (yes) {
-          await update.downloadAndInstall()
-        }
-      }
-    },
-    enabled: false
-  })
+  const settings = useSettingsManager()
+  const { isLoading, refetch: check } = useCheckForUpdates()
 
   useLayoutEffect(() => {
     getVersion().then((version) => setAppVersion(version))
@@ -57,7 +37,7 @@ const GeneralTab = () => {
         <LoadingButton
           size={"sm"}
           loading={isLoading}
-          onClick={async () => await refetch()}
+          onClick={async () => await check()}
         >
           Check for updates
         </LoadingButton>
@@ -80,3 +60,27 @@ const GeneralTab = () => {
 }
 
 export default GeneralTab
+
+const useCheckForUpdates = () => {
+  return useQuery({
+    queryKey: ["check_for_updates"],
+    queryFn: async () => {
+      // Only run updater logic in production
+      if (import.meta.env.DEV) {
+        await Bun.sleep(3000)
+        return ""
+      }
+
+      const update = await check()
+      if (update) {
+        const yes = await ask(
+          `TableX v${update.version} is now available -- you have v${update.currentVersion}.\n\nWould you like to install it now?`
+        )
+        if (yes) {
+          await update.downloadAndInstall()
+        }
+      }
+    },
+    enabled: false
+  })
+}
