@@ -10,22 +10,31 @@ import {
 import {
   useCommandPaletteState,
   useMetaXState,
+  usePreferencesState,
   useSqlEditorState
 } from "@/state/dialogState"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
-import { FileJson2, FileText, Globe2, Link, Terminal } from "lucide-react"
+import {
+  FileJson2,
+  FileText,
+  Globe2,
+  Link,
+  Settings2,
+  Terminal
+} from "lucide-react"
 
 const CommandPalette = () => {
   const { isOpen, toggleDialog } = useCommandPaletteState()
 
-  hotkeys("ctrl+k,command+k", () => toggleDialog())
+  hotkeys("ctrl+k,command+k", () => toggleDialog(!isOpen))
 
   return (
     <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
+        <GeneralGroup />
         <ConnectionsGroup />
         <UtilitiesGroup />
         <ConfigurationGroup />
@@ -35,6 +44,25 @@ const CommandPalette = () => {
 }
 
 export default CommandPalette
+
+const GeneralGroup = () => {
+  const { toggleDialog: togglePreferences } = usePreferencesState()
+  const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
+
+  return (
+    <CommandGroup heading="General">
+      <CommandItem
+        onSelect={() => {
+          toggleCommandPalette()
+          togglePreferences()
+        }}
+      >
+        <Settings2 />
+        Preferences
+      </CommandItem>
+    </CommandGroup>
+  )
+}
 
 const ConnectionsGroup = () => {
   const navigate = useNavigate()

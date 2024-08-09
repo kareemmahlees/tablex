@@ -48,14 +48,6 @@ async connectionsExist() : Promise<Result<boolean, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("open_in_external_editor", { file }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_connections") };
@@ -72,9 +64,41 @@ async getConnectionDetails(connId: string) : Promise<Result<ConnConfig, string>>
     else return { status: "error", error: e  as any };
 }
 },
+async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("open_in_external_editor", { file }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async loadSettingsFile() : Promise<Result<Settings, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("load_settings_file") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async writeIntoSettingsFile(settings: JsonValue) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("write_into_settings_file", { settings }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getTables() : Promise<Result<string[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_tables") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_columns_props", { tableName }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -99,14 +123,6 @@ async getPaginatedRows(tableName: string, pageIndex: number, pageSize: number) :
 async deleteRows(pkColName: string, rowPkValues: JsonValue[], tableName: string) : Promise<Result<string, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("delete_rows", { pkColName, rowPkValues, tableName }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("get_columns_props", { tableName }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -151,8 +167,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
@@ -231,6 +247,10 @@ $schema: string | null;
  */
 pageSize: number; 
 /**
+ * Wether to automatically check for updates or not.
+ */
+checkForUpdates: boolean; 
+/**
  * Configuration for the SQL editor.
  */
 sqlEditor: SQLEditorSettings }
@@ -245,7 +265,8 @@ export type Visibility = "hidden" | "visible" | "auto"
 /** tauri-specta globals **/
 
 import {
-    invoke as TAURI_INVOKE
+	invoke as TAURI_INVOKE,
+	Channel as TAURI_CHANNEL,
 } from "@tauri-apps/api/core";
 import * as TAURI_API_EVENT from "@tauri-apps/api/event";
 import { type WebviewWindow as __WebviewWindow__ } from "@tauri-apps/api/webviewWindow";

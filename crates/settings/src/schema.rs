@@ -2,6 +2,9 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
+const SCHEMA_URL: &str =
+    "https://raw.githubusercontent.com/kareemmahlees/tablex/master/crates/settings/schema.json";
+
 #[derive(Serialize, Deserialize, Type, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 /// The configuration object for TableX's settings.
@@ -11,20 +14,24 @@ pub struct Settings {
     schema: Option<String>,
     /// Number of rows to be fetched per page.
     page_size: u32,
+    /// Wether to automatically check for updates or not.
+    check_for_updates: bool,
     /// Configuration for the SQL editor.
     sql_editor: SQLEditorSettings,
 }
 
-impl Settings {
-    pub fn new(
-        schema: Option<String>,
-        page_size: u32,
-        sql_editor_settings: SQLEditorSettings,
-    ) -> Self {
+impl Default for Settings {
+    fn default() -> Self {
         Self {
-            schema,
-            page_size,
-            sql_editor: sql_editor_settings,
+            schema: Some(SCHEMA_URL.to_string()),
+            page_size: 500,
+            check_for_updates: true,
+            sql_editor: SQLEditorSettings {
+                minimap: true,
+                scrollbar: EditorScrollBarVisibility::new(Visibility::Hidden, Visibility::Visible),
+                font_size: 18,
+                cursor_blinking: CursorBlinkingStyle::Smooth,
+            },
         }
     }
 }
@@ -41,22 +48,6 @@ pub struct SQLEditorSettings {
     font_size: u8,
     /// Behavior of the cursor blinking style.
     cursor_blinking: CursorBlinkingStyle,
-}
-
-impl SQLEditorSettings {
-    pub fn new(
-        minimap: bool,
-        font_size: u8,
-        cursor_blinking: CursorBlinkingStyle,
-        scrollbar: EditorScrollBarVisibility,
-    ) -> Self {
-        Self {
-            minimap,
-            font_size,
-            cursor_blinking,
-            scrollbar,
-        }
-    }
 }
 
 #[derive(Serialize, Deserialize, Type, JsonSchema)]
