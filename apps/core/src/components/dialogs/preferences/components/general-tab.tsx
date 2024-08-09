@@ -10,7 +10,7 @@ import { useLayoutEffect, useState } from "react"
 
 const GeneralTab = () => {
   const [appVersion, setAppVersion] = useState<string>()
-  const { isLoading, refetch: check } = useCheckForUpdates()
+  const { isLoading, refetch: checkForUpdate } = useCheckForUpdate()
 
   useLayoutEffect(() => {
     getVersion().then((version) => setAppVersion(version))
@@ -34,7 +34,7 @@ const GeneralTab = () => {
         <LoadingButton
           size={"sm"}
           loading={isLoading}
-          onClick={async () => await check()}
+          onClick={async () => await checkForUpdate()}
         >
           Check for updates
         </LoadingButton>
@@ -45,7 +45,7 @@ const GeneralTab = () => {
 
 export default GeneralTab
 
-const useCheckForUpdates = () => {
+const useCheckForUpdate = () => {
   return useQuery({
     queryKey: ["check_for_updates"],
     queryFn: async () => {
