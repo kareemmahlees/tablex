@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { TabsContent } from "@/components/ui/tabs"
-import { useSettingsManager } from "@/settings/manager"
+import { useSettings } from "@/settings/manager"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FileJson2 } from "lucide-react"
 import type { PropsWithChildren } from "react"
@@ -33,7 +33,7 @@ const formSchema = z.object({
 })
 
 const SettingsTab = () => {
-  const settings = useSettingsManager()
+  const settings = useSettings()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: settings

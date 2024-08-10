@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/context-menu"
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
-import { useKeybindingsManager } from "@/keybindings/manager"
+import { useKeybindings } from "@/keybindings/manager"
 import { copyRows } from "@/keybindings/row"
 import { useEditRowSheetState } from "@/state/sheetState"
 import { useQueryClient } from "@tanstack/react-query"
@@ -46,7 +46,7 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
   const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
     useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
-  const keybindingsManager = useKeybindingsManager()
+  const keybindingsManager = useKeybindings()
   const { isOpen, toggleSheet } = useEditRowSheetState()
 
   useEffect(() => {

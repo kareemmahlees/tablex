@@ -15,7 +15,7 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useSettingsManager } from "@/settings/manager"
+import { useSettings } from "@/settings/manager"
 
 import { useSqlEditorState } from "@/state/dialogState"
 import { Editor, type OnMount } from "@monaco-editor/react"
@@ -30,7 +30,7 @@ const SQLDialog = () => {
   const [queryResult, setQueryResult] = useState<RawQueryResult>()
   const [editorMounted, setEditorMounted] = useState(false)
   const editorRef = useRef<MonakoEditor>()
-  const { sqlEditor: editorSettings } = useSettingsManager()
+  const { sqlEditor: editorSettings } = useSettings()
 
   const handleEditorDidMount: OnMount = (editor) => {
     setEditorMounted(true)

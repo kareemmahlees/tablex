@@ -4,7 +4,7 @@ import { createContext, useContext } from "react"
 
 /**
  * Loads the `settings.json` file and can be accessed from components
- * through {@link useSettingsManager} context hook.
+ * through {@link useSettings} context hook.
  */
 export class SettingsManager {
   //@ts-expect-error it's assigned in the constructor but typescript cannot detect it
@@ -23,7 +23,7 @@ export const SettingsContext = createContext(new SettingsManager())
 /**
  * A react context hook to access the {@link SettingsManager} from anywhere in the application.
  */
-export const useSettingsManager = () => {
+export const useSettings = () => {
   const settingsManager = useContext(SettingsContext)
   return settingsManager.settings
 }

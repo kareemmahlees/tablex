@@ -9,11 +9,11 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { TabsContent } from "@/components/ui/tabs"
-import { useKeybindingsManager } from "@/keybindings/manager"
+import { useKeybindings } from "@/keybindings/manager"
 import { Edit2 } from "lucide-react"
 
 const KeybindingsTab = () => {
-  const keybindings = useKeybindingsManager()
+  const keybindings = useKeybindings()
   return (
     <TabsContent value="keybindings">
       <Table>

@@ -11,7 +11,7 @@ import { createContext, useContext } from "react"
  * Class responsible for loading the keybindings from the keybindings file,
  * and register handlers for those keybindings on your desire.
  *
- * It can be used anywhere in the application through the {@link useKeybindingsManager} context hook.
+ * It can be used anywhere in the application through the {@link useKeybindings} context hook.
  */
 export class KeybindingsManager {
   bindings: Keybinding[] = []
@@ -49,6 +49,6 @@ export const KeybindingsManagerContext = createContext(new KeybindingsManager())
 /**
  * A react context hook to access the {@link KeybindingsManager} from anywhere in the application.
  */
-export const useKeybindingsManager = () => {
+export const useKeybindings = () => {
   return useContext(KeybindingsManagerContext)
 }
