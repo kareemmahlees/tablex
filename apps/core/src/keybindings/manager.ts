@@ -14,7 +14,7 @@ import { createContext, useContext } from "react"
  * It can be used anywhere in the application through the {@link useKeybindingsManager} context hook.
  */
 export class KeybindingsManager {
-  private bindings: Keybinding[] = []
+  bindings: Keybinding[] = []
 
   constructor() {
     readTextFile(KEYBINDINGS_FILE_NAME, {
