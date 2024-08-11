@@ -1,5 +1,20 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-bun lint
-bun format:check
+
+git_diff= git diff --cached --name-only 
+
+if git_diff | grep --quiet -e "**/Cargo.toml **/Cargo.lock **/*.rs"
+then
+    bun rust:lint
+fi
+
+if git_diff | grep --quiet -e "package.json apps/core/** packages/**"
+then
+    bun --filter @tablex/core lint
+fi
+
+if git_diff | grep --quiet -e "package.json apps/web/** packages/**"
+then
+    bun astro:check
+fi
