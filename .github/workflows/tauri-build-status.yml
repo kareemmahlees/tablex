@@ -1,4 +1,4 @@
-name: Test Tauri Build
+name: Tauri Build Status
 
 on:
   push:
@@ -20,11 +20,12 @@ on:
   workflow_dispatch:
 
 env:
+  HUSKY: 0
   RUST_BACKTRACE: 1
   CARGO_PROFILE_DEV_DEBUG: 0 # This would add unnecessary bloat to the target folder, decreasing cache efficiency.
 
 jobs:
-  test-tauri:
+  tauri-build:
     strategy:
       fail-fast: false
       matrix:
