@@ -17,6 +17,9 @@ on:
       - "package.json"
   workflow_dispatch:
 
+env:
+  HUSKY: 0
+
 jobs:
   astro-build:
     runs-on: ubuntu-latest
