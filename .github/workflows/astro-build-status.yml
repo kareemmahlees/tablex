@@ -1,4 +1,4 @@
-name: Test Astro Build
+name: Astro Build Status
 
 on:
   push:
@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-astro:
+  astro-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

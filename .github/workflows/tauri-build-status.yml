@@ -1,4 +1,4 @@
-name: Test Tauri Build
+name: Tauri Build Status
 
 on:
   push:
@@ -24,7 +24,7 @@ env:
   CARGO_PROFILE_DEV_DEBUG: 0 # This would add unnecessary bloat to the target folder, decreasing cache efficiency.
 
 jobs:
-  test-tauri:
+  tauri-build:
     strategy:
       fail-fast: false
       matrix:
