@@ -70,6 +70,7 @@ fn main() {
             open_in_external_editor,
             load_settings_file,
             write_into_settings_file,
+            write_into_keybindings_file,
             // Table commands.
             get_tables,
             get_columns_props,

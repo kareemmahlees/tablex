@@ -19,12 +19,13 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { TabsContent } from "@/components/ui/tabs"
-import { useKeybindings } from "@/keybindings/manager"
+import { useKeybindings, type EditedBinding } from "@/keybindings/manager"
 import { Edit2, FileJson2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react"
 
 const KeybindingsTab = () => {
   const keybindings = useKeybindings()
+  const [editedKeybindings, setEditKeybindings] = useState<EditedBinding[]>([])
   return (
     <TabsContent value="keybindings">
       <Table>
@@ -37,7 +38,7 @@ const KeybindingsTab = () => {
         </TableHeader>
         <TableBody>
           {keybindings.bindings.map((binding, idx) => (
-            <TableRow className="border-zinc-700" key={idx}>
+            <TableRow className="group border-zinc-700" key={idx}>
               <TableCell>
                 <code>{binding.command}</code>
               </TableCell>
@@ -47,7 +48,10 @@ const KeybindingsTab = () => {
                 ))}
               </TableCell>
               <TableCell>
-                <KeyRecorderDialog binding={binding} />
+                <KeyRecorderDialog
+                  binding={binding}
+                  setEditedKeybindings={setEditKeybindings}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -56,8 +60,10 @@ const KeybindingsTab = () => {
       <div className="absolute bottom-7 right-4 flex flex-row-reverse items-center gap-x-3">
         <Button
           size={"sm"}
-          onClick={() => {
-            // TODO: write into keybindings file.
+          onClick={async () => {
+            await commands.writeIntoKeybindingsFile(keybindings.bindings)
+            console.log(editedKeybindings)
+            keybindings.reRegister(editedKeybindings)
           }}
         >
           Save
@@ -78,24 +84,51 @@ const KeybindingsTab = () => {
 
 export default KeybindingsTab
 
-const KeyRecorderDialog = ({ binding }: { binding: Keybinding }) => {
+type KeyRecorderProps = {
+  binding: Keybinding
+  setEditedKeybindings: Dispatch<SetStateAction<EditedBinding[]>>
+}
+
+const KeyRecorderDialog = ({
+  binding,
+  setEditedKeybindings
+}: KeyRecorderProps) => {
   const [key, setKey] = useState<string[]>([])
+  const recordKeys = (e: KeyboardEvent) => {
+    if (e.repeat) return
+    e.preventDefault()
+
+    let preparedKey: string
+
+    switch (e.key) {
+      // for the sake of hotkey-js to recognize them.
+      case "Control":
+      case "Shift":
+      case "Alt":
+        preparedKey = e.key.toLowerCase()
+        break
+      default:
+        preparedKey = e.key
+    }
+
+    setKey((old) => [...old, preparedKey])
+  }
 
   useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.repeat) return
-      setKey((old) => [...old, e.key])
-    }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
+    document.addEventListener("keydown", recordKeys)
+    return () => document.removeEventListener("keydown", recordKeys)
   }, [key])
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant={"ghost"}>
-          <Edit2 className="h-4 w-4" />
-        </Button>
+    <Dialog
+      onOpenChange={(open) => {
+        if (!open) {
+          document.removeEventListener("keydown", recordKeys)
+        }
+      }}
+    >
+      <DialogTrigger asChild className="invisible group-hover:visible">
+        <Edit2 className="h-4 w-4" role="button" />
       </DialogTrigger>
       <DialogContent className="space-y-3">
         <DialogHeader>
@@ -115,7 +148,17 @@ const KeyRecorderDialog = ({ binding }: { binding: Keybinding }) => {
               Reset
             </Button>
             <DialogClose asChild>
-              <Button onClick={() => (binding.shortcuts = key)}>Done</Button>
+              <Button
+                onClick={() => {
+                  binding.shortcuts = [key.join("+")]
+                  setEditedKeybindings((old) => [
+                    ...old,
+                    { command: binding.command, shortcuts: binding.shortcuts }
+                  ])
+                }}
+              >
+                Done
+              </Button>
             </DialogClose>
           </div>
         </div>

@@ -88,6 +88,14 @@ async writeIntoSettingsFile(settings: JsonValue) : Promise<Result<null, string>>
     else return { status: "error", error: e  as any };
 }
 },
+async writeIntoKeybindingsFile(keybindings: Keybinding[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("write_into_keybindings_file", { keybindings }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getTables() : Promise<Result<string[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_tables") };
