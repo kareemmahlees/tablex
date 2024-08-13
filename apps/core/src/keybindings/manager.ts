@@ -7,14 +7,25 @@ import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs"
 import hotkeys from "hotkeys-js"
 import { createContext, useContext } from "react"
 
+export type RegisteredBinding = {
+  command: KeybindingCommand
+  handler: () => void
+}
+
+export type EditedBinding = {
+  command: KeybindingCommand
+  shortcuts: string[]
+}
+
 /**
  * Class responsible for loading the keybindings from the keybindings file,
  * and register handlers for those keybindings on your desire.
  *
- * It can be used anywhere in the application through the {@link useKeybindingsManager} context hook.
+ * It can be used anywhere in the application through the {@link useKeybindings} context hook.
  */
 export class KeybindingsManager {
-  private bindings: Keybinding[] = []
+  bindings: Keybinding[] = []
+  registeredKeybindings: RegisteredBinding[] = []
 
   constructor() {
     readTextFile(KEYBINDINGS_FILE_NAME, {
@@ -25,20 +36,31 @@ export class KeybindingsManager {
   /**
    * Register handlers keybindings' commands.
    * Handlers will be called once the shortcut is triggered by the user.
-   * @param keybindings array of commands and their respective handlers.
+   * @param keybindings keybindings to be registered.
    */
-  registerKeybindings(
-    keybindings: {
-      command: KeybindingCommand
-      handler: () => void
-    }[]
-  ) {
+  registerKeybindings(keybindings: RegisteredBinding[]) {
     keybindings.forEach((keybinding) => {
       const binding = this.bindings.find(
         (binding) => binding.command == keybinding.command
       )
       if (binding) {
+        this.registeredKeybindings.push(keybinding)
         hotkeys(binding.shortcuts.join(","), keybinding.handler)
+      }
+    })
+  }
+
+  /**
+   * ReRegister edited keybindings.
+   * @param keybindings edited keybindings
+   */
+  reRegister(keybindings: EditedBinding[]) {
+    keybindings.forEach((keybinding) => {
+      const toBeReRegistered = this.registeredKeybindings.find(
+        (registered) => registered.command === keybinding.command
+      )
+      if (toBeReRegistered) {
+        hotkeys(keybinding.shortcuts.join(","), toBeReRegistered.handler)
       }
     })
   }
@@ -49,6 +71,6 @@ export const KeybindingsManagerContext = createContext(new KeybindingsManager())
 /**
  * A react context hook to access the {@link KeybindingsManager} from anywhere in the application.
  */
-export const useKeybindingsManager = () => {
+export const useKeybindings = () => {
   return useContext(KeybindingsManagerContext)
 }

@@ -1,10 +1,11 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePreferencesState } from "@/state/dialogState"
 import { lazy, Suspense } from "react"
 
 import LoadingSpinner from "@/components/loading-spinner"
 import hotkeys from "hotkeys-js"
+import KeybindingsTab from "./components/keybindings-tab"
 import SettingsTab from "./components/settings-tab"
 const GeneralTab = lazy(() => import("./components/general-tab"))
 
@@ -36,7 +37,7 @@ const PreferencesDialog = () => {
             <Suspense fallback={<LoadingSpinner />}>
               <GeneralTab />
               <SettingsTab />
-              <TabsContent value="keybindings">TODO</TabsContent>
+              <KeybindingsTab />
             </Suspense>
           </section>
         </Tabs>

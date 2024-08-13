@@ -34,7 +34,8 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
     }
 
     let res = match v.type_info().name() {
-        "CHAR" | "VARCHAR" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT" | "LONGTEXT" | "ENUM" | "NAME" => {
+        "CHAR" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
+        | "LONGTEXT" | "ENUM" | "NAME" => {
             if let Ok(v) = AnyValueRef::to_owned(&v).try_decode() {
                 JsonValue::String(v)
             } else {
@@ -146,9 +147,8 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
     let column_type = value.decode::<&str>();
 
     match column_type.to_uppercase().as_str() {
-        "CHAR" | "VARCHAR" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT" | "LONGTEXT" | "ENUM" | "NAME" => {
-            DataType::Text
-        }
+        "\"CHAR\"" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
+        | "LONGTEXT" | "ENUM" | "NAME" => DataType::Text,
 
         "UUID" => DataType::Uuid,
 

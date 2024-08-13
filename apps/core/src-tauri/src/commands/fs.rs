@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use specta::Type;
 use tauri::AppHandle;
-use tx_keybindings::get_keybindings_file_path;
+use tx_keybindings::{get_keybindings_file_path, Keybinding};
 use tx_lib::fs::{read_from_json, write_into_json};
 use tx_settings::{get_settings_file_path, Settings};
 
@@ -48,5 +48,15 @@ pub fn write_into_settings_file(app: AppHandle, settings: Value) -> Result<(), S
     merge(&mut stored_settings, &settings);
 
     write_into_json(&get_settings_file_path(&app)?, stored_settings)?;
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn write_into_keybindings_file(
+    app: AppHandle,
+    keybindings: Vec<Keybinding>,
+) -> Result<(), String> {
+    write_into_json(&get_keybindings_file_path(&app)?, keybindings)?;
     Ok(())
 }

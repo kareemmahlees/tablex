@@ -6,11 +6,11 @@ import AddRowBtn from "@/components/sheets/create-row-sheet"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { focusSearch } from "@/keybindings"
-import { useKeybindingsManager } from "@/keybindings/manager"
+import { useKeybindings } from "@/keybindings/manager"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
-import { useState, type KeyboardEvent } from "react"
+import { useEffect, useState, type KeyboardEvent } from "react"
 import toast from "react-hot-toast"
 import { z } from "zod"
 
@@ -42,15 +42,17 @@ export const Route = createFileRoute("/dashboard/_layout")({
 function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
-  const keybindingsManager = useKeybindingsManager()
+  const keybindingsManager = useKeybindings()
   const [tables, setTables] = useState<string[]>(data!.tables)
 
-  keybindingsManager.registerKeybindings([
-    {
-      command: "focusSearch",
-      handler: () => focusSearch()
-    }
-  ])
+  useEffect(() => {
+    keybindingsManager.registerKeybindings([
+      {
+        command: "focusSearch",
+        handler: () => focusSearch()
+      }
+    ])
+  }, [keybindingsManager])
 
   let timeout: NodeJS.Timeout
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {

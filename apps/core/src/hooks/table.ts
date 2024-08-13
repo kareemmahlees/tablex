@@ -1,6 +1,6 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/$tableName/-components/columns"
-import { useSettingsManager } from "@/settings/manager"
+import { useSettings } from "@/settings/manager"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
@@ -89,7 +89,7 @@ export const useSetupReactTable = <TData, TValue>({
  * to be used in paginating the rows.
  */
 const useSetupPagination = () => {
-  const settings = useSettingsManager()
+  const settings = useSettings()
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: settings.pageSize
