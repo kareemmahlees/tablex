@@ -105,11 +105,12 @@ fn main() {
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             let app_handle = app.app_handle();
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let _settings = load_settings_file(app_handle.clone())?;
 
             ensure_config_files_exist(app_handle)?;
             builder.mount_events(app);
 
-            let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(cli::handle_cli_args(app_handle, args, cmd));
 
             #[cfg(debug_assertions)]
@@ -122,7 +123,9 @@ fn main() {
             #[cfg(not(debug_assertions))]
             {
                 app_handle.plugin(tauri_plugin_updater::Builder::new().build())?;
-                check_for_update(app_handle.clone())?;
+                if _settings.check_for_updates {
+                    check_for_update(app_handle.clone())?;
+                }
             }
 
             Ok(())
