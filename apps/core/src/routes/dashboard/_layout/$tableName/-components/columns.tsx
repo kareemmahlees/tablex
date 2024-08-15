@@ -2,6 +2,7 @@ import { type ColumnProps, commands } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
 import { unwrapResult } from "@/lib/utils"
 import type { ColumnDef } from "@tanstack/react-table"
+import ForeignKeyDropdown from "./fk-dropdown"
 import SortingButton from "./sorting-btn"
 
 export const generateColumnsDefs = async (tableName: string) => {
@@ -13,8 +14,7 @@ export const generateColumnsDefs = async (tableName: string) => {
         accessorKey: columnName,
         // types for `meta` come from env.d.ts
         meta: {
-          name: columnName,
-          hasFkRelations
+          name: columnName
         },
         header: ({ column }) => {
           return <SortingButton column={column} title={columnName} />
@@ -26,7 +26,18 @@ export const generateColumnsDefs = async (tableName: string) => {
           if (value && value.length > 20) {
             cellContent = value.slice(0, 15) + "..."
           }
-          return <span>{cellContent}</span>
+          return (
+            <span className="flex items-center gap-x-2">
+              {hasFkRelations && (
+                <ForeignKeyDropdown
+                  tableName={tableName}
+                  columnName={columnName}
+                  cellValue={value}
+                />
+              )}
+              {cellContent}
+            </span>
+          )
         }
       }
       columnDefinition.id = isPK ? "pk" : columnDefinition.accessorKey

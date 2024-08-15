@@ -35,7 +35,6 @@ import { copyRows } from "@/keybindings/row"
 import { useEditRowSheetState } from "@/state/sheetState"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
-import ForeignKeyDropdown from "./fk-dropdown"
 import TableActions from "./table-actions"
 
 interface DataTableProps {
@@ -139,19 +138,10 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
                         >
                           {row.getVisibleCells().map((cell) => (
                             <TableCell key={cell.id}>
-                              <div className="flex items-center gap-x-2">
-                                {cell.column.columnDef.meta?.hasFkRelations ? (
-                                  <ForeignKeyDropdown
-                                    tableName={tableName}
-                                    columnName={cell.column.columnDef.meta.name}
-                                    cellValue={cell.getValue()}
-                                  />
-                                ) : null}
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </div>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
                             </TableCell>
                           ))}
                         </TableRow>
