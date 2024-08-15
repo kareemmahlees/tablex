@@ -10,6 +10,7 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues, isUnsupported } from "@/lib/utils"
@@ -83,43 +84,45 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
     return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
 
   return (
-    <SheetContent className="overflow-y-auto">
+    <SheetContent>
       <SheetHeader className="mb-4">
         <SheetTitle>Edit row</SheetTitle>
       </SheetHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {row
-            .getAllCells()
-            // to remove the first checkbox column
-            .slice(1)
-            .map((cell) => (
-              <FormField
-                key={cell.column.id}
-                control={form.control}
-                name={cell.column.id}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>{cell.column.id}</FormLabel>
-                    <FormControl>
-                      <DynamicFormInput
-                        colDataType={getColumnType(
-                          columnsProps,
-                          cell.column.id
-                        )}
-                        defaultValue={cell.getValue() as string}
-                        field={field}
-                        disabled={isUnsupported(columnsProps, cell.column.id)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
+      <ScrollArea className="h-full">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {row
+              .getAllCells()
+              // to remove the first checkbox column
+              .slice(1)
+              .map((cell) => (
+                <FormField
+                  key={cell.column.id}
+                  control={form.control}
+                  name={cell.column.id}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>{cell.column.id}</FormLabel>
+                      <FormControl>
+                        <DynamicFormInput
+                          colDataType={getColumnType(
+                            columnsProps,
+                            cell.column.id
+                          )}
+                          defaultValue={cell.getValue() as string}
+                          field={field}
+                          disabled={isUnsupported(columnsProps, cell.column.id)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
+      </ScrollArea>
     </SheetContent>
   )
 }
