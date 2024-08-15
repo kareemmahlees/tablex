@@ -93,8 +93,6 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
       ) : (
         <ContextMenu>
           <ScrollArea className="relative h-full w-full overflow-auto">
-            <ScrollBar orientation="vertical" />
-            <ScrollBar orientation="horizontal" />
             <VirtualTable
               ref={tableRef}
               virtualizer={virtualizer}
@@ -165,6 +163,7 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
                 </TableBody>
               </ContextMenuTrigger>
             </VirtualTable>
+            <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </ContextMenu>
       )}

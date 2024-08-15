@@ -128,8 +128,6 @@ type ResultTableProps = {
 const ResultTable = ({ result }: ResultTableProps) => {
   return (
     <ScrollArea className="h-full overflow-auto">
-      <ScrollBar orientation="vertical" />
-      <ScrollBar orientation="horizontal" />
       <Table>
         <TableHeader className="bg-zinc-800">
           <TableRow className="sticky -top-[1px] border-none backdrop-blur-lg">
@@ -151,6 +149,7 @@ const ResultTable = ({ result }: ResultTableProps) => {
           ))}
         </TableBody>
       </Table>
+      <ScrollBar orientation="horizontal" />
     </ScrollArea>
   )
 }
