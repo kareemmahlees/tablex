@@ -31,7 +31,7 @@ const TableActions = ({ tableName, table }: TableActionsProps) => {
           <Button
             variant={"ghost"}
             size={"sm"}
-            onClick={toggleSqlEditor}
+            onClick={() => toggleSqlEditor()}
             className="hidden lg:block"
           >
             <Terminal className="h-5 w-5" />

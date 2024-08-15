@@ -33,16 +33,17 @@ import { useSetupReactTable } from "@/hooks/table"
 import { useKeybindings } from "@/keybindings/manager"
 import { copyRows } from "@/keybindings/row"
 import { useEditRowSheetState } from "@/state/sheetState"
+import { useTableState } from "@/state/tableState"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
 import TableActions from "./table-actions"
 
 interface DataTableProps {
   columns: ColumnDef<ColumnProps>[]
-  tableName: string
 }
 
-const DataTable = ({ columns, tableName }: DataTableProps) => {
+const DataTable = ({ columns }: DataTableProps) => {
+  const { tableName, pkColumn } = useTableState()
   const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
     useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
@@ -67,11 +68,13 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
       },
       {
         command: "deleteRow",
-        handler: () =>
-          deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
+        handler: () => {
+          deleteRowsCmd(tableName, table.getSelectedRowModel().rows, pkColumn)
+          table.toggleAllRowsSelected(false)
+        }
       }
     ])
-  }, [keybindingsManager, table, tableName])
+  }, [keybindingsManager, table, tableName, pkColumn])
 
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -156,7 +159,6 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
                     </TableRow>
                   )}
                   <TableContextMenuContent
-                    tableName={tableName}
                     table={table}
                     contextMenuRow={contextMenuRow}
                   />
@@ -167,7 +169,7 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
           </ScrollArea>
         </ContextMenu>
       )}
-      <EditRowSheet tableName={tableName} row={contextMenuRow} table={table} />
+      <EditRowSheet row={contextMenuRow} />
     </Sheet>
   )
 }
@@ -177,14 +179,13 @@ export default DataTable
 interface TableContextMenuContentProps {
   table: TableType<any>
   contextMenuRow?: Row<any>
-  tableName: string
 }
 
 const TableContextMenuContent = ({
   table,
-  tableName,
   contextMenuRow
 }: TableContextMenuContentProps) => {
+  const { tableName, pkColumn } = useTableState()
   const { toggleSheet } = useEditRowSheetState()
 
   if (!contextMenuRow) return null
@@ -194,9 +195,10 @@ const TableContextMenuContent = ({
       data-side="bottom"
     >
       <ContextMenuItem
-        onSelect={async () =>
-          await deleteRowsCmd(table, tableName, [contextMenuRow])
-        }
+        onSelect={async () => {
+          await deleteRowsCmd(tableName, [contextMenuRow], pkColumn)
+          table.toggleAllRowsSelected(false)
+        }}
       >
         Delete
         <ContextMenuShortcut>Delete</ContextMenuShortcut>

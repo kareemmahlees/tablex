@@ -1,21 +1,23 @@
 import { type ColumnProps, commands } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
 import { unwrapResult } from "@/lib/utils"
+import type { TableState } from "@/state/tableState"
 import type { ColumnDef } from "@tanstack/react-table"
 import ForeignKeyDropdown from "./fk-dropdown"
 import SortingButton from "./sorting-btn"
 
-export const generateColumnsDefs = async (tableName: string) => {
+export const generateColumnsDefs = async (
+  tableName: string,
+  updatePkColumn: TableState["updatePkColumn"]
+) => {
   const columnsResult = await commands.getColumnsProps(tableName)
   const columns = unwrapResult(columnsResult)
   const columnsDefinitions = columns.map(
     ({ columnName, isPK, hasFkRelations }) => {
       const columnDefinition: ColumnDef<ColumnProps> = {
         accessorKey: columnName,
+        id: columnName,
         // types for `meta` come from env.d.ts
-        meta: {
-          name: columnName
-        },
         header: ({ column }) => {
           return <SortingButton column={column} title={columnName} />
         },
@@ -40,7 +42,9 @@ export const generateColumnsDefs = async (tableName: string) => {
           )
         }
       }
-      columnDefinition.id = isPK ? "pk" : columnDefinition.accessorKey
+      if (isPK) {
+        updatePkColumn(columnName)
+      }
       return columnDefinition
     }
   )

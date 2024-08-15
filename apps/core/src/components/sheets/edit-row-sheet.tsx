@@ -14,8 +14,9 @@ import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues, isUnsupported } from "@/lib/utils"
 import { useEditRowSheetState } from "@/state/sheetState"
+import { useTableState } from "@/state/tableState"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Row, Table } from "@tanstack/react-table"
+import type { Row } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
@@ -28,12 +29,11 @@ const getColumnType = (columnsProps: ColumnProps[], columnName: string) => {
 }
 
 interface EditRowSheetProps {
-  tableName: string
-  table: Table<any>
   row?: Row<any>
 }
 
-const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
+const EditRowSheet = ({ row }: EditRowSheetProps) => {
+  const { tableName, pkColumn } = useTableState()
   const { toggleSheet } = useEditRowSheetState()
   const {
     "0": {
@@ -61,16 +61,15 @@ const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
   const onSubmit = async (
     values: z.infer<NonNullable<typeof partialZodSchema>>
   ) => {
-    const column = table.getColumn("pk")
-    if (!column)
+    if (!pkColumn)
       return toast.error("Table Doesn't have a primary key", {
         id: "table_pk_error"
       })
     await updateRowCmd(
       tableName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      column.columnDef.meta?.name!,
-      row.getValue("pk"),
+      pkColumn,
+      row.getValue(pkColumn),
       dirtyValues(form.formState.dirtyFields, values),
       toggleSheet
     )
@@ -101,12 +100,12 @@ const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
                 name={cell.column.id}
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>{cell.column.columnDef.meta?.name}</FormLabel>
+                    <FormLabel>{cell.column.id}</FormLabel>
                     <FormControl>
                       <DynamicFormInput
                         colDataType={getColumnType(
                           columnsProps,
-                          cell.column.columnDef.meta?.name as string
+                          cell.column.id
                         )}
                         defaultValue={cell.getValue() as string}
                         field={field}
