@@ -27,6 +27,7 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger
 } from "@/components/ui/context-menu"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { useKeybindings } from "@/keybindings/manager"
@@ -59,17 +60,19 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
     }
   }, [queryClient])
 
-  keybindingsManager.registerKeybindings([
-    {
-      command: "copyRow",
-      handler: () => copyRows(table.getSelectedRowModel().rows)
-    },
-    {
-      command: "deleteRow",
-      handler: () =>
-        deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
-    }
-  ])
+  useEffect(() => {
+    keybindingsManager.registerKeybindings([
+      {
+        command: "copyRow",
+        handler: () => copyRows(table.getSelectedRowModel().rows)
+      },
+      {
+        command: "deleteRow",
+        handler: () =>
+          deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
+      }
+    ])
+  }, [keybindingsManager, table, tableName])
 
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -90,85 +93,89 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
         <LoadingSpinner />
       ) : (
         <ContextMenu>
-          <VirtualTable
-            ref={tableRef}
-            virtualizer={virtualizer}
-            virtualizerRef={parentRef}
-          >
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow
-                  key={headerGroup.id}
-                  className="sticky top-0 backdrop-blur-lg"
-                >
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className="text-sm font-bold lg:text-base"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <ContextMenuTrigger asChild>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  virtualizer.getVirtualItems().map((virtualRow) => {
-                    const row = rows[virtualRow.index]
-                    return (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
-                        onContextMenu={() => setContextMenuRow(row)}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            <div className="flex items-center gap-x-2">
-                              {cell.column.columnDef.meta?.hasFkRelations ? (
-                                <ForeignKeyDropdown
-                                  tableName={tableName}
-                                  columnName={cell.column.columnDef.meta.name}
-                                  cellValue={cell.getValue()}
-                                />
-                              ) : null}
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
+          <ScrollArea className="relative h-full w-full overflow-auto">
+            <ScrollBar orientation="vertical" />
+            <ScrollBar orientation="horizontal" />
+            <VirtualTable
+              ref={tableRef}
+              virtualizer={virtualizer}
+              virtualizerRef={parentRef}
+            >
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow
+                    key={headerGroup.id}
+                    className="sticky top-0 backdrop-blur-lg"
+                  >
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead
+                          key={header.id}
+                          className="text-sm font-bold lg:text-base"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
                               )}
-                            </div>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
+                        </TableHead>
+                      )
+                    })}
                   </TableRow>
-                )}
-                <TableContextMenuContent
-                  tableName={tableName}
-                  table={table}
-                  contextMenuRow={contextMenuRow}
-                />
-              </TableBody>
-            </ContextMenuTrigger>
-          </VirtualTable>
+                ))}
+              </TableHeader>
+              <ContextMenuTrigger asChild>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    virtualizer.getVirtualItems().map((virtualRow) => {
+                      const row = rows[virtualRow.index]
+                      return (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                          className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
+                          onContextMenu={() => setContextMenuRow(row)}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              <div className="flex items-center gap-x-2">
+                                {cell.column.columnDef.meta?.hasFkRelations ? (
+                                  <ForeignKeyDropdown
+                                    tableName={tableName}
+                                    columnName={cell.column.columnDef.meta.name}
+                                    cellValue={cell.getValue()}
+                                  />
+                                ) : null}
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </div>
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      )
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  <TableContextMenuContent
+                    tableName={tableName}
+                    table={table}
+                    contextMenuRow={contextMenuRow}
+                  />
+                </TableBody>
+              </ContextMenuTrigger>
+            </VirtualTable>
+          </ScrollArea>
         </ContextMenu>
       )}
       <EditRowSheet tableName={tableName} row={contextMenuRow} table={table} />
