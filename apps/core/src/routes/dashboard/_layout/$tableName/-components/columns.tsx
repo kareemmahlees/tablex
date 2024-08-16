@@ -17,14 +17,18 @@ export const generateColumnsDefs = async (
       const columnDefinition: ColumnDef<ColumnProps> = {
         accessorKey: columnName,
         id: columnName,
-        // types for `meta` come from env.d.ts
         header: ({ column }) => {
           return <SortingButton column={column} title={columnName} />
         },
         cell: (info) => {
-          // Clamp long text.
-          const value = info.getValue() as string
+          // Overcome the fact that tanstack table can't render boolean
+          // values by default.
+          const value =
+            typeof info.getValue() === "boolean"
+              ? String(info.getValue())
+              : (info.getValue() as string)
           let cellContent = value
+          // Clamp long text.
           if (value && value.length > 20) {
             cellContent = value.slice(0, 15) + "..."
           }
@@ -37,6 +41,7 @@ export const generateColumnsDefs = async (
                   cellValue={value}
                 />
               )}
+
               {cellContent}
             </span>
           )

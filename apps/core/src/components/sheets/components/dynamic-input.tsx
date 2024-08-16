@@ -1,4 +1,5 @@
 import type { ColumnProps } from "@/bindings"
+import { Switch } from "@/components/ui/switch"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
 import { Input } from "../../ui/input"
 import { DateTimePicker } from "./date-time-picker"
@@ -67,6 +68,13 @@ const DynamicFormInput = <T extends FieldValues>({
       )
     case "json":
       return <JsonEditor field={field} defaultValue={defaultValue} />
+    case "boolean":
+      return (
+        <Switch
+          checked={field.value || Boolean(defaultValue)}
+          onCheckedChange={field.onChange}
+        />
+      )
     default:
       return (
         <Input {...field} disabled={disabled} defaultValue={defaultValue} />
