@@ -11,7 +11,7 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+  <div className="relative w-full ">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
@@ -25,7 +25,7 @@ const VirtualTable = React.forwardRef<
   HTMLTableElement,
   TableProps
 >(({ className,virtualizerRef,virtualizer, ...props }, ref) => (
-  <div className="relative h-full w-full overflow-auto" >
+  <div className="relative h-full w-full " >
     <div ref={virtualizerRef} style={{height:`${virtualizer.getTotalSize()}px`}}>
     <table
       ref={ref}

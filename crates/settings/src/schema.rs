@@ -15,7 +15,7 @@ pub struct Settings {
     /// Number of rows to be fetched per page.
     page_size: u32,
     /// Wether to automatically check for updates or not.
-    check_for_updates: bool,
+    pub check_for_updates: bool,
     /// Configuration for the SQL editor.
     sql_editor: SQLEditorSettings,
 }

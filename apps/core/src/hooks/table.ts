@@ -1,6 +1,7 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/$tableName/-components/columns"
 import { useSettings } from "@/settings/manager"
+import { useTableState } from "@/state/tableState"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
@@ -15,9 +16,10 @@ import { useMemo, useRef, useState } from "react"
 import { useGetPaginatedRows } from "./row"
 
 export const useGetTableColumns = (tableName: string) => {
+  const { updatePkColumn } = useTableState()
   return useQuery({
     queryKey: ["table_columns", tableName],
-    queryFn: async () => await generateColumnsDefs(tableName)
+    queryFn: async () => await generateColumnsDefs(tableName, updatePkColumn)
   })
 }
 

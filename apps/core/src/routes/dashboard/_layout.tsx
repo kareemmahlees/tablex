@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
 import { cn } from "@tablex/lib/utils"
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router"
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
 import { useEffect, useState, type KeyboardEvent } from "react"
 import toast from "react-hot-toast"
@@ -25,13 +25,15 @@ export const Route = createFileRoute("/dashboard/_layout")({
     connectionName,
     tableName
   }),
-  loader: async ({ deps: { connectionName }, navigate }) => {
+  loader: async ({ deps: { connectionName } }) => {
     const connName = connectionName || "Temp Connection"
 
     const tables = await commands.getTables()
     if (tables.status === "error") {
       toast.error(tables.error, { id: "get_tables" })
-      return navigate({ to: "../" })
+      throw redirect({
+        to: "/connections"
+      })
     }
 
     return { connName, tables: tables.data }
@@ -61,7 +63,6 @@ function DashboardLayout() {
 
     clearTimeout(timeout)
 
-    // @ts-expect-error idk what's the problem yet.
     timeout = setTimeout(() => {
       const filteredTables = tables.filter((table) =>
         table.includes(searchPattern)

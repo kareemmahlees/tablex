@@ -1,6 +1,8 @@
 import LoadingSpinner from "@/components/loading-spinner"
 import { useGetTableColumns } from "@/hooks/table"
+import { useTableState } from "@/state/tableState"
 import { createFileRoute } from "@tanstack/react-router"
+import { useEffect } from "react"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
 import DataTable from "./-components/data-table"
@@ -17,6 +19,9 @@ export const Route = createFileRoute("/dashboard/_layout/$tableName")({
 
 function TableData() {
   const { tableName } = Route.useParams()
+  const { updateTableName } = useTableState()
+
+  useEffect(() => updateTableName(tableName), [tableName, updateTableName])
 
   const {
     data: columns,
@@ -30,7 +35,7 @@ function TableData() {
 
   return (
     <section className="flex w-full flex-col overflow-auto will-change-scroll">
-      <DataTable columns={columns!} tableName={tableName} />
+      <DataTable columns={columns!} />
     </section>
   )
 }

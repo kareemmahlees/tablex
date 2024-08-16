@@ -10,12 +10,14 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues, isUnsupported } from "@/lib/utils"
 import { useEditRowSheetState } from "@/state/sheetState"
+import { useTableState } from "@/state/tableState"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Row, Table } from "@tanstack/react-table"
+import type { Row } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
@@ -28,12 +30,11 @@ const getColumnType = (columnsProps: ColumnProps[], columnName: string) => {
 }
 
 interface EditRowSheetProps {
-  tableName: string
-  table: Table<any>
   row?: Row<any>
 }
 
-const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
+const EditRowSheet = ({ row }: EditRowSheetProps) => {
+  const { tableName, pkColumn } = useTableState()
   const { toggleSheet } = useEditRowSheetState()
   const {
     "0": {
@@ -61,16 +62,15 @@ const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
   const onSubmit = async (
     values: z.infer<NonNullable<typeof partialZodSchema>>
   ) => {
-    const column = table.getColumn("pk")
-    if (!column)
+    if (!pkColumn)
       return toast.error("Table Doesn't have a primary key", {
         id: "table_pk_error"
       })
     await updateRowCmd(
       tableName,
       // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-      column.columnDef.meta?.name!,
-      row.getValue("pk"),
+      pkColumn,
+      row.getValue(pkColumn),
       dirtyValues(form.formState.dirtyFields, values),
       toggleSheet
     )
@@ -84,43 +84,45 @@ const EditRowSheet = ({ row, table, tableName }: EditRowSheetProps) => {
     return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
 
   return (
-    <SheetContent className="overflow-y-auto">
+    <SheetContent>
       <SheetHeader className="mb-4">
         <SheetTitle>Edit row</SheetTitle>
       </SheetHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          {row
-            .getAllCells()
-            // to remove the first checkbox column
-            .slice(1)
-            .map((cell) => (
-              <FormField
-                key={cell.column.id}
-                control={form.control}
-                name={cell.column.id}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>{cell.column.columnDef.meta?.name}</FormLabel>
-                    <FormControl>
-                      <DynamicFormInput
-                        colDataType={getColumnType(
-                          columnsProps,
-                          cell.column.columnDef.meta?.name as string
-                        )}
-                        defaultValue={cell.getValue() as string}
-                        field={field}
-                        disabled={isUnsupported(columnsProps, cell.column.id)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
+      <ScrollArea className="h-full">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {row
+              .getAllCells()
+              // to remove the first checkbox column
+              .slice(1)
+              .map((cell) => (
+                <FormField
+                  key={cell.column.id}
+                  control={form.control}
+                  name={cell.column.id}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>{cell.column.id}</FormLabel>
+                      <FormControl>
+                        <DynamicFormInput
+                          colDataType={getColumnType(
+                            columnsProps,
+                            cell.column.id
+                          )}
+                          defaultValue={cell.getValue() as string}
+                          field={field}
+                          disabled={isUnsupported(columnsProps, cell.column.id)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
+      </ScrollArea>
     </SheetContent>
   )
 }

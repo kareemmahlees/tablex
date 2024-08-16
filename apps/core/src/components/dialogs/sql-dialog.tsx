@@ -21,6 +21,7 @@ import { useSqlEditorState } from "@/state/dialogState"
 import { Editor, type OnMount } from "@monaco-editor/react"
 import { type Dispatch, type SetStateAction, useRef, useState } from "react"
 import CustomTooltip from "../custom-tooltip"
+import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
 type RawQueryResult = Result<{ [x: string]: JsonValue }[], string>
 type MonakoEditor = Parameters<OnMount>[0]
@@ -67,11 +68,7 @@ const SQLDialog = () => {
               )}
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel
-              style={{
-                overflow: "auto"
-              }}
-            >
+            <ResizablePanel>
               {queryResult &&
                 (queryResult.status === "error" ? (
                   <pre className="m-4">{queryResult.error}</pre>
@@ -130,26 +127,29 @@ type ResultTableProps = {
 
 const ResultTable = ({ result }: ResultTableProps) => {
   return (
-    <Table>
-      <TableHeader className="bg-zinc-800">
-        <TableRow className="sticky top-[-1px] border-none backdrop-blur-lg">
-          {/* A quick trick to get column headings without the need to 
+    <ScrollArea className="h-full overflow-auto">
+      <Table>
+        <TableHeader className="bg-zinc-800">
+          <TableRow className="sticky -top-[1px] border-none backdrop-blur-lg">
+            {/* A quick trick to get column headings without the need to 
               make an extra call to the backend
             */}
-          {Object.keys(result[0]).map((header) => (
-            <TableHead className="">{header}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {result.map((row) => (
-          <TableRow>
-            {Object.values(row).map((rowValue) => (
-              <TableCell>{rowValue?.toString()}</TableCell>
+            {Object.keys(result[0]).map((header) => (
+              <TableHead>{header}</TableHead>
             ))}
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {result.map((row) => (
+            <TableRow>
+              {Object.values(row).map((rowValue) => (
+                <TableCell>{rowValue?.toString()}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   )
 }

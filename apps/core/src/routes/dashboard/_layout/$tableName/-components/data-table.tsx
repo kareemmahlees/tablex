@@ -27,22 +27,23 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger
 } from "@/components/ui/context-menu"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Sheet } from "@/components/ui/sheet"
 import { useSetupReactTable } from "@/hooks/table"
 import { useKeybindings } from "@/keybindings/manager"
 import { copyRows } from "@/keybindings/row"
 import { useEditRowSheetState } from "@/state/sheetState"
+import { useTableState } from "@/state/tableState"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
-import ForeignKeyDropdown from "./fk-dropdown"
 import TableActions from "./table-actions"
 
 interface DataTableProps {
   columns: ColumnDef<ColumnProps>[]
-  tableName: string
 }
 
-const DataTable = ({ columns, tableName }: DataTableProps) => {
+const DataTable = ({ columns }: DataTableProps) => {
+  const { tableName, pkColumn } = useTableState()
   const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
     useSetupReactTable({ columns, tableName })
   const queryClient = useQueryClient()
@@ -59,17 +60,21 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
     }
   }, [queryClient])
 
-  keybindingsManager.registerKeybindings([
-    {
-      command: "copyRow",
-      handler: () => copyRows(table.getSelectedRowModel().rows)
-    },
-    {
-      command: "deleteRow",
-      handler: () =>
-        deleteRowsCmd(table, tableName, table.getSelectedRowModel().rows)
-    }
-  ])
+  useEffect(() => {
+    keybindingsManager.registerKeybindings([
+      {
+        command: "copyRow",
+        handler: () => copyRows(table.getSelectedRowModel().rows)
+      },
+      {
+        command: "deleteRow",
+        handler: () => {
+          deleteRowsCmd(tableName, table.getSelectedRowModel().rows, pkColumn)
+          table.toggleAllRowsSelected(false)
+        }
+      }
+    ])
+  }, [keybindingsManager, table, tableName, pkColumn])
 
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -90,88 +95,81 @@ const DataTable = ({ columns, tableName }: DataTableProps) => {
         <LoadingSpinner />
       ) : (
         <ContextMenu>
-          <VirtualTable
-            ref={tableRef}
-            virtualizer={virtualizer}
-            virtualizerRef={parentRef}
-          >
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow
-                  key={headerGroup.id}
-                  className="sticky top-0 backdrop-blur-lg"
-                >
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className="text-sm font-bold lg:text-base"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <ContextMenuTrigger asChild>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  virtualizer.getVirtualItems().map((virtualRow) => {
-                    const row = rows[virtualRow.index]
-                    return (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
-                        onContextMenu={() => setContextMenuRow(row)}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            <div className="flex items-center gap-x-2">
-                              {cell.column.columnDef.meta?.hasFkRelations ? (
-                                <ForeignKeyDropdown
-                                  tableName={tableName}
-                                  columnName={cell.column.columnDef.meta.name}
-                                  cellValue={cell.getValue()}
-                                />
-                              ) : null}
+          <ScrollArea className="relative h-full w-full overflow-auto">
+            <VirtualTable
+              ref={tableRef}
+              virtualizer={virtualizer}
+              virtualizerRef={parentRef}
+            >
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow
+                    key={headerGroup.id}
+                    className="sticky top-0 backdrop-blur-lg"
+                  >
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead
+                          key={header.id}
+                          className="text-sm font-bold lg:text-base"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      )
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <ContextMenuTrigger asChild>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    virtualizer.getVirtualItems().map((virtualRow) => {
+                      const row = rows[virtualRow.index]
+                      return (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                          className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
+                          onContextMenu={() => setContextMenuRow(row)}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
                               {flexRender(
                                 cell.column.columnDef.cell,
                                 cell.getContext()
                               )}
-                            </div>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    )
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-                <TableContextMenuContent
-                  tableName={tableName}
-                  table={table}
-                  contextMenuRow={contextMenuRow}
-                />
-              </TableBody>
-            </ContextMenuTrigger>
-          </VirtualTable>
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      )
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  <TableContextMenuContent
+                    table={table}
+                    contextMenuRow={contextMenuRow}
+                  />
+                </TableBody>
+              </ContextMenuTrigger>
+            </VirtualTable>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </ContextMenu>
       )}
-      <EditRowSheet tableName={tableName} row={contextMenuRow} table={table} />
+      <EditRowSheet row={contextMenuRow} />
     </Sheet>
   )
 }
@@ -181,14 +179,13 @@ export default DataTable
 interface TableContextMenuContentProps {
   table: TableType<any>
   contextMenuRow?: Row<any>
-  tableName: string
 }
 
 const TableContextMenuContent = ({
   table,
-  tableName,
   contextMenuRow
 }: TableContextMenuContentProps) => {
+  const { tableName, pkColumn } = useTableState()
   const { toggleSheet } = useEditRowSheetState()
 
   if (!contextMenuRow) return null
@@ -198,9 +195,10 @@ const TableContextMenuContent = ({
       data-side="bottom"
     >
       <ContextMenuItem
-        onSelect={async () =>
-          await deleteRowsCmd(table, tableName, [contextMenuRow])
-        }
+        onSelect={async () => {
+          await deleteRowsCmd(tableName, [contextMenuRow], pkColumn)
+          table.toggleAllRowsSelected(false)
+        }}
       >
         Delete
         <ContextMenuShortcut>Delete</ContextMenuShortcut>
