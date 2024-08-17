@@ -2,7 +2,10 @@ use crate::handler::{Handler, RowHandler, TableHandler};
 use async_trait::async_trait;
 use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
-use tx_lib::types::{ColumnProps, FKRows, FkRelation};
+use tx_lib::{
+    types::{ColumnProps, FKRows, FkRelation},
+    Result,
+};
 
 #[derive(Debug)]
 pub struct PostgresHandler;
@@ -10,24 +13,25 @@ impl Handler for PostgresHandler {}
 
 #[async_trait]
 impl TableHandler for PostgresHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>, String> {
+    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
-        sqlx::query(
+        let res = sqlx::query(
             "SELECT \"table_name\"
             FROM information_schema.tables
             WHERE table_type = 'BASE TABLE'
                 AND table_schema = 'public';",
         )
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())
+        .await?;
+
+        Ok(res)
     }
 
     async fn get_columns_props(
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<Vec<ColumnProps>, String> {
+    ) -> Result<Vec<ColumnProps>> {
         let result = sqlx::query_as::<_,ColumnProps>(
             "
             SELECT col.column_name,
@@ -68,8 +72,7 @@ impl TableHandler for PostgresHandler {
         )
         .bind(&table_name)
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())?;
+        .await?;
 
         Ok(result)
     }
@@ -83,7 +86,7 @@ impl RowHandler for PostgresHandler {
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
-    ) -> Result<Vec<FKRows>, String> {
+    ) -> Result<Vec<FKRows>> {
         let fk_relations = sqlx::query_as::<_, FkRelation>(
             "
             SELECT
@@ -104,8 +107,7 @@ impl RowHandler for PostgresHandler {
         .bind(&column_name)
         .bind(&table_name)
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())?;
+        .await?;
 
         let mut result = Vec::new();
 
@@ -120,8 +122,7 @@ impl RowHandler for PostgresHandler {
                 .as_str(),
             )
             .fetch_all(pool)
-            .await
-            .map_err(|err| err.to_string())?;
+            .await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 

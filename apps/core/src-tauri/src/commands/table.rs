@@ -2,11 +2,11 @@ use crate::state::SharedState;
 use serde_json::{Map, Value};
 use sqlx::Row;
 use tauri::{async_runtime::Mutex, State};
-use tx_lib::types::ColumnProps;
+use tx_lib::{types::ColumnProps, Result};
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>, String> {
+pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_ref().unwrap();
@@ -28,7 +28,7 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
 pub async fn get_columns_props(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
-) -> Result<Vec<ColumnProps>, String> {
+) -> Result<Vec<ColumnProps>> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_ref().unwrap();
@@ -42,7 +42,7 @@ pub async fn get_columns_props(
 pub async fn execute_raw_query(
     state: State<'_, Mutex<SharedState>>,
     query: String,
-) -> Result<Vec<Map<String, Value>>, String> {
+) -> Result<Vec<Map<String, Value>>> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_ref().unwrap();

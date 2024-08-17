@@ -1,4 +1,5 @@
-import { ColumnProps } from "@/bindings"
+import type { ColumnProps, TxError } from "@/bindings"
+import { Button } from "@/components/ui/button"
 import { toast } from "react-hot-toast"
 import { Drivers, type ConnectionStringParams } from "./types"
 
@@ -22,17 +23,24 @@ export function constructConnectionString(params: ConnectionStringParams) {
   return connString
 }
 
-export type Result<T extends any | null, E extends string> =
+export type Result<T extends any | null> =
   | { status: "ok"; data: T }
-  | { status: "error"; error: E }
+  | { status: "error"; error: TxError }
 
-export function customToast<T extends string, E extends string>(
-  commandResult: Result<T, E>,
+export function customToast<T extends string>(
+  commandResult: Result<T>,
   onSuccess: () => void,
   id?: string
 ) {
   if (commandResult.status === "error") {
-    return toast.error(commandResult.error, { id })
+    return toast.custom(
+      <div>
+        <p>{commandResult.error.message}</p>
+        <Button variant={"link"} size={"sm"}>
+          more
+        </Button>
+      </div>
+    )
   }
   onSuccess()
 
@@ -44,9 +52,10 @@ export function customToast<T extends string, E extends string>(
  * @param result Result of executing a Tauri command.
  * @returns The inner data of the `Ok`
  */
-export function unwrapResult<T, E extends string>(result: Result<T, E>) {
+export function unwrapResult<T>(result: Result<T>) {
   if (result.status === "error") {
-    throw new Error(result.error)
+    customToast(result, () => {})
+    throw new Error(result.error.kind)
   }
   return result.data
 }

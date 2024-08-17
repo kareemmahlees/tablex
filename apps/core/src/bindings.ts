@@ -96,7 +96,7 @@ async writeIntoKeybindingsFile(keybindings: Keybinding[]) : Promise<Result<null,
     else return { status: "error", error: e  as any };
 }
 },
-async getTables() : Promise<Result<string[], string>> {
+async getTables() : Promise<Result<string[], TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_tables") };
 } catch (e) {
@@ -104,7 +104,7 @@ async getTables() : Promise<Result<string[], string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], string>> {
+async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_columns_props", { tableName }) };
 } catch (e) {
@@ -112,7 +112,7 @@ async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], string>
     else return { status: "error", error: e  as any };
 }
 },
-async executeRawQuery(query: string) : Promise<Result<{ [key in string]: JsonValue }[], string>> {
+async executeRawQuery(query: string) : Promise<Result<{ [key in string]: JsonValue }[], TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("execute_raw_query", { query }) };
 } catch (e) {
@@ -120,7 +120,7 @@ async executeRawQuery(query: string) : Promise<Result<{ [key in string]: JsonVal
     else return { status: "error", error: e  as any };
 }
 },
-async getPaginatedRows(tableName: string, pageIndex: number, pageSize: number) : Promise<Result<PaginatedRows, string>> {
+async getPaginatedRows(tableName: string, pageIndex: number, pageSize: number) : Promise<Result<PaginatedRows, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_paginated_rows", { tableName, pageIndex, pageSize }) };
 } catch (e) {
@@ -128,7 +128,7 @@ async getPaginatedRows(tableName: string, pageIndex: number, pageSize: number) :
     else return { status: "error", error: e  as any };
 }
 },
-async deleteRows(pkColName: string, rowPkValues: JsonValue[], tableName: string) : Promise<Result<string, string>> {
+async deleteRows(pkColName: string, rowPkValues: JsonValue[], tableName: string) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("delete_rows", { pkColName, rowPkValues, tableName }) };
 } catch (e) {
@@ -136,7 +136,7 @@ async deleteRows(pkColName: string, rowPkValues: JsonValue[], tableName: string)
     else return { status: "error", error: e  as any };
 }
 },
-async createRow(tableName: string, data: { [key in string]: JsonValue }) : Promise<Result<string, string>> {
+async createRow(tableName: string, data: { [key in string]: JsonValue }) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("create_row", { tableName, data }) };
 } catch (e) {
@@ -144,7 +144,7 @@ async createRow(tableName: string, data: { [key in string]: JsonValue }) : Promi
     else return { status: "error", error: e  as any };
 }
 },
-async updateRow(tableName: string, pkColName: string, pkColValue: JsonValue, data: { [key in string]: JsonValue }) : Promise<Result<string, string>> {
+async updateRow(tableName: string, pkColName: string, pkColValue: JsonValue, data: { [key in string]: JsonValue }) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("update_row", { tableName, pkColName, pkColValue, data }) };
 } catch (e) {
@@ -152,7 +152,7 @@ async updateRow(tableName: string, pkColName: string, pkColValue: JsonValue, dat
     else return { status: "error", error: e  as any };
 }
 },
-async getFkRelations(tableName: string, columnName: string, cellValue: JsonValue) : Promise<Result<FKRows[], string>> {
+async getFkRelations(tableName: string, columnName: string, cellValue: JsonValue) : Promise<Result<FKRows[], TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_fk_relations", { tableName, columnName, cellValue }) };
 } catch (e) {
@@ -175,8 +175,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
 export const SETTINGS_FILE_NAME = "settings.json" as const;
+export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
 
 /** user-defined types **/
 

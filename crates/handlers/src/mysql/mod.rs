@@ -2,7 +2,10 @@ use crate::handler::{Handler, RowHandler, TableHandler};
 use async_trait::async_trait;
 use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
-use tx_lib::types::{ColumnProps, FKRows, FkRelation};
+use tx_lib::{
+    types::{ColumnProps, FKRows, FkRelation},
+    Result,
+};
 
 #[derive(Debug)]
 pub struct MySQLHandler;
@@ -11,18 +14,16 @@ impl Handler for MySQLHandler {}
 
 #[async_trait]
 impl TableHandler for MySQLHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>, String> {
+    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
-        sqlx::query("show tables;")
-            .fetch_all(pool)
-            .await
-            .map_err(|err| err.to_string())
+        let res = sqlx::query("show tables;").fetch_all(pool).await?;
+        Ok(res)
     }
     async fn get_columns_props(
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<Vec<ColumnProps>, String> {
+    ) -> Result<Vec<ColumnProps>> {
         let result = sqlx::query_as::<_,ColumnProps>(
                 "SELECT cols.column_name AS column_name,
                         cols.data_type AS data_type,
@@ -38,8 +39,7 @@ impl TableHandler for MySQLHandler {
         )
         .bind(&table_name)
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())?;
+        .await?;
 
         Ok(result)
     }
@@ -53,7 +53,7 @@ impl RowHandler for MySQLHandler {
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
-    ) -> Result<Vec<FKRows>, String> {
+    ) -> Result<Vec<FKRows>> {
         let fk_relations = sqlx::query_as::<_, FkRelation>(
             "
             SELECT referenced_table_name AS \"table\",
@@ -68,8 +68,7 @@ impl RowHandler for MySQLHandler {
         .bind(&table_name)
         .bind(&column_name)
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())?;
+        .await?;
 
         let mut result = Vec::new();
 
@@ -84,8 +83,7 @@ impl RowHandler for MySQLHandler {
                 .as_str(),
             )
             .fetch_all(pool)
-            .await
-            .map_err(|err| err.to_string())?;
+            .await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 

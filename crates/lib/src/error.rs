@@ -22,6 +22,9 @@ pub enum TxError {
 
     #[error(transparent)]
     SerdeError(#[from] serde_json::Error),
+
+    #[error("Unsupported data type")]
+    UnsupportedDataType,
 }
 
 impl specta::NamedType for TxError {
@@ -137,6 +140,7 @@ enum TxErrorKind {
     Io { message: String, details: String },
     TauriError { message: String, details: String },
     SerdeError { message: String, details: String },
+    UnsupportedDataType { message: String, details: String },
 }
 
 impl Serialize for TxError {
@@ -160,6 +164,10 @@ impl Serialize for TxError {
             },
             Self::SerdeError(_) => TxErrorKind::SerdeError {
                 message: "Serde serialization error".to_string(),
+                details: error_message,
+            },
+            Self::UnsupportedDataType => TxErrorKind::UnsupportedDataType {
+                message: "Unsupported data type".to_string(),
                 details: error_message,
             },
         };

@@ -1,3 +1,4 @@
+use crate::Result;
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
@@ -28,7 +29,7 @@ pub enum DataType {
 
 /// Utility to decode *most* of db types into serializable rust types.
 /// this code was taken from [here] (https://github.com/tauri-apps/tauri-plugin-sql/blob/v1/src/decode)
-pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
+pub fn to_json(v: AnyValueRef) -> Result<JsonValue> {
     if v.is_null() {
         return Ok(JsonValue::Null);
     }
@@ -130,7 +131,7 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue, String> {
             }
         }
         "NULL" | "VOID" => JsonValue::Null,
-        _ => return Err("Unsupported Data type".to_string()),
+        _ => return Err(crate::TxError::UnsupportedDataType),
     };
 
     Ok(res)
@@ -182,7 +183,7 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
 /// Transform/Decode a `Vec<AnyRow>` into a serializable datastructure.
 ///
 /// Typically used with `SELECT *`.
-pub fn decode_raw_rows(rows: Vec<AnyRow>) -> Result<Vec<JsonMap<String, JsonValue>>, String> {
+pub fn decode_raw_rows(rows: Vec<AnyRow>) -> Result<Vec<JsonMap<String, JsonValue>>> {
     let mut result = Vec::new();
 
     for row in rows {

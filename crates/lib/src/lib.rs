@@ -12,3 +12,4 @@ pub mod fs;
 pub mod types;
 
 pub use error::TxError;
+pub use types::Result;

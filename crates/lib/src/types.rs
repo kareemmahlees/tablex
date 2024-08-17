@@ -1,10 +1,15 @@
 use std::collections::HashMap;
 
-use crate::decode::{self, DataType};
+use crate::{
+    decode::{self, DataType},
+    TxError,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
 use sqlx::{any::AnyRow, Error, FromRow, Row};
+
+pub type Result<T> = std::result::Result<T, TxError>;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Type)]
 #[serde(rename_all = "lowercase")]
@@ -56,7 +61,7 @@ pub struct ColumnProps {
     pub has_fk_relations: bool,
 }
 impl<'r> FromRow<'r, AnyRow> for ColumnProps {
-    fn from_row(row: &'r AnyRow) -> Result<Self, Error> {
+    fn from_row(row: &'r AnyRow) -> std::result::Result<Self, Error> {
         let column_name: String = row.try_get("column_name")?;
         let data_type: DataType = decode::to_data_type(row.try_get_raw("data_type")?);
         let is_nullable = match row.try_get::<i16, &str>("is_nullable") {
