@@ -23,7 +23,6 @@ import { useCreateRowSheetState } from "@/state/sheetState"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
 import { z } from "zod"
 import CustomTooltip from "../custom-tooltip"
 import DynamicFormInput from "./components/dynamic-input"
@@ -65,14 +64,12 @@ const AddRowForm = ({ tableName }: { tableName: string }) => {
     "0": {
       data: zodSchema,
       isLoading: isZodSchemaLoading,
-      isSuccess: isZodSchemaSuccess,
-      error: zodSchemaError
+      isSuccess: isZodSchemaSuccess
     },
     "1": {
       data: columnsProps,
       isLoading: isColumnsPropsLoading,
-      isSuccess: isColumnsPropsSuccess,
-      error: columnsPropsError
+      isSuccess: isColumnsPropsSuccess
     }
   } = useGetGeneralColsData(tableName)
 
@@ -82,12 +79,9 @@ const AddRowForm = ({ tableName }: { tableName: string }) => {
 
   if (isZodSchemaLoading || isColumnsPropsLoading) return <LoadingSpinner />
 
-  if (!isZodSchemaSuccess)
-    return toast.error(zodSchemaError!.message, { id: "get_zod_schema" })
-  if (!isColumnsPropsSuccess)
-    return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
+  if (!isZodSchemaSuccess || !isColumnsPropsSuccess) return
 
-  const onSubmit = async (values: z.infer<typeof zodSchema>) => {
+  const onSubmit = async (values: z.infer<NonNullable<typeof zodSchema>>) => {
     await createRowCmd(tableName, values, toggleSheet)
   }
   return (

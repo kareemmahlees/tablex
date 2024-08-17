@@ -1,5 +1,7 @@
-import { ColumnProps } from "@/bindings"
-import { toast } from "react-hot-toast"
+import type { ColumnProps, TxError } from "@/bindings"
+import ErrorDialog from "@/components/dialogs/error-dialog"
+import { Separator } from "@/components/ui/separator"
+import { ErrorIcon, toast } from "react-hot-toast"
 import { Drivers, type ConnectionStringParams } from "./types"
 
 /**
@@ -22,17 +24,35 @@ export function constructConnectionString(params: ConnectionStringParams) {
   return connString
 }
 
-export type Result<T extends any | null, E extends string> =
+export type Result<T extends any | null> =
   | { status: "ok"; data: T }
-  | { status: "error"; error: E }
+  | { status: "error"; error: TxError }
 
-export function customToast<T extends string, E extends string>(
-  commandResult: Result<T, E>,
+export function customToast<T extends string>(
+  commandResult: Result<T>,
   onSuccess: () => void,
   id?: string
 ) {
   if (commandResult.status === "error") {
-    return toast.error(commandResult.error, { id })
+    return toast(
+      <div className="flex items-center justify-between gap-x-2">
+        <p>{commandResult.error.message}</p>
+        {commandResult.error.details && (
+          <>
+            <Separator orientation="vertical" />
+            <ErrorDialog error={commandResult.error.details}>
+              <button className="hover:bg-muted-foreground rounded-md p-1 font-semibold text-black transition-all">
+                more
+              </button>
+            </ErrorDialog>
+          </>
+        )}
+      </div>,
+      {
+        icon: <ErrorIcon />,
+        id: "toast_error"
+      }
+    )
   }
   onSuccess()
 
@@ -40,13 +60,14 @@ export function customToast<T extends string, E extends string>(
 }
 
 /**
- * Accepts a result returning the inner data or throws an Error.
+ * Accepts a result returning the inner data or returns false that can be checked against.
  * @param result Result of executing a Tauri command.
  * @returns The inner data of the `Ok`
  */
-export function unwrapResult<T, E extends string>(result: Result<T, E>) {
+export function unwrapResult<T>(result: Result<T>): false | T {
   if (result.status === "error") {
-    throw new Error(result.error)
+    customToast(result, () => {})
+    return false
   }
   return result.data
 }

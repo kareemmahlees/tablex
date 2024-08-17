@@ -10,6 +10,6 @@ export type TableState = {
 export const useTableState = create<TableState>((set) => ({
   tableName: "",
   pkColumn: undefined,
-  updateTableName: (tableName) => set(() => ({ tableName: tableName })),
-  updatePkColumn: (pkColumn) => set(() => ({ pkColumn: pkColumn }))
+  updateTableName: (tableName) => set(() => ({ tableName })),
+  updatePkColumn: (pkColumn) => set(() => ({ pkColumn }))
 }))

@@ -26,7 +26,7 @@ use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
-use tx_lib::events::*;
+use tx_lib::{events::*, TxError};
 use tx_settings::*;
 
 #[tauri::command]
@@ -43,7 +43,7 @@ fn close_splashscreen(window: Window) {
     }
 }
 
-fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
+fn ensure_config_files_exist(app: &AppHandle) -> Result<(), TxError> {
     ensure_settings_file_exist(&get_settings_file_path(app)?)?;
     ensure_keybindings_file_exist(&get_keybindings_file_path(app)?)?;
     ensure_connections_file_exist(&get_connections_file_path(app)?)?;
@@ -52,8 +52,8 @@ fn ensure_config_files_exist(app: &AppHandle) -> Result<(), String> {
 
 fn main() {
     let builder = Builder::<tauri::Wry>::new()
-        .ty::<Keybinding>()
-        .ty::<Settings>()
+        .typ::<Keybinding>()
+        .typ::<Settings>()
         .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
         .constant("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME)
         .commands(collect_commands![

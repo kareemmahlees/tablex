@@ -2,7 +2,10 @@ use crate::handler::{Handler, RowHandler, TableHandler};
 use async_trait::async_trait;
 use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
-use tx_lib::types::{ColumnProps, FKRows, FkRelation};
+use tx_lib::{
+    types::{ColumnProps, FKRows, FkRelation},
+    Result,
+};
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -11,23 +14,24 @@ impl Handler for SQLiteHandler {}
 
 #[async_trait]
 impl TableHandler for SQLiteHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>, String> {
-        sqlx::query(
+    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
+        let res = sqlx::query(
             "SELECT name
             FROM sqlite_schema
             WHERE type ='table' 
             AND name NOT LIKE 'sqlite_%';",
         )
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())
+        .await?;
+
+        Ok(res)
     }
 
     async fn get_columns_props(
         &self,
         pool: &AnyPool,
         table_name: String,
-    ) -> Result<Vec<ColumnProps>, String> {
+    ) -> Result<Vec<ColumnProps>> {
         let result = sqlx::query_as::<_,ColumnProps>(
             "
             SELECT ti.name AS column_name,
@@ -47,8 +51,7 @@ impl TableHandler for SQLiteHandler {
         )
         .bind(&table_name)
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())?;
+        .await?;
 
         Ok(result)
     }
@@ -62,15 +65,14 @@ impl RowHandler for SQLiteHandler {
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
-    ) -> Result<Vec<FKRows>, String> {
+    ) -> Result<Vec<FKRows>> {
         let fk_relations = sqlx::query_as::<_, FkRelation>(
             "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;",
         )
         .bind(&table_name)
         .bind(&column_name)
         .fetch_all(pool)
-        .await
-        .map_err(|err| err.to_string())?;
+        .await?;
 
         let mut result = Vec::new();
 
@@ -85,8 +87,7 @@ impl RowHandler for SQLiteHandler {
                 .as_str(),
             )
             .fetch_all(pool)
-            .await
-            .map_err(|err| err.to_string())?;
+            .await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 

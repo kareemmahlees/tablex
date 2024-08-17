@@ -13,7 +13,6 @@ import { unwrapResult } from "@/lib/utils"
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
-import toast from "react-hot-toast"
 
 export const Route = createFileRoute("/connections")({
   beforeLoad: async () => {
@@ -25,13 +24,12 @@ export const Route = createFileRoute("/connections")({
   },
   loader: async ({ abortController }) => {
     const commandResult = await commands.getConnections()
-    if (commandResult.status === "error") {
-      toast.error(commandResult.error, { id: "get_connections" })
-      return abortController.abort(
-        `error while getting connections: ${commandResult.error}`
-      )
+    const connections = unwrapResult(commandResult)
+    if (!connections) {
+      return abortController.abort(`error while getting connections`)
     }
-    return commandResult.data
+
+    return connections
   },
   staleTime: 0,
   component: ConnectionsPage
@@ -42,27 +40,24 @@ function ConnectionsPage() {
   const connections = Route.useLoaderData()
 
   const onClickConnect = async (connectionId: string) => {
-    try {
-      const connectionDetailsResult =
-        await commands.getConnectionDetails(connectionId)
-      const connectionDetails = unwrapResult(connectionDetailsResult)
+    const connectionDetailsResult =
+      await commands.getConnectionDetails(connectionId)
+    const connectionDetails = unwrapResult(connectionDetailsResult)
 
-      const establishConnectionResult = await commands.establishConnection(
-        connectionDetails.connString,
-        connectionDetails.driver
-      )
-      unwrapResult(establishConnectionResult)
+    if (!connectionDetails) return
 
-      router.navigate({
-        to: "/dashboard/land",
-        search: { connectionName: connectionDetails.connName }
-      })
-    } catch (e) {
-      if (e instanceof Error)
-        return toast.error(e.message, {
-          id: "establish_connection"
-        })
-    }
+    const establishConnectionResult = await commands.establishConnection(
+      connectionDetails.connString,
+      connectionDetails.driver
+    )
+    const connectionEstablishment = unwrapResult(establishConnectionResult)
+
+    if (connectionEstablishment === false) return
+
+    router.navigate({
+      to: "/dashboard/land",
+      search: { connectionName: connectionDetails.connName }
+    })
   }
 
   return (

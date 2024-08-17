@@ -4,8 +4,11 @@ use serde_json::Value as JsonValue;
 use std::collections::HashMap;
 use tauri::{async_runtime::Mutex, AppHandle, State};
 use tauri_specta::Event;
-use tx_lib::events::TableContentsChanged;
-use tx_lib::types::{FKRows, PaginatedRows};
+use tx_lib::{
+    events::TableContentsChanged,
+    types::{FKRows, PaginatedRows},
+    Result,
+};
 
 #[tauri::command]
 #[specta::specta]
@@ -14,7 +17,7 @@ pub async fn get_paginated_rows(
     table_name: String,
     page_index: u16,
     page_size: i32,
-) -> Result<PaginatedRows, String> {
+) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -32,7 +35,7 @@ pub async fn delete_rows(
     pk_col_name: String,
     row_pk_values: Vec<JsonValue>,
     table_name: String,
-) -> Result<String, String> {
+) -> Result<String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -64,7 +67,7 @@ pub async fn create_row(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     data: HashMap<String, JsonValue>,
-) -> Result<String, String> {
+) -> Result<String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -109,7 +112,7 @@ pub async fn update_row(
     pk_col_name: String,
     pk_col_value: JsonValue,
     data: Map<String, JsonValue>,
-) -> Result<String, String> {
+) -> Result<String> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();
@@ -139,7 +142,7 @@ pub async fn get_fk_relations(
     table_name: String,
     column_name: String,
     cell_value: JsonValue,
-) -> Result<Vec<FKRows>, String> {
+) -> Result<Vec<FKRows>> {
     let state = state.lock().await;
     let pool = state.pool.as_ref().unwrap();
     let handler = state.handler.as_deref().unwrap();

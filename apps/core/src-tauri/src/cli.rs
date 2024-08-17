@@ -4,7 +4,8 @@ use crate::commands::connection::{
 use crate::state::SharedState;
 use clap::{error::ErrorKind, Command, CommandFactory, Parser};
 use tauri::{async_runtime::Mutex, AppHandle, Manager, WebviewWindow};
-use tx_lib::types::Drivers;
+use tx_lib::TxError;
+use tx_lib::{types::Drivers, Result};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -101,13 +102,10 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
 }
 
 /// If the app is ran with CLI args
-async fn establish_on_the_fly_connection(
-    app: &AppHandle,
-    conn_string: &String,
-) -> Result<Drivers, String> {
+async fn establish_on_the_fly_connection(app: &AppHandle, conn_string: &String) -> Result<Drivers> {
     let (prefix, _) = conn_string
         .split_once(':')
-        .ok_or::<String>("Invalid connection string format".into())?;
+        .ok_or(TxError::InvalidConnectionString)?;
 
     let state = app.state::<Mutex<SharedState>>();
 
@@ -115,7 +113,7 @@ async fn establish_on_the_fly_connection(
         "sqlite" | "sqlite3" => Ok(Drivers::SQLite),
         "postgresql" | "postgres" => Ok(Drivers::PostgreSQL),
         "mysql" => Ok(Drivers::MySQL),
-        _ => Err(format!("Unsupported driver {prefix}")),
+        _ => Err(TxError::UnsupportedDriver(prefix.to_string())),
     }?;
     establish_connection(app.to_owned(), state, conn_string.into(), driver.clone()).await?;
 
