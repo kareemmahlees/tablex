@@ -12,7 +12,9 @@ edition.workspace = true
 serde_json = { workspace = true }
 serde = { workspace = true }
 sqlx = { workspace = true }
+tauri = { workspace = true }
 async-trait = { workspace = true }
 specta = { workspace = true }
 tauri-specta = { workspace = true }
 chrono = "0.4.38"
+thiserror = "1.0.63"
