@@ -9,32 +9,48 @@ use specta::{
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+/// Global error for all TableX operations.
+///
+/// **Note** that [`serde::Serialize`] is manually implemented for this enum, so
+/// the output data might be different from what you expected.
 pub enum TxError {
     #[error(transparent)]
+    /// Represents all sqlx related errors.
     Database(#[from] sqlx::Error),
 
     #[error(transparent)]
+    /// Represent all filesystem related errors.
     Io(#[from] std::io::Error),
 
     #[error(transparent)]
+    /// Represents tauri runtime's errors.
     TauriError(#[from] tauri::Error),
 
     #[error(transparent)]
+    /// Represents serde's serialization/deserialization errors.
     SerdeError(#[from] serde_json::Error),
 
     #[error("Unsupported data type")]
+    /// Represents errors when trying to decode an unsupported
+    /// datatype to a rust datatype.
     UnsupportedDataType,
 
     #[error("Couldn't connect to DB")]
+    /// Represents database connection errors.
     ConnectionError,
 
     #[error("DB not responding to Pings")]
+    /// Represents database ping errors.
     PingError,
 
     #[error("Invalid connection string format")]
+    /// Represents malformed connection string error
+    /// received from the cli.
     InvalidConnectionString,
 
     #[error("Unsupported driver {0}")]
+    /// For when receiving an unsupported database driver
+    /// from the cli.
     UnsupportedDriver(String),
 }
 
