@@ -13,6 +13,7 @@ export class SettingsManager {
   constructor() {
     commands.loadSettingsFile().then((result) => {
       const settings = unwrapResult(result)
+      if (!settings) return
       this.settings = settings
     })
   }

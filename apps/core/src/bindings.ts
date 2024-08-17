@@ -270,10 +270,6 @@ export type TableContentsChanged = null
  */
 export type TxError = { 
 /**
- * Kind of the error
- */
-kind: "Database" | "Io" | "TauriError" | "SerdeError"; 
-/**
  * short message to be displayed in the toast
  */
 message: string; 

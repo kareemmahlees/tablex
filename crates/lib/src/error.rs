@@ -1,9 +1,8 @@
 use serde::Serialize;
 use specta::{
-    datatype::{reference::reference, EnumRepr, PrimitiveType},
+    datatype::{reference::reference, PrimitiveType},
     internal::construct::{
-        data_type_reference, enum_variant, enum_variant_unit, field, impl_location,
-        named_data_type, r#enum, r#struct, sid, struct_named,
+        data_type_reference, field, impl_location, named_data_type, r#struct, sid, struct_named,
     },
     DataType, Generics, NamedType, SpectaID,
 };
@@ -74,40 +73,6 @@ impl specta::Type for TxError {
             vec![],
             struct_named(
                 vec![
-                    (
-                        "kind".into(),
-                        field(
-                            false,
-                            false,
-                            None,
-                            "Kind of the error".into(),
-                            Some(DataType::Enum(r#enum(
-                                "TxErrorKind".into(),
-                                sid("TxErrorKind", "tx_error_kind"),
-                                EnumRepr::External,
-                                false,
-                                vec![],
-                                vec![
-                                    (
-                                        "Database".into(),
-                                        enum_variant(false, None, "".into(), enum_variant_unit()),
-                                    ),
-                                    (
-                                        "Io".into(),
-                                        enum_variant(false, None, "".into(), enum_variant_unit()),
-                                    ),
-                                    (
-                                        "TauriError".into(),
-                                        enum_variant(false, None, "".into(), enum_variant_unit()),
-                                    ),
-                                    (
-                                        "SerdeError".into(),
-                                        enum_variant(false, None, "".into(), enum_variant_unit()),
-                                    ),
-                                ],
-                            ))),
-                        ),
-                    ),
                     (
                         "message".into(),
                         field(

@@ -12,6 +12,8 @@ export const generateColumnsDefs = async (
 ) => {
   const columnsResult = await commands.getColumnsProps(tableName)
   const columns = unwrapResult(columnsResult)
+  if (!columns) return
+
   const columnsDefinitions = columns.map(
     ({ columnName, isPK, hasFkRelations }) => {
       const columnDefinition: ColumnDef<ColumnProps> = {

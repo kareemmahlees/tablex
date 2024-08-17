@@ -24,13 +24,12 @@ export const Route = createFileRoute("/connections")({
   },
   loader: async ({ abortController }) => {
     const commandResult = await commands.getConnections()
-    if (commandResult.status === "error") {
-      unwrapResult(commandResult)
-      return abortController.abort(
-        `error while getting connections: ${commandResult.error}`
-      )
+    const connections = unwrapResult(commandResult)
+    if (!connections) {
+      return abortController.abort(`error while getting connections`)
     }
-    return commandResult.data
+
+    return connections
   },
   staleTime: 0,
   component: ConnectionsPage
@@ -45,7 +44,7 @@ function ConnectionsPage() {
       await commands.getConnectionDetails(connectionId)
     const connectionDetails = unwrapResult(connectionDetailsResult)
 
-    if (connectionDetails === false) return
+    if (!connectionDetails) return
 
     const establishConnectionResult = await commands.establishConnection(
       connectionDetails.connString,
@@ -53,7 +52,7 @@ function ConnectionsPage() {
     )
     const connectionEstablishment = unwrapResult(establishConnectionResult)
 
-    if (connectionEstablishment === false) return
+    if (!connectionEstablishment) return
 
     router.navigate({
       to: "/dashboard/land",
