@@ -1,4 +1,5 @@
 import type { ColumnProps, TxError } from "@/bindings"
+import ErrorDialog from "@/components/dialogs/error-dialog"
 import { Separator } from "@/components/ui/separator"
 import { ErrorIcon, toast } from "react-hot-toast"
 import { Drivers, type ConnectionStringParams } from "./types"
@@ -33,14 +34,17 @@ export function customToast<T extends string>(
   id?: string
 ) {
   if (commandResult.status === "error") {
-    console.log(commandResult.error.details)
     return toast(
       <div className="flex items-center justify-between gap-x-2">
         <p>{commandResult.error.message}</p>
         {commandResult.error.details && (
           <>
             <Separator orientation="vertical" />
-            <button className="font-semibold text-black">more</button>
+            <ErrorDialog error={commandResult.error.details}>
+              <button className="hover:bg-muted-foreground rounded-md p-1 font-semibold text-black transition-all">
+                more
+              </button>
+            </ErrorDialog>
           </>
         )}
       </div>,
@@ -55,7 +59,7 @@ export function customToast<T extends string>(
 }
 
 /**
- * Accepts a result returning the inner data or throws an Error.
+ * Accepts a result returning the inner data or returns false that can be checked against.
  * @param result Result of executing a Tauri command.
  * @returns The inner data of the `Ok`
  */
