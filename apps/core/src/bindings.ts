@@ -16,7 +16,7 @@ async testConnection(connString: string) : Promise<Result<string, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async createConnectionRecord(connString: string, connName: string, driver: Drivers) : Promise<Result<string, string>> {
+async createConnectionRecord(connString: string, connName: string, driver: Drivers) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("create_connection_record", { connString, connName, driver }) };
 } catch (e) {
@@ -24,7 +24,7 @@ async createConnectionRecord(connString: string, connName: string, driver: Drive
     else return { status: "error", error: e  as any };
 }
 },
-async deleteConnectionRecord(connId: string) : Promise<Result<string, string>> {
+async deleteConnectionRecord(connId: string) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("delete_connection_record", { connId }) };
 } catch (e) {
@@ -40,7 +40,7 @@ async establishConnection(connString: string, driver: Drivers) : Promise<Result<
     else return { status: "error", error: e  as any };
 }
 },
-async connectionsExist() : Promise<Result<boolean, string>> {
+async connectionsExist() : Promise<Result<boolean, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("connections_exist") };
 } catch (e) {
@@ -48,7 +48,7 @@ async connectionsExist() : Promise<Result<boolean, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>> {
+async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_connections") };
 } catch (e) {
@@ -56,7 +56,7 @@ async getConnections() : Promise<Result<{ [key in string]: ConnConfig }, string>
     else return { status: "error", error: e  as any };
 }
 },
-async getConnectionDetails(connId: string) : Promise<Result<ConnConfig, string>> {
+async getConnectionDetails(connId: string) : Promise<Result<ConnConfig, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_connection_details", { connId }) };
 } catch (e) {
@@ -64,7 +64,7 @@ async getConnectionDetails(connId: string) : Promise<Result<ConnConfig, string>>
     else return { status: "error", error: e  as any };
 }
 },
-async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
+async openInExternalEditor(file: ConfigFile) : Promise<Result<null, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("open_in_external_editor", { file }) };
 } catch (e) {
@@ -72,7 +72,7 @@ async openInExternalEditor(file: ConfigFile) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async loadSettingsFile() : Promise<Result<Settings, string>> {
+async loadSettingsFile() : Promise<Result<Settings, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("load_settings_file") };
 } catch (e) {
@@ -80,7 +80,7 @@ async loadSettingsFile() : Promise<Result<Settings, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async writeIntoSettingsFile(settings: JsonValue) : Promise<Result<null, string>> {
+async writeIntoSettingsFile(settings: JsonValue) : Promise<Result<null, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("write_into_settings_file", { settings }) };
 } catch (e) {
@@ -88,7 +88,7 @@ async writeIntoSettingsFile(settings: JsonValue) : Promise<Result<null, string>>
     else return { status: "error", error: e  as any };
 }
 },
-async writeIntoKeybindingsFile(keybindings: Keybinding[]) : Promise<Result<null, string>> {
+async writeIntoKeybindingsFile(keybindings: Keybinding[]) : Promise<Result<null, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("write_into_keybindings_file", { keybindings }) };
 } catch (e) {
@@ -175,8 +175,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
@@ -265,6 +265,22 @@ sqlEditor: SQLEditorSettings }
 export type Sidebar = "focusSearch"
 export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null
+/**
+ * Global error object returned by all commands
+ */
+export type TxError = { 
+/**
+ * Kind of the error
+ */
+kind: "Database" | "Io" | "TauriError" | "SerdeError"; 
+/**
+ * short message to be displayed in the toast
+ */
+message: string; 
+/**
+ * Detailed error message throwing by the low level api
+ */
+details: string }
 /**
  * General visibility settings.
  */

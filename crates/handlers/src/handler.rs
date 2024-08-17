@@ -82,7 +82,7 @@ pub trait RowHandler {
         let result = sqlx::query(&query_str)
             .execute(pool)
             .await
-            .map_err(|_| "Failed to delete rows".to_string())?;
+            .map_err(|e| "Failed to delete rows".to_string())?;
 
         let mut message = String::from("Successfully deleted ");
         if result.rows_affected() == 1 {

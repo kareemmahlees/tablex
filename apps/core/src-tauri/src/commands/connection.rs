@@ -12,6 +12,7 @@ use tx_lib::{
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},
     types::{ConnConfig, ConnectionsFileSchema, Drivers},
+    TxError,
 };
 use uuid::Uuid;
 
@@ -39,7 +40,7 @@ pub fn create_connection_record(
     conn_string: String,
     conn_name: String,
     driver: Drivers,
-) -> Result<String, String> {
+) -> Result<String, TxError> {
     let connections_file_path = get_connections_file_path(&app)?;
     let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     let connection = ConnConfig {
@@ -56,13 +57,13 @@ pub fn create_connection_record(
 
 #[tauri::command]
 #[specta::specta]
-pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String, String> {
+pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String, TxError> {
     let connections_file_path = get_connections_file_path(&app)?;
     let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
 
     contents
         .remove(&conn_id)
-        .ok_or("Couldn't delete specified connection".to_string())?;
+        .ok_or(TxError::Io(std::io::ErrorKind::Other.into()))?;
 
     write_into_json(&connections_file_path, contents)?;
     ConnectionsChanged.emit(&app).unwrap();
@@ -139,7 +140,7 @@ fn spawn_sidecar(app: AppHandle, driver: Drivers, conn_string: String) -> Comman
 
 #[tauri::command]
 #[specta::specta]
-pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
+pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, TxError> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     if connections.is_empty() {
@@ -150,7 +151,7 @@ pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, String> {
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema, String> {
+pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema, TxError> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     Ok(connections)
@@ -161,17 +162,17 @@ pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema, S
 pub fn get_connection_details(
     app: tauri::AppHandle,
     conn_id: String,
-) -> Result<ConnConfig, String> {
+) -> Result<ConnConfig, TxError> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     let connection_details = connections
         .get(&conn_id)
-        .ok_or("Couldn't find the specified connection".to_string())?;
+        .ok_or(TxError::Io(std::io::ErrorKind::NotFound.into()))?;
     Ok(connection_details.clone())
 }
 
 /// Make sure `connections.json` file exist, if not will create an empty json file for it.
-pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<(), String> {
+pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<(), TxError> {
     if path.exists() {
         return Ok(());
     }
@@ -184,11 +185,8 @@ pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<(), String> {
 /// **Varies by platform**.
 pub(crate) fn get_connections_file_path<R: Runtime>(
     app: &tauri::AppHandle<R>,
-) -> Result<PathBuf, String> {
-    let mut config_dir = app
-        .path()
-        .app_config_dir()
-        .map_err(|_| "Couldn't read config dir path".to_string())?;
+) -> Result<PathBuf, TxError> {
+    let mut config_dir = app.path().app_config_dir()?;
     config_dir.push(CONNECTIONS_FILE_NAME);
     Ok(config_dir)
 }
