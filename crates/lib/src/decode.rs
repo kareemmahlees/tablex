@@ -131,7 +131,7 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue> {
             }
         }
         "NULL" | "VOID" => JsonValue::Null,
-        _ => return Err(crate::TxError::UnsupportedDataType),
+        other => return Err(crate::TxError::UnsupportedDataType(other.to_string())),
     };
 
     Ok(res)

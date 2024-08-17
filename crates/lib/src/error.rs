@@ -30,10 +30,10 @@ pub enum TxError {
     /// Represents serde's serialization/deserialization errors.
     SerdeError(#[from] serde_json::Error),
 
-    #[error("Unsupported data type")]
+    #[error("Unsupported data type {0}")]
     /// Represents errors when trying to decode an unsupported
     /// datatype to a rust datatype.
-    UnsupportedDataType,
+    UnsupportedDataType(String),
 
     #[error("Couldn't connect to DB")]
     /// Represents database connection errors.
@@ -163,7 +163,7 @@ impl Serialize for TxError {
                 message: "Serde serialization error".to_string(),
                 details: error_message,
             },
-            Self::UnsupportedDataType => TxErrorKind::UnsupportedDataType {
+            Self::UnsupportedDataType(_) => TxErrorKind::UnsupportedDataType {
                 message: "Unsupported data type".to_string(),
                 details: error_message,
             },
