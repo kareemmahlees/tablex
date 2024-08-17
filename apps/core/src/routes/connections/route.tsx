@@ -52,7 +52,7 @@ function ConnectionsPage() {
     )
     const connectionEstablishment = unwrapResult(establishConnectionResult)
 
-    if (!connectionEstablishment) return
+    if (connectionEstablishment === false) return
 
     router.navigate({
       to: "/dashboard/land",

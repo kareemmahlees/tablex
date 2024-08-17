@@ -49,7 +49,8 @@ export function customToast<T extends string>(
         )}
       </div>,
       {
-        icon: <ErrorIcon />
+        icon: <ErrorIcon />,
+        id: "toast_error"
       }
     )
   }
