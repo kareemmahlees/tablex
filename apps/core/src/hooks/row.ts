@@ -63,8 +63,13 @@ export const useGetGeneralColsData = (tableName: string) => {
       },
       {
         queryKey: ["columns_props", tableName],
-        queryFn: async () =>
-          unwrapResult(await commands.getColumnsProps(tableName))
+        queryFn: async () => {
+          const columnsProps = unwrapResult(
+            await commands.getColumnsProps(tableName)
+          )
+          if (!columnsProps) throw new Error()
+          return columnsProps
+        }
       }
     ]
   })

@@ -40,14 +40,12 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
     "0": {
       data: zodSchema,
       isLoading: isZodSchemaLoading,
-      isSuccess: isZodSchemaSuccess,
-      error: zodSchemaError
+      isSuccess: isZodSchemaSuccess
     },
     "1": {
       data: columnsProps,
       isLoading: isColumnsPropsLoading,
-      isSuccess: isColumnsPropsSuccess,
-      error: columnsPropsError
+      isSuccess: isColumnsPropsSuccess
     }
   } = useGetGeneralColsData(tableName)
 
@@ -58,6 +56,10 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
   })
 
   if (!row) return null
+
+  if (isZodSchemaLoading || isColumnsPropsLoading) return <LoadingSpinner />
+
+  if (!isZodSchemaSuccess || !isColumnsPropsSuccess) return
 
   const onSubmit = async (
     values: z.infer<NonNullable<typeof partialZodSchema>>
@@ -75,13 +77,6 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
       toggleSheet
     )
   }
-
-  if (isZodSchemaLoading || isColumnsPropsLoading) return <LoadingSpinner />
-
-  if (!isZodSchemaSuccess)
-    return toast.error(zodSchemaError!.message, { id: "get_zod_schema" })
-  if (!isColumnsPropsSuccess)
-    return toast.error(columnsPropsError!.message, { id: "get_zod_schema" })
 
   return (
     <SheetContent>
