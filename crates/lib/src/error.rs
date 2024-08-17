@@ -25,6 +25,18 @@ pub enum TxError {
 
     #[error("Unsupported data type")]
     UnsupportedDataType,
+
+    #[error("Couldn't connect to DB")]
+    ConnectionError,
+
+    #[error("DB not responding to Pings")]
+    PingError,
+
+    #[error("Invalid connection string format")]
+    InvalidConnectionString,
+
+    #[error("Unsupported driver {0}")]
+    UnsupportedDriver(String),
 }
 
 impl specta::NamedType for TxError {
@@ -141,6 +153,10 @@ enum TxErrorKind {
     TauriError { message: String, details: String },
     SerdeError { message: String, details: String },
     UnsupportedDataType { message: String, details: String },
+    ConnectionError { message: String },
+    PingError { message: String },
+    InvalidConnectionString { message: String },
+    UnsupportedDriver { message: String },
 }
 
 impl Serialize for TxError {
@@ -169,6 +185,18 @@ impl Serialize for TxError {
             Self::UnsupportedDataType => TxErrorKind::UnsupportedDataType {
                 message: "Unsupported data type".to_string(),
                 details: error_message,
+            },
+            Self::ConnectionError => TxErrorKind::ConnectionError {
+                message: error_message,
+            },
+            Self::PingError => TxErrorKind::PingError {
+                message: error_message,
+            },
+            Self::InvalidConnectionString => TxErrorKind::InvalidConnectionString {
+                message: error_message,
+            },
+            Self::UnsupportedDriver(_) => TxErrorKind::UnsupportedDriver {
+                message: error_message,
             },
         };
         error_kind.serialize(serializer)

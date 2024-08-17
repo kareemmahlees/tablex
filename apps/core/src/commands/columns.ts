@@ -5,6 +5,8 @@ import { z } from "zod"
 export const getZodSchemaFromCols = async (tableName: string) => {
   const result = await commands.getColumnsProps(tableName)
   const cols = unwrapResult(result)
+  if (cols === false) return
+
   const schemaObject: z.ZodRawShape = {}
 
   cols.forEach((colProps) => {

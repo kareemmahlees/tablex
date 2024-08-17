@@ -8,7 +8,7 @@ export const commands = {
 async closeSplashscreen() : Promise<void> {
     await TAURI_INVOKE("close_splashscreen");
 },
-async testConnection(connString: string) : Promise<Result<string, string>> {
+async testConnection(connString: string) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("test_connection", { connString }) };
 } catch (e) {
@@ -32,7 +32,7 @@ async deleteConnectionRecord(connId: string) : Promise<Result<string, TxError>> 
     else return { status: "error", error: e  as any };
 }
 },
-async establishConnection(connString: string, driver: Drivers) : Promise<Result<null, string>> {
+async establishConnection(connString: string, driver: Drivers) : Promise<Result<null, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("establish_connection", { connString, driver }) };
 } catch (e) {
@@ -175,8 +175,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 

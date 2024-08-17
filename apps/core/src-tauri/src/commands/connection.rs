@@ -12,7 +12,7 @@ use tx_lib::{
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},
     types::{ConnConfig, ConnectionsFileSchema, Drivers},
-    TxError,
+    Result, TxError,
 };
 use uuid::Uuid;
 
@@ -20,13 +20,11 @@ const CONNECTIONS_FILE_NAME: &str = "connections.json";
 
 #[tauri::command]
 #[specta::specta]
-pub async fn test_connection(conn_string: String) -> Result<String, String> {
+pub async fn test_connection(conn_string: String) -> Result<String> {
     let mut con = AnyConnection::connect(conn_string.as_str())
         .await
-        .map_err(|_| "Couldn't connect to DB".to_string())?;
-    con.ping()
-        .await
-        .map_err(|_| "DB not responding to Pings".to_string())?;
+        .map_err(|_| TxError::ConnectionError)?;
+    con.ping().await.map_err(|_| TxError::PingError)?;
 
     let _ = con.close().await;
 
@@ -40,7 +38,7 @@ pub fn create_connection_record(
     conn_string: String,
     conn_name: String,
     driver: Drivers,
-) -> Result<String, TxError> {
+) -> Result<String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     let connection = ConnConfig {
@@ -57,7 +55,7 @@ pub fn create_connection_record(
 
 #[tauri::command]
 #[specta::specta]
-pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String, TxError> {
+pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String> {
     let connections_file_path = get_connections_file_path(&app)?;
     let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
 
@@ -77,7 +75,7 @@ pub async fn establish_connection(
     state: State<'_, Mutex<SharedState>>,
     conn_string: String,
     driver: Drivers,
-) -> Result<(), String> {
+) -> Result<()> {
     #[cfg(feature = "metax")]
     {
         if let Some(sidecar) = state.lock().await.metax.take() {
@@ -140,7 +138,7 @@ fn spawn_sidecar(app: AppHandle, driver: Drivers, conn_string: String) -> Comman
 
 #[tauri::command]
 #[specta::specta]
-pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, TxError> {
+pub fn connections_exist(app: tauri::AppHandle) -> Result<bool> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     if connections.is_empty() {
@@ -151,7 +149,7 @@ pub fn connections_exist(app: tauri::AppHandle) -> Result<bool, TxError> {
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema, TxError> {
+pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     Ok(connections)
@@ -159,10 +157,7 @@ pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema, T
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connection_details(
-    app: tauri::AppHandle,
-    conn_id: String,
-) -> Result<ConnConfig, TxError> {
+pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<ConnConfig> {
     let connections_file_path = get_connections_file_path(&app)?;
     let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
     let connection_details = connections
@@ -172,7 +167,7 @@ pub fn get_connection_details(
 }
 
 /// Make sure `connections.json` file exist, if not will create an empty json file for it.
-pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<(), TxError> {
+pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
     if path.exists() {
         return Ok(());
     }
@@ -183,9 +178,7 @@ pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<(), TxError> {
 /// Get the file path to `connections.json`.
 ///
 /// **Varies by platform**.
-pub(crate) fn get_connections_file_path<R: Runtime>(
-    app: &tauri::AppHandle<R>,
-) -> Result<PathBuf, TxError> {
+pub(crate) fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf> {
     let mut config_dir = app.path().app_config_dir()?;
     config_dir.push(CONNECTIONS_FILE_NAME);
     Ok(config_dir)
