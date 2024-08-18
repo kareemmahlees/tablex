@@ -15,12 +15,21 @@
     "updater:allow-check",
     "clipboard-manager:allow-write-text",
     {
-      "identifier":"fs:allow-read-file",
-      "allow": [{"path": "*/*.(db|db3|s3db|sl3|sqlite|sqlite3)"}]
+      "identifier": "fs:allow-read-file",
+      "allow": [
+        {
+          "path": "*/*.(db|db3|s3db|sl3|sqlite|sqlite3)"
+        }
+      ]
     },
     {
-     "identifier": "fs:allow-read-text-file",
-      "allow": [{ "path": "$APPDATA/*.json" }]
-    }
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        {
+          "path": "$APPDATA/*.json"
+        }
+      ]
+    },
+    "log:default"
   ]
 }

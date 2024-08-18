@@ -21,9 +21,11 @@ use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(not(debug_assertions))]
 use updater::check_for_update;
 
+use log::Level;
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
+use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
 use tx_lib::{events::*, TxError};
@@ -97,6 +99,19 @@ fn main() {
     let (args, cmd) = cli::parse_cli_args();
 
     let tauri_builder = tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .target(
+                    Target::new(TargetKind::LogDir {
+                        file_name: Some("tablex.logs".to_string()),
+                    })
+                    .filter(|metadata| {
+                        metadata.level() != Level::Debug || metadata.level() != Level::Trace
+                    }),
+                )
+                .rotation_strategy(RotationStrategy::KeepAll)
+                .build(),
+        )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
