@@ -68,28 +68,28 @@ impl RowHandler for SQLiteHandler {
         column_name: String,
         cell_value: JsonValue,
     ) -> Result<Vec<FKRows>> {
-        let fk_relations = sqlx::query_as::<_, FkRelation>(
-            "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;",
-        )
-        .bind(&table_name)
-        .bind(&column_name)
-        .fetch_all(pool)
-        .await?;
+        let query_str =
+            "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;";
+        log::info!("{}", query_str);
+
+        let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
+            .bind(&table_name)
+            .bind(&column_name)
+            .fetch_all(pool)
+            .await?;
 
         let mut result = Vec::new();
 
         for relation in fk_relations.iter() {
-            let rows = sqlx::query(
-                format!(
-                    "SELECT * from {table_name} where {to} = {column_value};",
-                    table_name = relation.table,
-                    to = relation.to,
-                    column_value = cell_value,
-                )
-                .as_str(),
-            )
-            .fetch_all(pool)
-            .await?;
+            let query_str = format!(
+                "SELECT * from {table_name} where {to} = {column_value};",
+                table_name = relation.table,
+                to = relation.to,
+                column_value = cell_value,
+            );
+            log::info!("{}", query_str);
+
+            let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 

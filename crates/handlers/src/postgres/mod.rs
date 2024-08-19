@@ -89,8 +89,7 @@ impl RowHandler for PostgresHandler {
         column_name: String,
         cell_value: JsonValue,
     ) -> Result<Vec<FKRows>> {
-        let fk_relations = sqlx::query_as::<_, FkRelation>(
-            "
+        let query_str = "
             SELECT
                 ccu.table_name AS table,
                 ccu.column_name AS to
@@ -104,27 +103,27 @@ impl RowHandler for PostgresHandler {
                 AND  kcu.column_name = $1
                 AND tc.table_schema='public'
                 AND tc.table_name= $2;
-            ",
-        )
-        .bind(&column_name)
-        .bind(&table_name)
-        .fetch_all(pool)
-        .await?;
+            ";
+        log::info!("{}", query_str);
+
+        let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
+            .bind(&column_name)
+            .bind(&table_name)
+            .fetch_all(pool)
+            .await?;
 
         let mut result = Vec::new();
 
         for relation in fk_relations.iter() {
-            let rows = sqlx::query(
-                format!(
-                    "SELECT * from {table_name} where {to} = {column_value};",
-                    table_name = relation.table,
-                    to = relation.to,
-                    column_value = cell_value,
-                )
-                .as_str(),
-            )
-            .fetch_all(pool)
-            .await?;
+            let query_str = format!(
+                "SELECT * from {table_name} where {to} = {column_value};",
+                table_name = relation.table,
+                to = relation.to,
+                column_value = cell_value,
+            );
+            log::info!("{}", query_str);
+
+            let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 
