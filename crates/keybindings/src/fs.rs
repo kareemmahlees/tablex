@@ -12,10 +12,13 @@ pub const KEYBINDINGS_FILE_NAME: &str = "keybindings.json";
 /// with the default keybindings.
 pub fn ensure_keybindings_file_exist(path: &PathBuf) -> Result<(), TxError> {
     if path.exists() {
+        log::debug!("{} exists, skipping creation.", KEYBINDINGS_FILE_NAME);
         return Ok(());
     }
     create_json_file_recursively(path)?;
     write_into_json(path, get_default_keybindings())?;
+    log::info!("Wrote default keybindings to {}", KEYBINDINGS_FILE_NAME);
+
     Ok(())
 }
 

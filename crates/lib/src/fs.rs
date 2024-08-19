@@ -16,6 +16,7 @@ where
 
     serde_json::to_writer_pretty(&mut writer, &contents)?;
     writer.flush().unwrap();
+
     Ok(())
 }
 
@@ -26,7 +27,11 @@ pub fn read_from_json<D>(path: &PathBuf) -> Result<D, TxError>
 where
     D: DeserializeOwned,
 {
-    let mut file = create_json_file_recursively(path)?;
+    let mut file = if !path.exists() {
+        create_json_file_recursively(path)?
+    } else {
+        OpenOptions::new().read(true).write(true).open(path)?
+    };
 
     let _ = file.seek(SeekFrom::Start(0));
     let reader = BufReader::new(file);
@@ -39,16 +44,17 @@ where
 /// write to it and empty object ( `{}` ),
 /// otherwise opens the file and returns it.
 pub fn create_json_file_recursively(path: &PathBuf) -> Result<File, TxError> {
-    if path.exists() {
-        let file = OpenOptions::new().read(true).write(true).open(path)?;
-        return Ok(file);
-    }
     let parent = path.parent().unwrap();
     if !parent.exists() {
         std::fs::create_dir_all(parent)?;
+        log::info!("Created {} recursively.", parent.to_str().unwrap());
     }
+
     let mut file = File::create_new(path)?;
+    log::info!("Created {}.", path.to_str().unwrap());
 
     write!(file, "{{}}")?;
+    log::info!("Wrote initial content to {}.", path.to_str().unwrap());
+
     Ok(file)
 }

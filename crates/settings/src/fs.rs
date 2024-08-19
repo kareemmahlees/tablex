@@ -14,10 +14,14 @@ pub const SETTINGS_FILE_NAME: &str = "settings.json";
 /// with the default settings.
 pub fn ensure_settings_file_exist(path: &PathBuf) -> Result<(), TxError> {
     if path.exists() {
+        log::debug!("{} exists, skipping creation.", SETTINGS_FILE_NAME);
         return Ok(());
     }
     create_json_file_recursively(path)?;
+
     write_into_json(path, Settings::default())?;
+    log::info!("Wrote default settings to {}", SETTINGS_FILE_NAME);
+
     Ok(())
 }
 
