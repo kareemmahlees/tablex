@@ -15,14 +15,14 @@ impl Handler for PostgresHandler {}
 impl TableHandler for PostgresHandler {
     async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
-        let res = sqlx::query(
-            "SELECT \"table_name\"
+        let query_str = "SELECT \"table_name\"
             FROM information_schema.tables
             WHERE table_type = 'BASE TABLE'
-                AND table_schema = 'public';",
-        )
-        .fetch_all(pool)
-        .await?;
+                AND table_schema = 'public';";
+
+        log::info!("{}", query_str);
+
+        let res = sqlx::query(query_str).fetch_all(pool).await?;
 
         Ok(res)
     }
@@ -32,8 +32,7 @@ impl TableHandler for PostgresHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>> {
-        let result = sqlx::query_as::<_,ColumnProps>(
-            "
+        let query_str = "
             SELECT col.column_name,
                     col.data_type,
                     CASE
@@ -68,11 +67,14 @@ impl TableHandler for PostgresHandler {
                     END has_fk_relations
             FROM information_schema.columns AS COL
             WHERE col.table_name = $1 ORDER BY col.ordinal_position;
-            "
-        )
-        .bind(&table_name)
-        .fetch_all(pool)
-        .await?;
+            ";
+
+        log::info!("{}", query_str);
+
+        let result = sqlx::query_as::<_, ColumnProps>(query_str)
+            .bind(&table_name)
+            .fetch_all(pool)
+            .await?;
 
         Ok(result)
     }

@@ -15,13 +15,15 @@ pub struct SharedState {
 impl SharedState {
     pub async fn cleanup(&mut self) {
         if let Some(pool) = &self.pool {
-            pool.close().await
+            pool.close().await;
+            log::debug!("Connection pool closed.");
         }
 
         #[cfg(feature = "metax")]
         {
             if let Some(metax) = self.metax.take() {
-                metax.kill().expect("unable to kill sidecar")
+                metax.kill().expect("unable to kill sidecar");
+                log::debug!("MetaX shutdown.");
             }
         }
     }

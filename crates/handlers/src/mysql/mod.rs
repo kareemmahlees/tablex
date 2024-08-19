@@ -16,7 +16,11 @@ impl Handler for MySQLHandler {}
 impl TableHandler for MySQLHandler {
     async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
-        let res = sqlx::query("show tables;").fetch_all(pool).await?;
+        let query_str = "show tables;";
+
+        log::info!("{}", query_str);
+
+        let res = sqlx::query(query_str).fetch_all(pool).await?;
         Ok(res)
     }
     async fn get_columns_props(
@@ -24,8 +28,7 @@ impl TableHandler for MySQLHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>> {
-        let result = sqlx::query_as::<_,ColumnProps>(
-                "SELECT cols.column_name AS column_name,
+        let query_str = "SELECT cols.column_name AS column_name,
                         cols.data_type AS data_type,
                         cols.is_nullable = \"YES\" AS is_nullable,
                         cols.column_default AS default_value,
@@ -35,11 +38,14 @@ impl TableHandler for MySQLHandler {
                 LEFT JOIN information_schema.key_column_usage AS kcu ON kcu.column_name = cols.column_name
                 LEFT JOIN information_schema.table_constraints AS tc ON tc.constraint_name = kcu.constraint_name
                 WHERE cols.table_name = ?
-                GROUP BY cols.column_name, cols.data_type, cols.is_nullable, cols.column_default;"
-        )
-        .bind(&table_name)
-        .fetch_all(pool)
-        .await?;
+                GROUP BY cols.column_name, cols.data_type, cols.is_nullable, cols.column_default;";
+
+        log::info!("{}", query_str);
+
+        let result = sqlx::query_as::<_, ColumnProps>(query_str)
+            .bind(&table_name)
+            .fetch_all(pool)
+            .await?;
 
         Ok(result)
     }

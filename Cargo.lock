@@ -5754,6 +5754,7 @@ name = "tx_handlers"
 version = "0.3.4"
 dependencies = [
  "async-trait",
+ "log",
  "serde_json",
  "sqlx",
  "tokio",
