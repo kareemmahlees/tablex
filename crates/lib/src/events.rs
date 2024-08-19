@@ -1,4 +1,3 @@
-use log::kv::ToValue;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri_specta::Event;

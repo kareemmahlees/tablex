@@ -7,16 +7,6 @@ mod state;
 #[cfg(not(debug_assertions))]
 mod updater;
 
-// use commands::{
-//     connection::{
-//         connections_exist, create_connection_record, delete_connection_record,
-//         ensure_connections_file_exist, establish_connection, get_connection_details,
-//         get_connections, get_connections_file_path, test_connection,
-//     },
-//     fs::{load_settings_file, open_in_external_editor},
-//     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
-//     table::{execute_raw_query, get_columns_props, get_tables},
-// };
 use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(not(debug_assertions))]
 use updater::check_for_update;
