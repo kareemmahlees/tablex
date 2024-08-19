@@ -4926,6 +4926,7 @@ dependencies = [
  "tauri-plugin-shell",
  "tauri-plugin-updater",
  "tauri-specta",
+ "time",
  "tokio",
  "tx_handlers",
  "tx_keybindings",
@@ -5762,6 +5763,7 @@ dependencies = [
 name = "tx_keybindings"
 version = "0.3.4"
 dependencies = [
+ "log",
  "serde",
  "specta",
  "tauri",
@@ -5775,6 +5777,7 @@ version = "0.3.4"
 dependencies = [
  "async-trait",
  "chrono",
+ "log",
  "serde",
  "serde_json",
  "specta",
@@ -5788,6 +5791,7 @@ dependencies = [
 name = "tx_settings"
 version = "0.3.4"
 dependencies = [
+ "log",
  "schemars",
  "serde",
  "serde_json",
