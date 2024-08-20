@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { useCreateRowSheetState } from "@/state/sheetState"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -45,11 +46,13 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
             <Plus className="h-3 w-3 lg:h-4 lg:w-4" />
           </CustomTooltip>
         </SheetTrigger>
-        <SheetContent className="overflow-y-auto">
+        <SheetContent>
           <SheetHeader className="mb-4">
             <SheetTitle>Add new row</SheetTitle>
           </SheetHeader>
-          <AddRowForm tableName={tableName} />
+          <ScrollArea className="h-full">
+            <AddRowForm tableName={tableName} />
+          </ScrollArea>
         </SheetContent>
       </Sheet>
     </TooltipProvider>
