@@ -1,8 +1,9 @@
 import type { ColumnProps, TxError } from "@/bindings"
 import ErrorDialog from "@/components/dialogs/error-dialog"
 import { Separator } from "@/components/ui/separator"
+import { error } from "@tauri-apps/plugin-log"
 import { ErrorIcon, toast } from "react-hot-toast"
-import { Drivers, type ConnectionStringParams } from "./types"
+import { ConnectionStringParams, Drivers } from "./types"
 
 /**
  * creates connection string for the specified driver accordingly
@@ -66,6 +67,7 @@ export function customToast<T extends string>(
  */
 export function unwrapResult<T>(result: Result<T>): false | T {
   if (result.status === "error") {
+    error(`message: ${result.error.message}, details: ${result.error.details}.`)
     customToast(result, () => {})
     return false
   }

@@ -16,5 +16,5 @@ tokio = { workspace = true }
 sqlx = { workspace = true }
 serde_json = { workspace = true }
 async-trait = { workspace = true }
-log = { workspacek = true }
+log = { workspace = true }
 tx_lib = { path = "../lib" }
