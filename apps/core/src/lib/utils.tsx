@@ -35,6 +35,9 @@ export function customToast<T extends string>(
   id?: string
 ) {
   if (commandResult.status === "error") {
+    error(
+      `message: ${commandResult.error.message}, details: ${commandResult.error.details}.`
+    )
     return toast(
       <div className="flex items-center justify-between gap-x-2">
         <p>{commandResult.error.message}</p>
@@ -67,7 +70,6 @@ export function customToast<T extends string>(
  */
 export function unwrapResult<T>(result: Result<T>): false | T {
   if (result.status === "error") {
-    error(`message: ${result.error.message}, details: ${result.error.details}.`)
     customToast(result, () => {})
     return false
   }

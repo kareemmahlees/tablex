@@ -94,10 +94,13 @@ fn main() {
                 .clear_targets()
                 .targets([
                     Target::new(TargetKind::LogDir { file_name: None }).filter(|metadata| {
-                        metadata.level() != Level::Debug && metadata.level() != Level::Trace
+                        metadata.level() != Level::Debug
+                            && metadata.level() != Level::Trace
+                            && !metadata.target().starts_with("tao")
                     }),
                     Target::new(TargetKind::Stdout),
                 ])
+                .max_file_size(2_000_000)
                 .format(|out, message, record| {
                     out.finish(format_args!(
                         "{} [{}] {}",

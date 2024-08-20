@@ -36,7 +36,7 @@ tauri-plugin-shell = "2.0.0-beta.9"
 tauri-plugin-fs = "2.0.0-beta.11"
 tauri-plugin-updater = "2.0.0-beta.10"
 json-patch = "2.0.0"
-tauri-plugin-log = { version = "2.0.0-rc.0", features = ["colored"] }
+tauri-plugin-log = "2.0.0-rc.0"
 log = { workspace = true }
 time = "0.3.36"
 
