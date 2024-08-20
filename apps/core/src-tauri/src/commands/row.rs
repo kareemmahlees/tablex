@@ -55,7 +55,8 @@ pub async fn delete_rows(
         .delete_rows(pool, pk_col_name, table_name, params)
         .await;
     if result.is_ok() {
-        TableContentsChanged.emit(&app).unwrap()
+        TableContentsChanged.emit(&app).unwrap();
+        log::debug!(TableContentsChanged:?; "Event emitted");
     }
     result
 }
@@ -81,7 +82,7 @@ pub async fn create_row(
     let values = data
         .values()
         .map(|value| {
-            // Hack: handle json quotation marks until a better
+            // HACK: handle json quotation marks until a better
             // solution is found.
             let mut value = value.to_string();
             if value.starts_with("\"{") && value.ends_with("}\"") {
@@ -99,6 +100,7 @@ pub async fn create_row(
     let result = handler.create_row(pool, table_name, columns, values).await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
+        log::debug!(TableContentsChanged:?; "Event emitted");
     }
     result
 }
@@ -131,6 +133,7 @@ pub async fn update_row(
         .await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
+        log::debug!(TableContentsChanged:?; "Event emitted");
     }
     result
 }
