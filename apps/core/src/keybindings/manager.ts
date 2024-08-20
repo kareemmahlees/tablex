@@ -4,6 +4,7 @@ import {
   KEYBINDINGS_FILE_NAME
 } from "@/bindings"
 import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs"
+import { debug } from "@tauri-apps/plugin-log"
 import hotkeys from "hotkeys-js"
 import { createContext, useContext } from "react"
 
@@ -45,7 +46,12 @@ export class KeybindingsManager {
       )
       if (binding) {
         this.registeredKeybindings.push(keybinding)
-        hotkeys(binding.shortcuts.join(","), keybinding.handler)
+        hotkeys(binding.shortcuts.join(","), (_, event) => {
+          debug(
+            `Keybinding activated: { shortcut: ${event.shortcut}, command: ${keybinding.command} }`
+          )
+          keybinding.handler()
+        })
       }
     })
   }
