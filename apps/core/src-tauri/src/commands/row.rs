@@ -56,7 +56,7 @@ pub async fn delete_rows(
         .await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
-        log::debug!(TableContentsChanged:?; "Event emitted");
+        log::debug!("Event emitted: {:?}", TableContentsChanged);
     }
     result
 }
@@ -100,7 +100,7 @@ pub async fn create_row(
     let result = handler.create_row(pool, table_name, columns, values).await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
-        log::debug!(TableContentsChanged:?; "Event emitted");
+        log::debug!("Event emitted: {:?}", TableContentsChanged);
     }
     result
 }
@@ -133,7 +133,7 @@ pub async fn update_row(
         .await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
-        log::debug!(TableContentsChanged:?; "Event emitted");
+        log::debug!("Event emitted: {:?}", TableContentsChanged);
     }
     result
 }

@@ -69,7 +69,7 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
     log::info!(id = conn_id.as_str(); "Connection deleted");
 
     ConnectionsChanged.emit(&app).unwrap();
-    log::debug!(ConnectionsChanged:?; "Event emitted");
+    log::debug!("Event emitted: {:?}", ConnectionsChanged);
 
     Ok(String::from("Successfully deleted connection"))
 }
