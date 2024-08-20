@@ -62,7 +62,6 @@ const KeybindingsTab = () => {
           size={"sm"}
           onClick={async () => {
             await commands.writeIntoKeybindingsFile(keybindings.bindings)
-            console.log(editedKeybindings)
             keybindings.reRegister(editedKeybindings)
           }}
         >

@@ -28,7 +28,6 @@ pub trait TableHandler {
         pool: &AnyPool,
         query: String,
     ) -> Result<Vec<Map<String, JsonValue>>> {
-        log::info!("{}", query);
         let res = sqlx::query(&query).fetch_all(pool).await?;
         let decoded = decode_raw_rows(res).unwrap();
         Ok(decoded)
@@ -51,12 +50,10 @@ pub trait RowHandler {
             page_size,
             page_index as i32 * page_size
         );
-        log::info!("{}", query_str);
 
         let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 
         let query_str = format!("SELECT COUNT(*) from {}", table_name);
-        log::info!("{}", query_str);
 
         let page_count_result = sqlx::query(&query_str).fetch_one(pool).await?;
         let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() as i32 / page_size;
@@ -74,7 +71,6 @@ pub trait RowHandler {
         params: String,
     ) -> Result<String> {
         let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});");
-        log::info!("{}", query_str);
 
         let result = sqlx::query(&query_str).execute(pool).await?;
 
@@ -94,7 +90,6 @@ pub trait RowHandler {
         values: String,
     ) -> Result<String> {
         let query_str = format!("INSERT INTO {table_name} ({columns}) VALUES({values})");
-        log::info!("{}", query_str);
 
         let res = sqlx::query(&query_str).execute(pool).await?;
         Ok(format!("Successfully created {} row", res.rows_affected()))
@@ -111,7 +106,6 @@ pub trait RowHandler {
             "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
             pk_col_value
         );
-        log::info!("{}", query_str);
 
         let _ = sqlx::query(&query_str).execute(pool).await?;
         Ok(String::from("Successfully updated row"))

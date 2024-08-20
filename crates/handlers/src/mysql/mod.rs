@@ -18,8 +18,6 @@ impl TableHandler for MySQLHandler {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
         let query_str = "show tables;";
 
-        log::info!("{}", query_str);
-
         let res = sqlx::query(query_str).fetch_all(pool).await?;
         Ok(res)
     }
@@ -39,8 +37,6 @@ impl TableHandler for MySQLHandler {
                 LEFT JOIN information_schema.table_constraints AS tc ON tc.constraint_name = kcu.constraint_name
                 WHERE cols.table_name = ?
                 GROUP BY cols.column_name, cols.data_type, cols.is_nullable, cols.column_default;";
-
-        log::info!("{}", query_str);
 
         let result = sqlx::query_as::<_, ColumnProps>(query_str)
             .bind(&table_name)
@@ -69,7 +65,6 @@ impl RowHandler for MySQLHandler {
                 AND column_name = ?
                 AND referenced_table_name IS NOT NULL;
             ";
-        log::info!("{}", query_str);
 
         let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
             .bind(&table_name)
@@ -86,7 +81,6 @@ impl RowHandler for MySQLHandler {
                 to = relation.to,
                 column_value = cell_value,
             );
-            log::info!("{}", query_str);
 
             let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 

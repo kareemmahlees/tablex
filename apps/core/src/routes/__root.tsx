@@ -1,9 +1,4 @@
 import { commands } from "@/bindings"
-import {
-  KeybindingsManager,
-  KeybindingsManagerContext
-} from "@/keybindings/manager"
-import { SettingsContext, SettingsManager } from "@/settings/manager"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import React, { Suspense } from "react"
 import { Toaster } from "react-hot-toast"
@@ -18,23 +13,16 @@ const TanStackRouterDevtools =
         }))
       )
 
-const keybindingsManager = new KeybindingsManager()
-const settingsManager = new SettingsManager()
-
 export const Route = createRootRoute({
   onEnter: commands.closeSplashscreen,
   component: () => {
     return (
       <main className="dark h-full w-full">
-        <SettingsContext.Provider value={settingsManager}>
-          <KeybindingsManagerContext.Provider value={keybindingsManager}>
-            <Toaster position="top-right" />
-            <Outlet />
-            <Suspense>
-              <TanStackRouterDevtools position="bottom-right" />
-            </Suspense>
-          </KeybindingsManagerContext.Provider>
-        </SettingsContext.Provider>
+        <Toaster position="top-right" />
+        <Outlet />
+        <Suspense>
+          <TanStackRouterDevtools position="bottom-right" />
+        </Suspense>
       </main>
     )
   }

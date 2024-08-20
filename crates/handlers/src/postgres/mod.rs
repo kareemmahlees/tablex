@@ -20,8 +20,6 @@ impl TableHandler for PostgresHandler {
             WHERE table_type = 'BASE TABLE'
                 AND table_schema = 'public';";
 
-        log::info!("{}", query_str);
-
         let res = sqlx::query(query_str).fetch_all(pool).await?;
 
         Ok(res)
@@ -69,8 +67,6 @@ impl TableHandler for PostgresHandler {
             WHERE col.table_name = $1 ORDER BY col.ordinal_position;
             ";
 
-        log::info!("{}", query_str);
-
         let result = sqlx::query_as::<_, ColumnProps>(query_str)
             .bind(&table_name)
             .fetch_all(pool)
@@ -104,7 +100,6 @@ impl RowHandler for PostgresHandler {
                 AND tc.table_schema='public'
                 AND tc.table_name= $2;
             ";
-        log::info!("{}", query_str);
 
         let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
             .bind(&column_name)
@@ -121,7 +116,6 @@ impl RowHandler for PostgresHandler {
                 to = relation.to,
                 column_value = cell_value,
             );
-            log::info!("{}", query_str);
 
             let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 

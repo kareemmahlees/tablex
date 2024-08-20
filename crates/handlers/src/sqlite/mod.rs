@@ -20,8 +20,6 @@ impl TableHandler for SQLiteHandler {
             WHERE type ='table' 
             AND name NOT LIKE 'sqlite_%';";
 
-        log::info!("{}", query_str);
-
         let res = sqlx::query(query_str).fetch_all(pool).await?;
 
         Ok(res)
@@ -48,8 +46,6 @@ impl TableHandler for SQLiteHandler {
             FROM PRAGMA_TABLE_INFO($1) as ti;
             ";
 
-        log::info!("{}", query_str);
-
         let result = sqlx::query_as::<_, ColumnProps>(query_str)
             .bind(&table_name)
             .fetch_all(pool)
@@ -70,7 +66,6 @@ impl RowHandler for SQLiteHandler {
     ) -> Result<Vec<FKRows>> {
         let query_str =
             "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;";
-        log::info!("{}", query_str);
 
         let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
             .bind(&table_name)
@@ -87,7 +82,6 @@ impl RowHandler for SQLiteHandler {
                 to = relation.to,
                 column_value = cell_value,
             );
-            log::info!("{}", query_str);
 
             let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 

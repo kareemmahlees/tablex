@@ -66,11 +66,11 @@ export class KeybindingsManager {
   }
 }
 
-export const KeybindingsManagerContext = createContext(new KeybindingsManager())
+export const KeybindingsContext = createContext(new KeybindingsManager())
 
 /**
  * A react context hook to access the {@link KeybindingsManager} from anywhere in the application.
  */
 export const useKeybindings = () => {
-  return useContext(KeybindingsManagerContext)
+  return useContext(KeybindingsContext)
 }
