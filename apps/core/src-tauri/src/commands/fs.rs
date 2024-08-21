@@ -27,6 +27,7 @@ pub fn open_in_external_editor(app: AppHandle, file: ConfigFile) -> Result<(), T
         ConfigFile::Keybindings => get_keybindings_file_path(&app)?,
         ConfigFile::Settings => get_settings_file_path(&app)?,
     };
+    log::debug!("Opening {} in external editor.", path.to_str().unwrap());
     Ok(open::that_detached(path)?)
 }
 
@@ -39,6 +40,9 @@ pub fn load_settings_file(app: AppHandle) -> Result<Settings, TxError> {
     merge(&mut default_settings, &settings);
 
     let settings = serde_json::from_value::<Settings>(settings)?;
+
+    log::debug!("Loaded settings.");
+
     Ok(settings)
 }
 
@@ -48,7 +52,14 @@ pub fn write_into_settings_file(app: AppHandle, settings: Value) -> Result<(), T
     let mut stored_settings = read_from_json::<Value>(&get_settings_file_path(&app)?)?;
     merge(&mut stored_settings, &settings);
 
-    write_into_json(&get_settings_file_path(&app)?, stored_settings)?;
+    let parsed_settings = serde_json::from_value::<Settings>(stored_settings)?;
+
+    if parsed_settings.page_size > 2000 {
+        log::warn!(page_size = parsed_settings.page_size;"Setting page size to a high value can cause performance issues.");
+    };
+
+    write_into_json(&get_settings_file_path(&app)?, parsed_settings)?;
+    log::info!("Settings updated.");
     Ok(())
 }
 
@@ -59,5 +70,7 @@ pub fn write_into_keybindings_file(
     keybindings: Vec<Keybinding>,
 ) -> Result<(), TxError> {
     write_into_json(&get_keybindings_file_path(&app)?, keybindings)?;
+    log::info!("Keybindings updated.");
+
     Ok(())
 }

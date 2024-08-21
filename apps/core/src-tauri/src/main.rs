@@ -7,23 +7,15 @@ mod state;
 #[cfg(not(debug_assertions))]
 mod updater;
 
-// use commands::{
-//     connection::{
-//         connections_exist, create_connection_record, delete_connection_record,
-//         ensure_connections_file_exist, establish_connection, get_connection_details,
-//         get_connections, get_connections_file_path, test_connection,
-//     },
-//     fs::{load_settings_file, open_in_external_editor},
-//     row::{create_row, delete_rows, get_fk_relations, get_paginated_rows, update_row},
-//     table::{execute_raw_query, get_columns_props, get_tables},
-// };
 use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(not(debug_assertions))]
 use updater::check_for_update;
 
+use log::Level;
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
+use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
 use tx_lib::{events::*, TxError};
@@ -97,6 +89,37 @@ fn main() {
     let (args, cmd) = cli::parse_cli_args();
 
     let tauri_builder = tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .clear_targets()
+                .targets([
+                    Target::new(TargetKind::LogDir { file_name: None }).filter(|metadata| {
+                        metadata.level() != Level::Debug
+                            && metadata.level() != Level::Trace
+                            && !metadata.target().starts_with("tao")
+                    }),
+                    Target::new(TargetKind::Stdout),
+                ])
+                .max_file_size(2_000_000)
+                .format(|out, message, record| {
+                    out.finish(format_args!(
+                        "{} [{}] {}",
+                        TimezoneStrategy::UseUtc
+                            .get_now()
+                            .format(
+                                &time::format_description::parse(
+                                    "[year]-[month]-[day] [hour]:[minute]:[second]"
+                                )
+                                .unwrap()
+                            )
+                            .unwrap(),
+                        record.level(),
+                        message
+                    ))
+                })
+                .rotation_strategy(RotationStrategy::KeepAll)
+                .build(),
+        )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
@@ -106,9 +129,10 @@ fn main() {
         .setup(move |app| {
             let app_handle = app.app_handle();
             let rt = tokio::runtime::Runtime::new().unwrap();
-            let _settings = load_settings_file(app_handle.clone())?;
 
             ensure_config_files_exist(app_handle)?;
+            let _settings = load_settings_file(app_handle.clone())?;
+
             builder.mount_events(app);
 
             rt.block_on(cli::handle_cli_args(app_handle, args, cmd));

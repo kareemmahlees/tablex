@@ -15,14 +15,12 @@ impl Handler for PostgresHandler {}
 impl TableHandler for PostgresHandler {
     async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
-        let res = sqlx::query(
-            "SELECT \"table_name\"
+        let query_str = "SELECT \"table_name\"
             FROM information_schema.tables
             WHERE table_type = 'BASE TABLE'
-                AND table_schema = 'public';",
-        )
-        .fetch_all(pool)
-        .await?;
+                AND table_schema = 'public';";
+
+        let res = sqlx::query(query_str).fetch_all(pool).await?;
 
         Ok(res)
     }
@@ -32,8 +30,7 @@ impl TableHandler for PostgresHandler {
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>> {
-        let result = sqlx::query_as::<_,ColumnProps>(
-            "
+        let query_str = "
             SELECT col.column_name,
                     col.data_type,
                     CASE
@@ -68,11 +65,12 @@ impl TableHandler for PostgresHandler {
                     END has_fk_relations
             FROM information_schema.columns AS COL
             WHERE col.table_name = $1 ORDER BY col.ordinal_position;
-            "
-        )
-        .bind(&table_name)
-        .fetch_all(pool)
-        .await?;
+            ";
+
+        let result = sqlx::query_as::<_, ColumnProps>(query_str)
+            .bind(&table_name)
+            .fetch_all(pool)
+            .await?;
 
         Ok(result)
     }
@@ -87,8 +85,7 @@ impl RowHandler for PostgresHandler {
         column_name: String,
         cell_value: JsonValue,
     ) -> Result<Vec<FKRows>> {
-        let fk_relations = sqlx::query_as::<_, FkRelation>(
-            "
+        let query_str = "
             SELECT
                 ccu.table_name AS table,
                 ccu.column_name AS to
@@ -102,27 +99,25 @@ impl RowHandler for PostgresHandler {
                 AND  kcu.column_name = $1
                 AND tc.table_schema='public'
                 AND tc.table_name= $2;
-            ",
-        )
-        .bind(&column_name)
-        .bind(&table_name)
-        .fetch_all(pool)
-        .await?;
+            ";
+
+        let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
+            .bind(&column_name)
+            .bind(&table_name)
+            .fetch_all(pool)
+            .await?;
 
         let mut result = Vec::new();
 
         for relation in fk_relations.iter() {
-            let rows = sqlx::query(
-                format!(
-                    "SELECT * from {table_name} where {to} = {column_value};",
-                    table_name = relation.table,
-                    to = relation.to,
-                    column_value = cell_value,
-                )
-                .as_str(),
-            )
-            .fetch_all(pool)
-            .await?;
+            let query_str = format!(
+                "SELECT * from {table_name} where {to} = {column_value};",
+                table_name = relation.table,
+                to = relation.to,
+                column_value = cell_value,
+            );
+
+            let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 

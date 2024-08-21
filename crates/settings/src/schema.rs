@@ -13,7 +13,7 @@ pub struct Settings {
     #[serde(rename = "$schema")]
     schema: Option<String>,
     /// Number of rows to be fetched per page.
-    page_size: u32,
+    pub page_size: u32,
     /// Wether to automatically check for updates or not.
     pub check_for_updates: bool,
     /// Configuration for the SQL editor.

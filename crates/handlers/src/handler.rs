@@ -44,22 +44,18 @@ pub trait RowHandler {
         page_index: u16,
         page_size: i32,
     ) -> Result<PaginatedRows> {
-        let rows = sqlx::query(
-            format!(
-                "SELECT * FROM {} limit {} offset {};",
-                table_name,
-                page_size,
-                page_index as i32 * page_size
-            )
-            .as_str(),
-        )
-        .fetch_all(pool)
-        .await?;
+        let query_str = format!(
+            "SELECT * FROM {} limit {} offset {};",
+            table_name,
+            page_size,
+            page_index as i32 * page_size
+        );
 
-        let page_count_result =
-            sqlx::query(format!("SELECT COUNT(*) from {}", table_name).as_str())
-                .fetch_one(pool)
-                .await?;
+        let rows = sqlx::query(&query_str).fetch_all(pool).await?;
+
+        let query_str = format!("SELECT COUNT(*) from {}", table_name);
+
+        let page_count_result = sqlx::query(&query_str).fetch_one(pool).await?;
         let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() as i32 / page_size;
 
         let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
@@ -75,6 +71,7 @@ pub trait RowHandler {
         params: String,
     ) -> Result<String> {
         let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});");
+
         let result = sqlx::query(&query_str).execute(pool).await?;
 
         let mut message = String::from("Successfully deleted ");
@@ -92,10 +89,9 @@ pub trait RowHandler {
         columns: String,
         values: String,
     ) -> Result<String> {
-        let res =
-            sqlx::query(format!("INSERT INTO {table_name} ({columns}) VALUES({values})").as_str())
-                .execute(pool)
-                .await?;
+        let query_str = format!("INSERT INTO {table_name} ({columns}) VALUES({values})");
+
+        let res = sqlx::query(&query_str).execute(pool).await?;
         Ok(format!("Successfully created {} row", res.rows_affected()))
     }
     async fn update_row(
@@ -106,15 +102,12 @@ pub trait RowHandler {
         pk_col_name: String,
         pk_col_value: JsonValue,
     ) -> Result<String> {
-        let _ = sqlx::query(
-            format!(
-                "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
-                pk_col_value
-            )
-            .as_str(),
-        )
-        .execute(pool)
-        .await?;
+        let query_str = format!(
+            "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
+            pk_col_value
+        );
+
+        let _ = sqlx::query(&query_str).execute(pool).await?;
         Ok(String::from("Successfully updated row"))
     }
 

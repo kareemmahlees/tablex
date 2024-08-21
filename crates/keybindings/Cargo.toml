@@ -13,4 +13,5 @@ serde = { workspace = true }
 specta = { workspace = true }
 tauri-specta = { workspace = true }
 tauri = { workspace = true }
+log = { workspace = true }
 tx_lib = { path = "../lib" }

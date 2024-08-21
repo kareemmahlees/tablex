@@ -47,9 +47,11 @@ pub fn create_connection_record(
         conn_name,
     };
     let id = Uuid::new_v4().to_string();
-    contents.insert(id, connection);
+    contents.insert(id.clone(), connection);
 
     write_into_json(&connections_file_path, contents)?;
+    log::info!(id = id.as_str() ;"New connection created");
+
     Ok(String::from("Successfully created connection"))
 }
 
@@ -64,7 +66,11 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
         .ok_or(TxError::Io(std::io::ErrorKind::Other.into()))?;
 
     write_into_json(&connections_file_path, contents)?;
+    log::info!(id = conn_id.as_str(); "Connection deleted");
+
     ConnectionsChanged.emit(&app).unwrap();
+    log::debug!("Event emitted: {:?}", ConnectionsChanged);
+
     Ok(String::from("Successfully deleted connection"))
 }
 
@@ -169,6 +175,7 @@ pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<
 /// Make sure `connections.json` file exist, if not will create an empty json file for it.
 pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
     if path.exists() {
+        log::debug!("{} exists, skipping creation.", CONNECTIONS_FILE_NAME);
         return Ok(());
     }
     create_json_file_recursively(path)?;

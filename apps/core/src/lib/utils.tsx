@@ -1,8 +1,9 @@
 import type { ColumnProps, TxError } from "@/bindings"
 import ErrorDialog from "@/components/dialogs/error-dialog"
 import { Separator } from "@/components/ui/separator"
+import { error } from "@tauri-apps/plugin-log"
 import { ErrorIcon, toast } from "react-hot-toast"
-import { Drivers, type ConnectionStringParams } from "./types"
+import { ConnectionStringParams, Drivers } from "./types"
 
 /**
  * creates connection string for the specified driver accordingly
@@ -34,6 +35,9 @@ export function customToast<T extends string>(
   id?: string
 ) {
   if (commandResult.status === "error") {
+    error(
+      `message: ${commandResult.error.message}, details: ${commandResult.error.details}.`
+    )
     return toast(
       <div className="flex items-center justify-between gap-x-2">
         <p>{commandResult.error.message}</p>
