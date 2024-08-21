@@ -84,9 +84,9 @@ pub async fn establish_connection(
     let pool = tx_handlers::establish_connection(&conn_string).await?;
 
     let handler: Box<dyn Handler> = match driver {
-        Drivers::SQLite => Box::new(SQLiteHandler {}),
-        Drivers::PostgreSQL => Box::new(PostgresHandler {}),
-        Drivers::MySQL => Box::new(MySQLHandler {}),
+        Drivers::SQLite => SQLiteHandler::new(),
+        Drivers::PostgreSQL => PostgresHandler::new(),
+        Drivers::MySQL => MySQLHandler::new(),
     };
 
     #[allow(unused_mut)]
@@ -98,7 +98,7 @@ pub async fn establish_connection(
         state.metax = None;
     }
 
-    app.manage(state);
+    app.manage(Mutex::new(state));
 
     Ok(())
 }

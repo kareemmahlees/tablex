@@ -8,43 +8,41 @@ use tx_lib::{
 };
 
 #[derive(Debug)]
-pub struct SQLiteHandler;
+pub struct MySQLHandler;
 
-impl Handler for SQLiteHandler {}
+impl MySQLHandler {
+    pub fn new() -> Box<Self> {
+        Box::new(MySQLHandler {})
+    }
+}
+
+impl Handler for MySQLHandler {}
 
 #[async_trait]
-impl TableHandler for SQLiteHandler {
+impl TableHandler for MySQLHandler {
     async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
-        let query_str = "SELECT name
-            FROM sqlite_schema
-            WHERE type ='table' 
-            AND name NOT LIKE 'sqlite_%';";
+        let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
+        let query_str = "show tables;";
 
         let res = sqlx::query(query_str).fetch_all(pool).await?;
-
         Ok(res)
     }
-
     async fn get_columns_props(
         &self,
         pool: &AnyPool,
         table_name: String,
     ) -> Result<Vec<ColumnProps>> {
-        let query_str = "
-            SELECT ti.name AS column_name,
-                    ti.type AS data_type,
-                    CASE WHEN ti.\"notnull\" = 1
-                        THEN 0
-                        ELSE 1
-                        END AS is_nullable,
-                    ti.dflt_value AS default_value,
-                    ti.pk AS is_pk,
-            CASE WHEN ti.name in (SELECt \"from\" FROM PRAGMA_FOREIGN_KEY_LIST($1) WHERE \"from\" = ti.name)
-                THEN 1
-                ELSE 0
-                END AS has_fk_relations
-            FROM PRAGMA_TABLE_INFO($1) as ti;
-            ";
+        let query_str = "SELECT cols.column_name AS column_name,
+                        cols.data_type AS data_type,
+                        cols.is_nullable = \"YES\" AS is_nullable,
+                        cols.column_default AS default_value,
+                        GROUP_CONCAT(tc.constraint_type) LIKE '%PRIMARY KEY%' AS is_pk,
+                        GROUP_CONCAT(tc.constraint_type) LIKE '%FOREIGN KEY%' AS has_fk_relations
+                FROM information_schema.columns AS cols
+                LEFT JOIN information_schema.key_column_usage AS kcu ON kcu.column_name = cols.column_name
+                LEFT JOIN information_schema.table_constraints AS tc ON tc.constraint_name = kcu.constraint_name
+                WHERE cols.table_name = ?
+                GROUP BY cols.column_name, cols.data_type, cols.is_nullable, cols.column_default;";
 
         let result = sqlx::query_as::<_, ColumnProps>(query_str)
             .bind(&table_name)
@@ -56,7 +54,7 @@ impl TableHandler for SQLiteHandler {
 }
 
 #[async_trait]
-impl RowHandler for SQLiteHandler {
+impl RowHandler for MySQLHandler {
     async fn fk_relations(
         &self,
         pool: &AnyPool,
@@ -64,8 +62,15 @@ impl RowHandler for SQLiteHandler {
         column_name: String,
         cell_value: JsonValue,
     ) -> Result<Vec<FKRows>> {
-        let query_str =
-            "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;";
+        let query_str = "
+            SELECT referenced_table_name AS \"table\",
+                referenced_column_name AS \"to\"
+            FROM
+                information_schema.key_column_usage
+            WHERE table_name = ?
+                AND column_name = ?
+                AND referenced_table_name IS NOT NULL;
+            ";
 
         let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
             .bind(&table_name)
