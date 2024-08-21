@@ -136,11 +136,9 @@ pub async fn get_fk_relations(
     column_name: String,
     cell_value: JsonValue,
 ) -> Result<Vec<FKRows>> {
-    let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    let handler = &state.lock().await.handler;
 
     handler
-        .fk_relations(pool, table_name, column_name, cell_value)
+        .fk_relations(table_name, column_name, cell_value)
         .await
 }

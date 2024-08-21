@@ -112,7 +112,6 @@ impl RowHandler for SQLiteHandler {
 
     async fn fk_relations(
         &self,
-        pool: &AnyPool,
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
@@ -123,7 +122,7 @@ impl RowHandler for SQLiteHandler {
         let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
             .bind(&table_name)
             .bind(&column_name)
-            .fetch_all(pool)
+            .fetch_all(&self.pool)
             .await?;
 
         let mut result = Vec::new();
@@ -136,7 +135,7 @@ impl RowHandler for SQLiteHandler {
                 column_value = cell_value,
             );
 
-            let rows = sqlx::query(&query_str).fetch_all(pool).await?;
+            let rows = sqlx::query(&query_str).fetch_all(&self.pool).await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 

@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use serde_json::{Map, Value as JsonValue};
-use sqlx::{any::AnyRow, AnyPool};
+use sqlx::any::AnyRow;
 use std::fmt::Debug;
 
 use tx_lib::{
@@ -53,7 +53,6 @@ pub trait RowHandler {
 
     async fn fk_relations(
         &self,
-        pool: &AnyPool,
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
