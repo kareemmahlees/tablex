@@ -7,11 +7,11 @@ import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
+import { unwrapResult } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { ArrowLeft, Search, Table } from "lucide-react"
 import { useEffect, useState, type KeyboardEvent } from "react"
-import toast from "react-hot-toast"
 import { z } from "zod"
 
 const dashboardConnectionSchema = z.object({
@@ -28,16 +28,15 @@ export const Route = createFileRoute("/dashboard/_layout")({
   loader: async ({ deps: { connectionName } }) => {
     const connName = connectionName || "Temp Connection"
 
-    const tables = await commands.getTables()
-    if (tables.status === "error") {
-      toast.error(tables.error, { id: "get_tables" })
+    const tables = unwrapResult(await commands.getTables())
+    if (!tables)
       throw redirect({
         to: "/connections"
       })
-    }
 
-    return { connName, tables: tables.data }
+    return { connName, tables }
   },
+  onLeave: async () => unwrapResult(await commands.killMetax()),
   component: DashboardLayout
 })
 

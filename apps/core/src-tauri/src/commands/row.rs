@@ -19,8 +19,8 @@ pub async fn get_paginated_rows(
     page_size: i32,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
-    let pool = state.pool.as_ref().unwrap();
-    let handler = state.handler.as_deref().unwrap();
+    let pool = &state.pool;
+    let handler = &state.handler;
 
     handler
         .get_paginated_rows(pool, table_name, page_index, page_size)
@@ -37,8 +37,8 @@ pub async fn delete_rows(
     table_name: String,
 ) -> Result<String> {
     let state = state.lock().await;
-    let pool = state.pool.as_ref().unwrap();
-    let handler = state.handler.as_deref().unwrap();
+    let pool = &state.pool;
+    let handler = &state.handler;
 
     let mut params: String = Default::default();
     for val in row_pk_values.iter() {
@@ -70,8 +70,8 @@ pub async fn create_row(
     data: HashMap<String, JsonValue>,
 ) -> Result<String> {
     let state = state.lock().await;
-    let pool = state.pool.as_ref().unwrap();
-    let handler = state.handler.as_deref().unwrap();
+    let pool = &state.pool;
+    let handler = &state.handler;
 
     let columns = data
         .keys()
@@ -116,8 +116,8 @@ pub async fn update_row(
     data: Map<String, JsonValue>,
 ) -> Result<String> {
     let state = state.lock().await;
-    let pool = state.pool.as_ref().unwrap();
-    let handler = state.handler.as_deref().unwrap();
+    let pool = &state.pool;
+    let handler = &state.handler;
 
     if data.is_empty() {
         return Ok(String::new());
@@ -147,8 +147,8 @@ pub async fn get_fk_relations(
     cell_value: JsonValue,
 ) -> Result<Vec<FKRows>> {
     let state = state.lock().await;
-    let pool = state.pool.as_ref().unwrap();
-    let handler = state.handler.as_deref().unwrap();
+    let pool = &state.pool;
+    let handler = &state.handler;
 
     handler
         .fk_relations(pool, table_name, column_name, cell_value)

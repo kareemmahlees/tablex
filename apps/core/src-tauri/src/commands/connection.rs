@@ -77,17 +77,10 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
 #[tauri::command]
 #[specta::specta]
 pub async fn establish_connection(
-    _app: AppHandle,
-    state: State<'_, Mutex<SharedState>>,
+    app: AppHandle,
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    #[cfg(feature = "metax")]
-    {
-        if let Some(sidecar) = state.lock().await.metax.take() {
-            sidecar.kill().expect("failed to kill sidecar")
-        }
-    }
     let pool = tx_handlers::establish_connection(&conn_string).await?;
 
     let handler: Box<dyn Handler> = match driver {
@@ -96,16 +89,31 @@ pub async fn establish_connection(
         Drivers::MySQL => Box::new(MySQLHandler {}),
     };
 
-    let mut state = state.lock().await;
+    #[allow(unused_mut)]
+    let mut state = SharedState::new(handler, pool, None);
 
-    state.pool = Some(pool);
-    state.handler = Some(handler);
     #[cfg(feature = "metax")]
     {
-        let child = spawn_sidecar(_app, driver, conn_string);
-        state.metax = Some(child);
+        let child = spawn_sidecar(app, driver, conn_string);
+        state.metax = None;
     }
 
+    app.manage(state);
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn kill_metax(_state: State<'_, Mutex<SharedState>>) -> Result<()> {
+    #[cfg(feature = "metax")]
+    {
+        if let Some(metax) = _state.lock().await.metax.take() {
+            metax
+                .kill()
+                .map_err(|_| TxError::MetaXError("Failed to kill metax".to_string()))?;
+        }
+    }
     Ok(())
 }
 

@@ -50,6 +50,7 @@ fn main() {
         .constant("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME)
         .commands(collect_commands![
             close_splashscreen,
+            kill_metax,
             // Connection commands.
             test_connection,
             create_connection_record,
@@ -124,7 +125,6 @@ fn main() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
-        .manage(Mutex::new(SharedState::default()))
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             let app_handle = app.app_handle();
