@@ -1,10 +1,9 @@
 use async_trait::async_trait;
 use serde_json::{Map, Value as JsonValue};
-use sqlx::{any::AnyRow, AnyPool, Row};
+use sqlx::{any::AnyRow, AnyPool};
 use std::fmt::Debug;
 
 use tx_lib::{
-    decode,
     types::{ColumnProps, FKRows, PaginatedRows},
     Result,
 };
@@ -27,29 +26,10 @@ pub trait TableHandler {
 pub trait RowHandler {
     async fn get_paginated_rows(
         &self,
-        pool: &AnyPool,
         table_name: String,
         page_index: u16,
         page_size: i32,
-    ) -> Result<PaginatedRows> {
-        let query_str = format!(
-            "SELECT * FROM {} limit {} offset {};",
-            table_name,
-            page_size,
-            page_index as i32 * page_size
-        );
-
-        let rows = sqlx::query(&query_str).fetch_all(pool).await?;
-
-        let query_str = format!("SELECT COUNT(*) from {}", table_name);
-
-        let page_count_result = sqlx::query(&query_str).fetch_one(pool).await?;
-        let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() as i32 / page_size;
-
-        let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
-
-        Ok(paginated_rows)
-    }
+    ) -> Result<PaginatedRows>;
 
     async fn delete_rows(
         &self,

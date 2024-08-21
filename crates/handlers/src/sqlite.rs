@@ -3,13 +3,10 @@ use crate::{
     shared_queries,
 };
 use async_trait::async_trait;
-use serde_json::{
-    Map,
-    Value::{self as JsonValue},
-};
+use serde_json::{Map, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::{
-    types::{ColumnProps, FKRows, FkRelation},
+    types::{ColumnProps, FKRows, FkRelation, PaginatedRows},
     Result,
 };
 
@@ -71,6 +68,14 @@ impl TableHandler for SQLiteHandler {
 
 #[async_trait]
 impl RowHandler for SQLiteHandler {
+    async fn get_paginated_rows(
+        &self,
+        table_name: String,
+        page_index: u16,
+        page_size: i32,
+    ) -> Result<PaginatedRows> {
+        shared_queries::get_paginated_rows(&self.pool, table_name, page_index, page_size).await
+    }
     async fn fk_relations(
         &self,
         pool: &AnyPool,

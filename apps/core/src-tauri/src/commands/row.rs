@@ -18,12 +18,10 @@ pub async fn get_paginated_rows(
     page_index: u16,
     page_size: i32,
 ) -> Result<PaginatedRows> {
-    let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    let handler = &state.lock().await.handler;
 
     handler
-        .get_paginated_rows(pool, table_name, page_index, page_size)
+        .get_paginated_rows(table_name, page_index, page_size)
         .await
 }
 
