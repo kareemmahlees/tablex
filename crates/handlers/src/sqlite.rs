@@ -1,6 +1,12 @@
-use crate::handler::{Handler, RowHandler, TableHandler};
+use crate::{
+    handler::{Handler, RowHandler, TableHandler},
+    shared_queries,
+};
 use async_trait::async_trait;
-use serde_json::Value::{self as JsonValue};
+use serde_json::{
+    Map,
+    Value::{self as JsonValue},
+};
 use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::{
     types::{ColumnProps, FKRows, FkRelation},
@@ -8,11 +14,13 @@ use tx_lib::{
 };
 
 #[derive(Debug)]
-pub struct SQLiteHandler;
+pub struct SQLiteHandler {
+    pub(crate) pool: AnyPool,
+}
 
 impl SQLiteHandler {
-    pub fn new() -> Box<Self> {
-        Box::new(SQLiteHandler {})
+    pub fn new(pool: AnyPool) -> Box<Self> {
+        Box::new(SQLiteHandler { pool })
     }
 }
 
@@ -20,22 +28,18 @@ impl Handler for SQLiteHandler {}
 
 #[async_trait]
 impl TableHandler for SQLiteHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
+    async fn get_tables(&self) -> Result<Vec<AnyRow>> {
         let query_str = "SELECT name
             FROM sqlite_schema
             WHERE type ='table' 
             AND name NOT LIKE 'sqlite_%';";
 
-        let res = sqlx::query(query_str).fetch_all(pool).await?;
+        let res = sqlx::query(query_str).fetch_all(&self.pool).await?;
 
         Ok(res)
     }
 
-    async fn get_columns_props(
-        &self,
-        pool: &AnyPool,
-        table_name: String,
-    ) -> Result<Vec<ColumnProps>> {
+    async fn get_columns_props(&self, table_name: String) -> Result<Vec<ColumnProps>> {
         let query_str = "
             SELECT ti.name AS column_name,
                     ti.type AS data_type,
@@ -54,10 +58,14 @@ impl TableHandler for SQLiteHandler {
 
         let result = sqlx::query_as::<_, ColumnProps>(query_str)
             .bind(&table_name)
-            .fetch_all(pool)
+            .fetch_all(&self.pool)
             .await?;
 
         Ok(result)
+    }
+
+    async fn execute_raw_query(&self, query: String) -> Result<Vec<Map<String, JsonValue>>> {
+        shared_queries::execute_raw_query(&self.pool, query).await
     }
 }
 

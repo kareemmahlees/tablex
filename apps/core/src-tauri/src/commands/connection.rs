@@ -84,9 +84,9 @@ pub async fn establish_connection(
     let pool = tx_handlers::establish_connection(&conn_string).await?;
 
     let handler: Box<dyn Handler> = match driver {
-        Drivers::SQLite => SQLiteHandler::new(),
-        Drivers::PostgreSQL => PostgresHandler::new(),
-        Drivers::MySQL => MySQLHandler::new(),
+        Drivers::SQLite => SQLiteHandler::new(pool.clone()),
+        Drivers::PostgreSQL => PostgresHandler::new(pool.clone()),
+        Drivers::MySQL => MySQLHandler::new(pool.clone()),
     };
 
     #[allow(unused_mut)]

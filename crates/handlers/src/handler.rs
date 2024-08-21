@@ -4,7 +4,7 @@ use sqlx::{any::AnyRow, AnyPool, Row};
 use std::fmt::Debug;
 
 use tx_lib::{
-    decode::{self, decode_raw_rows},
+    decode,
     types::{ColumnProps, FKRows, PaginatedRows},
     Result,
 };
@@ -16,22 +16,10 @@ pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
 #[async_trait]
 /// Every handler must provide it's own implementation of this.
 pub trait TableHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>>;
-    async fn get_columns_props(
-        &self,
-        pool: &AnyPool,
-        table_name: String,
-    ) -> Result<Vec<ColumnProps>>;
+    async fn get_tables(&self) -> Result<Vec<AnyRow>>;
+    async fn get_columns_props(&self, table_name: String) -> Result<Vec<ColumnProps>>;
 
-    async fn execute_raw_query(
-        &self,
-        pool: &AnyPool,
-        query: String,
-    ) -> Result<Vec<Map<String, JsonValue>>> {
-        let res = sqlx::query(&query).fetch_all(pool).await?;
-        let decoded = decode_raw_rows(res).unwrap();
-        Ok(decoded)
-    }
+    async fn execute_raw_query(&self, query: String) -> Result<Vec<Map<String, JsonValue>>>;
 }
 
 #[async_trait]
