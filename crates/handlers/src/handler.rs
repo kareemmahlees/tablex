@@ -33,51 +33,23 @@ pub trait RowHandler {
 
     async fn delete_rows(
         &self,
-        pool: &AnyPool,
         pk_col_name: String,
         table_name: String,
         params: String,
-    ) -> Result<String> {
-        let query_str = format!("DELETE FROM {table_name} WHERE {pk_col_name} in ({params});");
-
-        let result = sqlx::query(&query_str).execute(pool).await?;
-
-        let mut message = String::from("Successfully deleted ");
-        if result.rows_affected() == 1 {
-            message.push_str("1 row")
-        } else {
-            message.push_str(format!("{} rows", result.rows_affected()).as_str())
-        }
-        Ok(message)
-    }
+    ) -> Result<String>;
     async fn create_row(
         &self,
-        pool: &AnyPool,
         table_name: String,
         columns: String,
         values: String,
-    ) -> Result<String> {
-        let query_str = format!("INSERT INTO {table_name} ({columns}) VALUES({values})");
-
-        let res = sqlx::query(&query_str).execute(pool).await?;
-        Ok(format!("Successfully created {} row", res.rows_affected()))
-    }
+    ) -> Result<String>;
     async fn update_row(
         &self,
-        pool: &AnyPool,
         table_name: String,
         set_condition: String,
         pk_col_name: String,
         pk_col_value: JsonValue,
-    ) -> Result<String> {
-        let query_str = format!(
-            "UPDATE {table_name} SET {set_condition} WHERE {pk_col_name}={}",
-            pk_col_value
-        );
-
-        let _ = sqlx::query(&query_str).execute(pool).await?;
-        Ok(String::from("Successfully updated row"))
-    }
+    ) -> Result<String>;
 
     async fn fk_relations(
         &self,

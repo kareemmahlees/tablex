@@ -34,9 +34,7 @@ pub async fn delete_rows(
     row_pk_values: Vec<JsonValue>,
     table_name: String,
 ) -> Result<String> {
-    let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    let handler = &state.lock().await.handler;
 
     let mut params: String = Default::default();
     for val in row_pk_values.iter() {
@@ -49,9 +47,7 @@ pub async fn delete_rows(
     }
     params.pop(); // to remove the last trailing comma
 
-    let result = handler
-        .delete_rows(pool, pk_col_name, table_name, params)
-        .await;
+    let result = handler.delete_rows(pk_col_name, table_name, params).await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
         log::debug!("Event emitted: {:?}", TableContentsChanged);
@@ -67,9 +63,7 @@ pub async fn create_row(
     table_name: String,
     data: HashMap<String, JsonValue>,
 ) -> Result<String> {
-    let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    let handler = &state.lock().await.handler;
 
     let columns = data
         .keys()
@@ -95,7 +89,7 @@ pub async fn create_row(
         .join(",")
         .to_string();
 
-    let result = handler.create_row(pool, table_name, columns, values).await;
+    let result = handler.create_row(table_name, columns, values).await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
         log::debug!("Event emitted: {:?}", TableContentsChanged);
@@ -113,9 +107,7 @@ pub async fn update_row(
     pk_col_value: JsonValue,
     data: Map<String, JsonValue>,
 ) -> Result<String> {
-    let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    let handler = &state.lock().await.handler;
 
     if data.is_empty() {
         return Ok(String::new());
@@ -127,7 +119,7 @@ pub async fn update_row(
     set_condition.pop(); // to remove the trailing comma
 
     let result = handler
-        .update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
+        .update_row(table_name, set_condition, pk_col_name, pk_col_value)
         .await;
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();

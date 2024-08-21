@@ -68,6 +68,39 @@ impl RowHandler for MySQLHandler {
     ) -> Result<PaginatedRows> {
         shared_queries::get_paginated_rows(&self.pool, table_name, page_index, page_size).await
     }
+    async fn delete_rows(
+        &self,
+        pk_col_name: String,
+        table_name: String,
+        params: String,
+    ) -> Result<String> {
+        shared_queries::delete_rows(&self.pool, pk_col_name, table_name, params).await
+    }
+    async fn create_row(
+        &self,
+        table_name: String,
+        columns: String,
+        values: String,
+    ) -> Result<String> {
+        shared_queries::create_row(&self.pool, table_name, columns, values).await
+    }
+    async fn update_row(
+        &self,
+        table_name: String,
+        set_condition: String,
+        pk_col_name: String,
+        pk_col_value: JsonValue,
+    ) -> Result<String> {
+        shared_queries::update_row(
+            &self.pool,
+            table_name,
+            set_condition,
+            pk_col_name,
+            pk_col_value,
+        )
+        .await
+    }
+
     async fn fk_relations(
         &self,
         pool: &AnyPool,
