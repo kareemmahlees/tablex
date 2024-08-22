@@ -195,6 +195,10 @@ pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
 /// **Varies by platform**.
 pub(crate) fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf> {
     let mut config_dir = app.path().app_config_dir()?;
+
+    #[cfg(debug_assertions)]
+    config_dir.push("dev");
+
     config_dir.push(CONNECTIONS_FILE_NAME);
     Ok(config_dir)
 }
