@@ -10,7 +10,6 @@ use tx_lib::{Result, TxError};
 mod handler;
 mod mysql;
 mod postgres;
-mod shared_queries;
 mod sqlite;
 
 pub use handler::{Handler, RowHandler, TableHandler};

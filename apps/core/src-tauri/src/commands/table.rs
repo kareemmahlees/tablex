@@ -8,8 +8,9 @@ use tx_lib::{types::ColumnProps, Result};
 #[specta::specta]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>> {
     let state = state.lock().await;
+    let pool = &state.pool;
     let handler = &state.handler;
-    let tables = handler.get_tables().await?;
+    let tables = handler.get_tables(pool).await?;
 
     if tables.is_empty() {
         return Ok(vec![]);
@@ -28,8 +29,10 @@ pub async fn get_columns_props(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
 ) -> Result<Vec<ColumnProps>> {
-    let handler = &state.lock().await.handler;
-    let cols_defs = handler.get_columns_props(table_name).await?;
+    let state = state.lock().await;
+    let pool = &state.pool;
+    let handler = &state.handler;
+    let cols_defs = handler.get_columns_props(pool, table_name).await?;
 
     Ok(cols_defs)
 }
@@ -40,9 +43,11 @@ pub async fn execute_raw_query(
     state: State<'_, Mutex<SharedState>>,
     query: String,
 ) -> Result<Vec<Map<String, Value>>> {
-    let handler = &state.lock().await.handler;
+    let state = state.lock().await;
+    let pool = &state.pool;
+    let handler = &state.handler;
 
-    let result = handler.execute_raw_query(query).await?;
+    let result = handler.execute_raw_query(pool, query).await?;
 
     Ok(result)
 }

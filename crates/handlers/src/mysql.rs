@@ -1,23 +1,18 @@
-use crate::{
-    handler::{Handler, RowHandler, TableHandler},
-    shared_queries,
-};
+use crate::handler::{Handler, RowHandler, TableHandler};
 use async_trait::async_trait;
-use serde_json::{Map, Value as JsonValue};
+use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
 use tx_lib::{
-    types::{ColumnProps, FKRows, FkRelation, PaginatedRows},
+    types::{ColumnProps, FKRows, FkRelation},
     Result,
 };
 
 #[derive(Debug)]
-pub struct MySQLHandler {
-    pub(crate) pool: AnyPool,
-}
+pub struct MySQLHandler;
 
 impl MySQLHandler {
-    pub fn new(pool: AnyPool) -> Box<Self> {
-        Box::new(MySQLHandler { pool })
+    pub fn new() -> Box<Self> {
+        Box::new(MySQLHandler {})
     }
 }
 
@@ -25,14 +20,18 @@ impl Handler for MySQLHandler {}
 
 #[async_trait]
 impl TableHandler for MySQLHandler {
-    async fn get_tables(&self) -> Result<Vec<AnyRow>> {
-        let _ = self.pool.acquire().await; // This line is only added due to weird behavior when running the CLI
+    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
+        let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
         let query_str = "show tables;";
 
-        let res = sqlx::query(query_str).fetch_all(&self.pool).await?;
+        let res = sqlx::query(query_str).fetch_all(pool).await?;
         Ok(res)
     }
-    async fn get_columns_props(&self, table_name: String) -> Result<Vec<ColumnProps>> {
+    async fn get_columns_props(
+        &self,
+        pool: &AnyPool,
+        table_name: String,
+    ) -> Result<Vec<ColumnProps>> {
         let query_str = "SELECT cols.column_name AS column_name,
                         cols.data_type AS data_type,
                         cols.is_nullable = \"YES\" AS is_nullable,
@@ -47,62 +46,18 @@ impl TableHandler for MySQLHandler {
 
         let result = sqlx::query_as::<_, ColumnProps>(query_str)
             .bind(&table_name)
-            .fetch_all(&self.pool)
+            .fetch_all(pool)
             .await?;
 
         Ok(result)
-    }
-
-    async fn execute_raw_query(&self, query: String) -> Result<Vec<Map<String, JsonValue>>> {
-        shared_queries::execute_raw_query(&self.pool, query).await
     }
 }
 
 #[async_trait]
 impl RowHandler for MySQLHandler {
-    async fn get_paginated_rows(
-        &self,
-        table_name: String,
-        page_index: u16,
-        page_size: i32,
-    ) -> Result<PaginatedRows> {
-        shared_queries::get_paginated_rows(&self.pool, table_name, page_index, page_size).await
-    }
-    async fn delete_rows(
-        &self,
-        pk_col_name: String,
-        table_name: String,
-        params: String,
-    ) -> Result<String> {
-        shared_queries::delete_rows(&self.pool, pk_col_name, table_name, params).await
-    }
-    async fn create_row(
-        &self,
-        table_name: String,
-        columns: String,
-        values: String,
-    ) -> Result<String> {
-        shared_queries::create_row(&self.pool, table_name, columns, values).await
-    }
-    async fn update_row(
-        &self,
-        table_name: String,
-        set_condition: String,
-        pk_col_name: String,
-        pk_col_value: JsonValue,
-    ) -> Result<String> {
-        shared_queries::update_row(
-            &self.pool,
-            table_name,
-            set_condition,
-            pk_col_name,
-            pk_col_value,
-        )
-        .await
-    }
-
     async fn fk_relations(
         &self,
+        pool: &AnyPool,
         table_name: String,
         column_name: String,
         cell_value: JsonValue,
@@ -120,7 +75,7 @@ impl RowHandler for MySQLHandler {
         let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
             .bind(&table_name)
             .bind(&column_name)
-            .fetch_all(&self.pool)
+            .fetch_all(pool)
             .await?;
 
         let mut result = Vec::new();
@@ -133,7 +88,7 @@ impl RowHandler for MySQLHandler {
                 column_value = cell_value,
             );
 
-            let rows = sqlx::query(&query_str).fetch_all(&self.pool).await?;
+            let rows = sqlx::query(&query_str).fetch_all(pool).await?;
 
             let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
 
