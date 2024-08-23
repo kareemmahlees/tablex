@@ -4,7 +4,7 @@ import { unwrapResult } from "@/lib/utils"
 import type { TableState } from "@/state/tableState"
 import type { ColumnDef } from "@tanstack/react-table"
 import ForeignKeyDropdown from "./fk-dropdown"
-import SortingButton from "./sorting-btn"
+import { DataTableColumnHeader } from "./super-powered-column"
 
 export const generateColumnsDefs = async (
   tableName: string,
@@ -20,7 +20,7 @@ export const generateColumnsDefs = async (
         accessorKey: columnName,
         id: columnName,
         header: ({ column }) => {
-          return <SortingButton column={column} title={columnName} />
+          return <DataTableColumnHeader column={column} title={columnName} />
         },
         cell: (info) => {
           // Overcome the fact that tanstack table can't render boolean
