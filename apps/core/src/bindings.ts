@@ -8,6 +8,14 @@ export const commands = {
 async closeSplashscreen() : Promise<void> {
     await TAURI_INVOKE("close_splashscreen");
 },
+async killMetax() : Promise<Result<null, TxError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("kill_metax") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async testConnection(connString: string) : Promise<Result<string, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("test_connection", { connString }) };
@@ -175,13 +183,13 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
 export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
-export type ConfigFile = "settings" | "keybindings"
+export type ConfigFile = "settings" | "keybindings" | "logs"
 /**
  * Connection Config Stored inside `connections.json` file.
  */

@@ -9,6 +9,13 @@ use tx_lib::{
 
 #[derive(Debug)]
 pub struct PostgresHandler;
+
+impl PostgresHandler {
+    pub fn new() -> Box<Self> {
+        Box::new(PostgresHandler {})
+    }
+}
+
 impl Handler for PostgresHandler {}
 
 #[async_trait]

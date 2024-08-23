@@ -30,6 +30,9 @@ pub enum TxError {
     /// Represents serde's serialization/deserialization errors.
     SerdeError(#[from] serde_json::Error),
 
+    #[error("{0}")]
+    MetaXError(String),
+
     #[error("Unsupported data type {0}")]
     /// Represents errors when trying to decode an unsupported
     /// datatype to a rust datatype.
@@ -52,6 +55,9 @@ pub enum TxError {
     /// For when receiving an unsupported database driver
     /// from the cli.
     UnsupportedDriver(String),
+
+    #[error("Unable to resolve home dir path")]
+    HomeDirResolution,
 }
 
 impl specta::NamedType for TxError {
@@ -133,11 +139,13 @@ enum TxErrorKind {
     Io { message: String, details: String },
     TauriError { message: String, details: String },
     SerdeError { message: String, details: String },
+    MetaXError { message: String },
     UnsupportedDataType { message: String, details: String },
     ConnectionError { message: String },
     PingError { message: String },
     InvalidConnectionString { message: String },
     UnsupportedDriver { message: String },
+    HomeDirResolution { message: String },
 }
 
 impl Serialize for TxError {
@@ -163,6 +171,9 @@ impl Serialize for TxError {
                 message: "Serde serialization error".to_string(),
                 details: error_message,
             },
+            Self::MetaXError(e) => TxErrorKind::MetaXError {
+                message: e.to_string(),
+            },
             Self::UnsupportedDataType(_) => TxErrorKind::UnsupportedDataType {
                 message: "Unsupported data type".to_string(),
                 details: error_message,
@@ -177,6 +188,9 @@ impl Serialize for TxError {
                 message: error_message,
             },
             Self::UnsupportedDriver(_) => TxErrorKind::UnsupportedDriver {
+                message: error_message,
+            },
+            Self::HomeDirResolution => TxErrorKind::HomeDirResolution {
                 message: error_message,
             },
         };

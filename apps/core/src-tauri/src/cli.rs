@@ -1,9 +1,8 @@
 use crate::commands::connection::{
     connections_exist, create_connection_record, establish_connection,
 };
-use crate::state::SharedState;
 use clap::{error::ErrorKind, Command, CommandFactory, Parser};
-use tauri::{async_runtime::Mutex, AppHandle, Manager, WebviewWindow};
+use tauri::{AppHandle, Manager, WebviewWindow};
 use tx_lib::TxError;
 use tx_lib::{types::Drivers, Result};
 
@@ -107,15 +106,13 @@ async fn establish_on_the_fly_connection(app: &AppHandle, conn_string: &String) 
         .split_once(':')
         .ok_or(TxError::InvalidConnectionString)?;
 
-    let state = app.state::<Mutex<SharedState>>();
-
     let driver = match prefix {
         "sqlite" | "sqlite3" => Ok(Drivers::SQLite),
         "postgresql" | "postgres" => Ok(Drivers::PostgreSQL),
         "mysql" => Ok(Drivers::MySQL),
         _ => Err(TxError::UnsupportedDriver(prefix.to_string())),
     }?;
-    establish_connection(app.to_owned(), state, conn_string.into(), driver.clone()).await?;
+    establish_connection(app.to_owned(), conn_string.into(), driver.clone()).await?;
 
     Ok(driver)
 }

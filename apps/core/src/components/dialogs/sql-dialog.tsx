@@ -1,4 +1,4 @@
-import { commands, JsonValue, Result } from "@/bindings"
+import { commands, JsonValue } from "@/bindings"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import {
@@ -23,7 +23,7 @@ import { type Dispatch, type SetStateAction, useRef, useState } from "react"
 import CustomTooltip from "../custom-tooltip"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
-type RawQueryResult = Result<{ [x: string]: JsonValue }[], string>
+type RawQueryResult = Awaited<ReturnType<typeof commands.executeRawQuery>>
 type MonakoEditor = Parameters<OnMount>[0]
 
 const SQLDialog = () => {
@@ -71,7 +71,7 @@ const SQLDialog = () => {
             <ResizablePanel>
               {queryResult &&
                 (queryResult.status === "error" ? (
-                  <pre className="m-4">{queryResult.error}</pre>
+                  <pre className="m-4">{`message: ${queryResult.error.message} details: ${queryResult.error.details}`}</pre>
                 ) : (
                   <ResultTable result={queryResult.data} />
                 ))}
@@ -131,9 +131,6 @@ const ResultTable = ({ result }: ResultTableProps) => {
       <Table>
         <TableHeader className="bg-zinc-800">
           <TableRow className="sticky -top-[1px] border-none backdrop-blur-lg">
-            {/* A quick trick to get column headings without the need to 
-              make an extra call to the backend
-            */}
             {Object.keys(result[0]).map((header) => (
               <TableHead>{header}</TableHead>
             ))}

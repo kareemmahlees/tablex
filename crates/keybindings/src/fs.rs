@@ -29,6 +29,10 @@ pub fn get_keybindings_file_path<R: Runtime>(
     app: &tauri::AppHandle<R>,
 ) -> Result<PathBuf, TxError> {
     let mut config_dir = app.path().app_config_dir()?;
+
+    #[cfg(debug_assertions)]
+    config_dir.push("dev");
+
     config_dir.push(KEYBINDINGS_FILE_NAME);
     Ok(config_dir)
 }

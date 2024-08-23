@@ -77,35 +77,43 @@ pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Resul
 #[tauri::command]
 #[specta::specta]
 pub async fn establish_connection(
-    _app: AppHandle,
-    state: State<'_, Mutex<SharedState>>,
+    app: AppHandle,
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    #[cfg(feature = "metax")]
-    {
-        if let Some(sidecar) = state.lock().await.metax.take() {
-            sidecar.kill().expect("failed to kill sidecar")
-        }
-    }
-    let pool = tx_handlers::establish_connection(&conn_string).await?;
+    let pool = tx_handlers::establish_connection(&conn_string, &driver).await?;
 
     let handler: Box<dyn Handler> = match driver {
-        Drivers::SQLite => Box::new(SQLiteHandler {}),
-        Drivers::PostgreSQL => Box::new(PostgresHandler {}),
-        Drivers::MySQL => Box::new(MySQLHandler {}),
+        Drivers::SQLite => SQLiteHandler::new(),
+        Drivers::PostgreSQL => PostgresHandler::new(),
+        Drivers::MySQL => MySQLHandler::new(),
     };
 
-    let mut state = state.lock().await;
+    #[allow(unused_mut)]
+    let mut state = SharedState::new(handler, pool, None);
 
-    state.pool = Some(pool);
-    state.handler = Some(handler);
     #[cfg(feature = "metax")]
     {
-        let child = spawn_sidecar(_app, driver, conn_string);
-        state.metax = Some(child);
+        let child = spawn_sidecar(app, driver, conn_string);
+        state.metax = None;
     }
 
+    app.manage(Mutex::new(state));
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn kill_metax(_state: State<'_, Mutex<SharedState>>) -> Result<()> {
+    #[cfg(feature = "metax")]
+    {
+        if let Some(metax) = _state.lock().await.metax.take() {
+            metax
+                .kill()
+                .map_err(|_| TxError::MetaXError("Failed to kill metax".to_string()))?;
+        }
+    }
     Ok(())
 }
 
@@ -187,6 +195,10 @@ pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
 /// **Varies by platform**.
 pub(crate) fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf> {
     let mut config_dir = app.path().app_config_dir()?;
+
+    #[cfg(debug_assertions)]
+    config_dir.push("dev");
+
     config_dir.push(CONNECTIONS_FILE_NAME);
     Ok(config_dir)
 }

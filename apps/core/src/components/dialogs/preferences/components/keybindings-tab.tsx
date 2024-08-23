@@ -43,8 +43,8 @@ const KeybindingsTab = () => {
                 <code>{binding.command}</code>
               </TableCell>
               <TableCell className="space-x-2">
-                {binding.shortcuts.map((b) => (
-                  <Kbd>{b}</Kbd>
+                {binding.shortcuts.map((b, idx) => (
+                  <Kbd key={idx}>{b}</Kbd>
                 ))}
               </TableCell>
               <TableCell>

@@ -2,7 +2,7 @@ use json_patch::merge;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use specta::Type;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use tx_keybindings::{get_keybindings_file_path, Keybinding};
 use tx_lib::{
     fs::{read_from_json, write_into_json},
@@ -15,6 +15,7 @@ use tx_settings::{get_settings_file_path, Settings};
 pub(crate) enum ConfigFile {
     Settings,
     Keybindings,
+    Logs,
 }
 
 // Note: for now this command is only dedicated to opening config files,
@@ -26,6 +27,7 @@ pub fn open_in_external_editor(app: AppHandle, file: ConfigFile) -> Result<(), T
     let path = match file {
         ConfigFile::Keybindings => get_keybindings_file_path(&app)?,
         ConfigFile::Settings => get_settings_file_path(&app)?,
+        ConfigFile::Logs => app.path().app_log_dir()?,
     };
     log::debug!("Opening {} in external editor.", path.to_str().unwrap());
     Ok(open::that_detached(path)?)

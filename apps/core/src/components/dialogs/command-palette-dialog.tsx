@@ -4,9 +4,9 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem,
-  CommandList
+  CommandItem
 } from "@/components/ui/command"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   useCommandPaletteState,
   useMetaXState,
@@ -32,13 +32,13 @@ const CommandPalette = () => {
   return (
     <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
       <CommandInput placeholder="Type a command or search..." />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+      <CommandEmpty>No results found.</CommandEmpty>
+      <ScrollArea className="max-h-[300px] overflow-auto">
         <GeneralGroup />
         <ConnectionsGroup />
         <UtilitiesGroup />
         <ConfigurationGroup />
-      </CommandList>
+      </ScrollArea>
     </CommandDialog>
   )
 }
