@@ -15,6 +15,7 @@ use commands::{connection::*, fs::*, row::*, table::*};
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, WindowEvent};
+use tauri_plugin_decorum::WebviewWindowExt;
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
@@ -121,6 +122,9 @@ fn main() {
         .setup(move |app| {
             let app_handle = app.app_handle();
             let rt = tokio::runtime::Runtime::new().unwrap();
+            let main_window = app.get_webview_window("main").unwrap();
+
+            main_window.create_overlay_titlebar()?;
 
             ensure_config_files_exist(app_handle)?;
 
@@ -130,7 +134,6 @@ fn main() {
 
             #[cfg(debug_assertions)]
             {
-                let main_window = app.get_webview_window("main").unwrap();
                 main_window.open_devtools();
                 main_window.close_devtools();
             }
