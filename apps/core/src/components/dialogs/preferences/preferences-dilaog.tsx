@@ -1,13 +1,10 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePreferencesState } from "@/state/dialogState"
-import { lazy, Suspense } from "react"
-
-import LoadingSpinner from "@/components/loading-spinner"
 import hotkeys from "hotkeys-js"
+import GeneralTab from "./components/general-tab"
 import KeybindingsTab from "./components/keybindings-tab"
 import SettingsTab from "./components/settings-tab"
-const GeneralTab = lazy(() => import("./components/general-tab"))
 
 const PreferencesDialog = () => {
   const { isOpen, toggleDialog } = usePreferencesState()
@@ -34,11 +31,9 @@ const PreferencesDialog = () => {
             </TabsList>
           </aside>
           <section className="relative mt-3 h-full w-full px-8 lg:px-10">
-            <Suspense fallback={<LoadingSpinner />}>
-              <GeneralTab />
-              <SettingsTab />
-              <KeybindingsTab />
-            </Suspense>
+            <GeneralTab />
+            <SettingsTab />
+            <KeybindingsTab />
           </section>
         </Tabs>
       </DialogContent>
