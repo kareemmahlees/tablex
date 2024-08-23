@@ -55,6 +55,9 @@ pub enum TxError {
     /// For when receiving an unsupported database driver
     /// from the cli.
     UnsupportedDriver(String),
+
+    #[error("Unable to resolve home dir path")]
+    HomeDirResolution,
 }
 
 impl specta::NamedType for TxError {
@@ -142,6 +145,7 @@ enum TxErrorKind {
     PingError { message: String },
     InvalidConnectionString { message: String },
     UnsupportedDriver { message: String },
+    HomeDirResolution { message: String },
 }
 
 impl Serialize for TxError {
@@ -184,6 +188,9 @@ impl Serialize for TxError {
                 message: error_message,
             },
             Self::UnsupportedDriver(_) => TxErrorKind::UnsupportedDriver {
+                message: error_message,
+            },
+            Self::HomeDirResolution => TxErrorKind::HomeDirResolution {
                 message: error_message,
             },
         };

@@ -81,7 +81,7 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    let pool = tx_handlers::establish_connection(&conn_string).await?;
+    let pool = tx_handlers::establish_connection(&conn_string, &driver).await?;
 
     let handler: Box<dyn Handler> = match driver {
         Drivers::SQLite => SQLiteHandler::new(),
