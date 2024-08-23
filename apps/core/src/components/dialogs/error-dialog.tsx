@@ -1,3 +1,4 @@
+import { commands } from "@/bindings"
 import { PropsWithChildren } from "react"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
@@ -11,7 +12,12 @@ const ErrorDialog = ({ error, children }: ErrorDialogProps) => {
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex flex-col items-start">
-        <Button variant={"link"}>Show logs</Button>
+        <Button
+          variant={"link"}
+          onClick={async () => await commands.openInExternalEditor("logs")}
+        >
+          Show logs
+        </Button>
         <code className="w-full overflow-auto rounded-md border-2 p-2">
           {error}
         </code>
