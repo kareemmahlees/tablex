@@ -10,7 +10,7 @@ import { useKeybindings } from "@/keybindings/manager"
 import { unwrapResult } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
-import { ArrowLeft, Search, Table } from "lucide-react"
+import { ArrowLeft, Table } from "lucide-react"
 import { useEffect, useState, type KeyboardEvent } from "react"
 import { z } from "zod"
 
@@ -73,7 +73,7 @@ function DashboardLayout() {
   return (
     <main className="flex h-full w-full">
       <aside className="flex w-56 flex-col items-start justify-between bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
-        <div className="mb-4 flex flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
+        <div className="mb-4 flex w-full flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
           <Link
             to="/connections"
             className={cn(
@@ -86,20 +86,16 @@ function DashboardLayout() {
               color="gray"
             />
           </Link>
-          <h1 className="text-lg font-bold text-gray-500">{data!.connName}</h1>
-          <div className="bg-background flex items-center rounded-sm px-1">
-            <Search className="h-3 lg:h-5" color="#4a506f" />
+          <h1 className="w-full text-center text-lg font-bold text-gray-500">
+            {data!.connName}
+          </h1>
+          <div className="flex w-full items-center justify-center rounded-sm px-1">
             <Input
               id="search_input"
               onKeyUp={handleKeyUp}
               placeholder="Search..."
-              className="h-6 border-none text-sm placeholder:text-xs focus-visible:ring-0 focus-visible:ring-offset-0 lg:h-8 lg:placeholder:text-base"
+              className="h-6 border-none text-sm transition-all placeholder:text-xs focus-visible:ring-0 focus-visible:ring-offset-0 lg:h-8 lg:w-[170px] lg:placeholder:text-base lg:focus:w-full"
             />
-            <div className="hidden items-center gap-x-1 text-xs lg:flex">
-              <p className="bg-muted rounded-sm px-1 py-[0.5px]">Ctrl</p>
-              <p>+</p>
-              <p className="bg-muted rounded-sm px-1 py-[0.5px]">S</p>
-            </div>
           </div>
           <div className="mb-4 overflow-y-auto">
             <ul className="flex flex-col items-start gap-y-1 overflow-y-auto">
