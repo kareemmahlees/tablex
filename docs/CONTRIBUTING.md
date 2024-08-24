@@ -29,7 +29,7 @@ Inside the [package.json](../package.json) file, you will find all the scripts y
 To start playing around with TableX locally, you will need the following requirements:
 
 - Cargo 1.74.1 or later
-- Bun 1.1.20 or later
+- Bun 1.1.26 or later
 
 > [!IMPORTANT]
 > some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
