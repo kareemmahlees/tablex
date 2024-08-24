@@ -102,4 +102,4 @@ jobs:
           includeUpdaterJson: true
           projectPath: ./apps/core
           tauriScript: bunx tauri
-          args: --config src-tauri/tauri.conf.prod.json --features metax --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}
+          args: --ci --config src-tauri/tauri.conf.prod.json --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}

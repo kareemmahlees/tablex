@@ -81,4 +81,4 @@ jobs:
           tauriScript: bunx tauri
           includeRelease: false
           includeDebug: true
-          args: --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}
+          args: --ci --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}

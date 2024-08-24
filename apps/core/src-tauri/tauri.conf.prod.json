@@ -1,5 +1,8 @@
 {
   "$schema": "../../../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "features": ["metax"]
+  },
   "bundle": {
     "externalBin": ["../../bin/meta-x"],
     "createUpdaterArtifacts": true
