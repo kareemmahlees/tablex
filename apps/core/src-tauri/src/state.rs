@@ -1,5 +1,5 @@
 use sqlx::AnyPool;
-// #[cfg(feature = "metax")]
+#[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
 use tx_handlers::Handler;
 
@@ -8,15 +8,20 @@ pub struct SharedState {
     pub handler: Box<dyn Handler>,
     /// `pool` is passed to the Handler
     pub pool: AnyPool,
-    // #[cfg(feature = "metax")]
+    #[cfg(feature = "metax")]
     pub metax: Option<CommandChild>,
 }
 
 impl SharedState {
-    pub fn new(handler: Box<dyn Handler>, pool: AnyPool, metax: Option<CommandChild>) -> Self {
+    pub fn new(
+        handler: Box<dyn Handler>,
+        pool: AnyPool,
+        #[cfg(feature = "metax")] metax: Option<CommandChild>,
+    ) -> Self {
         Self {
             handler,
             pool,
+            #[cfg(feature = "metax")]
             metax,
         }
     }

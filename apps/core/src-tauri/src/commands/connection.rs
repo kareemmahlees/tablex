@@ -90,12 +90,17 @@ pub async fn establish_connection(
     };
 
     #[allow(unused_mut)]
-    let mut state = SharedState::new(handler, pool, None);
+    let mut state = SharedState::new(
+        handler,
+        pool,
+        #[cfg(feature = "metax")]
+        None,
+    );
 
     #[cfg(feature = "metax")]
     {
         let child = spawn_sidecar(app, driver, conn_string);
-        state.metax = None;
+        state.metax = Some(child);
     }
 
     app.manage(Mutex::new(state));
