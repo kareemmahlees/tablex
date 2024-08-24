@@ -1,5 +1,13 @@
 ---
+import { cn } from "@tablex/lib/utils"
 
+type Props = {
+  className?: string
+}
+
+const { className } = Astro.props
 ---
 
-<section class="m-auto w-full max-w-3xl p-4 md:p-0"><slot /></section>
+<section class={cn("m-auto w-full max-w-3xl p-4 md:p-0", className)}>
+  <slot />
+</section>
