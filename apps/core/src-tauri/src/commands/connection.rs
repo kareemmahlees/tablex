@@ -99,7 +99,7 @@ pub async fn establish_connection(
 
     #[cfg(feature = "metax")]
     {
-        let child = spawn_sidecar(app, driver, conn_string);
+        let child = spawn_sidecar(&app, driver, conn_string);
         state.metax = Some(child);
     }
 
@@ -123,7 +123,7 @@ pub async fn kill_metax(_state: State<'_, Mutex<SharedState>>) -> Result<()> {
 }
 
 #[cfg(feature = "metax")]
-fn spawn_sidecar(app: AppHandle, driver: Drivers, conn_string: String) -> CommandChild {
+fn spawn_sidecar(app: &AppHandle, driver: Drivers, conn_string: String) -> CommandChild {
     let args = match driver {
         Drivers::SQLite => {
             let (_, after) = conn_string.split_once(':').unwrap();
