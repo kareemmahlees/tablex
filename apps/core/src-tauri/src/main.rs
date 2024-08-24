@@ -4,13 +4,14 @@
 mod cli;
 mod commands;
 mod state;
-#[cfg(not(debug_assertions))]
+#[cfg(feature = "updater")]
 mod updater;
 
-use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(not(debug_assertions))]
-use updater::check_for_update;
+use log::Level;
 
+use commands::{connection::*, fs::*, row::*, table::*};
+#[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
@@ -67,16 +68,13 @@ fn setup_logging_plugin() -> tauri_plugin_log::Builder {
     let builder = builder.target(Target::new(TargetKind::Stdout));
 
     #[cfg(not(debug_assertions))]
-    {
-        use log::Level;
-        let builder = builder.target(Target::new(TargetKind::LogDir { file_name: None }).filter(
-            |metadata| {
-                metadata.level() != Level::Debug
-                    && metadata.level() != Level::Trace
-                    && !metadata.target().starts_with("tao")
-            },
-        ));
-    }
+    let builder = builder.target(Target::new(TargetKind::LogDir { file_name: None }).filter(
+        |metadata| {
+            metadata.level() != Level::Debug
+                && metadata.level() != Level::Trace
+                && !metadata.target().starts_with("tao")
+        },
+    ));
 
     builder
 }
@@ -153,11 +151,11 @@ fn main() {
                 main_window.close_devtools();
             }
 
-            #[cfg(not(debug_assertions))]
+            #[cfg(feature = "updater")]
             {
                 app_handle.plugin(tauri_plugin_updater::Builder::new().build())?;
                 if _settings.check_for_updates {
-                    check_for_update(app_handle.clone())?;
+                    updater::check_for_update(app_handle.clone())?;
                 }
             }
 
