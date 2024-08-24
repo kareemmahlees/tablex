@@ -10,5 +10,6 @@ pnpm-lock.yaml
 **/*.gen.ts
 .all-contributorsrc
 .astro
+env.d.ts
 apps/core/src/bindings.ts
 crates/settings/schema.json
