@@ -1,6 +1,7 @@
-import { Globe2, SettingsIcon } from "lucide-react"
+import { Globe2, Keyboard, SettingsIcon } from "lucide-react"
 import { BentoGrid, BentoGridItem } from "./components/bento-grid"
 import CrossPlatform from "./components/cross-platform"
+import Keybindings from "./components/keybindings"
 import Settings from "./components/settings"
 
 const items = [
@@ -19,6 +20,14 @@ const items = [
     header: <Settings />,
     icon: <SettingsIcon className="h-5 w-5" />,
     className: "md:col-span-2"
+  },
+  {
+    title: "Leverage the full power of your Keyboard",
+    description:
+      "A configurable keybindings system that meets your needs. Inspired by VSCode.",
+    header: <Keybindings />,
+    icon: <Keyboard className="h-5 w-5" />,
+    className: "md:col-span-2 "
   }
 ]
 
