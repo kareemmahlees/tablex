@@ -1,9 +1,10 @@
-import { Globe2, Keyboard, Palette, SettingsIcon } from "lucide-react"
+import { Check, Globe2, Keyboard, Palette, SettingsIcon } from "lucide-react"
 import { BentoGrid, BentoGridItem } from "./components/bento-grid"
 import CommandPalette from "./components/command-palette"
 import CrossPlatform from "./components/cross-platform"
 import Keybindings from "./components/keybindings"
 import Settings from "./components/settings"
+import Updater from "./components/updater"
 
 const items = [
   {
@@ -36,6 +37,13 @@ const items = [
     header: <CommandPalette />,
     icon: <Palette className="h-5 w-5" />,
     className: "md:col-span-2 "
+  },
+  {
+    title: "Staying up-to-date always.",
+    description: "TableX can self-update with our built in updater.",
+    header: <Updater />,
+    icon: <Check className="h-5 w-5" />,
+    className: "md:col-span-1"
   }
 ]
 
