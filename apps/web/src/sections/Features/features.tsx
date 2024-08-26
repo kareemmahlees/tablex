@@ -4,10 +4,12 @@ import {
   Keyboard,
   Palette,
   SettingsIcon,
+  Terminal,
   Webhook
 } from "lucide-react"
 import APIDocs from "./components/api-docs"
 import { BentoGrid, BentoGridItem } from "./components/bento-grid"
+import CLI from "./components/cli"
 import CommandPalette from "./components/command-palette"
 import CrossPlatform from "./components/cross-platform"
 import Keybindings from "./components/keybindings"
@@ -52,6 +54,14 @@ const items = [
     header: <Updater />,
     icon: <Check className="h-5 w-5" />,
     className: "md:col-span-1"
+  },
+  {
+    title: "Terminal friendly.",
+    description:
+      "You can use TableX from right within your terminal thanks to our shipped-by-default CLI.",
+    header: <CLI />,
+    icon: <Terminal className="h-5 w-5" />,
+    className: "md:col-span-2"
   },
   {
     title: "Automatically generated endpoints for your database.",
