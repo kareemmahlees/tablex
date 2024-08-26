@@ -15,6 +15,7 @@ fi
 if ! git diff --cached --quiet HEAD --  "package.json"  "apps\/web\/**"  "packages\/**";
 then
     bun astro:check
+    bun --filter @tablex/web lint
 fi
 
 exit 0
