@@ -1,4 +1,4 @@
-import HighLight from "./highlight"
+import HighLight from "../components/highlight"
 
 const Settings = () => {
   const str = `"pageSize": 500,

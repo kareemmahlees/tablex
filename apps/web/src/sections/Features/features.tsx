@@ -8,15 +8,15 @@ import {
   Terminal,
   Webhook
 } from "lucide-react"
-import APIDocs from "./components/api-docs"
+import APIDocs from "./cards/api-docs"
+import CLI from "./cards/cli"
+import CommandPalette from "./cards/command-palette"
+import CrossPlatform from "./cards/cross-platform"
+import Keybindings from "./cards/keybindings"
+import OpenSource from "./cards/open-source"
+import Settings from "./cards/settings"
+import Updater from "./cards/updater"
 import { BentoGrid, BentoGridItem } from "./components/bento-grid"
-import CLI from "./components/cli"
-import CommandPalette from "./components/command-palette"
-import CrossPlatform from "./components/cross-platform"
-import Keybindings from "./components/keybindings"
-import OpenSource from "./components/open-source"
-import Settings from "./components/settings"
-import Updater from "./components/updater"
 
 const items = [
   {

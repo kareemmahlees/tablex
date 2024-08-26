@@ -1,5 +1,5 @@
 import { cn } from "@tablex/lib/utils"
-import HighLight from "./highlight"
+import HighLight from "../components/highlight"
 
 const requests: RequestBarProps[] = [
   {
