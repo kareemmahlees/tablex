@@ -31,7 +31,7 @@ const tools: { src: string; alt: string }[] = [
 
 const CrossPlatform = () => {
   return (
-    <div className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative mx-auto grid h-full w-full grid-cols-4 gap-2 bg-white pt-7 md:gap-y-8 dark:bg-black">
+    <div className="dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative mx-auto grid h-full w-full grid-cols-4 gap-2 bg-white pt-7 md:gap-y-8 dark:bg-black">
       {tools.map(({ src, alt }) => (
         <img
           src={src}
