@@ -1,5 +1,6 @@
 import {
   Check,
+  GitBranch,
   Globe2,
   Keyboard,
   Palette,
@@ -13,6 +14,7 @@ import CLI from "./components/cli"
 import CommandPalette from "./components/command-palette"
 import CrossPlatform from "./components/cross-platform"
 import Keybindings from "./components/keybindings"
+import OpenSource from "./components/open-source"
 import Settings from "./components/settings"
 import Updater from "./components/updater"
 
@@ -63,6 +65,7 @@ const items = [
     icon: <Terminal className="h-5 w-5" />,
     className: "md:col-span-2"
   },
+
   {
     title: "Automatically generated endpoints for your database.",
     description: (
@@ -78,6 +81,14 @@ const items = [
     header: <APIDocs />,
     icon: <Webhook className="h-5 w-5" />,
     className: "md:col-span-3"
+  },
+  {
+    title: "100% Open-Source and Free.",
+    description:
+      "We believe in open source philosophy, that's why TableX is completely open-source and free with no login or sign-up required. ",
+    header: <OpenSource />,
+    icon: <GitBranch className="h-5 w-5" />,
+    className: "md:col-span-full"
   }
 ]
 
