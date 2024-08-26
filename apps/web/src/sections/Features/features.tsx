@@ -1,4 +1,12 @@
-import { Check, Globe2, Keyboard, Palette, SettingsIcon } from "lucide-react"
+import {
+  Check,
+  Globe2,
+  Keyboard,
+  Palette,
+  SettingsIcon,
+  Webhook
+} from "lucide-react"
+import APIDocs from "./components/api-docs"
 import { BentoGrid, BentoGridItem } from "./components/bento-grid"
 import CommandPalette from "./components/command-palette"
 import CrossPlatform from "./components/cross-platform"
@@ -44,6 +52,22 @@ const items = [
     header: <Updater />,
     icon: <Check className="h-5 w-5" />,
     className: "md:col-span-1"
+  },
+  {
+    title: "Automatically generated endpoints for your database.",
+    description: (
+      <p>
+        With the power of{" "}
+        <a href="" className="font-semibold text-white hover:underline">
+          MetaX
+        </a>
+        , we autogenerate RESTfull & GraphQL endpoints for your database without
+        any effort from you
+      </p>
+    ),
+    header: <APIDocs />,
+    icon: <Webhook className="h-5 w-5" />,
+    className: "md:col-span-3"
   }
 ]
 
