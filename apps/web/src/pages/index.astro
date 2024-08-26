@@ -1,29 +1,20 @@
 ---
 import Layout from "@/layouts/Layout.astro"
 import MaxWidthWrapper from "@/layouts/MaxWidthWrapper.astro"
-import BundleSizeCard from "@/sections/BundleSizeCard/BundleSizeCard.astro"
-import CLICard from "@/sections/CLI/CLI.astro"
 import Download from "@/sections/Download/Download.astro"
+import Features from "@/sections/Features/features"
 import Footer from "@/sections/Footer/Footer.astro"
 import Heading from "@/sections/Heading/Heading.astro"
-import MetaXCard from "@/sections/MetaXCard/MetaXCard.astro"
 import Nav from "@/sections/Nav/Nav.astro"
-import SQLEditor from "@/sections/SQLEditor/SQLEditor.astro"
-import ToolsCard from "@/sections/ToolsCard/ToolsCard.astro"
 import "@/styles/globals.css"
 ---
 
 <Layout>
   <Nav />
+  <Heading />
   <MaxWidthWrapper>
-    <Heading />
-    <ToolsCard />
-    <MetaXCard />
-    <CLICard />
-    <SQLEditor />
-    <BundleSizeCard />
-    <!-- <KbdShortcutsCard /> -->
     <Download />
-    <Footer />
   </MaxWidthWrapper>
+  <Features client:visible />
+  <Footer />
 </Layout>

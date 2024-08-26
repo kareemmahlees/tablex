@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button"
 const DownloadBtn = () => {
   const userAgent = window.navigator.userAgent
   let iconSrc: string
-  if (userAgent.includes("Windows")) {
-    iconSrc = "https://cdn.simpleicons.org/windows10/black"
-  } else if (userAgent.includes("Mac")) {
+  if (userAgent.includes("Mac")) {
     iconSrc = "https://cdn.simpleicons.org/macos/black"
   } else if (userAgent.includes("Linux")) {
     iconSrc = "https://cdn.simpleicons.org/linux/black"
@@ -20,7 +18,9 @@ const DownloadBtn = () => {
         document.getElementById("download")?.scrollIntoView({ block: "center" })
       }}
     >
-      <img src={iconSrc} alt="os_icon" className="h-4 w-4" />
+      {iconSrc.length > 0 && (
+        <img src={iconSrc} alt="os_icon" className="h-4 w-4" />
+      )}
       <p>Download</p>
     </Button>
   )
