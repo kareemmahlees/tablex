@@ -19,7 +19,15 @@ export default [
       }
     }
   },
-  { ignores: ["tailwind.config.ts", "src/components", "src/env.d.ts"] },
+  {
+    ignores: [
+      "tailwind.config.ts",
+      "src/components",
+      "src/env.d.ts",
+      ".astro",
+      "node_modules"
+    ]
+  },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended
 ]
