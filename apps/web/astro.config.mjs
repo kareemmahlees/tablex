@@ -15,6 +15,9 @@ export default defineConfig({
       logo: {
         src: "./public/logo.svg"
       },
+      components: {
+        SchemaField: "./src/components/docs/SchemaField.astro"
+      },
       social: {
         github: "https://github.com/kareemmahlees/tablex"
       },
@@ -23,7 +26,8 @@ export default defineConfig({
       },
       sidebar: [
         { label: "Overview", slug: "overview" },
-        { label: "Features", items: ["features/settings"] }
+        { label: "Features", items: ["features/settings"] },
+        { label: "References", items: ["references/settings"], collapsed: true }
       ]
     })
   ]
