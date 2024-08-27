@@ -26,8 +26,15 @@ export default defineConfig({
       },
       sidebar: [
         { label: "Overview", slug: "overview" },
-        { label: "Features", items: ["features/settings"] },
-        { label: "References", items: ["references/settings"], collapsed: true }
+        {
+          label: "Features",
+          items: ["features/settings", "features/keybindings"]
+        },
+        {
+          label: "References",
+          items: ["references/settings", "references/keybindings"],
+          collapsed: true
+        }
       ]
     })
   ]
