@@ -7,7 +7,7 @@ import { defineConfig } from "astro/config"
 export default defineConfig({
   integrations: [
     tailwind({
-      applyBaseStyles: true
+      applyBaseStyles: false
     }),
     react(),
     starlight({
