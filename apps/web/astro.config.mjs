@@ -21,7 +21,10 @@ export default defineConfig({
       editLink: {
         baseUrl: "https://github.com/kareemmahlees/tablex/edit/main/docs/"
       },
-      sidebar: [{ label: "Overview", slug: "overview" }]
+      sidebar: [
+        { label: "Overview", slug: "overview" },
+        { label: "Features", items: ["features/settings"] }
+      ]
     })
   ]
 })

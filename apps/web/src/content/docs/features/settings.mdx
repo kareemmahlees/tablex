@@ -1,0 +1,39 @@
+---
+title: Settings
+description: A tour about TableX's settings.
+---
+
+import { Badge } from "@astrojs/starlight/components"
+
+TableX gives you the ability to modify it's settings to control how it behaves in certain situations.
+
+Similar to VSCode's, your settings will be stored under your `config_dir` directory:
+
+- `Windows`: `C:\Users\${USERNAME}\AppData\Roaming\tablex\settings.json`
+- `MacOS`: <Badge text="TODO" variant="tip" size="small" />
+- `Linux`: <Badge text="TODO" variant="tip" size="small" />
+
+You can find all the available options in the [settings configuration reference](/references/settings).
+
+## Modifying settings
+
+### In Default Editor
+
+Open the command palette ( `Ctrl + p` ), scroll down to the
+bottom and there you will find an `Open settings.json` option.
+
+This will open the settings file in your default editor and you can change the fields as you desire.
+
+:::note
+A refresh ( `Ctrl + r` ) is required in order for the changes to take effect.
+This will be improved in future versions.
+:::
+
+### From the GUI
+
+If you prefer a nicer interface to interact with your settings, you can open the
+command palette ( `Ctrl + p` ), open `preferences`, and navigate to the `settings` tab on the left-hand side.
+
+:::tip
+On the bottom-right corner, you will find a button that opens the settings in your default editor.
+:::
