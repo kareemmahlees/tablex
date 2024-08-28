@@ -1,4 +1,5 @@
 import { motion } from "framer-motion"
+import star from "../../assets/star.svg"
 
 const AnimatedStar = () => {
   return (
@@ -12,7 +13,7 @@ const AnimatedStar = () => {
       }}
     >
       <img
-        src="/star.svg"
+        src={star.src}
         alt="star"
         className="transition-transform group-hover:-translate-y-5"
         aria-hidden

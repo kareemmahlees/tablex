@@ -14,7 +14,7 @@ export default defineConfig({
       title: "Docs",
       logo: {
         replacesTitle: true,
-        src: "./src/assets/docs-logo.svg"
+        src: "./src/assets/logo-docs.svg"
       },
       customCss: ["./src/styles/docs.css"],
       social: {
