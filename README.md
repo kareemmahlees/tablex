@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./apps/web/public/billboard.png">
+  <img src="./docs/billboard.png">
 </p>
 <div align="center">
   <img alt="Static Badge" src="https://img.shields.io/badge/bun-v1.1.26%20-white">
