@@ -12,4 +12,5 @@ pnpm-lock.yaml
 .astro
 env.d.ts
 apps/core/src/bindings.ts
+apps/web/src/content/docs/references/settings.mdx
 crates/settings/schema.json
