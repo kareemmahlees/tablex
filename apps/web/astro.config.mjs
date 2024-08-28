@@ -27,7 +27,12 @@ export default defineConfig({
         { label: "Overview", slug: "overview" },
         {
           label: "Features",
-          items: ["features/settings", "features/keybindings", "features/cli"]
+          items: [
+            "features/settings",
+            "features/keybindings",
+            "features/cli",
+            "features/updater"
+          ]
         },
         {
           label: "References",
