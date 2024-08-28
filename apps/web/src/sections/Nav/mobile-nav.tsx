@@ -1,6 +1,5 @@
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
-import { cn } from "@tablex/lib/utils"
 import { Menu } from "lucide-react"
 import { useState } from "react"
 import {
@@ -25,10 +24,7 @@ const MobileNav = () => {
         <DrawerContent className="flex items-center justify-center">
           <div className="grid h-full w-full grid-cols-3 p-5">
             <a
-              className={cn(
-                "text-muted-foreground",
-                buttonVariants({ variant: "ghost", size: "sm" })
-              )}
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
               href="/overview"
             >
               Docs
