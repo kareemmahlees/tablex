@@ -24,7 +24,7 @@
     "astro:check": "bun --filter @tablex/web check",
     "astro:build": "bun --filter @tablex/web build",
     "astro:preview": "bun --filter @tablex/web preview",
-    "ts:lint": "bun astro:check && bun --filter @tablex/core lint",
+    "ts:lint": "bun astro:check && bun --filter @tablex/core lint && bun --filter @tablex/web lint",
     "rust:lint": "cargo clippy",
     "lint": "bun ts:lint && bun rust:lint",
     "format:check": "bunx prettier . --check",

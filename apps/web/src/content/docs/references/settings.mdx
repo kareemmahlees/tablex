@@ -1,0 +1,122 @@
+---
+# NOTE: This file is auto-generated. Do not edit here!
+# For corrections please directly edit the documentation of the underlying Rust source code.
+# Example for the configuration reference: 
+# - https://github.com/kareemmahlees/tablex/blob/master/crates/settings/src/schema.rs
+
+title: Settings Reference
+description: TableX's settings reference
+---
+import { Badge } from '@astrojs/starlight/components'
+
+
+
+The configuration object for TableX's settings.
+
+**Object Properties**:
+
+- checkForUpdates <Badge text="Required" variant="note" size="medium" />
+- pageSize <Badge text="Required" variant="note" size="medium" />
+- sqlEditor <Badge text="Required" variant="note" size="medium" />
+
+### checkForUpdates
+
+`boolean`
+
+Wether to automatically check for updates or not.
+
+### pageSize
+
+`integer` formatted as `uint32`
+
+Number of rows to be fetched per page.
+
+### sqlEditor
+
+
+
+[`SQLEditorSettings`](#sqleditorsettings)
+
+Configuration for the SQL editor.
+
+## Definitions
+
+### CursorBlinkingStyle
+
+`"blink"` | `"expand"` | `"smooth"` | `"solid"` | `"phase"`
+
+Behavior of the cursor blinking style.
+
+### EditorScrollBarVisibility
+
+
+
+Vertical/Horizontal scrollbar visibility.
+
+**Object Properties**:
+
+- horizontal <Badge text="Required" variant="note" size="medium" />
+- vertical <Badge text="Required" variant="note" size="medium" />
+
+##### horizontal
+
+
+
+[`Visibility`](#visibility)
+
+Toggle horizontal scrollbar visibility.
+
+##### vertical
+
+
+
+[`Visibility`](#visibility)
+
+Toggle vertical scrollbar visibility.
+
+### SQLEditorSettings
+
+
+
+Configuration for the SQL editor.
+
+**Object Properties**:
+
+- cursorBlinking <Badge text="Required" variant="note" size="medium" />
+- fontSize <Badge text="Required" variant="note" size="medium" />
+- minimap <Badge text="Required" variant="note" size="medium" />
+- scrollbar <Badge text="Required" variant="note" size="medium" />
+
+##### cursorBlinking
+
+
+
+[`CursorBlinkingStyle`](#cursorblinkingstyle)
+
+Behavior of the cursor blinking style.
+
+##### fontSize
+
+`integer` formatted as `uint8`
+
+Editor font size.
+
+##### minimap
+
+`boolean`
+
+Visibility of the right-hand-side minimap.
+
+##### scrollbar
+
+
+
+[`EditorScrollBarVisibility`](#editorscrollbarvisibility)
+
+Vertical/Horizontal scrollbar visibility.
+
+### Visibility
+
+`"hidden"` | `"visible"` | `"auto"`
+
+General visibility settings.

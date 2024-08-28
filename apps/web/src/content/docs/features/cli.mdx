@@ -1,0 +1,41 @@
+---
+title: Command Line Interface
+description: A tour about TableX's CLI.
+---
+
+import { Steps } from "@astrojs/starlight/components"
+
+TableX ships with a little CLI that you can use to hook into your database from your terminal.
+
+Refer to the [CLI reference](/references/cli) for a list of all arguments/flags available.
+
+:::note
+TableX doesn't get added to your `PATH` by default, you need to add it first
+before you can use the CLI, See below.
+:::
+
+## Setup
+
+<Steps>
+
+1.  Add TableX to your path.
+
+        **Windows**:
+        ```powershell  title="Powershell"
+        set PATH="%PATH%;C:\path\to\tablex"
+        ```
+        If you wish to add it to your path _permanently_, [follow this guide](https://windowsloop.com/how-to-add-to-windows-path/)
+
+        **MacOS** & **Linux**:
+        ```sh frame="none"
+        export PATH = "$PATH :/path/to/tablex"
+        ```
+        You can also add the above line to your `.zshrc` or `.bashrc` to add it permanently.
+
+2.  Test it.
+
+    ```sh showLineNumbers=false frame="none"
+    tablex --help
+    ```
+
+</Steps>

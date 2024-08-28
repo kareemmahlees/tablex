@@ -1,0 +1,38 @@
+---
+title: Keybindings
+description: A tour about TableX's keybindings.
+---
+
+import { Badge } from "@astrojs/starlight/components"
+
+A keyboard is a vital piece in every programmers workflow, that's why TableX tries to be as keyboard ergonomic as possible, offering you a configurable keybindings system inspired by VSCode's.
+
+Side-by-side with your settings configuration, `keybindings.json` will be stored in your `config_dir`:
+
+- `Windows`: `C:\Users\${USERNAME}\AppData\Roaming\tablex\keybindings.json`
+- `MacOS`: <Badge text="TODO" variant="tip" size="small" />
+- `Linux`: <Badge text="TODO" variant="tip" size="small" />
+
+You can find all the available commands in the [keybindings commands reference](/references/keybindings).
+
+## Modifying keybindings
+
+### In Default Editor
+
+Open the command palette ( `Ctrl + p` ), scroll down to the
+bottom and there you will find an `Open keybindings.json` option.
+
+This will open the keybindings file in your default editor and you can change the fields as you desire.
+
+:::tip
+No need to refresh the app as your new modified keybindings will take effect immediately after you save
+:::
+
+### From the GUI
+
+If you prefer a nicer interface to interact with your settings, you can open the
+command palette ( `Ctrl + p` ), open `preferences`, and navigate to the `settings` tab on the left-hand side.
+
+:::tip
+On the bottom-right corner, you will find a button that opens the settings in your default editor.
+:::

@@ -5,10 +5,33 @@ const {
   default: flattenColorPalette
 } = require("tailwindcss/lib/util/flattenColorPalette")
 
+// Generated color palettes
+const accent = {
+  200: "#8cd8d8",
+  600: "#007b7d",
+  900: "#003b3b",
+  950: "#002a2b"
+}
+const gray = {
+  100: "#f6f6f6",
+  200: "#eeeeee",
+  300: "#c2c2c2",
+  400: "#8b8b8b",
+  500: "#585858",
+  700: "#383838",
+  800: "#272727",
+  900: "#181818"
+}
+
 const config: Config = {
   darkMode: ["class"],
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   presets: [tablexTailwindPreset],
+  theme: {
+    extend: {
+      colors: { accent, gray }
+    }
+  },
   plugins: [
     function ({ matchUtilities, theme }: any) {
       matchUtilities(

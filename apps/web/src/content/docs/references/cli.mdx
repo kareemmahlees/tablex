@@ -1,0 +1,27 @@
+---
+title: CLI Reference
+description: TableX's CLI reference
+---
+
+The reference to TableX CLIs usage.
+
+## Usage
+
+```sh frame="none"
+tablex.exe [OPTIONS] [CONN_STRING]
+```
+
+## Arguments
+
+| Arg         | Description                                     | Required |
+| ----------- | ----------------------------------------------- | -------- |
+| CONN_STRING | Connection string of the database to connect to | True     |
+
+## Options
+
+| Option/Flag                   | Description                                                   | Default |
+| ----------------------------- | ------------------------------------------------------------- | ------- |
+| -c / --conn-name &lt;Name&gt; | Connection name used to identify the current connection       | "Temp"  |
+| -s / --save                   | Save the current connection instead of creating it on the fly | false   |
+| --help                        | Show help message                                             |         |
+| --version                     | Print version                                                 |         |

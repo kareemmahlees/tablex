@@ -8,11 +8,13 @@
     "check": "bunx --bun astro check",
     "build": "bunx --bun astro check && bunx --bun astro build",
     "preview": "bunx --bun astro preview",
-    "astro": "bunx --bun astro"
+    "astro": "bunx --bun astro",
+    "lint": "bunx eslint . "
   },
   "dependencies": {
     "@astrojs/check": "^0.5.10",
     "@astrojs/react": "^3.6.2",
+    "@astrojs/starlight": "^0.26.1",
     "@astrojs/tailwind": "^5.1.0",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.0",
@@ -29,11 +31,11 @@
     "cobe": "^0.6.3",
     "framer-motion": "^10.18.0",
     "highlight.js": "^11.10.0",
-    "lucide-react": "^0.435.0",
+    "lucide-react": "^0.436.0",
+    "marked": "^14.1.0",
     "mini-svg-data-uri": "^1.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.12.7",
     "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.2",
     "tailwindcss": "^3.4.10",
@@ -42,7 +44,13 @@
     "vaul": "^0.8.9"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.1",
     "@tablex/tailwind": "workspace:^",
-    "@types/react-highlight": "^0.12.8"
+    "@types/json-schema": "^7.0.15",
+    "eslint": "^9.9.1",
+    "eslint-plugin-react": "^7.35.0",
+    "globals": "^15.9.0",
+    "json-schema": "^0.4.0",
+    "typescript-eslint": "^8.3.0"
   }
 }

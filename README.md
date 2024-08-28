@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./apps/web/public/billboard.png">
+  <img src="./docs/billboard.png">
 </p>
 <div align="center">
   <img alt="Static Badge" src="https://img.shields.io/badge/bun-v1.1.26%20-white">
@@ -13,42 +13,23 @@
 
 </div>
 
-> [!NOTE]
-> 🚧
-> TableX is still under development, don't expect it to be perfect, yet.
+Download and try TableX from the [official website](https://tablex-tan.vercel.app)
 
-Checkout [Changleogs](./apps/core/CHANGELOG.md) and our [issues](https://github.com/kareemmahlees/tablex/issues) section.
-
-## Don't Waste time, try it NOW 💥
-
-Head to TableX's [official website](https://tablex-tan.vercel.app/) and download the executable of your choice.
-
-## About the Project
+## About the Project 🎯
 
 Tablex aims at delivering a fast, user friendly, productive and **free** database browsing experience.
 
-While not claiming that it is a replacement of any other tool, yet, it strives to provide a, hopefully, good user experience.
+While not claiming that it is a replacement of any other tool, it strives to provide a new way of dealing with databases.
 
-## What Does it offer ✨
+## Features ✨
 
-- Delightful user experience
-- Top-Notch performance with pagination and virtualization
-- Support for SQLite, PostgreSQL, MySQL
-- Available for Windows, MacOS, and Linux
-- A CLI to boost your workflow
-- Automatically create a RESTfull and GraphQL APIs for your database
-- Keyboard shortcuts for productivity homies
-- Free and Open-Source
-
-## Announcements 🎉
-
-### v0.3.7
-
-- You can now write Raw SQL withing TableX directly.
-
-### v0.3.6
-
-- TableX now supports Foreign key relations 🔗.
+- `Cross-Platform`: supports Windows, MacOS and Linux with a variety of architectures.
+- `Multi-DB support`: supports PostgreSQL, MySQL and SQLite.
+- `Settings & Keybindings`: configurable settings and keybindings inspired by VSCode.
+- `Automatic API docs`: Auto generate RESTfull and GraphQL endpoints for your database inspired by Supabase.
+- `Built-in updater`: TableX can self update with our built-in updater.
+- `Accessibility`: you will find utilities that improve your experience.
+- `CLI`: Use TableX from right withing your terminal.
 
 ## Tech Stack ⌨️
 
@@ -57,25 +38,16 @@ While not claiming that it is a replacement of any other tool, yet, it strives t
   - [Rust](https://www.rust-lang.org/) : Backend
 - [Tailwind](https://tailwindcss.com/) : CSS Framework
 - [Tanstack](https://tanstack.com/) : [Router](https://tanstack.com/router/latest), [Query](https://tanstack.com/query/latest), [Table](https://tanstack.com/table/v8), [Virtual](https://tanstack.com/virtual/latest)
-- [Astro](https://astro.build/) : Website
+- [Zustand](https://zustand-demo.pmnd.rs/): State management
+- [Astro](https://astro.build/) + [Starlight](https://starlight.astro.build/) : Website and Docs
 - [Golang](https://go.dev) : [MetaX](https://github.com/kareemmahlees/meta-x)
 - [shadcn/ui](https://ui.shadcn.com/) : Components
 - [Changesets](https://github.com/changesets/changesets): Versioning and Changelogs
 - [Vercel](https://vercel.com/) : Deployment
 
-<!-- ## Keyboard Shortcuts -->
-
-<!-- | Shortcut                       | Description                       |
-| ------------------------------ | --------------------------------- |
-| <kbd>Ctrl</kbd> + <kbd>k</kbd> | open command palette              |
-| <kbd>Ctrl</kbd> + <kbd>s</kbd> | focus search input                |
-| <kbd>Ctrl</kbd> + <kbd>a</kbd> | select or deselect all            |
-| <kbd>Ctrl</kbd> + <kbd>c</kbd> | copy selected rows into clipboard |
-| <kbd>Delete</kbd>              | delete selected rows              | -->
-
 ## Contributing 🫱🏻‍🫲🏻
 
-please refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+please refer to [Contributing](https://tablex-tan.vercel.app/contributing).
 
 ## Contributors
 
