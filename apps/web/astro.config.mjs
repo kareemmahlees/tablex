@@ -56,6 +56,7 @@ export default defineConfig({
           ],
           collapsed: true
         },
+        { label: "Contributing", slug: "contributing" },
         { label: "Changelog", slug: "changelog" }
       ]
     })
