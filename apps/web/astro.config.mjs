@@ -43,7 +43,8 @@ export default defineConfig({
             "features/settings",
             "features/keybindings",
             "features/cli",
-            "features/updater"
+            "features/updater",
+            "features/api-docs"
           ]
         },
         {

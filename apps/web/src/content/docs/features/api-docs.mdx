@@ -1,0 +1,70 @@
+---
+title: API Docs
+description: A tour about TableX's automatic API docs generation
+---
+
+import { Code, TabItem, Tabs } from "@astrojs/starlight/components"
+
+TableX leverages the power of [MetaX](https://github.com/kareemmahlees/meta-x)
+to automatically generate RESTfull and GraphQL well documented API endpoints for your database.
+
+There is no extra steps needed to be done by you, it works out of the box 🚀.
+
+## Usage
+
+By default, MetaX listens on port `5522`, you can view and try the API by different ways.
+
+### From the Terminal
+
+<Tabs>
+
+    <TabItem label="REST API" icon="seti:json">
+    <Code code="curl https://localhost:5522/tables" lang="sh" title="REST endpoint request example"/>
+    </TabItem>
+
+    <TabItem label="GraphQL API" icon="seti:graphql">
+    <Code code={`
+
+curl -X POST \
+-H "Content-Type: application/json" \
+-d '{"query": "{ tables }"}' \
+http://localhost:5522/graphql
+
+`} lang="sh" title="GraphQL query request example"/>
+
+</TabItem>
+
+</Tabs>
+
+### From The Browser
+
+<Tabs>
+
+<TabItem label="REST API" icon="seti:json">
+  Navigate to [`http://localhost:5522/swagger`](http://localhost:5522/swagger)
+  where your will find the swagger documentation of the API where you can also
+  test the endpoints.
+</TabItem>
+
+<TabItem label="GraphQL API" icon="seti:graphql">
+  Navigate to
+  [`http://localhost:5522/playground`](http://localhost:5522/playground) where
+  you will find the **Apollo Sandbox**, an interactive interface where you can
+  try graphql queries.
+</TabItem>
+
+</Tabs>
+
+:::tip
+You can quickly open the **Swagger** documentation or the **Apollo Sandbox** from right withing TableX.
+
+1. Open the Command Palette ( `Ctrl+p` ).
+1. Select `Show API docs` option.
+1. You will find options to navigate to the urls in your browser or copy the endpoint link to your clipboard.
+   :::
+
+:::tip
+The GraphQL schema is introspectable, meaning that you can provide the query
+endpoint to the API testing tool of your choice (e.g Postman) and it will
+automatically pull the types from the schema.  
+:::
