@@ -94,7 +94,7 @@ const items = [
 
 const Features = () => {
   return (
-    <BentoGrid className="mt-40 grid max-w-5xl grid-cols-1 md:auto-rows-[20rem] md:grid-cols-3 lg:grid-cols-5">
+    <BentoGrid className="mx-4 mt-40 grid max-w-5xl grid-cols-1 md:mx-3 md:auto-rows-[20rem] md:grid-cols-3 lg:mx-0 lg:grid-cols-5">
       {items.map((item, i) => (
         <BentoGridItem
           key={i}

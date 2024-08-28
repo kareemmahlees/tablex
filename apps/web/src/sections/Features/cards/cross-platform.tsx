@@ -31,12 +31,12 @@ const tools: { src: string; alt: string }[] = [
 
 const CrossPlatform = () => {
   return (
-    <div className="dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative mx-auto grid h-full w-full grid-cols-4 gap-2 bg-white pt-7 md:gap-y-8 dark:bg-black">
+    <div className="dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative mx-auto grid h-full w-full grid-cols-4 gap-2 gap-y-6 bg-white pt-7 md:gap-y-8 dark:bg-black">
       {tools.map(({ src, alt }) => (
         <img
           src={src}
           alt={alt}
-          className="z-10 h-10 w-10 justify-self-center"
+          className="z-10 h-9 w-9 justify-self-center md:h-10 md:w-10"
         />
       ))}
       <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-white transition-all [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
