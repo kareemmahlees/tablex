@@ -16,6 +16,18 @@ export default defineConfig({
         replacesTitle: true,
         src: "./src/assets/logo-docs.svg"
       },
+      favicon: "./src/assets/logo.svg",
+      head: [
+        // ICO favicon fallback for Safari.
+        {
+          tag: "link",
+          attrs: {
+            rel: "icon",
+            href: "./src/assets/logo.svg",
+            sizes: "32x32"
+          }
+        }
+      ],
       customCss: ["./src/styles/docs.css"],
       social: {
         github: "https://github.com/kareemmahlees/tablex"
