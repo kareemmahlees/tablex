@@ -17,7 +17,6 @@
     "@astrojs/starlight": "^0.26.1",
     "@astrojs/tailwind": "^5.1.0",
     "@expressive-code/plugin-collapsible-sections": "^0.36.0",
-    "@expressive-code/plugin-line-numbers": "^0.36.0",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",

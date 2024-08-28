@@ -11,13 +11,12 @@ export default defineConfig({
     }),
     react(),
     starlight({
-      title: "TableX Docs",
+      title: "Docs",
       logo: {
-        src: "./public/logo.svg"
+        replacesTitle: true,
+        src: "./src/assets/docs-logo.svg"
       },
-      components: {
-        SchemaField: "./src/components/docs/SchemaField.astro"
-      },
+      customCss: ["./src/styles/docs.css"],
       social: {
         github: "https://github.com/kareemmahlees/tablex"
       },
