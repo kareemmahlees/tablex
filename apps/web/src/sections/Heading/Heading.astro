@@ -9,7 +9,7 @@ import AnimatedStar from "./animated-star"
 import DownloadBtn from "./download-btn"
 ---
 
-<header class="flex flex-col items-center gap-y-40">
+<header class="flex flex-col items-center gap-y-32 md:gap-y-36 lg:gap-y-40">
   <MaxWidthWrapper
     className="relative mt-24 flex flex-col items-center gap-y-6 break-keep md:mt-32 md:gap-y-8"
   >
@@ -66,16 +66,19 @@ import DownloadBtn from "./download-btn"
     </div>
   </MaxWidthWrapper>
   <div
-    class="w-[400px] md:w-[600px] lg:w-[1080px] relative flex flex-col items-center"
+    class="w-[400px] md:w-[800px] lg:w-[1080px] relative flex flex-col items-center"
   >
     <Image
       src={Overview}
       alt="overview"
       aria-hidden
-      class="mt-5 rounded-sm [mask-image:linear-gradient(black,gray,transparent_85%)]"
+      class="rounded-sm [mask-image:linear-gradient(black,gray,transparent_85%)]"
       loading={"eager"}
     />
-    <div class="w-[75%] h-[25%] bg-white absolute -top-5 blur-3xl -z-10"></div>
+    <div
+      class="w-[69%] h-[15%] md:w-[75%] md:h-[25%] bg-white absolute -top-5 blur-3xl -z-10"
+    >
+    </div>
     <div class="w-[50%] h-[25%] bg-white absolute top-0 blur-xl -z-10"></div>
   </div>
 </header>

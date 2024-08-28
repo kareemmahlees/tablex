@@ -24,15 +24,15 @@ const items = [
     description:
       "Powered by Rust & Tauri, TableX supports Windows, MacOS and Linux.",
     header: <CrossPlatform />,
-    icon: <Globe2 className="h-5 w-5" />,
-    className: "md:col-span-3"
+    icon: <Globe2 className="h-4 w-4 md:h-5 md:w-5" />,
+    className: "md:col-span-2 lg:col-span-3"
   },
   {
     title: "Your App, your Settings.",
     description:
       "Change how TableX behaves with configurable settings inspired by VSCode.",
     header: <Settings />,
-    icon: <SettingsIcon className="h-5 w-5" />,
+    icon: <SettingsIcon className="h-4 w-4 md:h-5 md:w-5" />,
     className: "md:col-span-2"
   },
   {
@@ -40,29 +40,29 @@ const items = [
     description:
       "A configurable keybindings system that meets your needs. Inspired by VSCode.",
     header: <Keybindings />,
-    icon: <Keyboard className="h-5 w-5" />,
+    icon: <Keyboard className="h-4 w-4 md:h-5 md:w-5" />,
     className: "md:col-span-2 "
   },
   {
     title: "Quick access to available commands.",
     description: "Invoke functionality from a central command palette.",
     header: <CommandPalette />,
-    icon: <Palette className="h-5 w-5" />,
+    icon: <Palette className="h-4 w-4 md:h-5 md:w-5" />,
     className: "md:col-span-2 "
   },
   {
     title: "Staying up-to-date always.",
     description: "TableX can self-update with our built in updater.",
     header: <Updater />,
-    icon: <Check className="h-5 w-5" />,
-    className: "md:col-span-1"
+    icon: <Check className="h-4 w-4 md:h-5 md:w-5" />,
+    className: "md:col-span-2 lg:col-span-1"
   },
   {
     title: "Terminal friendly.",
     description:
       "You can use TableX from right within your terminal thanks to our shipped-by-default CLI.",
     header: <CLI />,
-    icon: <Terminal className="h-5 w-5" />,
+    icon: <Terminal className="h-4 w-4 md:h-5 md:w-5" />,
     className: "md:col-span-2"
   },
 
@@ -79,22 +79,22 @@ const items = [
       </p>
     ),
     header: <APIDocs />,
-    icon: <Webhook className="h-5 w-5" />,
-    className: "md:col-span-3"
+    icon: <Webhook className="h-4 w-4 md:h-5 md:w-5" />,
+    className: "md:col-span-full lg:col-span-3"
   },
   {
     title: "100% Open-Source and Free.",
     description:
       "We believe in open source philosophy, that's why TableX is completely open-source and free with no login or sign-up required. ",
     header: <OpenSource />,
-    icon: <GitBranch className="h-5 w-5" />,
+    icon: <GitBranch className="h-4 w-4 md:h-5 md:w-5" />,
     className: "md:col-span-full"
   }
 ]
 
 const Features = () => {
   return (
-    <BentoGrid className="mt-40 grid max-w-5xl grid-cols-1 md:auto-rows-[20rem] md:grid-cols-3 lg:grid-cols-5">
+    <BentoGrid className="mx-4 mt-40 grid max-w-5xl grid-cols-1 md:mx-8 md:auto-rows-[20rem] md:grid-cols-4 lg:mx-auto lg:grid-cols-5">
       {items.map((item, i) => (
         <BentoGridItem
           key={i}

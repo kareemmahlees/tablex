@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
 import { Menu } from "lucide-react"
 import { useState } from "react"
@@ -23,6 +23,12 @@ const MobileNav = () => {
         </DrawerTrigger>
         <DrawerContent className="flex items-center justify-center">
           <div className="grid h-full w-full grid-cols-3 p-5">
+            <a
+              className={buttonVariants({ variant: "ghost", size: "sm" })}
+              href="/overview"
+            >
+              Docs
+            </a>
             <Button
               variant={"ghost"}
               size={"sm"}

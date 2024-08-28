@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -7,11 +7,21 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import { cn } from "@tablex/lib/utils"
 
 const DesktopNav = () => {
   return (
     <Dialog>
       <ul className="hidden items-end text-sm md:flex md:gap-x-4 lg:gap-x-5">
+        <a
+          className={cn(
+            "text-muted-foreground",
+            buttonVariants({ variant: "ghost", size: "sm" })
+          )}
+          href="/overview"
+        >
+          Docs
+        </a>
         <Button
           variant={"ghost"}
           size={"sm"}
