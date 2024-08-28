@@ -1,0 +1,13 @@
+---
+type Props = {
+  url: string
+}
+const { url } = Astro.props
+
+import { marked } from "marked"
+const response = await fetch(url)
+const markdown = await response.text()
+const content = marked.parse(markdown)
+---
+
+<article set:html={content} />

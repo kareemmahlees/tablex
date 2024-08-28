@@ -55,7 +55,8 @@ export default defineConfig({
             "references/cli"
           ],
           collapsed: true
-        }
+        },
+        { label: "Changelog", slug: "changelog" }
       ]
     })
   ]
