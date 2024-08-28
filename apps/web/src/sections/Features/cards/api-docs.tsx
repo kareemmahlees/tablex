@@ -22,8 +22,8 @@ const requests: RequestBarProps[] = [
 
 const APIDocs = () => {
   return (
-    <div className="flex items-center gap-x-4">
-      <div className="space-y-2">
+    <div className="flex flex-col items-center gap-x-4 gap-y-4 md:flex-row md:gap-y-0">
+      <div className="w-full space-y-2">
         {requests.map(({ method, endpoint }, i) => (
           <RequestBar key={i} method={method} endpoint={endpoint} />
         ))}
