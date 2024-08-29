@@ -101,20 +101,15 @@ function ConnectionsPage() {
           })}
         </Suspense>
       </ul>
-      <aside className="relative flex h-full flex-[0.5] flex-col items-center justify-center gap-y-14 lg:gap-y-20">
+      <aside className="dark:bg-grid-white/[0.2] bg-grid-black/[0.2] relative flex h-full flex-[0.5] flex-col items-center justify-center gap-y-14 bg-white lg:gap-y-20 dark:bg-black">
         <img
           src="/icons/planet.svg"
           alt="planet"
-          className="h-[120px] w-[120px] lg:h-[170px] lg:w-[170px]"
+          className="z-10 h-[120px] w-[120px] lg:h-[170px] lg:w-[170px]"
           aria-hidden
         />
         <CreateConnectionBtn />
-        <img
-          src={"/connect.svg"}
-          alt="background"
-          className="absolute -z-10 h-full w-full object-cover object-center opacity-30"
-          aria-hidden
-        />
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
       </aside>
     </main>
   )
