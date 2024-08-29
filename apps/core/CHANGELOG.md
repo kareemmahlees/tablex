@@ -1,5 +1,33 @@
 # @tablex/core
 
+## 0.3.9
+
+### Patch Changes
+
+- [#93](https://github.com/kareemmahlees/tablex/pull/93) [`24cc41e`](https://github.com/kareemmahlees/tablex/commit/24cc41effa369ec97425b6dddad543c42aacfe67) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Removes the splash screen + replace background images with procedural ones to reduce bundle size
+
+- [#86](https://github.com/kareemmahlees/tablex/pull/86) [`9039b38`](https://github.com/kareemmahlees/tablex/commit/9039b389c9b49e146572d55a1627681ad369a006) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Creates a universal error interface integrated with frontend toast notifications.
+
+- [#78](https://github.com/kareemmahlees/tablex/pull/78) [`e03b98c`](https://github.com/kareemmahlees/tablex/commit/e03b98cc0070eee146edcf9c310d65de5f01a166) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Use zustand for managing dialogs/sheets state, hence decoupling code.
+
+- [#75](https://github.com/kareemmahlees/tablex/pull/75) [`58304ca`](https://github.com/kareemmahlees/tablex/commit/58304ca7a533e7cd7b242bd023724ac64740ca84) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Add support for date picker in in create/edit row sheets.
+
+- [#79](https://github.com/kareemmahlees/tablex/pull/79) [`be2be03`](https://github.com/kareemmahlees/tablex/commit/be2be033b5a7ccd2ad1f841f3aa85d2e0dca7939) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Bump versions of Bun, tauri, tauri-sepcta and specta with the required new modifications.
+
+- [#83](https://github.com/kareemmahlees/tablex/pull/83) [`0778494`](https://github.com/kareemmahlees/tablex/commit/0778494a5c58e0e2dc3f39e7c8ae688ae7cec98f) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Better scroll areas + using zustand for table state + boolean data type support + optimize pre commit hooks
+
+- [#82](https://github.com/kareemmahlees/tablex/pull/82) [`d0129a0`](https://github.com/kareemmahlees/tablex/commit/d0129a08f267e3cc4ddb9cfe379f2af32968871e) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Adds keybindings tab + adds some extra datatypes in the backend
+
+- [#87](https://github.com/kareemmahlees/tablex/pull/87) [`9fa4b53`](https://github.com/kareemmahlees/tablex/commit/9fa4b53cf7f2a40402179bb39eb9afbc172c54e5) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Adds logging to stdout and to log file
+
+- [#89](https://github.com/kareemmahlees/tablex/pull/89) [`0db6f52`](https://github.com/kareemmahlees/tablex/commit/0db6f52f01a6c8a1b4f784f49903177783e05813) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Pump versions of Bun and workspace dependencies.
+
+- [#77](https://github.com/kareemmahlees/tablex/pull/77) [`a17820d`](https://github.com/kareemmahlees/tablex/commit/a17820dde260ae7425c800266a4762528d5c3ddf) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Adds DateTime picker and Json editor in create/edit rows sheets.
+
+- [#88](https://github.com/kareemmahlees/tablex/pull/88) [`9e71146`](https://github.com/kareemmahlees/tablex/commit/9e711466214c979a30ea7fc563769a5df28876f4) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - A bunch of tiny backend and frontend features/fixes
+
+- [#80](https://github.com/kareemmahlees/tablex/pull/80) [`7f2fb5b`](https://github.com/kareemmahlees/tablex/commit/7f2fb5bd774090b416eeb7a8ab155332cc101e5b) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Adds preferences dialog with general and settings tab
+
 ## 0.3.8
 
 ### Patch Changes
