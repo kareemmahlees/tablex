@@ -14,26 +14,12 @@ use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
-use tauri::{async_runtime::Mutex, AppHandle, Manager, Window, WindowEvent};
+use tauri::{async_runtime::Mutex, AppHandle, Manager, WindowEvent};
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
 use tx_lib::{events::*, TxError};
 use tx_settings::*;
-
-#[tauri::command]
-#[specta::specta]
-fn close_splashscreen(window: Window) {
-    if let Some(splashscreen) = window.get_webview_window("splashscreen") {
-        splashscreen.close().unwrap();
-
-        window
-            .get_webview_window("main")
-            .expect("no window labeled 'main' found")
-            .show()
-            .unwrap();
-    }
-}
 
 fn ensure_config_files_exist(app: &AppHandle) -> Result<(), TxError> {
     ensure_settings_file_exist(&get_settings_file_path(app)?)?;
@@ -86,7 +72,6 @@ fn main() {
         .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
         .constant("SETTINGS_FILE_NAME", SETTINGS_FILE_NAME)
         .commands(collect_commands![
-            close_splashscreen,
             kill_metax,
             // Connection commands.
             test_connection,

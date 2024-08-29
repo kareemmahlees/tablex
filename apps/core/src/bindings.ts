@@ -5,9 +5,6 @@
 
 
 export const commands = {
-async closeSplashscreen() : Promise<void> {
-    await TAURI_INVOKE("close_splashscreen");
-},
 async killMetax() : Promise<Result<null, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("kill_metax") };
@@ -183,8 +180,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 

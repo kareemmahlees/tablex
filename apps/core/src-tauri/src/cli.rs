@@ -62,7 +62,6 @@ pub fn parse_cli_args() -> (Args, Command) {
 /// - If `--save` is set without `-c`.
 pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
     let main_window = app.get_webview_window("main").unwrap();
-    let splash_screen = app.get_webview_window("splashscreen").unwrap();
 
     if let Some(conn_string) = args.conn_string {
         #[cfg(all(windows, not(dev)))]
@@ -86,16 +85,12 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
         #[cfg(all(windows, not(dev)))]
         free_console();
 
-        splash_screen.show().unwrap();
-
         let url = format!(
             "/dashboard/land?connectionName={}",
             &args.conn_name.unwrap_or("Temp".into())
         );
         let _ = main_window.eval(format!("window.location.replace('{url}')").as_str());
     } else {
-        splash_screen.show().unwrap();
-
         normal_navigation(app, main_window);
     }
 }
