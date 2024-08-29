@@ -48,18 +48,7 @@
         "resizable": true,
         "title": "TableX",
         "width": 800,
-        "center": true,
-        "visible": false
-      },
-      {
-        "width": 600,
-        "height": 350,
-        "decorations": false,
-        "url": "splashscreen.html",
-        "label": "splashscreen",
-        "center": true,
-        "visible": false
-      }
+        "center": true      }
     ],
     "security": {
       "csp": null,

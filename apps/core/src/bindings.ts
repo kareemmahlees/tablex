@@ -5,9 +5,6 @@
 
 
 export const commands = {
-async closeSplashscreen() : Promise<void> {
-    await TAURI_INVOKE("close_splashscreen");
-},
 async killMetax() : Promise<Result<null, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("kill_metax") };

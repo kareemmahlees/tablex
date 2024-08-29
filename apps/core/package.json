@@ -47,6 +47,7 @@
     "date-fns": "^3.6.0",
     "hotkeys-js": "^3.13.7",
     "lucide-react": "^0.292.0",
+    "mini-svg-data-uri": "^1.4.4",
     "react": "^18.3.1",
     "react-day-picker": "8.10.1",
     "react-dom": "^18.3.1",

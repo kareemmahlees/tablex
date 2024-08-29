@@ -7,7 +7,7 @@ const CreateConnectionBtn = () => {
   return (
     <Link
       to={"/connect"}
-      className={cn(buttonVariants({ size: "sm" }), "space-x-2")}
+      className={cn(buttonVariants({ size: "sm" }), "z-10 space-x-2")}
     >
       <LinkIcon className="text-muted-foreground" size={20} />
       <p>Start a connection</p>
