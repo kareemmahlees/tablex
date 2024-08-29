@@ -48,7 +48,8 @@
         "resizable": true,
         "title": "TableX",
         "width": 800,
-        "center": true
+        "center": true,
+        "titleBarStyle": "Transparent"
       }
     ],
     "security": {
