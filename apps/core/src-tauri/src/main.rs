@@ -123,7 +123,6 @@ fn main() {
             let rt = tokio::runtime::Runtime::new().unwrap();
 
             ensure_config_files_exist(app_handle)?;
-            let _settings = load_settings_file(app_handle.clone())?;
 
             builder.mount_events(app);
 
@@ -139,7 +138,10 @@ fn main() {
             #[cfg(feature = "updater")]
             {
                 app_handle.plugin(tauri_plugin_updater::Builder::new().build())?;
-                if _settings.check_for_updates {
+
+                let settings = load_settings_file(app_handle.clone())?;
+
+                if settings.check_for_updates {
                     updater::check_for_update(app_handle.clone())?;
                 }
             }

@@ -48,9 +48,7 @@
         "resizable": true,
         "title": "TableX",
         "width": 800,
-        "center": true,
-        "titleBarStyle": "Transparent"
-      }
+        "center": true      }
     ],
     "security": {
       "csp": null,
