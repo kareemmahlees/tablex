@@ -1,6 +1,6 @@
 const CLI = () => {
   return (
-    <div className="bg-muted h-full space-y-3 rounded-md p-3">
+    <div className="bg-muted h-full space-y-3 overflow-x-auto rounded-md p-3">
       <div className="flex items-center gap-x-2">
         <div className="h-2 w-2 rounded-full bg-red-500"></div>
         <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
