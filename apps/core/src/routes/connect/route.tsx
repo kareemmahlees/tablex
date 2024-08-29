@@ -22,7 +22,9 @@ function CreateConnection() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [selectedDriver, setSelectedDriver] = useState<Drivers | null>(null)
   return (
-    <section className="flex h-full flex-col items-center justify-center gap-y-9 overflow-hidden">
+    <section className="dark:bg-grid-white/[0.2] bg-grid-black/[0.2] flex h-full flex-col items-center justify-center gap-y-9 overflow-hidden bg-white dark:bg-black">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
+
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -73,12 +75,6 @@ function CreateConnection() {
       ) : (
         selectedDriver && <PgMySQLConnection driver={selectedDriver} />
       )}
-      <img
-        src={"/connect.svg"}
-        alt="bg"
-        aria-hidden
-        className="absolute -z-10 h-full w-full object-cover object-center opacity-50"
-      />
     </section>
   )
 }
