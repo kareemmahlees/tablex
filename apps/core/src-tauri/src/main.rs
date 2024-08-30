@@ -114,6 +114,7 @@ fn main() {
 
     let tauri_builder = tauri::Builder::default()
         .plugin(setup_logging_plugin().build())
+        .plugin(tauri_plugin_decorum::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
