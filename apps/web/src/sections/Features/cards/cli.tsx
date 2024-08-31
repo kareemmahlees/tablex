@@ -7,7 +7,8 @@ const CLI = () => {
         <div className="h-2 w-2 rounded-full bg-green-500"></div>
       </div>
       <p className="flex items-center gap-x-3">
-        <span className="text-muted-foreground">$</span> <pre>table --help</pre>
+        <span className="text-muted-foreground">$</span>{" "}
+        <pre>tablex --help</pre>
       </p>
       <pre className="text-muted-foreground space-y-1 text-sm">
         <span>Table Viewer for modern developers.</span>
