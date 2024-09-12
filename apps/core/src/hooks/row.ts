@@ -21,10 +21,9 @@ export const useGetFKRelations = (
         columnName,
         cellValue
       )
-      return unwrapResult(result)
+      return unwrapResult(result) || []
     },
-    enabled: false,
-    placeholderData: [{ tableName: "", rows: [{ "": "" }] }]
+    enabled: false
   })
 }
 
