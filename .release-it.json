@@ -1,0 +1,38 @@
+{
+  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+  "git": {
+    "commitMessage": "chore: release v${version}🔖",
+    "tagAnnotation": "v${version}",
+    "commitArgs": ["-S"],
+    "requireBranch": true,
+    "requireCommits": true
+  },
+  "github": {
+    "release": true,
+    "web": true,
+    "releaseName": "v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "header": "# TableX's Changelog",
+      "ignoreRecommendedBump": true,
+      "preset": {
+        "name": "angular"
+      }
+    },
+    "@release-it/bumper": {
+      "in": {
+        "file": "Cargo.toml",
+        "path": "workspace.package.version"
+      },
+      "out": {
+        "file": "Cargo.toml",
+        "path": "workspace.package.version"
+      }
+    }
+  }
+}
