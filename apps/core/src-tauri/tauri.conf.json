@@ -37,7 +37,6 @@
     }
   },
   "productName": "TableX",
-  "version": "../package.json",
   "identifier": "tablex",
   "plugins": {},
   "app": {
