@@ -4,17 +4,16 @@
     "commitMessage": "chore: release v${version}🔖",
     "tagAnnotation": "v${version}",
     "commitArgs": ["-S"],
-    "requireBranch": true,
-    "requireCommits": true
+    "requireBranch": "master",
+    "requireCommits": true,
+    "requireCleanWorkingDir": false
   },
   "github": {
     "release": true,
     "web": true,
     "releaseName": "v${version}"
   },
-  "npm": {
-    "publish": false
-  },
+  "npm": false,
   "plugins": {
     "@release-it/conventional-changelog": {
       "infile": "CHANGELOG.md",
@@ -28,11 +27,10 @@
       "in": {
         "file": "Cargo.toml",
         "path": "workspace.package.version"
-      },
-      "out": {
-        "file": "Cargo.toml",
-        "path": "workspace.package.version"
       }
     }
+  },
+  "hooks": {
+    "after:bump": "cargo set-version ${version}"
   }
 }
