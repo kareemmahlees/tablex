@@ -30,14 +30,13 @@ const ForeignKeyDropdown = ({
   columnName,
   cellValue
 }: ForeignKeyDropdownProps) => {
-  const { data, isLoading, isSuccess, refetch } = useGetFKRelations(
+  const { data, isPending, isError, refetch } = useGetFKRelations(
     tableName,
     columnName,
     cellValue
   )
 
-  if (!isSuccess)
-    return toast.error("Error while fetching foreign key relations")
+  if (isError) return toast.error("Error while fetching foreign key relations")
 
   return (
     <DropdownMenu>
@@ -47,10 +46,10 @@ const ForeignKeyDropdown = ({
       >
         <Link className="md:h-3 md:w-3 lg:h-4 lg:w-4" />
       </DropdownMenuTrigger>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
-        <DropdownMenuContent className="sm:w-[300px] md:w-[400px] lg:w-[500px]">
+      <DropdownMenuContent className="sm:w-[300px] md:w-[400px] lg:w-[500px]">
+        {isPending ? (
+          <LoadingSpinner />
+        ) : (
           <Tabs defaultValue={data[0].tableName} className="w-full">
             <TabsList>
               {data.map((fkRow) => (
@@ -61,35 +60,41 @@ const ForeignKeyDropdown = ({
             </TabsList>
             {data.map((fkRow) => (
               <TabsContent value={fkRow.tableName} className="overflow-x-auto">
-                <ScrollArea>
-                  <Table>
-                    <TableHeader className="bg-white/5">
-                      <TableRow>
-                        {/* A quick trick to get column headings without the need to 
+                {fkRow.rows.length ? (
+                  <ScrollArea>
+                    <Table>
+                      <TableHeader className="bg-white/5">
+                        <TableRow>
+                          {/* A quick trick to get column headings without the need to 
                           make an extra call to the backend
                        */}
-                        {Object.keys(fkRow.rows[0]).map((head) => (
-                          <TableHead>{head}</TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {fkRow.rows.map((row) => (
-                        <TableRow>
-                          {Object.values(row).map((rowValue) => (
-                            <TableCell>{rowValue?.toString()}</TableCell>
+                          {Object.keys(fkRow.rows[0]).map((head) => (
+                            <TableHead>{head}</TableHead>
                           ))}
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                      </TableHeader>
+                      <TableBody>
+                        {fkRow.rows.map((row) => (
+                          <TableRow>
+                            {Object.values(row).map((rowValue) => (
+                              <TableCell>{rowValue?.toString()}</TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                ) : (
+                  <TableRow>
+                    <TableCell className="text-center">No results.</TableCell>
+                  </TableRow>
+                )}
               </TabsContent>
             ))}
           </Tabs>
-        </DropdownMenuContent>
-      )}
+        )}
+      </DropdownMenuContent>
     </DropdownMenu>
   )
 }
