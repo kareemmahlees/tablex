@@ -180,12 +180,12 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_NAME = "settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const;
+export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
-export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean }
+export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean; isAutoIncrement: boolean }
 export type ConfigFile = "settings" | "keybindings" | "logs"
 /**
  * Connection Config Stored inside `connections.json` file.

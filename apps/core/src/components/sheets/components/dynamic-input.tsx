@@ -16,19 +16,19 @@ const normalizeTimezoneOffset = (date: Date) => {
 }
 
 type DynamicInputProps<T extends FieldValues> = {
-  colDataType: ColumnProps["type"]
+  column: ColumnProps
   field: ControllerRenderProps<T>
-  disabled: boolean
   defaultValue?: string
 }
 
 const DynamicFormInput = <T extends FieldValues>({
-  colDataType,
+  column,
   field,
-  disabled = false,
   defaultValue
 }: DynamicInputProps<T>) => {
-  switch (colDataType) {
+  const disabled = column.type === "unsupported"
+
+  switch (column.type) {
     // TODO: use a proper <TimePicker/> component instead.
     case "time":
       return (
@@ -77,7 +77,12 @@ const DynamicFormInput = <T extends FieldValues>({
       )
     default:
       return (
-        <Input {...field} disabled={disabled} defaultValue={defaultValue} />
+        <Input
+          {...field}
+          disabled={disabled}
+          defaultValue={defaultValue}
+          placeholder={column.isAutoIncrement ? "Auto Increment" : ""}
+        />
       )
   }
 }

@@ -36,6 +36,7 @@ impl TableHandler for MySQLHandler {
                         cols.data_type AS data_type,
                         cols.is_nullable = \"YES\" AS is_nullable,
                         cols.column_default AS default_value,
+                        cols.extra,
                         GROUP_CONCAT(tc.constraint_type) LIKE '%PRIMARY KEY%' AS is_pk,
                         GROUP_CONCAT(tc.constraint_type) LIKE '%FOREIGN KEY%' AS has_fk_relations
                 FROM information_schema.columns AS cols

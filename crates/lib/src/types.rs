@@ -59,6 +59,8 @@ pub struct ColumnProps {
     pub is_pk: bool,
     #[serde(rename = "hasFkRelations")]
     pub has_fk_relations: bool,
+    #[serde(rename = "isAutoIncrement")]
+    pub is_auto_increment: bool,
 }
 impl<'r> FromRow<'r, AnyRow> for ColumnProps {
     fn from_row(row: &'r AnyRow) -> std::result::Result<Self, Error> {
@@ -77,7 +79,10 @@ impl<'r> FromRow<'r, AnyRow> for ColumnProps {
             Ok(val) => val == 1,
             Err(_) => row.try_get::<bool, &str>("has_fk_relations")?,
         };
+        let extras = row.try_get::<&str, &str>("extras").unwrap_or("");
 
+        let is_auto_increment = extras.contains("auto_increment")
+            || default_value.as_str().unwrap_or("").contains("nextval");
         Ok(ColumnProps {
             column_name,
             data_type,
@@ -85,6 +90,7 @@ impl<'r> FromRow<'r, AnyRow> for ColumnProps {
             default_value,
             is_pk,
             has_fk_relations,
+            is_auto_increment,
         })
     }
 }

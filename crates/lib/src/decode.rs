@@ -147,6 +147,8 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
     let value = AnyValueRef::to_owned(&v);
     let column_type = value.decode::<&str>();
 
+    dbg!(&column_type);
+
     match column_type.to_uppercase().as_str() {
         "\"CHAR\"" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
         | "LONGTEXT" | "ENUM" | "NAME" => DataType::Text,
@@ -156,7 +158,7 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
         "FLOAT4" | "FLOAT8" | "REAL" | "DOUBLE" => DataType::Float,
 
         "INT2" | "INT4" | "INTEGER" | "NUMERIC" | "INT8" | "TINYINT" | "SMALLINT" | "INT"
-        | "MEDIUMINT" | "YEAR" => DataType::PositiveInteger,
+        | "MEDIUMINT" | "BIGINT" | "YEAR" => DataType::PositiveInteger,
 
         "TINYINT UNSIGNED" | "SMALLINT UNSIGNED" | "INT UNSIGNED" | "MEDIUMINT UNSIGNED"
         | "BIGINT UNSIGNED" => DataType::Integer,

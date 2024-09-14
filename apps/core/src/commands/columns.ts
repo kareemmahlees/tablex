@@ -80,7 +80,7 @@ export const getZodSchemaFromCols = async (tableName: string) => {
         validationRule = z.any()
     }
 
-    if (colProps.isNullable) {
+    if (colProps.isNullable || colProps.isAutoIncrement) {
       validationRule = validationRule.optional()
     }
 
