@@ -1,6 +1,7 @@
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger
@@ -47,10 +48,13 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
           </CustomTooltip>
         </SheetTrigger>
         <SheetContent>
-          <SheetHeader className="mb-4">
-            <SheetTitle>Add new row</SheetTitle>
-          </SheetHeader>
           <ScrollArea className="h-full">
+            <SheetHeader className="bg-background sticky top-0 mb-4 scroll-mb-6 scroll-pb-6">
+              <SheetTitle>Add new row</SheetTitle>
+              <SheetDescription>
+                Click Save to submit your changes.
+              </SheetDescription>
+            </SheetHeader>
             <AddRowForm tableName={tableName} />
           </ScrollArea>
         </SheetContent>
@@ -66,12 +70,12 @@ const AddRowForm = ({ tableName }: { tableName: string }) => {
   const {
     "0": {
       data: zodSchema,
-      isLoading: isZodSchemaLoading,
+      isPending: isZodSchemaPending,
       isSuccess: isZodSchemaSuccess
     },
     "1": {
       data: columnsProps,
-      isLoading: isColumnsPropsLoading,
+      isPending: isColumnsPropsPending,
       isSuccess: isColumnsPropsSuccess
     }
   } = useGetGeneralColsData(tableName)
@@ -80,7 +84,7 @@ const AddRowForm = ({ tableName }: { tableName: string }) => {
     resolver: zodResolver(zodSchema!)
   })
 
-  if (isZodSchemaLoading || isColumnsPropsLoading) return <LoadingSpinner />
+  if (isZodSchemaPending || isColumnsPropsPending) return <LoadingSpinner />
 
   if (!isZodSchemaSuccess || !isColumnsPropsSuccess) return
 
