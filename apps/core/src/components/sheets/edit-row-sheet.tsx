@@ -102,7 +102,7 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
                   control={form.control}
                   name={cell.column.id}
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col px-1">
                       <FormLabel>{cell.column.id}</FormLabel>
                       <FormControl>
                         <DynamicFormInput

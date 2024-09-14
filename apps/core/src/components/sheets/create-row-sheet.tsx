@@ -100,7 +100,7 @@ const AddRowForm = ({ tableName }: { tableName: string }) => {
             control={form.control}
             name={column.columnName}
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className="flex flex-col px-1">
                 <FormLabel>{column.columnName}</FormLabel>
                 <FormControl
                   defaultValue={
