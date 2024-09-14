@@ -41,7 +41,11 @@ export const useGetPaginatedRows = (
         pageSize
       )
 
-      return unwrapResult(result)
+      const res = unwrapResult(result)
+      if (!res) {
+        throw new Error()
+      }
+      return res
     }
   })
 }
