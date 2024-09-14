@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
 import { unwrapResult } from "@/lib/utils"
+import { useTableState } from "@/state/tableState"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { ArrowLeft, Table } from "lucide-react"
@@ -44,6 +45,7 @@ function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
   const keybindingsManager = useKeybindings()
+  const { sidebarCollapsed } = useTableState()
   const [tables, setTables] = useState<string[]>(data!.tables)
 
   useEffect(() => {
@@ -72,8 +74,18 @@ function DashboardLayout() {
 
   return (
     <main className="flex h-full w-full">
-      <aside className="flex w-56 flex-col items-start justify-between bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
-        <div className="mb-4 flex w-full flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
+      <aside
+        className={cn(
+          "flex w-56 flex-col items-start justify-between bg-zinc-800 p-4 pt-2 transition-all lg:w-72 lg:p-6",
+          sidebarCollapsed && "w-0 p-0 lg:w-0 lg:p-0"
+        )}
+      >
+        <div
+          className={cn(
+            "mb-4 flex w-full flex-col items-start gap-y-4 overflow-y-auto transition-all lg:gap-y-5",
+            sidebarCollapsed && "hidden"
+          )}
+        >
           <Link
             to="/connections"
             className={cn(
