@@ -6,6 +6,7 @@ import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
@@ -71,14 +72,13 @@ export const useSetupReactTable = <TData, TValue>({
 }: SetupReactTableOptions<TData, TValue>) => {
   const { defaultData, pagination, setPagination, pageIndex, pageSize } =
     useSetupPagination()
+  const { globalFilter, setGlobalFilter } = useTableState()
 
   const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
     tableName,
     pageIndex,
     pageSize
   )
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setGlobalFilter] = useState("")
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
@@ -90,6 +90,7 @@ export const useSetupReactTable = <TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     onGlobalFilterChange: setGlobalFilter,
@@ -100,7 +101,8 @@ export const useSetupReactTable = <TData, TValue>({
     state: {
       sorting,
       rowSelection,
-      pagination
+      pagination,
+      globalFilter
     },
     manualPagination: true,
     debugTable: import.meta.env.DEV
@@ -110,7 +112,6 @@ export const useSetupReactTable = <TData, TValue>({
     isRowsLoading,
     contextMenuRow,
     setContextMenuRow,
-    setGlobalFilter,
     tableRef,
     table
   }

@@ -19,21 +19,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
+import { useTableState } from "@/state/tableState"
 
 type TableActionsProps = {
-  tableName: string
   table: Table<any>
 }
 
-const TableActions = ({ tableName, table }: TableActionsProps) => {
+const TableActions = ({ table }: TableActionsProps) => {
   const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
+  const { tableName, setGlobalFilter } = useTableState()
   return (
     <>
       <div className="flex items-center justify-between p-4">
-        <div className="flex h-full items-start">
+        <div className="flex h-full flex-col items-start gap-y-3">
           <h1 className="h-full w-full text-xl font-bold lg:text-3xl">
             {tableName}
           </h1>
+          <Input
+            className="hidden min-w-[500px] placeholder:text-white/50 lg:block"
+            placeholder="Type something to filter..."
+            onChange={(value) =>
+              setGlobalFilter(String(value.currentTarget.value))
+            }
+          />
         </div>
         <div className="flex flex-col items-end gap-y-3">
           <DataTablePagination table={table} />

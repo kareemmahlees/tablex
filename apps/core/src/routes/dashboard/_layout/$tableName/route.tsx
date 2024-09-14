@@ -25,13 +25,14 @@ function TableData() {
 
   const {
     data: columns,
-    isLoading: isColumnsLoading,
+    isPending: isColumnsPending,
+    isError,
     error
   } = useGetTableColumns(tableName)
 
-  if (isColumnsLoading) return <LoadingSpinner />
+  if (isColumnsPending) return <LoadingSpinner />
 
-  if (error) return toast.error(error.message, { id: "get_table_columns" })
+  if (isError) return toast.error(error.message, { id: "get_table_columns" })
 
   return (
     <section className="flex w-full flex-col overflow-auto will-change-scroll">

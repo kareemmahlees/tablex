@@ -90,7 +90,7 @@ const DataTable = ({ columns }: DataTableProps) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleSheet}>
-      <TableActions table={table} tableName={tableName} />
+      <TableActions table={table} />
       {isRowsLoading ? (
         <LoadingSpinner />
       ) : (
