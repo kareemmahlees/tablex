@@ -2,12 +2,14 @@ import { getZodSchemaFromCols } from "@/commands/columns"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/$tableName/-components/columns"
 import { useSettings } from "@/settings/manager"
 import { useTableState } from "@/state/tableState"
+import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
+  type FilterFn,
   type PaginationState,
   type Row,
   type SortingState
@@ -34,6 +36,26 @@ export const useGetZodSchema = (tableName: string) => {
   })
 }
 
+declare module "@tanstack/react-table" {
+  //add fuzzy filter to the filterFns
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row.getValue(columnId), value)
+
+  addMeta({
+    itemRank
+  })
+
+  return itemRank.passed
+}
+
 type SetupReactTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   tableName: string
@@ -55,6 +77,8 @@ export const useSetupReactTable = <TData, TValue>({
     pageIndex,
     pageSize
   )
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setGlobalFilter] = useState("")
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
@@ -68,6 +92,11 @@ export const useSetupReactTable = <TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: "fuzzy",
+    filterFns: {
+      fuzzy: fuzzyFilter
+    },
     state: {
       sorting,
       rowSelection,
@@ -81,6 +110,7 @@ export const useSetupReactTable = <TData, TValue>({
     isRowsLoading,
     contextMenuRow,
     setContextMenuRow,
+    setGlobalFilter,
     tableRef,
     table
   }
