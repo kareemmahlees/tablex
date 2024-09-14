@@ -94,22 +94,20 @@ const AddRowForm = ({ tableName }: { tableName: string }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {columnsProps.map(({ columnName, type }, idx) => (
+        {columnsProps.map((column, idx) => (
           <FormField
             key={idx}
             control={form.control}
-            name={columnName}
+            name={column.columnName}
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>{columnName}</FormLabel>
+                <FormLabel>{column.columnName}</FormLabel>
                 <FormControl
-                  defaultValue={type === "unsupported" ? "Unsupported" : ""}
+                  defaultValue={
+                    column.type === "unsupported" ? "Unsupported" : ""
+                  }
                 >
-                  <DynamicFormInput
-                    colDataType={type}
-                    field={field}
-                    disabled={type === "unsupported"}
-                  />
+                  <DynamicFormInput column={column} field={field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
