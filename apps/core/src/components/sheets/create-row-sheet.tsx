@@ -49,7 +49,7 @@ const AddRowBtn = ({ tableName }: AddRowBtnProps) => {
         </SheetTrigger>
         <SheetContent>
           <ScrollArea className="h-full">
-            <SheetHeader className="bg-background sticky top-0 mb-4 scroll-mb-6 scroll-pb-6">
+            <SheetHeader className="bg-background sticky top-0 mb-4">
               <SheetTitle>Add new row</SheetTitle>
               <SheetDescription>
                 Click Save to submit your changes.

@@ -11,7 +11,12 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "@/components/ui/sheet"
 import { useGetGeneralColsData } from "@/hooks/row"
 import { dirtyValues } from "@/lib/utils"
 import { useEditRowSheetState } from "@/state/sheetState"
@@ -78,10 +83,13 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
 
   return (
     <SheetContent>
-      <SheetHeader className="mb-4">
-        <SheetTitle>Edit row</SheetTitle>
-      </SheetHeader>
       <ScrollArea className="h-full">
+        <SheetHeader className="bg-background sticky top-0 mb-4">
+          <SheetTitle>Edit row</SheetTitle>
+          <SheetDescription>
+            Click Save to submit your changes.
+          </SheetDescription>
+        </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {row
@@ -108,7 +116,7 @@ const EditRowSheet = ({ row }: EditRowSheetProps) => {
                   )}
                 />
               ))}
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Save</Button>
           </form>
         </Form>
       </ScrollArea>
