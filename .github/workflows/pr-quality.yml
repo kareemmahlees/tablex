@@ -1,9 +1,12 @@
-name: "Validate PRs"
+name: "PR Quality"
 
 on:
-  pull_request:
-    branches:
-      - "master"
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
   workflow_dispatch:
 
 permissions:
