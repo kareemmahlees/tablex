@@ -49,6 +49,7 @@ export const Route = createFileRoute("/dashboard/_layout")({
 function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
+  const searchParams = Route.useSearch()
   const keybindingsManager = useKeybindings()
   const [, setSideBarCollapsed] = useState(false) // NOTE: I don't know why this is needed, but collapsing doesn't work without it.
   const [tables, setTables] = useState<string[]>(data!.tables)
@@ -130,8 +131,8 @@ function DashboardLayout() {
               className="h-6 border-none text-sm transition-all placeholder:text-xs focus-visible:ring-0 focus-visible:ring-offset-0 lg:h-8 lg:w-[170px] lg:placeholder:text-base lg:focus:w-full"
             />
           </div>
-          <div className="mb-4 overflow-y-auto">
-            <ul className="flex flex-col items-start gap-y-1 overflow-y-auto">
+          <div className="mb-4 w-full overflow-y-auto">
+            <ul className="flex w-full flex-col items-start gap-y-1 overflow-y-auto">
               {tables.map((table, index) => {
                 return (
                   <Link
@@ -145,11 +146,15 @@ function DashboardLayout() {
                     }}
                     preload={false}
                     key={index}
-                    className="flex items-center justify-center gap-x-1 text-sm text-white lg:text-base"
+                    className={cn(
+                      "hover:bg-muted-foreground/30 flex w-full items-center gap-x-1 rounded-md p-1 text-sm text-white lg:text-base",
+                      searchParams.tableName === table &&
+                        "bg-muted-foreground/30"
+                    )}
                     role="button"
                   >
-                    <Table size={16} className="fill-amber-600 text-black" />
-                    {table}
+                    <Table className="h-4 w-4 fill-amber-600 text-black" />
+                    <p className="flex items-center justify-center">{table}</p>
                   </Link>
                 )
               })}
