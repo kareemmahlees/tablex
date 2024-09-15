@@ -9,7 +9,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Settings2,
-  Sidebar,
   Terminal
 } from "lucide-react"
 
@@ -29,17 +28,14 @@ type TableActionsProps = {
 
 const TableActions = ({ table }: TableActionsProps) => {
   const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
-  const { tableName, setGlobalFilter, setSidebarCollapsed, sidebarCollapsed } =
-    useTableState()
+  const { tableName, setGlobalFilter } = useTableState()
   return (
     <>
       <div className="flex items-end justify-between p-4">
         <div className="flex h-full flex-col items-start gap-y-3">
-          <Sidebar
-            className="h-4 w-4 cursor-pointer"
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          />
-          <h1 className="text-xl font-bold lg:text-3xl">{tableName}</h1>
+          <h1 className="text-center text-xl font-bold lg:text-3xl">
+            {tableName}
+          </h1>
           <Input
             className="hidden min-w-[500px] placeholder:text-white/50 lg:block"
             placeholder="Type something to filter..."
@@ -142,7 +138,11 @@ export function DataTableViewOptions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto flex h-8">
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-auto hidden h-8 lg:flex"
+        >
           <Settings2 className="mr-2 h-4 w-4" />
           View
         </Button>
@@ -160,7 +160,6 @@ export function DataTableViewOptions<TData>({
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
