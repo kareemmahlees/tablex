@@ -18,6 +18,7 @@ import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { ArrowLeft, PanelLeftClose, Table } from "lucide-react"
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import type { ImperativePanelHandle } from "react-resizable-panels"
+import { useLocalStorage } from "usehooks-ts"
 import { z } from "zod"
 
 const dashboardConnectionSchema = z.object({
@@ -54,6 +55,7 @@ function DashboardLayout() {
   const [, setSideBarCollapsed] = useState(false) // NOTE: I don't know why this is needed, but collapsing doesn't work without it.
   const [tables, setTables] = useState<string[]>(data!.tables)
   const sidebarPanelRef = useRef<ImperativePanelHandle>(null)
+  const [, setActiveTable] = useLocalStorage("@tablex/active-table", "")
 
   useEffect(() => {
     keybindingsManager.registerKeybindings([
@@ -136,6 +138,7 @@ function DashboardLayout() {
               {tables.map((table, index) => {
                 return (
                   <Link
+                    onClick={() => setActiveTable(table)}
                     to="/dashboard/$tableName"
                     params={{
                       tableName: table
