@@ -31,9 +31,9 @@ const TableActions = ({ table }: TableActionsProps) => {
   const { tableName, setGlobalFilter } = useTableState()
   return (
     <>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-end justify-between p-4">
         <div className="flex h-full flex-col items-start gap-y-3">
-          <h1 className="h-full w-full text-xl font-bold lg:text-3xl">
+          <h1 className="text-center text-xl font-bold lg:text-3xl">
             {tableName}
           </h1>
           <Input
@@ -44,7 +44,7 @@ const TableActions = ({ table }: TableActionsProps) => {
             }
           />
         </div>
-        <div className="flex flex-col items-end gap-y-3">
+        <div className="flex flex-col items-end gap-y-1 lg:gap-y-3">
           <DataTablePagination table={table} />
           <div className="flex items-center gap-x-3">
             <DataTableViewOptions table={table} />
@@ -160,7 +160,6 @@ export function DataTableViewOptions<TData>({
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >

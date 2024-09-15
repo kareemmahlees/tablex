@@ -3,15 +3,21 @@ import CommandPalette from "@/components/dialogs/command-palette-dialog"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
 import PreferencesDialog from "@/components/dialogs/preferences/preferences-dilaog"
 import AddRowBtn from "@/components/sheets/create-row-sheet"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup
+} from "@/components/ui/resizable"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
 import { unwrapResult } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
-import { ArrowLeft, Table } from "lucide-react"
-import { useEffect, useState, type KeyboardEvent } from "react"
+import { ArrowLeft, PanelLeftClose, Table } from "lucide-react"
+import { useEffect, useRef, useState, type KeyboardEvent } from "react"
+import type { ImperativePanelHandle } from "react-resizable-panels"
 import { z } from "zod"
 
 const dashboardConnectionSchema = z.object({
@@ -44,7 +50,9 @@ function DashboardLayout() {
   const deps = Route.useLoaderDeps()
   const data = Route.useLoaderData()
   const keybindingsManager = useKeybindings()
+  const [, setSideBarCollapsed] = useState(false) // NOTE: I don't know why this is needed, but collapsing doesn't work without it.
   const [tables, setTables] = useState<string[]>(data!.tables)
+  const sidebarPanelRef = useRef<ImperativePanelHandle>(null)
 
   useEffect(() => {
     keybindingsManager.registerKeybindings([
@@ -71,21 +79,46 @@ function DashboardLayout() {
   }
 
   return (
-    <main className="flex h-full w-full">
-      <aside className="flex w-56 flex-col items-start justify-between bg-zinc-800 p-4 pt-2 lg:w-72 lg:p-6">
-        <div className="mb-4 flex w-full flex-col items-start gap-y-4 overflow-y-auto lg:gap-y-5">
-          <Link
-            to="/connections"
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
-              "hover:bg-muted-foreground/20 group -mb-2 h-6 p-2"
-            )}
-          >
-            <ArrowLeft
-              className="h-4 w-4 transition-transform group-hover:-translate-x-1"
-              color="gray"
-            />
-          </Link>
+    <ResizablePanelGroup className="flex h-full w-full" direction="horizontal">
+      <ResizablePanel
+        ref={sidebarPanelRef}
+        defaultSize={14}
+        onCollapse={() => setSideBarCollapsed(true)}
+        onExpand={() => setSideBarCollapsed(false)}
+        collapsible
+        minSize={0}
+        className={cn(
+          "flex flex-col items-start justify-between bg-zinc-800 p-4 pt-2 transition-all lg:p-6",
+          sidebarPanelRef.current?.isCollapsed() && "w-0 p-0 lg:w-0 lg:p-0"
+        )}
+      >
+        <div
+          className={cn(
+            "mb-4 flex w-full flex-col items-start gap-y-4 overflow-y-auto overflow-x-hidden transition-all lg:gap-y-5",
+            sidebarPanelRef.current?.isCollapsed() && "hidden"
+          )}
+        >
+          <div className="flex w-full items-center justify-between">
+            <Link
+              to="/connections"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "hover:bg-muted-foreground/20 group -mb-2 h-6 p-2"
+              )}
+            >
+              <ArrowLeft
+                className="h-4 w-4 transition-transform group-hover:-translate-x-1"
+                color="gray"
+              />
+            </Link>
+            <Button
+              variant={"ghost"}
+              className="hover:bg-muted-foreground/20 -mb-2 h-6 p-2"
+              onClick={() => sidebarPanelRef.current?.collapse()}
+            >
+              <PanelLeftClose className="text-muted-foreground h-4 w-4" />
+            </Button>
+          </div>
           <h1 className="w-full text-center text-lg font-bold text-gray-500">
             {data!.connName}
           </h1>
@@ -123,13 +156,16 @@ function DashboardLayout() {
             </ul>
           </div>
         </div>
-      </aside>
-      {deps.tableName && <AddRowBtn tableName={deps.tableName} />}
-      {tables.length > 0 && <Outlet />}
+      </ResizablePanel>
+      <ResizableHandle />
+      {deps.tableName && !sidebarPanelRef.current?.isCollapsed() && (
+        <AddRowBtn tableName={deps.tableName} />
+      )}
+      <ResizablePanel>{tables.length > 0 && <Outlet />}</ResizablePanel>
       <CommandPalette />
       <PreferencesDialog />
       <MetaXDialog />
-    </main>
+    </ResizablePanelGroup>
   )
 }
 
