@@ -81,14 +81,11 @@ export function DataTablePagination<TData>({
   table,
   connectionId
 }: DataTablePaginationProps<TData>) {
-  const { tableName } = useTableState()
-  const [, setConnectionStorage] = useLocalStorage<TableLocalStorage>(
-    `@tablex/${connectionId}`,
-    {
-      tableName,
+  const [connectionStorage, setConnectionStorage] =
+    useLocalStorage<TableLocalStorage>(`@tablex/${connectionId}`, {
+      tableName: "",
       pageIndex: 0
-    }
-  )
+    })
 
   return (
     <div className="flex items-center justify-between px-2">
@@ -107,7 +104,7 @@ export function DataTablePagination<TData>({
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => {
               table.setPageIndex(0)
-              setConnectionStorage({ tableName, pageIndex: 0 })
+              setConnectionStorage({ ...connectionStorage, pageIndex: 0 })
             }}
             disabled={!table.getCanPreviousPage()}
           >
@@ -119,7 +116,7 @@ export function DataTablePagination<TData>({
             className="h-8 w-8 p-0"
             onClick={() => {
               setConnectionStorage({
-                tableName,
+                ...connectionStorage,
                 pageIndex: table.getState().pagination.pageIndex - 1
               })
               table.previousPage()
@@ -134,7 +131,7 @@ export function DataTablePagination<TData>({
             className="h-8 w-8 p-0"
             onClick={() => {
               setConnectionStorage({
-                tableName,
+                ...connectionStorage,
                 pageIndex: table.getState().pagination.pageIndex + 1
               })
               table.nextPage()
@@ -150,7 +147,7 @@ export function DataTablePagination<TData>({
             onClick={() => {
               table.setPageIndex(table.getPageCount() - 1)
               setConnectionStorage({
-                tableName,
+                ...connectionStorage,
                 pageIndex: table.getPageCount() - 1
               })
             }}
