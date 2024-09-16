@@ -2,6 +2,7 @@ import { getZodSchemaFromCols } from "@/commands/columns"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/$tableName/-components/columns"
 import { useSettings } from "@/settings/manager"
 import { useTableState } from "@/state/tableState"
+import { TableLocalStorage } from "@/types"
 import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
 import { useQuery } from "@tanstack/react-query"
 import {
@@ -16,6 +17,7 @@ import {
   type SortingState
 } from "@tanstack/react-table"
 import { useMemo, useRef, useState } from "react"
+import { useLocalStorage } from "usehooks-ts"
 import { useGetPaginatedRows } from "./row"
 
 export const useGetTableColumns = (tableName: string) => {
@@ -60,6 +62,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 type SetupReactTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   tableName: string
+  connectionId: string
 }
 
 /**
@@ -68,10 +71,11 @@ type SetupReactTableOptions<TData, TValue> = {
  */
 export const useSetupReactTable = <TData, TValue>({
   tableName,
-  columns
+  columns,
+  connectionId
 }: SetupReactTableOptions<TData, TValue>) => {
   const { defaultData, pagination, setPagination, pageIndex, pageSize } =
-    useSetupPagination()
+    useSetupPagination(connectionId)
   const { globalFilter, setGlobalFilter } = useTableState()
 
   const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
@@ -121,10 +125,15 @@ export const useSetupReactTable = <TData, TValue>({
  * Sets up the state and memoization for page index & page size
  * to be used in paginating the rows.
  */
-const useSetupPagination = () => {
+const useSetupPagination = (connectionId: string) => {
   const settings = useSettings()
+  const [{ pageIndex: persistedPageIndex }] =
+    useLocalStorage<TableLocalStorage>(`@tablex/${connectionId}`, {
+      tableName: "",
+      pageIndex: 0
+    })
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
+    pageIndex: persistedPageIndex,
     pageSize: settings.pageSize
   })
   const defaultData = useMemo(() => [], [])

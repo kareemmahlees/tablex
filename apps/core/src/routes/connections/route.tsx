@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { unwrapResult } from "@/lib/utils"
+import { TableLocalStorage } from "@/types"
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
@@ -54,9 +55,26 @@ function ConnectionsPage() {
 
     if (connectionEstablishment === false) return
 
+    const connectionStorageData = localStorage.getItem(
+      `@tablex/${connectionId}`
+    )
+
+    if (connectionStorageData) {
+      const parsedConnectionData: TableLocalStorage = JSON.parse(
+        connectionStorageData
+      )
+      return router.navigate({
+        to: "/dashboard/$tableName",
+        params: {
+          tableName: parsedConnectionData.tableName
+        },
+        search: { connectionId }
+      })
+    }
+
     router.navigate({
       to: "/dashboard/land",
-      search: { connectionName: connectionDetails.connName }
+      search: { connectionId }
     })
   }
 

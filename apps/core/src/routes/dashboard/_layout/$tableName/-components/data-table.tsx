@@ -40,12 +40,13 @@ import TableActions from "./table-actions"
 
 interface DataTableProps {
   columns: ColumnDef<ColumnProps>[]
+  connectionId: string
 }
 
-const DataTable = ({ columns }: DataTableProps) => {
+const DataTable = ({ columns, connectionId }: DataTableProps) => {
   const { tableName, pkColumn } = useTableState()
   const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
-    useSetupReactTable({ columns, tableName })
+    useSetupReactTable({ columns, tableName, connectionId })
   const queryClient = useQueryClient()
   const keybindingsManager = useKeybindings()
   const { isOpen, toggleSheet } = useEditRowSheetState()
@@ -83,14 +84,14 @@ const DataTable = ({ columns }: DataTableProps) => {
   const virtualizer = useVirtualizer({
     count: table.getRowCount(),
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 50, // I reached to this number by trial and error
+    estimateSize: () => 34, // I reached to this number by trial and error
     overscan: 10,
     debug: import.meta.env.DEV
   })
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleSheet}>
-      <TableActions table={table} />
+      <TableActions table={table} connectionId={connectionId} />
       {isRowsLoading ? (
         <LoadingSpinner />
       ) : (
