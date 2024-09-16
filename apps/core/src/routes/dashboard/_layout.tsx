@@ -22,18 +22,23 @@ import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"
 
 const dashboardConnectionSchema = z.object({
-  connectionName: z.string(),
+  connectionId: z.string().uuid(),
   tableName: z.string().optional()
 })
 
 export const Route = createFileRoute("/dashboard/_layout")({
   validateSearch: dashboardConnectionSchema,
-  loaderDeps: ({ search: { tableName, connectionName } }) => ({
-    connectionName,
+  loaderDeps: ({ search: { tableName, connectionId } }) => ({
+    connectionId,
     tableName
   }),
-  loader: async ({ deps: { connectionName } }) => {
-    const connName = connectionName || "Temp Connection"
+  loader: async ({ deps: { connectionId } }) => {
+    const connectionDetailsResult =
+      await commands.getConnectionDetails(connectionId)
+    const connectionDetails = unwrapResult(connectionDetailsResult)
+
+    if (!connectionDetails) throw redirect({ to: "/connections" })
+    const connName = connectionDetails.connName || "Temp Connection"
 
     const tables = unwrapResult(await commands.getTables())
     if (!tables)
@@ -143,7 +148,7 @@ function DashboardLayout() {
                       tableName: table
                     }}
                     search={{
-                      connectionName: deps.connectionName,
+                      connectionId: deps.connectionId,
                       tableName: table
                     }}
                     preload={false}

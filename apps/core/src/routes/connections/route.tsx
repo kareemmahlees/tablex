@@ -10,11 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { unwrapResult } from "@/lib/utils"
-import { ActiveTableLocalStorage } from "@/types"
+import { TableLocalStorage } from "@/types"
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
-import { useLocalStorage } from "usehooks-ts"
 
 export const Route = createFileRoute("/connections")({
   beforeLoad: async () => {
@@ -40,10 +39,6 @@ export const Route = createFileRoute("/connections")({
 function ConnectionsPage() {
   const router = useRouter()
   const connections = Route.useLoaderData()
-  const [activeTable] = useLocalStorage<ActiveTableLocalStorage | null>(
-    "@tablex/active-table",
-    null
-  )
 
   const onClickConnect = async (connectionId: string) => {
     const connectionDetailsResult =
@@ -60,19 +55,26 @@ function ConnectionsPage() {
 
     if (connectionEstablishment === false) return
 
-    if (activeTable?.connectionName == connectionDetails.connName) {
+    const connectionStorageData = localStorage.getItem(
+      `@tablex/${connectionId}`
+    )
+
+    if (connectionStorageData) {
+      const parsedConnectionData: TableLocalStorage = JSON.parse(
+        connectionStorageData
+      )
       return router.navigate({
         to: "/dashboard/$tableName",
         params: {
-          tableName: activeTable.tableName
+          tableName: parsedConnectionData.tableName
         },
-        search: { connectionName: connectionDetails.connName }
+        search: { connectionId }
       })
     }
 
     router.navigate({
       to: "/dashboard/land",
-      search: { connectionName: connectionDetails.connName }
+      search: { connectionId }
     })
   }
 

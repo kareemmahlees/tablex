@@ -21,18 +21,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { useTableState } from "@/state/tableState"
-import { useDebounceCallback } from "usehooks-ts"
+import { TableLocalStorage } from "@/types"
+import { useDebounceCallback, useLocalStorage } from "usehooks-ts"
 
 type TableActionsProps = {
   table: Table<any>
+  connectionId: string
 }
 
-const TableActions = ({ table }: TableActionsProps) => {
+const TableActions = ({ table, connectionId }: TableActionsProps) => {
   const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
   const { tableName, setGlobalFilter } = useTableState()
   const debounced = useDebounceCallback(
     (filter: string) => setGlobalFilter(filter),
-    200
+    500
   )
   return (
     <>
@@ -48,7 +50,7 @@ const TableActions = ({ table }: TableActionsProps) => {
           />
         </div>
         <div className="flex flex-col items-end gap-y-1 lg:gap-y-3">
-          <DataTablePagination table={table} />
+          <DataTablePagination table={table} connectionId={connectionId} />
           <div className="flex items-center gap-x-3">
             <DataTableViewOptions table={table} />
             <Button
@@ -72,11 +74,22 @@ export default TableActions
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
+  connectionId: string
 }
 
 export function DataTablePagination<TData>({
-  table
+  table,
+  connectionId
 }: DataTablePaginationProps<TData>) {
+  const { tableName } = useTableState()
+  const [, setConnectionStorage] = useLocalStorage<TableLocalStorage>(
+    `@tablex/${connectionId}`,
+    {
+      tableName,
+      pageIndex: 0
+    }
+  )
+
   return (
     <div className="flex items-center justify-between px-2">
       <div className="text-muted-foreground hidden text-sm lg:flex">
@@ -92,7 +105,10 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(0)}
+            onClick={() => {
+              table.setPageIndex(0)
+              setConnectionStorage({ tableName, pageIndex: 0 })
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
@@ -101,7 +117,13 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => table.previousPage()}
+            onClick={() => {
+              setConnectionStorage({
+                tableName,
+                pageIndex: table.getState().pagination.pageIndex - 1
+              })
+              table.previousPage()
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to previous page</span>
@@ -110,7 +132,13 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => table.nextPage()}
+            onClick={() => {
+              setConnectionStorage({
+                tableName,
+                pageIndex: table.getState().pagination.pageIndex + 1
+              })
+              table.nextPage()
+            }}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to next page</span>
@@ -119,7 +147,13 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            onClick={() => {
+              table.setPageIndex(table.getPageCount() - 1)
+              setConnectionStorage({
+                tableName,
+                pageIndex: table.getPageCount() - 1
+              })
+            }}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>

@@ -1,4 +1,4 @@
-export type ActiveTableLocalStorage = {
-  connectionName: string
+export type TableLocalStorage = {
   tableName: string
+  pageIndex: number
 }
