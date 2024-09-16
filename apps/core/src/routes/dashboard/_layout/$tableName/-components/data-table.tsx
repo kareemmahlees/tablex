@@ -83,7 +83,7 @@ const DataTable = ({ columns }: DataTableProps) => {
   const virtualizer = useVirtualizer({
     count: table.getRowCount(),
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 50, // I reached to this number by trial and error
+    estimateSize: () => 34, // I reached to this number by trial and error
     overscan: 10,
     debug: import.meta.env.DEV
   })

@@ -43,7 +43,7 @@ function TableData() {
   if (isError) return toast.error(error.message, { id: "get_table_columns" })
 
   return (
-    <section className="flex w-full flex-col overflow-auto will-change-scroll">
+    <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
       <DataTable columns={columns!} />
     </section>
   )

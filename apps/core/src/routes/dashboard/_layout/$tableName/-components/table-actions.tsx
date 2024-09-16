@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { useTableState } from "@/state/tableState"
+import { useDebounceCallback } from "usehooks-ts"
 
 type TableActionsProps = {
   table: Table<any>
@@ -29,6 +30,10 @@ type TableActionsProps = {
 const TableActions = ({ table }: TableActionsProps) => {
   const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
   const { tableName, setGlobalFilter } = useTableState()
+  const debounced = useDebounceCallback(
+    (filter: string) => setGlobalFilter(filter),
+    200
+  )
   return (
     <>
       <div className="flex items-end justify-between p-4">
@@ -39,9 +44,7 @@ const TableActions = ({ table }: TableActionsProps) => {
           <Input
             className="hidden min-w-[500px] placeholder:text-white/50 lg:block"
             placeholder="Type something to filter..."
-            onChange={(value) =>
-              setGlobalFilter(String(value.currentTarget.value))
-            }
+            onChange={(value) => debounced(String(value.currentTarget.value))}
           />
         </div>
         <div className="flex flex-col items-end gap-y-1 lg:gap-y-3">

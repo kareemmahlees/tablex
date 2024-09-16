@@ -16,8 +16,9 @@ import { unwrapResult } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { ArrowLeft, PanelLeftClose, Table } from "lucide-react"
-import { useEffect, useRef, useState, type KeyboardEvent } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { ImperativePanelHandle } from "react-resizable-panels"
+import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"
 
 const dashboardConnectionSchema = z.object({
@@ -51,8 +52,8 @@ function DashboardLayout() {
   const data = Route.useLoaderData()
   const searchParams = Route.useSearch()
   const keybindingsManager = useKeybindings()
-  const [, setSideBarCollapsed] = useState(false) // NOTE: I don't know why this is needed, but collapsing doesn't work without it.
-  const [tables, setTables] = useState<string[]>(data!.tables)
+  const [tables, setTables] = useState<string[]>(data.tables)
+  const [, setSideBarCollapsed] = useState(false)
   const sidebarPanelRef = useRef<ImperativePanelHandle>(null)
 
   useEffect(() => {
@@ -64,30 +65,31 @@ function DashboardLayout() {
     ])
   }, [keybindingsManager])
 
-  let timeout: NodeJS.Timeout
-  const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    const searchPattern = e.currentTarget.value
+  const handleTableSearch = (searchPattern: string) => {
     if (searchPattern === "") return setTables(data!.tables)
 
-    clearTimeout(timeout)
-
-    timeout = setTimeout(() => {
-      const filteredTables = tables.filter((table) =>
-        table.includes(searchPattern)
-      )
-      setTables(filteredTables)
-    }, 100)
+    const filteredTables = tables.filter((table) =>
+      table.includes(searchPattern)
+    )
+    setTables(filteredTables)
   }
 
+  const debounced = useDebounceCallback(handleTableSearch)
+
   return (
-    <ResizablePanelGroup className="flex h-full w-full" direction="horizontal">
+    <ResizablePanelGroup
+      className="flex h-full w-full"
+      direction="horizontal"
+      autoSaveId={"@tablex/layout"}
+    >
       <ResizablePanel
         ref={sidebarPanelRef}
         defaultSize={14}
-        onCollapse={() => setSideBarCollapsed(true)}
         onExpand={() => setSideBarCollapsed(false)}
+        onCollapse={() => setSideBarCollapsed(true)}
         collapsible
-        minSize={0}
+        minSize={12}
+        collapsedSize={0}
         className={cn(
           "flex flex-col items-start justify-between bg-zinc-800 p-4 pt-2 transition-all lg:p-6",
           sidebarPanelRef.current?.isCollapsed() && "w-0 p-0 lg:w-0 lg:p-0"
@@ -126,7 +128,7 @@ function DashboardLayout() {
           <div className="flex w-full items-center justify-center rounded-sm px-1">
             <Input
               id="search_input"
-              onKeyUp={handleKeyUp}
+              onChange={(e) => debounced(e.currentTarget.value)}
               placeholder="Search..."
               className="h-6 border-none text-sm transition-all placeholder:text-xs focus-visible:ring-0 focus-visible:ring-offset-0 lg:h-8 lg:w-[170px] lg:placeholder:text-base lg:focus:w-full"
             />
@@ -147,7 +149,7 @@ function DashboardLayout() {
                     preload={false}
                     key={index}
                     className={cn(
-                      "hover:bg-muted-foreground/30 flex w-full items-center gap-x-1 rounded-md p-1 text-sm text-white lg:text-base",
+                      "hover:bg-muted-foreground/30 flex w-full items-center gap-x-1 overflow-x-hidden rounded-md p-1 text-sm text-white lg:text-base",
                       searchParams.tableName === table &&
                         "bg-muted-foreground/30"
                     )}
