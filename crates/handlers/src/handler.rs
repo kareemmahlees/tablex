@@ -37,18 +37,19 @@ pub trait TableHandler {
 #[async_trait]
 /// The logic for this trait is almost identical between all drivers, so default implementation is created.
 pub trait RowHandler {
+    #[allow(clippy::incompatible_msrv)]
     async fn get_paginated_rows(
         &self,
         pool: &AnyPool,
         table_name: String,
         page_index: u16,
-        page_size: i32,
+        page_size: u32,
     ) -> Result<PaginatedRows> {
         let query_str = format!(
             "SELECT * FROM {} limit {} offset {};",
             table_name,
             page_size,
-            page_index as i32 * page_size
+            page_index as u32 * page_size
         );
 
         let rows = sqlx::query(&query_str).fetch_all(pool).await?;
@@ -56,7 +57,8 @@ pub trait RowHandler {
         let query_str = format!("SELECT COUNT(*) from {}", table_name);
 
         let page_count_result = sqlx::query(&query_str).fetch_one(pool).await?;
-        let page_count = page_count_result.try_get::<i64, usize>(0).unwrap() as i32 / page_size;
+        let page_count =
+            (page_count_result.try_get::<i64, usize>(0).unwrap() as u32).div_ceil(page_size);
 
         let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
 

@@ -36,11 +36,11 @@ pub type ConnectionsFileSchema = HashMap<String, ConnConfig>;
 #[serde(rename_all = "camelCase")]
 pub struct PaginatedRows {
     data: Vec<JsonMap<String, JsonValue>>,
-    page_count: i32,
+    page_count: u32,
 }
 
 impl PaginatedRows {
-    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: i32) -> Self {
+    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: u32) -> Self {
         PaginatedRows { data, page_count }
     }
 }
