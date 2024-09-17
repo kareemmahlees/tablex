@@ -92,10 +92,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     }
 
     navigate({
-      to: "/dashboard/land",
-      search: {
-        connectionName: values.connName
-      }
+      to: "/dashboard/land"
     })
   }
 
@@ -112,6 +109,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
         values.connName,
         driver
       ),
+      undefined,
       () => navigate({ to: "/connections" })
     )
   }
@@ -236,10 +234,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
       return customToast(result, "establish_connection")
     }
     navigate({
-      to: "/dashboard/land",
-      search: {
-        connectionName: values.connName
-      }
+      to: "/dashboard/land"
     })
   }
 
@@ -251,10 +246,8 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
       values.connName,
       driver
     )
-    customToast(
-      commandResult,
-      () => navigate({ to: "/connections" }),
-      "create_connection"
+    customToast(commandResult, "create_connection", () =>
+      navigate({ to: "/connections" })
     )
   }
 

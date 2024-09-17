@@ -40,7 +40,7 @@ import TableActions from "./table-actions"
 
 interface DataTableProps {
   columns: ColumnDef<ColumnProps>[]
-  connectionId: string
+  connectionId?: string
 }
 
 const DataTable = ({ columns, connectionId }: DataTableProps) => {

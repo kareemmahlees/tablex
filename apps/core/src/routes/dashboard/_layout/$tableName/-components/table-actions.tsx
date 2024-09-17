@@ -26,7 +26,7 @@ import { useDebounceCallback, useLocalStorage } from "usehooks-ts"
 
 type TableActionsProps = {
   table: Table<any>
-  connectionId: string
+  connectionId?: string
 }
 
 const TableActions = ({ table, connectionId }: TableActionsProps) => {
@@ -74,7 +74,7 @@ export default TableActions
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
-  connectionId: string
+  connectionId?: string
 }
 
 export function DataTablePagination<TData>({
