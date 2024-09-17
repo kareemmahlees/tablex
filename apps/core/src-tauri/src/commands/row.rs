@@ -16,7 +16,7 @@ pub async fn get_paginated_rows(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     page_index: u16,
-    page_size: i32,
+    page_size: u32,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let pool = &state.pool;
