@@ -4,9 +4,6 @@
   "private": true,
   "description": "TableX frontend lib",
   "type": "module",
-  "dependencies": {
-    "react-hot-toast": "^2.4.1"
-  },
   "exports": {
     ".": "./src/index",
     "./utils": "./src/utils.ts"

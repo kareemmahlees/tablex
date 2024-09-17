@@ -16,7 +16,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "react-hot-toast"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
 
@@ -89,7 +88,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     const connString = constructConnectionString({ ...values, driver })
     const result = await commands.establishConnection(connString, driver)
     if (result.status === "error") {
-      return toast.error(result.error, { id: "establish_connection" })
+      return customToast(result, "establish_connection")
     }
 
     navigate({
@@ -121,7 +120,7 @@ const ConnectionParamsForm = ({ driver }: ConnectionParamsFormProps) => {
     values: z.infer<typeof connectionParamsFormSchema>
   ) => {
     const connString = constructConnectionString({ ...values, driver })
-    customToast(await commands.testConnection(connString), () => {})
+    customToast(await commands.testConnection(connString))
   }
   return (
     <Form {...form}>
@@ -234,7 +233,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   ) => {
     const result = await commands.establishConnection(values.connString, driver)
     if (result.status === "error") {
-      return toast.error(result.error, { id: "establish_connection" })
+      return customToast(result, "establish_connection")
     }
     navigate({
       to: "/dashboard/land",
@@ -264,7 +263,7 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
   ) => {
     const commandResult = await commands.testConnection(values.connString)
     if (commandResult.status === "error") {
-      return toast.error(commandResult.error)
+      return customToast(commandResult)
     }
   }
 

@@ -37,3 +37,4 @@ next-env.d.ts
 **/bin/
 **/dist
 gen
+*.log

@@ -24,7 +24,7 @@ import { useTableState } from "@/state/tableState"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Row } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 import { z } from "zod"
 import DynamicFormInput from "./components/dynamic-input"
 

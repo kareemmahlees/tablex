@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { useGetFKRelations } from "@/hooks/row"
 import { Link } from "lucide-react"
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 
 type ForeignKeyDropdownProps = {
   tableName: string

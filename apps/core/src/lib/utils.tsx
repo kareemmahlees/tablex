@@ -32,8 +32,8 @@ export type Result<T extends any | null> =
 
 export function customToast<T extends string>(
   commandResult: Result<T>,
-  onSuccess: () => void,
-  id?: string
+  id?: string,
+  onSuccess?: () => void
 ) {
   if (commandResult.status === "error") {
     error(
@@ -53,10 +53,13 @@ export function customToast<T extends string>(
           </Button>
         </ErrorDialog>
       ),
-      position: "bottom-center"
+      position: "bottom-center",
+      id
     })
   }
-  onSuccess()
+  if (onSuccess) {
+    onSuccess()
+  }
 
   toast.success(commandResult.data, { id })
 }
@@ -68,7 +71,7 @@ export function customToast<T extends string>(
  */
 export function unwrapResult<T>(result: Result<T>): false | T {
   if (result.status === "error") {
-    customToast(result, () => {})
+    customToast(result)
     return false
   }
   return result.data
