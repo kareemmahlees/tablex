@@ -1,8 +1,9 @@
 import type { ColumnProps, TxError } from "@/bindings"
 import ErrorDialog from "@/components/dialogs/error-dialog"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button"
+import { cn } from "@tablex/lib/utils"
 import { error } from "@tauri-apps/plugin-log"
-import { ErrorIcon, toast } from "react-hot-toast"
+import { toast } from "sonner"
 import { ConnectionStringParams, Drivers } from "./types"
 
 /**
@@ -38,25 +39,22 @@ export function customToast<T extends string>(
     error(
       `message: ${commandResult.error.message}, details: ${commandResult.error.details}.`
     )
-    return toast(
-      <div className="flex items-center justify-between gap-x-2">
-        <p>{commandResult.error.message}</p>
-        {commandResult.error.details && (
-          <>
-            <Separator orientation="vertical" />
-            <ErrorDialog error={commandResult.error.details}>
-              <button className="hover:bg-muted-foreground rounded-md p-1 font-semibold text-black transition-all">
-                more
-              </button>
-            </ErrorDialog>
-          </>
-        )}
-      </div>,
-      {
-        icon: <ErrorIcon />,
-        id: "toast_error"
-      }
-    )
+    return toast.error(commandResult.error.message, {
+      action: (
+        <ErrorDialog error={commandResult.error.details}>
+          <Button
+            size={"sm"}
+            className={cn(
+              "ml-auto hidden",
+              commandResult.error.details && "block"
+            )}
+          >
+            more
+          </Button>
+        </ErrorDialog>
+      ),
+      position: "bottom-center"
+    })
   }
   onSuccess()
 
