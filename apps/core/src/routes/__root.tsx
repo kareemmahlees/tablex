@@ -1,6 +1,6 @@
+import { Toaster } from "@/components/ui/sonner"
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import React, { Suspense } from "react"
-import { Toaster } from "react-hot-toast"
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -16,7 +16,18 @@ export const Route = createRootRoute({
   component: () => {
     return (
       <main className="dark h-full w-full">
-        <Toaster position="top-right" />
+        <Toaster
+          closeButton
+          richColors
+          position="top-right"
+          pauseWhenPageIsHidden
+          toastOptions={{
+            classNames: {
+              toast:
+                "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:pointer-events-auto "
+            }
+          }}
+        />
         <Outlet />
         <Suspense>
           <TanStackRouterDevtools position="bottom-right" />
