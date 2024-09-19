@@ -22,10 +22,23 @@ import { TabsContent } from "@/components/ui/tabs"
 import { useKeybindings, type EditedBinding } from "@/keybindings/manager"
 import { Edit2, FileJson2 } from "lucide-react"
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react"
+import { toast } from "sonner"
 
 const KeybindingsTab = () => {
   const keybindings = useKeybindings()
   const [editedKeybindings, setEditKeybindings] = useState<EditedBinding[]>([])
+
+  const handleKeybindingsSave = async () => {
+    const result = await commands.writeIntoKeybindingsFile(keybindings.bindings)
+    if (result.status === "error") {
+      return toast.error("Failed to update keybindings", {
+        description: "Please try again"
+      })
+    }
+    keybindings.reRegister(editedKeybindings)
+    toast.success("Keybindings updated successfully")
+  }
+
   return (
     <TabsContent value="keybindings">
       <Table>
@@ -58,13 +71,7 @@ const KeybindingsTab = () => {
         </TableBody>
       </Table>
       <div className="absolute bottom-7 right-4 flex flex-row-reverse items-center gap-x-3">
-        <Button
-          size={"sm"}
-          onClick={async () => {
-            await commands.writeIntoKeybindingsFile(keybindings.bindings)
-            keybindings.reRegister(editedKeybindings)
-          }}
-        >
+        <Button size={"sm"} onClick={handleKeybindingsSave}>
           Save
         </Button>
         <Button
