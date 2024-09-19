@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { FileJson2 } from "lucide-react"
 import type { PropsWithChildren } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import z from "zod"
 
 const formSchema = z.object({
@@ -40,7 +41,19 @@ const SettingsTab = () => {
   })
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    await commands.writeIntoSettingsFile(data)
+    const result = await commands.writeIntoSettingsFile(data)
+    if (result.status === "error") {
+      return toast.error("Failed to update settings.", {
+        description: result.error.details
+      })
+    }
+    return toast.success("Successfully updated settings", {
+      description: "A hard refresh is required",
+      action: {
+        label: "Refresh",
+        onClick: () => location.reload()
+      }
+    })
   }
 
   return (

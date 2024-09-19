@@ -17,7 +17,6 @@ import { useNavigate } from "@tanstack/react-router"
 import { open } from "@tauri-apps/plugin-dialog"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
 import { z } from "zod"
 import ConnectionActions from "./connection-actions"
 
@@ -64,7 +63,7 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
     resolver: zodResolver(formSchema)
   })
 
-  const onClickConnect = async (values: z.infer<typeof formSchema>) => {
+  const onClickConnect = async () => {
     const connString = constructConnectionString({
       driver: Drivers.SQLite,
       filePath: selectedPath
@@ -74,13 +73,10 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
       Drivers.SQLite
     )
     if (result.status === "error") {
-      return toast.error(result.error, { id: "establish_connection" })
+      return customToast(result, "establish_connection")
     }
     navigate({
-      to: "/dashboard/land",
-      search: {
-        connectionName: values.connName
-      }
+      to: "/dashboard/land"
     })
   }
 
@@ -95,8 +91,8 @@ const ConnectionForm = ({ selectedPath }: ConnectionFormProps) => {
         values.connName,
         Drivers.SQLite
       ),
-      () => navigate({ to: "/connections" }),
-      "create_connection"
+      "create_connection",
+      () => navigate({ to: "/connections" })
     )
   }
 

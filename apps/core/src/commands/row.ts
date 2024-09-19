@@ -1,7 +1,7 @@
 import { commands } from "@/bindings"
 import { customToast } from "@/lib/utils"
 import type { Row } from "@tanstack/react-table"
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 
 export const createRowCmd = async (
   tableName: string,
@@ -10,7 +10,7 @@ export const createRowCmd = async (
 ) => {
   const commandResult = await commands.createRow(tableName, data)
 
-  customToast(commandResult, () => toggleSheet(false), "create_row")
+  customToast(commandResult, "create_row", () => toggleSheet(false))
 }
 
 export const deleteRowsCmd = async (
@@ -29,7 +29,7 @@ export const deleteRowsCmd = async (
     rows.map((row) => row.getValue(pkColumn)),
     tableName
   )
-  customToast(command, () => {}, "delete_row")
+  customToast(command, "delete_row")
 }
 
 export const updateRowCmd = async (
@@ -45,5 +45,5 @@ export const updateRowCmd = async (
     pkColValue,
     data
   )
-  customToast(command, () => toggleSheet(false), "update_row")
+  customToast(command, "update_row", () => toggleSheet(false))
 }

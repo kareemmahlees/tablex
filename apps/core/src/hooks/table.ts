@@ -62,7 +62,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 type SetupReactTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   tableName: string
-  connectionId: string
+  connectionId?: string
 }
 
 /**
@@ -125,7 +125,7 @@ export const useSetupReactTable = <TData, TValue>({
  * Sets up the state and memoization for page index & page size
  * to be used in paginating the rows.
  */
-const useSetupPagination = (connectionId: string) => {
+const useSetupPagination = (connectionId?: string) => {
   const settings = useSettings()
   const [{ pageIndex: persistedPageIndex }] =
     useLocalStorage<TableLocalStorage>(`@tablex/${connectionId}`, {

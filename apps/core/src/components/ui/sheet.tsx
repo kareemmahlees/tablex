@@ -1,9 +1,9 @@
 "use client"
 
-import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
+import * as React from "react"
 
 import { cn } from "@tablex/lib/utils"
 
@@ -62,6 +62,15 @@ const SheetContent = React.forwardRef<
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
+      onInteractOutside={(e) => {
+        const { originalEvent } = e.detail
+        if (
+          originalEvent.target instanceof Element &&
+          originalEvent.target.closest(".group.toast")
+        ) {
+          e.preventDefault()
+        }
+      }}
       {...props}
     >
       {children}
@@ -127,14 +136,7 @@ const SheetDescription = React.forwardRef<
 SheetDescription.displayName = SheetPrimitive.Description.displayName
 
 export {
-  Sheet,
-  SheetPortal,
-  SheetOverlay,
-  SheetTrigger,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
-  SheetDescription
+  Sheet, SheetClose,
+  SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger
 }
+
