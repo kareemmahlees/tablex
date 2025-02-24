@@ -1,10 +1,11 @@
 use sqlx::AnyPool;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
-use tx_handlers::Handler;
+use tx_handlers::{DatabaseConnection, Handler};
 
 #[derive(Debug)]
 pub struct SharedState {
+    pub conn: DatabaseConnection,
     pub handler: Box<dyn Handler>,
     /// `pool` is passed to the Handler
     pub pool: AnyPool,
@@ -14,11 +15,13 @@ pub struct SharedState {
 
 impl SharedState {
     pub fn new(
+        conn: DatabaseConnection,
         handler: Box<dyn Handler>,
         pool: AnyPool,
         #[cfg(feature = "metax")] metax: Option<CommandChild>,
     ) -> Self {
         Self {
+            conn,
             handler,
             pool,
             #[cfg(feature = "metax")]

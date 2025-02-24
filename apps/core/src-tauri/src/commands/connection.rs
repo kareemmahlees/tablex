@@ -1,4 +1,4 @@
-use crate::state::SharedState;
+use crate::{database::DatabaseConnection, state::SharedState};
 use sqlx::{AnyConnection, Connection};
 use std::path::PathBuf;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime, State};
@@ -82,6 +82,7 @@ pub async fn establish_connection(
     driver: Drivers,
 ) -> Result<()> {
     let pool = tx_handlers::establish_connection(&conn_string, &driver).await?;
+    let conn = DatabaseConnection::connect(&conn_string).await?;
 
     let handler: Box<dyn Handler> = match driver {
         Drivers::SQLite => SQLiteHandler::new(),
@@ -91,6 +92,7 @@ pub async fn establish_connection(
 
     #[allow(unused_mut)]
     let mut state = SharedState::new(
+        conn,
         handler,
         pool,
         #[cfg(feature = "metax")]

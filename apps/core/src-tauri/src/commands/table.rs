@@ -10,7 +10,7 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
     let state = state.lock().await;
     let pool = &state.pool;
     let handler = &state.handler;
-    let tables = handler.get_tables(pool).await?;
+    let tables = handler.get_tables(pool, &state.conn).await?;
 
     if tables.is_empty() {
         return Ok(vec![]);

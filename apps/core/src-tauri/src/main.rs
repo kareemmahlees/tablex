@@ -4,6 +4,7 @@
 mod cli;
 mod commands;
 mod state;
+
 #[cfg(feature = "updater")]
 mod updater;
 

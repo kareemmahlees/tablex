@@ -9,6 +9,8 @@ use tx_lib::{
     Result,
 };
 
+use crate::{database::DatabaseConnection, QueryResult};
+
 /// **Handler** must be implemented by any logic handling service, which is
 /// therefore persisted in `SharedState`.
 pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
@@ -16,7 +18,7 @@ pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
 #[async_trait]
 /// Every handler must provide it's own implementation of this.
 pub trait TableHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>>;
+    async fn get_tables(&self, pool: &AnyPool, conn: &DatabaseConnection) -> Result<Vec<AnyRow>>;
     async fn get_columns_props(
         &self,
         pool: &AnyPool,

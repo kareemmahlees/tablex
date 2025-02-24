@@ -35,50 +35,50 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue> {
     }
 
     let res = match v.type_info().name() {
-        "CHAR" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
-        | "LONGTEXT" | "ENUM" | "NAME" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode() {
-                JsonValue::String(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "FLOAT4" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<f32>() {
-                JsonValue::from(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "FLOAT8" | "REAL" | "DOUBLE" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<f64>() {
-                JsonValue::from(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "INT2" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<i16>() {
-                JsonValue::Number(v.into())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "INT4" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<i32>() {
-                JsonValue::Number(v.into())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "INTEGER" | "NUMERIC" | "INT8" | "TINYINT" | "SMALLINT" | "INT" | "MEDIUMINT"
-        | "BIGINT" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<i64>() {
-                JsonValue::Number(v.into())
-            } else {
-                JsonValue::Null
-            }
-        }
+        // "CHAR" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
+        // | "LONGTEXT" | "ENUM" | "NAME" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode() {
+        //         JsonValue::String(v)
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "FLOAT4" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<f32>() {
+        //         JsonValue::from(v)
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "FLOAT8" | "REAL" | "DOUBLE" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<f64>() {
+        //         JsonValue::from(v)
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "INT2" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<i16>() {
+        //         JsonValue::Number(v.into())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "INT4" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<i32>() {
+        //         JsonValue::Number(v.into())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "INTEGER" | "NUMERIC" | "INT8" | "TINYINT" | "SMALLINT" | "INT" | "MEDIUMINT"
+        // | "BIGINT" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<i64>() {
+        //         JsonValue::Number(v.into())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
         // TODO the current sqlx version doesn't implement the `Decode` trait for usize rust types.
         // "TINYINT UNSIGNED" | "SMALLINT UNSIGNED" | "INT UNSIGNED" | "MEDIUMINT UNSIGNED"
         // | "BIGINT UNSIGNED" | "YEAR" => {
@@ -88,48 +88,48 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue> {
         //         JsonValue::Null
         //     }
         // }
-        "BOOLEAN" | "BOOL" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode() {
-                JsonValue::Bool(v)
-            } else {
-                JsonValue::Null
-            }
-        }
-        "DATE" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<NaiveDate>() {
-                JsonValue::String(v.to_string())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "TIME" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<NaiveTime>() {
-                JsonValue::String(v.to_string())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<NaiveDateTime>() {
-                JsonValue::String(v.to_string())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "TINIYBLOB" | "MEDIUMBLOB" | "BLOB" | "BYTEA" | "LONGBLOB" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<Vec<u8>>() {
-                JsonValue::Array(v.into_iter().map(|n| JsonValue::Number(n.into())).collect())
-            } else {
-                JsonValue::Null
-            }
-        }
-        "JSON" | "JSONB" => {
-            if let Ok(v) = AnyValueRef::to_owned(&v).try_decode_unchecked::<String>() {
-                JsonValue::String(v)
-            } else {
-                JsonValue::Null
-            }
-        }
+        // "BOOLEAN" | "BOOL" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode() {
+        //         JsonValue::Bool(v)
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "DATE" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<NaiveDate>() {
+        //         JsonValue::String(v.to_string())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "TIME" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<NaiveTime>() {
+        //         JsonValue::String(v.to_string())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<NaiveDateTime>() {
+        //         JsonValue::String(v.to_string())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "TINIYBLOB" | "MEDIUMBLOB" | "BLOB" | "BYTEA" | "LONGBLOB" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode::<Vec<u8>>() {
+        //         JsonValue::Array(v.into_iter().map(|n| JsonValue::Number(n.into())).collect())
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
+        // "JSON" | "JSONB" => {
+        //     if let Ok(v) = AnyValueRef::to_owned(&v).try_decode_unchecked::<String>() {
+        //         JsonValue::String(v)
+        //     } else {
+        //         JsonValue::Null
+        //     }
+        // }
         "NULL" | "VOID" => JsonValue::Null,
         other => return Err(crate::TxError::UnsupportedDataType(other.to_string())),
     };
@@ -144,40 +144,43 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
         return DataType::Null;
     }
 
-    let value = AnyValueRef::to_owned(&v);
-    let column_type = value.decode::<&str>();
+    // let value = AnyValueRef::to_owned(&v);
+    // let column_type = value.decode::<&str>();
 
-    match column_type.to_uppercase().as_str() {
-        "\"CHAR\"" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
-        | "LONGTEXT" | "ENUM" | "NAME" => DataType::Text,
+    // dbg!(&column_type);
+    DataType::Unsupported
 
-        "UUID" => DataType::Uuid,
+    // match column_type.to_uppercase().as_str() {
+    //     "\"CHAR\"" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
+    //     | "LONGTEXT" | "ENUM" | "NAME" => DataType::Text,
 
-        "FLOAT4" | "FLOAT8" | "REAL" | "DOUBLE" => DataType::Float,
+    //     "UUID" => DataType::Uuid,
 
-        "INT2" | "INT4" | "INTEGER" | "NUMERIC" | "INT8" | "TINYINT" | "SMALLINT" | "INT"
-        | "MEDIUMINT" | "BIGINT" | "YEAR" => DataType::PositiveInteger,
+    //     "FLOAT4" | "FLOAT8" | "REAL" | "DOUBLE" => DataType::Float,
 
-        "TINYINT UNSIGNED" | "SMALLINT UNSIGNED" | "INT UNSIGNED" | "MEDIUMINT UNSIGNED"
-        | "BIGINT UNSIGNED" => DataType::Integer,
+    //     "INT2" | "INT4" | "INTEGER" | "NUMERIC" | "INT8" | "TINYINT" | "SMALLINT" | "INT"
+    //     | "MEDIUMINT" | "BIGINT" | "YEAR" => DataType::PositiveInteger,
 
-        "BOOLEAN" | "BOOL" => DataType::Boolean,
+    //     "TINYINT UNSIGNED" | "SMALLINT UNSIGNED" | "INT UNSIGNED" | "MEDIUMINT UNSIGNED"
+    //     | "BIGINT UNSIGNED" => DataType::Integer,
 
-        "DATE" => DataType::Date,
+    //     "BOOLEAN" | "BOOL" => DataType::Boolean,
 
-        "TIME" | "TIME WITHOUT TIME ZONE" => DataType::Time,
+    //     "DATE" => DataType::Date,
 
-        "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" | "TIMESTAMP WITHOUT TIME ZONE" => {
-            DataType::DateTime
-        }
+    //     "TIME" | "TIME WITHOUT TIME ZONE" => DataType::Time,
 
-        "JSON" | "JSONB" => DataType::Json,
+    //     "DATETIME" | "TIMESTAMP" | "TIMESTAMPTZ" | "TIMESTAMP WITHOUT TIME ZONE" => {
+    //         DataType::DateTime
+    //     }
 
-        "TINIYBLOB" | "MEDIUMBLOB" | "BLOB" | "BYTEA" | "LONGBLOB" => DataType::Unsupported,
+    //     "JSON" | "JSONB" => DataType::Json,
 
-        "NULL" | "VOID" => DataType::Null,
-        _ => DataType::Unsupported,
-    }
+    //     "TINIYBLOB" | "MEDIUMBLOB" | "BLOB" | "BYTEA" | "LONGBLOB" => DataType::Unsupported,
+
+    //     "NULL" | "VOID" => DataType::Null,
+    //     _ => DataType::Unsupported,
+    // }
 }
 
 /// Transform/Decode a `Vec<AnyRow>` into a serializable datastructure.

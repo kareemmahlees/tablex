@@ -8,11 +8,13 @@ use sqlx::{any::AnyPoolOptions, AnyPool};
 use std::time::Duration;
 use tx_lib::{types::Drivers, Result, TxError};
 
+mod database;
 mod handler;
 mod mysql;
 mod postgres;
 mod sqlite;
 
+pub use database::{DatabaseConnection, QueryResult};
 pub use handler::{Handler, RowHandler, TableHandler};
 pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
