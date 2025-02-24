@@ -13,7 +13,7 @@ const tablePageSchema = z.object({
   tableName: z.string().optional()
 })
 
-export const Route = createFileRoute("/dashboard/_layout/$tableName")({
+export const Route = createFileRoute("/dashboard/_layout/connection/$tableName")({
   validateSearch: tablePageSchema,
   component: TableData
 })

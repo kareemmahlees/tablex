@@ -32,7 +32,7 @@ export const Route = createRootRoute({
         <Outlet />
         <Suspense>
           <TanStackRouterDevtools position="bottom-right" />
-          <ReactQueryDevtools buttonPosition="bottom-left" />
+          <ReactQueryDevtools buttonPosition="bottom-right" />
         </Suspense>
       </main>
     )

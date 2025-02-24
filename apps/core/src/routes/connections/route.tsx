@@ -64,7 +64,7 @@ function ConnectionsPage() {
         connectionStorageData
       )
       return router.navigate({
-        to: "/dashboard/$tableName",
+        to: "/dashboard/connection/$tableName",
         params: {
           tableName: parsedConnectionData.tableName
         },
@@ -73,7 +73,7 @@ function ConnectionsPage() {
     }
 
     router.navigate({
-      to: "/dashboard/land",
+      to: "/dashboard/connection/land",
       search: { connectionId }
     })
   }
