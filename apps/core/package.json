@@ -66,6 +66,7 @@
     "@eslint/compat": "^1.1.1",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.9.1",
+    "@tanstack/react-query-devtools": "^5.66.11",
     "@tanstack/router-devtools": "^1.50.0",
     "@tanstack/router-vite-plugin": "^1.49.3",
     "@tauri-apps/cli": "2.0.0-beta.22",
