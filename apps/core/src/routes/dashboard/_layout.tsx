@@ -2,7 +2,6 @@ import { commands } from "@/bindings"
 import CommandPalette from "@/components/dialogs/command-palette-dialog"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
 import PreferencesDialog from "@/components/dialogs/preferences/preferences-dilaog"
-import AddRowBtn from "@/components/sheets/create-row-sheet"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
@@ -66,8 +65,8 @@ function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar connectionId={deps.connectionId!} />
-      {deps.tableName && <AddRowBtn tableName={deps.tableName} />}
-      {tables.length > 0 && <Outlet />}
+      {/* {deps.tableName && <AddRowBtn tableName={deps.tableName} />} */}
+      <main className="w-full">{tables.length > 0 && <Outlet />}</main>
       <CommandPalette />
       <PreferencesDialog />
       <MetaXDialog />

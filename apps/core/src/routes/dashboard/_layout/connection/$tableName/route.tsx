@@ -1,4 +1,5 @@
 import LoadingSpinner from "@/components/loading-spinner"
+import { getTablesQueryOptions } from "@/features/table-view/queries"
 import { useGetTableColumns } from "@/hooks/table"
 import { useTableState } from "@/state/tableState"
 import type { TableLocalStorage } from "@/types"
@@ -13,12 +14,16 @@ const tablePageSchema = z.object({
   tableName: z.string().optional()
 })
 
-export const Route = createFileRoute("/dashboard/_layout/connection/$tableName")({
+export const Route = createFileRoute(
+  "/dashboard/_layout/connection/$tableName"
+)({
   validateSearch: tablePageSchema,
-  component: TableData
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(getTablesQueryOptions),
+  component: TableView
 })
 
-function TableData() {
+function TableView() {
   const { tableName } = Route.useParams()
   const { connectionId } = Route.useSearch()
   const { updateTableName } = useTableState()

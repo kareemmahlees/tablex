@@ -18,6 +18,7 @@ import {
 
 import { events, type ColumnProps } from "@/bindings"
 import { deleteRowsCmd } from "@/commands/row"
+import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import LoadingSpinner from "@/components/loading-spinner"
 import EditRowSheet from "@/components/sheets/edit-row-sheet"
 import {
@@ -168,6 +169,9 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
             </VirtualTable>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
+          <div className="px-4 pb-2">
+            <DataTablePagination table={table} connectionId={connectionId} />
+          </div>
         </ContextMenu>
       )}
       <EditRowSheet row={contextMenuRow} />

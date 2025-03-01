@@ -1,56 +1,43 @@
 import SQLDialog from "@/components/dialogs/sql-dialog"
 import { Button } from "@/components/ui/button"
 import { useSqlEditorState } from "@/state/dialogState"
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import type { Table } from "@tanstack/react-table"
-import {
-  ArrowLeft,
-  ArrowRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Settings2,
-  Terminal
-} from "lucide-react"
+import { Table2Icon, Terminal } from "lucide-react"
 
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { useTableState } from "@/state/tableState"
-import { TableLocalStorage } from "@/types"
-import { useDebounceCallback, useLocalStorage } from "usehooks-ts"
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbSeparator
+} from "@/components/ui/breadcrumb"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+
+import { DataTableViewOptions } from "@/components/custom/data-table-pagination"
+import { getTablesQueryOptions } from "@/features/table-view/queries"
+import { useSuspenseQuery } from "@tanstack/react-query"
 
 type TableActionsProps = {
   table: Table<any>
   connectionId?: string
 }
 
-const TableActions = ({ table, connectionId }: TableActionsProps) => {
+const TableActions = ({ table }: TableActionsProps) => {
   const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
-  const { tableName, setGlobalFilter } = useTableState()
-  const debounced = useDebounceCallback(
-    (filter: string) => setGlobalFilter(filter),
-    500
-  )
   return (
     <>
       <div className="flex items-end justify-between p-4">
         <div className="flex h-full flex-col items-start gap-y-3">
           <h1 className="text-center text-xl font-bold lg:text-3xl">
-            {tableName}
+            <TableSelectionBreadCrumb />
           </h1>
-          <Input
-            className="hidden min-w-[500px] placeholder:text-white/50 lg:block"
-            placeholder="Type something to filter..."
-            onChange={(value) => debounced(String(value.currentTarget.value))}
-          />
         </div>
         <div className="flex flex-col items-end gap-y-1 lg:gap-y-3">
-          <DataTablePagination table={table} connectionId={connectionId} />
           <div className="flex items-center gap-x-3">
             <DataTableViewOptions table={table} />
             <Button
@@ -72,136 +59,34 @@ const TableActions = ({ table, connectionId }: TableActionsProps) => {
 
 export default TableActions
 
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>
-  connectionId?: string
-}
-
-export function DataTablePagination<TData>({
-  table,
-  connectionId
-}: DataTablePaginationProps<TData>) {
-  const [connectionStorage, setConnectionStorage] =
-    useLocalStorage<TableLocalStorage>(`@tablex/${connectionId}`, {
-      tableName: "",
-      pageIndex: 0
-    })
+const TableSelectionBreadCrumb = () => {
+  const { data: tables } = useSuspenseQuery(getTablesQueryOptions)
 
   return (
-    <div className="flex items-center justify-between px-2">
-      <div className="text-muted-foreground hidden text-sm lg:flex">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div>
-      <div className="flex items-center space-x-4 lg:space-x-2">
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </div>
-        <div className="flex items-center gap-x-2">
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => {
-              table.setPageIndex(0)
-              setConnectionStorage({ ...connectionStorage, pageIndex: 0 })
-            }}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Go to first page</span>
-            <ChevronsLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => {
-              setConnectionStorage({
-                ...connectionStorage,
-                pageIndex: table.getState().pagination.pageIndex - 1
-              })
-              table.previousPage()
-            }}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <span className="sr-only">Go to previous page</span>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => {
-              setConnectionStorage({
-                ...connectionStorage,
-                pageIndex: table.getState().pagination.pageIndex + 1
-              })
-              table.nextPage()
-            }}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Go to next page</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => {
-              table.setPageIndex(table.getPageCount() - 1)
-              setConnectionStorage({
-                ...connectionStorage,
-                pageIndex: table.getPageCount() - 1
-              })
-            }}
-            disabled={!table.getCanNextPage()}
-          >
-            <span className="sr-only">Go to last page</span>
-            <ChevronsRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface DataTableViewOptionsProps<TData> {
-  table: Table<TData>
-}
-
-export function DataTableViewOptions<TData>({
-  table
-}: DataTableViewOptionsProps<TData>) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="ml-auto hidden h-8 lg:flex"
-        >
-          <Settings2 className="mr-2 h-4 w-4" />
-          View
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter(
-            (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
-          )
-          .map((column) => {
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
-            )
-          })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>Tables</BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <Select defaultValue={tables[0]}>
+            <SelectTrigger
+              id="select-table"
+              className="relative gap-2 ps-9"
+              aria-label="Select Table"
+            >
+              <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 group-has-[select[disabled]]:opacity-50">
+                <Table2Icon size={16} aria-hidden="true" />
+              </div>
+              <SelectValue placeholder="Select Table" />
+            </SelectTrigger>
+            <SelectContent>
+              {(tables as string[]).map((t) => (
+                <SelectItem value={t}>{t}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
   )
 }

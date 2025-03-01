@@ -14,6 +14,7 @@ import { TableLocalStorage } from "@/types"
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
+import { useLocalStorage } from "usehooks-ts"
 
 export const Route = createFileRoute("/connections")({
   beforeLoad: async () => {
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/connections")({
 function ConnectionsPage() {
   const router = useRouter()
   const connections = Route.useLoaderData()
+  const [latestTable] = useLocalStorage("latest_table", null)
 
   const onClickConnect = async (connectionId: string) => {
     const connectionDetailsResult =
@@ -66,7 +68,7 @@ function ConnectionsPage() {
       return router.navigate({
         to: "/dashboard/connection/$tableName",
         params: {
-          tableName: parsedConnectionData.tableName
+          tableName: "test"
         },
         search: { connectionId }
       })

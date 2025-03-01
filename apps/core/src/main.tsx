@@ -6,10 +6,15 @@ import { KeybindingsContext, KeybindingsManager } from "./keybindings/manager"
 import { routeTree } from "./routeTree.gen"
 import { SettingsContext, SettingsManager } from "./settings/manager"
 
+const client = new QueryClient()
+
 // Set up a Router instance
 const router = createRouter({
   routeTree,
-  defaultPreload: "intent"
+  defaultPreload: "intent",
+  context: {
+    queryClient: client
+  }
 })
 
 // Register things for typesafety
@@ -19,7 +24,6 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const client = new QueryClient()
 const keybindingsManager = new KeybindingsManager()
 const settingsManager = new SettingsManager()
 

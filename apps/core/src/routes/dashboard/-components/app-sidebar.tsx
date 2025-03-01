@@ -46,10 +46,10 @@ const items = (connectionId: string) => [
 
 const AppSidebar = ({ connectionId }: { connectionId: string }) => {
   return (
-    <Sidebar className="w-[--sidebar-width/2] lg:w-[--sidebar-width]">
+    <Sidebar>
       <SidebarHeader>
         <Link
-          to=""
+          to="/connections"
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
             "hover:bg-muted-foreground/20 group -mb-2 h-6 w-fit p-2"
