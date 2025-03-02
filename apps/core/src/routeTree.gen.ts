@@ -17,6 +17,9 @@ import { Route as ConnectionsRouteImport } from './routes/connections/route'
 import { Route as ConnectRouteImport } from './routes/connect/route'
 import { Route as IndexRouteImport } from './routes/index/route'
 import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
+import { Route as DashboardLayoutSettingsRouteImport } from './routes/dashboard/_layout/settings/route'
+import { Route as DashboardLayoutKeybindingsRouteImport } from './routes/dashboard/_layout/keybindings/route'
+import { Route as DashboardLayoutApiDocsRouteImport } from './routes/dashboard/_layout/api-docs/route'
 import { Route as DashboardLayoutTableViewLandRouteImport } from './routes/dashboard/_layout/table-view/land/route'
 import { Route as DashboardLayoutTableViewTableNameRouteImport } from './routes/dashboard/_layout/table-view/$tableName/route'
 
@@ -50,6 +53,24 @@ const DashboardLayoutRoute = DashboardLayoutImport.update({
   id: '/_layout',
   getParentRoute: () => DashboardRoute,
 } as any)
+
+const DashboardLayoutSettingsRouteRoute =
+  DashboardLayoutSettingsRouteImport.update({
+    path: '/settings',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
+const DashboardLayoutKeybindingsRouteRoute =
+  DashboardLayoutKeybindingsRouteImport.update({
+    path: '/keybindings',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
+const DashboardLayoutApiDocsRouteRoute =
+  DashboardLayoutApiDocsRouteImport.update({
+    path: '/api-docs',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
 
 const DashboardLayoutTableViewLandRouteRoute =
   DashboardLayoutTableViewLandRouteImport.update({
@@ -102,6 +123,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/_layout/api-docs': {
+      id: '/dashboard/_layout/api-docs'
+      path: '/api-docs'
+      fullPath: '/dashboard/api-docs'
+      preLoaderRoute: typeof DashboardLayoutApiDocsRouteImport
+      parentRoute: typeof DashboardLayoutImport
+    }
+    '/dashboard/_layout/keybindings': {
+      id: '/dashboard/_layout/keybindings'
+      path: '/keybindings'
+      fullPath: '/dashboard/keybindings'
+      preLoaderRoute: typeof DashboardLayoutKeybindingsRouteImport
+      parentRoute: typeof DashboardLayoutImport
+    }
+    '/dashboard/_layout/settings': {
+      id: '/dashboard/_layout/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardLayoutSettingsRouteImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/table-view/$tableName': {
       id: '/dashboard/_layout/table-view/$tableName'
       path: '/table-view/$tableName'
@@ -127,6 +169,9 @@ export const routeTree = rootRoute.addChildren({
   ConnectionsRouteRoute,
   DashboardRoute: DashboardRoute.addChildren({
     DashboardLayoutRoute: DashboardLayoutRoute.addChildren({
+      DashboardLayoutApiDocsRouteRoute,
+      DashboardLayoutKeybindingsRouteRoute,
+      DashboardLayoutSettingsRouteRoute,
       DashboardLayoutTableViewTableNameRouteRoute,
       DashboardLayoutTableViewLandRouteRoute,
     }),
@@ -166,9 +211,24 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "dashboard/_layout.tsx",
       "parent": "/dashboard",
       "children": [
+        "/dashboard/_layout/api-docs",
+        "/dashboard/_layout/keybindings",
+        "/dashboard/_layout/settings",
         "/dashboard/_layout/table-view/$tableName",
         "/dashboard/_layout/table-view/land"
       ]
+    },
+    "/dashboard/_layout/api-docs": {
+      "filePath": "dashboard/_layout/api-docs/route.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/keybindings": {
+      "filePath": "dashboard/_layout/keybindings/route.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/settings": {
+      "filePath": "dashboard/_layout/settings/route.tsx",
+      "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/table-view/$tableName": {
       "filePath": "dashboard/_layout/table-view/$tableName/route.tsx",
