@@ -1,23 +1,13 @@
 import LoadingSpinner from "@/components/loading-spinner"
-import { getTablesQueryOptions } from "@/features/table-view/queries"
+import { getTablesQueryOptions } from "@/features/shared/queries"
 import { useGetTableColumns } from "@/hooks/table"
-import { useTableState } from "@/state/tableState"
-import type { TableLocalStorage } from "@/types"
 import { createFileRoute } from "@tanstack/react-router"
-import { useEffect } from "react"
 import { toast } from "sonner"
-import { useLocalStorage } from "usehooks-ts"
-import { z } from "zod"
 import DataTable from "./-components/data-table"
 
-const tablePageSchema = z.object({
-  tableName: z.string().optional()
-})
-
 export const Route = createFileRoute(
-  "/dashboard/_layout/connection/$tableName"
+  "/dashboard/_layout/table-view/$tableName"
 )({
-  validateSearch: tablePageSchema,
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(getTablesQueryOptions),
   component: TableView
@@ -26,17 +16,17 @@ export const Route = createFileRoute(
 function TableView() {
   const { tableName } = Route.useParams()
   const { connectionId } = Route.useSearch()
-  const { updateTableName } = useTableState()
-  const [, setActiveTable] = useLocalStorage<TableLocalStorage | null>(
-    `@tablex/${connectionId}`,
-    null
-  )
+  // const { updateTableName } = useTableState()
+  // const [, setActiveTable] = useLocalStorage<TableLocalStorage | null>(
+  //   `@tablex/${connectionId}`,
+  //   null
+  // )
 
-  useEffect(() => updateTableName(tableName), [tableName, updateTableName])
-  useEffect(
-    () => setActiveTable({ tableName, pageIndex: 0 }),
-    [setActiveTable, tableName]
-  )
+  // useEffect(() => updateTableName(tableName), [tableName, updateTableName])
+  // useEffect(
+  //   () => setActiveTable({ tableName, pageIndex: 0 }),
+  //   [setActiveTable, tableName]
+  // )
 
   const {
     data: columns,

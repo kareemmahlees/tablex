@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select"
 
 import { DataTableViewOptions } from "@/components/custom/data-table-pagination"
-import { getTablesQueryOptions } from "@/features/table-view/queries"
+import { getTablesQueryOptions } from "@/features/shared/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 type TableActionsProps = {

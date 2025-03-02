@@ -1,5 +1,5 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
-import { generateColumnsDefs } from "@/routes/dashboard/_layout/connection/$tableName/-components/columns"
+import { generateColumnsDefs } from "@/routes/dashboard/_layout/table-view/$tableName/-components/columns"
 import { useSettings } from "@/settings/manager"
 import { useTableState } from "@/state/tableState"
 import { TableLocalStorage } from "@/types"

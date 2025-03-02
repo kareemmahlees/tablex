@@ -10,29 +10,19 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { unwrapResult } from "@/lib/utils"
-import { TableLocalStorage } from "@/types"
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
+import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
-import { useLocalStorage } from "usehooks-ts"
 
 export const Route = createFileRoute("/connections")({
-  beforeLoad: async () => {
-    const result = await commands.connectionsExist()
-    const connectionExist = unwrapResult(result)
-    if (!connectionExist) {
-      throw redirect({ to: "/" })
-    }
-  },
-  loader: async ({ abortController }) => {
-    const commandResult = await commands.getConnections()
-    const connections = unwrapResult(commandResult)
-    if (!connections) {
-      return abortController.abort(`error while getting connections`)
-    }
-
-    return connections
-  },
+  // beforeLoad: async () => {
+  //   const result = await commands.connectionsExist()
+  //   const connectionExist = unwrapResult(result)
+  //   if (!connectionExist) {
+  //     throw redirect({ to: "/" })
+  //   }
+  // },
+  loader: async () => unwrapResult(await commands.getConnections()),
   staleTime: 0,
   component: ConnectionsPage
 })
@@ -40,42 +30,35 @@ export const Route = createFileRoute("/connections")({
 function ConnectionsPage() {
   const router = useRouter()
   const connections = Route.useLoaderData()
-  const [latestTable] = useLocalStorage("latest_table", null)
 
   const onClickConnect = async (connectionId: string) => {
-    const connectionDetailsResult =
+    const connectionDetails = unwrapResult(
       await commands.getConnectionDetails(connectionId)
-    const connectionDetails = unwrapResult(connectionDetailsResult)
-
-    if (!connectionDetails) return
-
-    const establishConnectionResult = await commands.establishConnection(
-      connectionDetails.connString,
-      connectionDetails.driver
-    )
-    const connectionEstablishment = unwrapResult(establishConnectionResult)
-
-    if (connectionEstablishment === false) return
-
-    const connectionStorageData = localStorage.getItem(
-      `@tablex/${connectionId}`
     )
 
-    if (connectionStorageData) {
-      const parsedConnectionData: TableLocalStorage = JSON.parse(
-        connectionStorageData
+    unwrapResult(
+      await commands.establishConnection(
+        connectionDetails.connString,
+        connectionDetails.driver
       )
-      return router.navigate({
-        to: "/dashboard/connection/$tableName",
-        params: {
-          tableName: "test"
-        },
-        search: { connectionId }
-      })
-    }
+    )
+
+    // const connectionStorageData = localStorage.getItem(
+    //   `@tablex/${connectionId}`
+    // )
+
+    // if (connectionStorageData) {
+    // const parsedConnectionData: TableLocalStorage = JSON.parse(
+    //   connectionStorageData
+    // )
+    //   return router.navigate({
+    //     to: "/dashboard/table-view/land",
+    //     search: { connectionId }
+    //   })
+    // }
 
     router.navigate({
-      to: "/dashboard/connection/land",
+      to: "/dashboard/table-view/land",
       search: { connectionId }
     })
   }
@@ -84,7 +67,7 @@ function ConnectionsPage() {
     <main className="flex h-full items-start">
       <ul className="flex h-full flex-[0.5] flex-col justify-start gap-y-5 overflow-y-auto p-5 lg:p-7">
         <Suspense fallback={<LoadingSpinner />}>
-          {Object.entries(connections!).map(([id, config]) => {
+          {Object.entries(connections).map(([id, config]) => {
             return (
               <li key={id}>
                 <div className="flex justify-between">

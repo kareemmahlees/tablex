@@ -17,8 +17,8 @@ import { Route as ConnectionsRouteImport } from './routes/connections/route'
 import { Route as ConnectRouteImport } from './routes/connect/route'
 import { Route as IndexRouteImport } from './routes/index/route'
 import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
-import { Route as DashboardLayoutConnectionLandRouteImport } from './routes/dashboard/_layout/connection/land/route'
-import { Route as DashboardLayoutConnectionTableNameRouteImport } from './routes/dashboard/_layout/connection/$tableName/route'
+import { Route as DashboardLayoutTableViewLandRouteImport } from './routes/dashboard/_layout/table-view/land/route'
+import { Route as DashboardLayoutTableViewTableNameRouteImport } from './routes/dashboard/_layout/table-view/$tableName/route'
 
 // Create Virtual Routes
 
@@ -51,15 +51,15 @@ const DashboardLayoutRoute = DashboardLayoutImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardLayoutConnectionLandRouteRoute =
-  DashboardLayoutConnectionLandRouteImport.update({
-    path: '/connection/land',
+const DashboardLayoutTableViewLandRouteRoute =
+  DashboardLayoutTableViewLandRouteImport.update({
+    path: '/table-view/land',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
-const DashboardLayoutConnectionTableNameRouteRoute =
-  DashboardLayoutConnectionTableNameRouteImport.update({
-    path: '/connection/$tableName',
+const DashboardLayoutTableViewTableNameRouteRoute =
+  DashboardLayoutTableViewTableNameRouteImport.update({
+    path: '/table-view/$tableName',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -102,18 +102,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/_layout/connection/$tableName': {
-      id: '/dashboard/_layout/connection/$tableName'
-      path: '/connection/$tableName'
-      fullPath: '/dashboard/connection/$tableName'
-      preLoaderRoute: typeof DashboardLayoutConnectionTableNameRouteImport
+    '/dashboard/_layout/table-view/$tableName': {
+      id: '/dashboard/_layout/table-view/$tableName'
+      path: '/table-view/$tableName'
+      fullPath: '/dashboard/table-view/$tableName'
+      preLoaderRoute: typeof DashboardLayoutTableViewTableNameRouteImport
       parentRoute: typeof DashboardLayoutImport
     }
-    '/dashboard/_layout/connection/land': {
-      id: '/dashboard/_layout/connection/land'
-      path: '/connection/land'
-      fullPath: '/dashboard/connection/land'
-      preLoaderRoute: typeof DashboardLayoutConnectionLandRouteImport
+    '/dashboard/_layout/table-view/land': {
+      id: '/dashboard/_layout/table-view/land'
+      path: '/table-view/land'
+      fullPath: '/dashboard/table-view/land'
+      preLoaderRoute: typeof DashboardLayoutTableViewLandRouteImport
       parentRoute: typeof DashboardLayoutImport
     }
   }
@@ -127,8 +127,8 @@ export const routeTree = rootRoute.addChildren({
   ConnectionsRouteRoute,
   DashboardRoute: DashboardRoute.addChildren({
     DashboardLayoutRoute: DashboardLayoutRoute.addChildren({
-      DashboardLayoutConnectionTableNameRouteRoute,
-      DashboardLayoutConnectionLandRouteRoute,
+      DashboardLayoutTableViewTableNameRouteRoute,
+      DashboardLayoutTableViewLandRouteRoute,
     }),
   }),
 })
@@ -166,16 +166,16 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "dashboard/_layout.tsx",
       "parent": "/dashboard",
       "children": [
-        "/dashboard/_layout/connection/$tableName",
-        "/dashboard/_layout/connection/land"
+        "/dashboard/_layout/table-view/$tableName",
+        "/dashboard/_layout/table-view/land"
       ]
     },
-    "/dashboard/_layout/connection/$tableName": {
-      "filePath": "dashboard/_layout/connection/$tableName/route.tsx",
+    "/dashboard/_layout/table-view/$tableName": {
+      "filePath": "dashboard/_layout/table-view/$tableName/route.tsx",
       "parent": "/dashboard/_layout"
     },
-    "/dashboard/_layout/connection/land": {
-      "filePath": "dashboard/_layout/connection/land/route.tsx",
+    "/dashboard/_layout/table-view/land": {
+      "filePath": "dashboard/_layout/table-view/land/route.tsx",
       "parent": "/dashboard/_layout"
     }
   }
