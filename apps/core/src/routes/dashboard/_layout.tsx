@@ -1,5 +1,4 @@
 import { commands } from "@/bindings"
-import CommandPalette from "@/components/dialogs/command-palette-dialog"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
 import PreferencesDialog from "@/components/dialogs/preferences/preferences-dilaog"
 import { SidebarProvider } from "@/components/ui/sidebar"
@@ -62,7 +61,6 @@ function DashboardLayout() {
       <AppSidebar connectionId={deps.connectionId!} />
       {/* {deps.tableName && <AddRowBtn tableName={deps.tableName} />} */}
       <main className="w-full">{tables.length > 0 && <Outlet />}</main>
-      <CommandPalette />
       <PreferencesDialog />
       <MetaXDialog />
     </SidebarProvider>

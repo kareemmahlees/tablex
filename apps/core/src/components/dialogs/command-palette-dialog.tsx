@@ -13,6 +13,7 @@ import {
   usePreferencesState,
   useSqlEditorState
 } from "@/state/dialogState"
+import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
 import {
@@ -23,6 +24,7 @@ import {
   Settings2,
   Terminal
 } from "lucide-react"
+import { Button } from "../ui/button"
 
 const CommandPalette = () => {
   const { isOpen, toggleDialog } = useCommandPaletteState()
@@ -30,16 +32,27 @@ const CommandPalette = () => {
   hotkeys("ctrl+k,command+k", () => toggleDialog(!isOpen))
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
-      <CommandInput placeholder="Type a command or search..." />
-      <CommandEmpty>No results found.</CommandEmpty>
-      <ScrollArea className="max-h-[300px] overflow-auto">
-        <GeneralGroup />
-        <ConnectionsGroup />
-        <UtilitiesGroup />
-        <ConfigurationGroup />
-      </ScrollArea>
-    </CommandDialog>
+    <>
+      <Button
+        onClick={() => toggleDialog(true)}
+        variant="outline"
+        className={cn(
+          "bg-muted/50 text-muted-foreground relative h-8 w-full justify-start rounded-[0.5rem] text-sm font-normal shadow-none"
+        )}
+      >
+        Search...
+      </Button>
+      <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandEmpty>No results found.</CommandEmpty>
+        <ScrollArea className="max-h-[300px] overflow-auto">
+          <GeneralGroup />
+          <ConnectionsGroup />
+          <UtilitiesGroup />
+          <ConfigurationGroup />
+        </ScrollArea>
+      </CommandDialog>
+    </>
   )
 }
 

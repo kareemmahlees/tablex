@@ -1,3 +1,4 @@
+import CommandPalette from "@/components/dialogs/command-palette-dialog"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Sidebar,
@@ -47,7 +48,7 @@ const items = (connectionId: string) => [
 const AppSidebar = ({ connectionId }: { connectionId: string }) => {
   return (
     <Sidebar>
-      <SidebarHeader>
+      <SidebarHeader className="space-y-1.5">
         <Link
           to="/connections"
           className={cn(
@@ -60,6 +61,7 @@ const AppSidebar = ({ connectionId }: { connectionId: string }) => {
             color="gray"
           />
         </Link>
+        <CommandPalette />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
