@@ -13,12 +13,13 @@ import {
 } from "@/components/ui/select"
 import { getTablesQueryOptions } from "@/features/shared/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { useNavigate } from "@tanstack/react-router"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { Table2Icon } from "lucide-react"
 
 export const TableSelectionBreadCrumb = () => {
   const { data: tables } = useSuspenseQuery(getTablesQueryOptions)
   const navigate = useNavigate()
+  const { tableName } = useParams({ strict: false })
 
   return (
     <Breadcrumb>
@@ -35,6 +36,7 @@ export const TableSelectionBreadCrumb = () => {
                 }
               })
             }
+            defaultValue={tableName}
           >
             <SelectTrigger
               id="select-table"

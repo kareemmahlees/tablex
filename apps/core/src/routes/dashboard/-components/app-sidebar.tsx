@@ -20,7 +20,8 @@ import {
   LucideIcon,
   Settings,
   StickyNote,
-  Table2
+  Table2,
+  Terminal
 } from "lucide-react"
 
 type Routes = FileRoutesByPath[keyof FileRoutesByPath]["fullPath"]
@@ -32,9 +33,9 @@ const items: { title: string; url: Routes; icon: LucideIcon }[] = [
     icon: Table2
   },
   {
-    title: "Keybindings",
-    url: `/dashboard/keybindings`,
-    icon: Keyboard
+    title: "SQL Editor",
+    url: "/dashboard/sql-editor",
+    icon: Terminal
   },
   {
     title: "API Docs",
@@ -42,13 +43,13 @@ const items: { title: string; url: Routes; icon: LucideIcon }[] = [
     icon: StickyNote
   },
   {
-    title: "Settings",
-    url: `/dashboard/settings`,
-    icon: Settings
+    title: "Keybindings",
+    url: `/dashboard/keybindings`,
+    icon: Keyboard
   },
   {
-    title: "Testing",
-    url: "/dashboard/table-view/land",
+    title: "Settings",
+    url: `/dashboard/settings`,
     icon: Settings
   }
 ]

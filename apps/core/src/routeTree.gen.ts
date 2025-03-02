@@ -18,6 +18,7 @@ import { Route as ConnectRouteImport } from './routes/connect/route'
 import { Route as IndexRouteImport } from './routes/index/route'
 import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
 import { Route as DashboardLayoutTableViewLayoutImport } from './routes/dashboard/_layout/_table-view-layout'
+import { Route as DashboardLayoutSqlEditorRouteImport } from './routes/dashboard/_layout/sql-editor/route'
 import { Route as DashboardLayoutSettingsRouteImport } from './routes/dashboard/_layout/settings/route'
 import { Route as DashboardLayoutKeybindingsRouteImport } from './routes/dashboard/_layout/keybindings/route'
 import { Route as DashboardLayoutApiDocsRouteImport } from './routes/dashboard/_layout/api-docs/route'
@@ -58,6 +59,12 @@ const DashboardLayoutRoute = DashboardLayoutImport.update({
 const DashboardLayoutTableViewLayoutRoute =
   DashboardLayoutTableViewLayoutImport.update({
     id: '/_table-view-layout',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
+const DashboardLayoutSqlEditorRouteRoute =
+  DashboardLayoutSqlEditorRouteImport.update({
+    path: '/sql-editor',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -151,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutSettingsRouteImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/sql-editor': {
+      id: '/dashboard/_layout/sql-editor'
+      path: '/sql-editor'
+      fullPath: '/dashboard/sql-editor'
+      preLoaderRoute: typeof DashboardLayoutSqlEditorRouteImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/_table-view-layout': {
       id: '/dashboard/_layout/_table-view-layout'
       path: ''
@@ -186,6 +200,7 @@ export const routeTree = rootRoute.addChildren({
       DashboardLayoutApiDocsRouteRoute,
       DashboardLayoutKeybindingsRouteRoute,
       DashboardLayoutSettingsRouteRoute,
+      DashboardLayoutSqlEditorRouteRoute,
       DashboardLayoutTableViewLayoutRoute:
         DashboardLayoutTableViewLayoutRoute.addChildren({
           DashboardLayoutTableViewLayoutTableViewTableNameRouteRoute,
@@ -231,6 +246,7 @@ export const routeTree = rootRoute.addChildren({
         "/dashboard/_layout/api-docs",
         "/dashboard/_layout/keybindings",
         "/dashboard/_layout/settings",
+        "/dashboard/_layout/sql-editor",
         "/dashboard/_layout/_table-view-layout"
       ]
     },
@@ -244,6 +260,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/dashboard/_layout/settings": {
       "filePath": "dashboard/_layout/settings/route.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/sql-editor": {
+      "filePath": "dashboard/_layout/sql-editor/route.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/_table-view-layout": {

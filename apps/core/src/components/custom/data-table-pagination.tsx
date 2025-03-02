@@ -121,7 +121,7 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="bg-muted/50 ml-auto hidden h-8 lg:flex"
         >
           <Settings2 className="mr-2 h-4 w-4" />
           View

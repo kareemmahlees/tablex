@@ -37,6 +37,7 @@ import { useEditRowSheetState } from "@/state/sheetState"
 import { useTableState } from "@/state/tableState"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import TableActions from "./table-actions"
 
 interface DataTableProps {
@@ -92,7 +93,10 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleSheet}>
-      <TableActions table={table} connectionId={connectionId} />
+      {createPortal(
+        <TableActions table={table} connectionId={connectionId} />,
+        document.getElementById("table-view-layout")!
+      )}
       {isRowsLoading ? (
         <LoadingSpinner />
       ) : (
