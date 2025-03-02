@@ -12,20 +12,23 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { cn } from "@tablex/lib/utils"
-import { Link } from "@tanstack/react-router"
+import { FileRoutesByPath, Link } from "@tanstack/react-router"
 import {
   ArrowLeft,
   Info,
   Keyboard,
+  LucideIcon,
   Settings,
   StickyNote,
   Table2
 } from "lucide-react"
 
-const items = (connectionId: string) => [
+type Routes = FileRoutesByPath[keyof FileRoutesByPath]["fullPath"]
+
+const items: { title: string; url: Routes; icon: LucideIcon }[] = [
   {
     title: "Tables",
-    url: `/dashboard/connection/${connectionId}`,
+    url: "/dashboard/table-view/land",
     icon: Table2
   },
   {
@@ -35,17 +38,22 @@ const items = (connectionId: string) => [
   },
   {
     title: "API Docs",
-    url: `/dashboard/docs`,
+    url: `/dashboard/api-docs`,
     icon: StickyNote
   },
   {
     title: "Settings",
     url: `/dashboard/settings`,
     icon: Settings
+  },
+  {
+    title: "Testing",
+    url: "/dashboard/table-view/land",
+    icon: Settings
   }
 ]
 
-const AppSidebar = ({ connectionId }: { connectionId: string }) => {
+const AppSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader className="space-y-1.5">
@@ -53,11 +61,11 @@ const AppSidebar = ({ connectionId }: { connectionId: string }) => {
           to="/connections"
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
-            "hover:bg-muted-foreground/20 group -mb-2 h-6 w-fit p-2"
+            "group/arrow hover:bg-muted-foreground/20 group -mb-2 h-6 w-fit p-2"
           )}
         >
           <ArrowLeft
-            className="h-4 w-4 transition-transform hover:-translate-x-1"
+            className="h-4 w-4 transition-transform group-hover/arrow:-translate-x-1"
             color="gray"
           />
         </Link>
@@ -67,13 +75,13 @@ const AppSidebar = ({ connectionId }: { connectionId: string }) => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {items(connectionId).map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton className="lg:h-9" asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span className="lg:text-base">{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

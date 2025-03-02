@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import DataTable from "./-components/data-table"
 
 export const Route = createFileRoute(
-  "/dashboard/_layout/table-view/$tableName"
+  "/dashboard/_layout/_table-view-layout/table-view/$tableName"
 )({
   loader: ({ context: { queryClient } }) =>
     queryClient.ensureQueryData(getTablesQueryOptions),

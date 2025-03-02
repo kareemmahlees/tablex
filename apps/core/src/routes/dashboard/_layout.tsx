@@ -41,7 +41,6 @@ export const Route = createFileRoute("/dashboard/_layout")({
 })
 
 function DashboardLayout() {
-  const deps = Route.useLoaderDeps()
   const { data: tables } = useSuspenseQuery(getTablesQueryOptions)
   // const data = Route.useLoaderData()
   // const [tables, _] = useState<string[]>(data.tables)
@@ -58,7 +57,7 @@ function DashboardLayout() {
 
   return (
     <SidebarProvider>
-      <AppSidebar connectionId={deps.connectionId!} />
+      <AppSidebar />
       {/* {deps.tableName && <AddRowBtn tableName={deps.tableName} />} */}
       <main className="w-full">{tables.length > 0 && <Outlet />}</main>
       <PreferencesDialog />
