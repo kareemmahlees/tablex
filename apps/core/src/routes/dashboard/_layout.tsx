@@ -2,11 +2,9 @@ import { commands } from "@/bindings"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
 import PreferencesDialog from "@/components/dialogs/preferences/preferences-dilaog"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { getTablesQueryOptions } from "@/features/shared/queries"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
 import { unwrapResult } from "@/lib/utils"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { z } from "zod"
@@ -21,7 +19,7 @@ export const Route = createFileRoute("/dashboard/_layout")({
   loaderDeps: ({ search: { connectionId } }) => ({
     connectionId
   }),
-  loader: async ({ deps: { connectionId }, context: { queryClient } }) => {
+  loader: async ({ deps: { connectionId } }) => {
     let connName = ""
     if (connectionId) {
       const connectionDetailsResult =
@@ -33,7 +31,6 @@ export const Route = createFileRoute("/dashboard/_layout")({
       connName = "Temp Connection"
     }
 
-    queryClient.ensureQueryData(getTablesQueryOptions)
     return { connName }
   },
   onLeave: async () => unwrapResult(await commands.killMetax()),
@@ -41,7 +38,6 @@ export const Route = createFileRoute("/dashboard/_layout")({
 })
 
 function DashboardLayout() {
-  const { data: tables } = useSuspenseQuery(getTablesQueryOptions)
   // const data = Route.useLoaderData()
   // const [tables, _] = useState<string[]>(data.tables)
   const keybindingsManager = useKeybindings()
@@ -59,7 +55,9 @@ function DashboardLayout() {
     <SidebarProvider>
       <AppSidebar />
       {/* {deps.tableName && <AddRowBtn tableName={deps.tableName} />} */}
-      <main className="w-full">{tables.length > 0 && <Outlet />}</main>
+      <main className="w-full">
+        <Outlet />
+      </main>
       <PreferencesDialog />
       <MetaXDialog />
     </SidebarProvider>

@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/components/loading-spinner"
-import { getTablesQueryOptions } from "@/features/shared/queries"
+import { getTablesQueryOptions } from "@/features/table-view/queries"
 import { useGetTableColumns } from "@/hooks/table"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"
@@ -8,8 +8,9 @@ import DataTable from "./-components/data-table"
 export const Route = createFileRoute(
   "/dashboard/_layout/_table-view-layout/table-view/$tableName"
 )({
-  loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(getTablesQueryOptions),
+  loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
+  loader: ({ context: { queryClient }, deps: { connectionId } }) =>
+    queryClient.ensureQueryData(getTablesQueryOptions(connectionId!)),
   component: TableView
 })
 

@@ -11,20 +11,30 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { getTablesQueryOptions } from "@/features/shared/queries"
+import {
+  getConnectionDetailsQueryOptions,
+  getTablesQueryOptions
+} from "@/features/table-view/queries"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { Table2Icon } from "lucide-react"
 
-export const TableSelectionBreadCrumb = () => {
-  const { data: tables } = useSuspenseQuery(getTablesQueryOptions)
+export const TableSelectionBreadCrumb = ({
+  connectionId
+}: {
+  connectionId: string
+}) => {
+  const { data: tables } = useSuspenseQuery(getTablesQueryOptions(connectionId))
+  const { data: connectionDetails } = useSuspenseQuery(
+    getConnectionDetailsQueryOptions(connectionId)
+  )
   const navigate = useNavigate()
   const { tableName } = useParams({ strict: false })
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>Tables</BreadcrumbItem>
+        <BreadcrumbItem>{connectionDetails.connName}</BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <Select
@@ -33,6 +43,9 @@ export const TableSelectionBreadCrumb = () => {
                 to: "/dashboard/table-view/$tableName",
                 params: {
                   tableName: v
+                },
+                search: {
+                  connectionId
                 }
               })
             }
