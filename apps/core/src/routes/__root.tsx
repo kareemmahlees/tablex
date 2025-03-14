@@ -33,7 +33,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           />
           <Outlet />
           <Suspense>
-            <TanStackRouterDevtools position="bottom-right" />
+            <TanStackRouterDevtools
+              position="bottom-right"
+              toggleButtonProps={{
+                className: "mr-[70px]"
+              }}
+            />
             <ReactQueryDevtools buttonPosition="bottom-right" />
           </Suspense>
         </main>
