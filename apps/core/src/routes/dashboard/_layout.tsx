@@ -1,6 +1,5 @@
 import { commands } from "@/bindings"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
-import PreferencesDialog from "@/components/dialogs/preferences/preferences-dilaog"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { focusSearch } from "@/keybindings"
 import { useKeybindings } from "@/keybindings/manager"
@@ -58,7 +57,6 @@ function DashboardLayout() {
       <main className="w-full">
         <Outlet />
       </main>
-      <PreferencesDialog />
       <MetaXDialog />
     </SidebarProvider>
   )

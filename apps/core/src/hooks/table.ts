@@ -1,6 +1,6 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
+import { useSettings } from "@/features/settings/manager"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/_table-view-layout/table-view/$tableName/-components/columns"
-import { useSettings } from "@/settings/manager"
 import { useTableState } from "@/state/tableState"
 import { TableLocalStorage } from "@/types"
 import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"

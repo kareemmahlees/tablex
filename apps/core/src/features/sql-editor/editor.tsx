@@ -14,7 +14,7 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useSettings } from "@/settings/manager"
+import { useSettings } from "@/features/settings/manager"
 
 import CustomTooltip from "@/components/custom-tooltip"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"

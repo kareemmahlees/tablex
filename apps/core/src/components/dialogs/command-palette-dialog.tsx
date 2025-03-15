@@ -7,11 +7,7 @@ import {
   CommandItem
 } from "@/components/ui/command"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  useCommandPaletteState,
-  useMetaXState,
-  usePreferencesState
-} from "@/state/dialogState"
+import { useCommandPaletteState, useMetaXState } from "@/state/dialogState"
 import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
@@ -58,19 +54,13 @@ const CommandPalette = () => {
 export default CommandPalette
 
 const GeneralGroup = () => {
-  const { toggleDialog: togglePreferences } = usePreferencesState()
-  const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
+  const navigate = useNavigate()
 
   return (
     <CommandGroup heading="General">
-      <CommandItem
-        onSelect={() => {
-          toggleCommandPalette()
-          togglePreferences()
-        }}
-      >
+      <CommandItem onSelect={() => navigate({ to: "/dashboard/settings" })}>
         <Settings2 />
-        Preferences
+        Settings
       </CommandItem>
     </CommandGroup>
   )

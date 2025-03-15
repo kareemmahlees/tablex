@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { TabsContent } from "@/components/ui/tabs"
-import { useSettings } from "@/settings/manager"
+import { useSettings } from "@/features/settings/manager"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FileJson2 } from "lucide-react"
 import type { PropsWithChildren } from "react"
@@ -33,7 +33,7 @@ const formSchema = z.object({
   })
 })
 
-const SettingsTab = () => {
+export const PreferencesTab = () => {
   const settings = useSettings()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,7 +57,7 @@ const SettingsTab = () => {
   }
 
   return (
-    <TabsContent value="settings" className="h-full">
+    <TabsContent value="preferences" className="w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
@@ -147,8 +147,6 @@ const SettingsTab = () => {
     </TabsContent>
   )
 }
-
-export default SettingsTab
 
 type SettingsEntryProps = PropsWithChildren & {
   label: string
