@@ -11,11 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
+import { About } from "@/features/about/about"
 import { FileRoutesByPath, Link, useRouter } from "@tanstack/react-router"
 import {
   ArrowLeft,
   ArrowRight,
-  Info,
   Keyboard,
   LucideIcon,
   RotateCw,
@@ -113,10 +113,7 @@ const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton className="lg:h-9">
-          <Info />
-          <span className="lg:text-base">{"About"}</span>
-        </SidebarMenuButton>
+        <About />
       </SidebarFooter>
     </Sidebar>
   )
