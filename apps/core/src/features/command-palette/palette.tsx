@@ -1,4 +1,5 @@
 import { commands } from "@/bindings"
+import { Button } from "@/components/ui/button"
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,7 +8,6 @@ import {
   CommandItem
 } from "@/components/ui/command"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useCommandPaletteState, useMetaXState } from "@/state/dialogState"
 import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
@@ -19,7 +19,7 @@ import {
   Settings2,
   Terminal
 } from "lucide-react"
-import { Button } from "../ui/button"
+import { useCommandPaletteState } from "./state"
 
 const CommandPalette = () => {
   const { isOpen, toggleDialog } = useCommandPaletteState()
@@ -83,22 +83,26 @@ const ConnectionsGroup = () => {
 }
 
 const UtilitiesGroup = () => {
-  const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
-  const { toggleDialog: toggleMetaXDialog } = useMetaXState()
+  const { toggleDialog } = useCommandPaletteState()
   const navigate = useNavigate()
 
   return (
     <CommandGroup heading="Utilities">
       <CommandItem
         onSelect={() => {
-          toggleCommandPalette()
-          toggleMetaXDialog()
+          toggleDialog()
+          navigate({ to: "/dashboard/api-docs" })
         }}
       >
         <FileText className="h-4 w-4" />
         Show API Docs
       </CommandItem>
-      <CommandItem onSelect={() => navigate({ to: "/dashboard/sql-editor" })}>
+      <CommandItem
+        onSelect={() => {
+          toggleDialog()
+          navigate({ to: "/dashboard/sql-editor" })
+        }}
+      >
         <Terminal className="h-4 w-4" />
         SQL Editor
       </CommandItem>

@@ -1,4 +1,3 @@
-import CommandPalette from "@/components/dialogs/command-palette-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -12,6 +11,7 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar"
 import { About } from "@/features/about/about"
+import CommandPalette from "@/features/command-palette/palette"
 import { FileRoutesByPath, Link, useRouter } from "@tanstack/react-router"
 import {
   ArrowLeft,

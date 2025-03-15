@@ -1,12 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { usePreferencesState } from "@/state/dialogState"
-import hotkeys from "hotkeys-js"
 import { PreferencesTab } from "./tabs/preferences"
 
 export const Settings = () => {
-  const { isOpen, toggleDialog } = usePreferencesState()
-
-  hotkeys("ctrl+,,command+,", () => toggleDialog(!isOpen))
   return (
     <Tabs
       defaultValue="preferences"
