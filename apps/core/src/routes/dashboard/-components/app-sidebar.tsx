@@ -1,5 +1,5 @@
 import CommandPalette from "@/components/dialogs/command-palette-dialog"
-import { buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Sidebar,
   SidebarContent,
@@ -11,13 +11,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { cn } from "@tablex/lib/utils"
-import { FileRoutesByPath, Link } from "@tanstack/react-router"
+import { FileRoutesByPath, Link, useRouter } from "@tanstack/react-router"
 import {
   ArrowLeft,
+  ArrowRight,
   Info,
   Keyboard,
   LucideIcon,
+  RotateCw,
   Settings,
   StickyNote,
   Table2,
@@ -55,21 +56,42 @@ const items: { title: string; url: Routes; icon: LucideIcon }[] = [
 ]
 
 const AppSidebar = () => {
+  const router = useRouter()
   return (
     <Sidebar>
       <SidebarHeader className="space-y-1.5">
-        <Link
-          to="/connections"
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "sm" }),
-            "group/arrow hover:bg-muted-foreground/20 group -mb-2 h-6 w-fit p-2"
-          )}
-        >
-          <ArrowLeft
-            className="h-4 w-4 transition-transform group-hover/arrow:-translate-x-1"
-            color="gray"
-          />
-        </Link>
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={
+                "hover:bg-muted-foreground/20 -mb-2 h-6 w-fit px-1 py-2"
+              }
+              onClick={() => router.history.back()}
+            >
+              <ArrowLeft className="h-4 w-4" color="gray" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={
+                "hover:bg-muted-foreground/20 -mb-2 h-6 w-fit px-1 py-2"
+              }
+              onClick={() => router.history.forward()}
+            >
+              <ArrowRight className="h-4 w-4" color="gray" />
+            </Button>
+          </div>
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            className="hover:bg-muted-foreground/20 -mb-2 h-6 w-fit px-1 py-2"
+            onClick={() => window.location.reload()}
+          >
+            <RotateCw className="h-4 w-4" color="gray" />
+          </Button>
+        </div>
         <CommandPalette />
       </SidebarHeader>
       <SidebarContent>

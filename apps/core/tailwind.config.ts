@@ -7,11 +7,7 @@ import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette"
 
 const config: Config = {
   darkMode: ["selector"],
-  content: [
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}"
-  ],
+  content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
