@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/sidebar"
 import { About } from "@/features/about/about"
 import CommandPalette from "@/features/command-palette/palette"
-import { FileRoutesByPath, Link, useRouter } from "@tanstack/react-router"
+import {
+  FileRoutesByPath,
+  getRouteApi,
+  Link,
+  useRouter
+} from "@tanstack/react-router"
 import {
   ArrowLeft,
   ArrowRight,
@@ -57,6 +62,7 @@ const items: { title: string; url: Routes; icon: LucideIcon }[] = [
 
 const AppSidebar = () => {
   const router = useRouter()
+  const search = getRouteApi("/dashboard/_layout").useSearch()
   return (
     <Sidebar>
       <SidebarHeader className="space-y-1.5">
@@ -101,7 +107,10 @@ const AppSidebar = () => {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton className="lg:h-9" asChild>
-                    <Link to={item.url}>
+                    <Link
+                      to={item.url}
+                      search={{ connectionId: search.connectionId }}
+                    >
                       <item.icon />
                       <span className="lg:text-base">{item.title}</span>
                     </Link>
