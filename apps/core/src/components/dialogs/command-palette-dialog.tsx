@@ -10,8 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   useCommandPaletteState,
   useMetaXState,
-  usePreferencesState,
-  useSqlEditorState
+  usePreferencesState
 } from "@/state/dialogState"
 import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
@@ -96,7 +95,7 @@ const ConnectionsGroup = () => {
 const UtilitiesGroup = () => {
   const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
   const { toggleDialog: toggleMetaXDialog } = useMetaXState()
-  const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
+  const navigate = useNavigate()
 
   return (
     <CommandGroup heading="Utilities">
@@ -109,12 +108,7 @@ const UtilitiesGroup = () => {
         <FileText className="h-4 w-4" />
         Show API Docs
       </CommandItem>
-      <CommandItem
-        onSelect={() => {
-          toggleCommandPalette()
-          toggleSqlEditor()
-        }}
-      >
+      <CommandItem onSelect={() => navigate({ to: "/dashboard/sql-editor" })}>
         <Terminal className="h-4 w-4" />
         SQL Editor
       </CommandItem>

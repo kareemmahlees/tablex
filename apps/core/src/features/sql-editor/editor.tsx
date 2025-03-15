@@ -1,6 +1,5 @@
 import { commands, JsonValue } from "@/bindings"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -17,76 +16,64 @@ import {
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useSettings } from "@/settings/manager"
 
-import { useSqlEditorState } from "@/state/dialogState"
+import CustomTooltip from "@/components/custom-tooltip"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Editor, type OnMount } from "@monaco-editor/react"
-import { type Dispatch, type SetStateAction, useRef, useState } from "react"
-import CustomTooltip from "../custom-tooltip"
-import { ScrollArea, ScrollBar } from "../ui/scroll-area"
+import { useRef, useState, type Dispatch, type SetStateAction } from "react"
 
 type RawQueryResult = Awaited<ReturnType<typeof commands.executeRawQuery>>
-type MonakoEditor = Parameters<OnMount>[0]
+type MonacoEditor = Parameters<OnMount>[0]
 
-const SQLDialog = () => {
-  const { isOpen, toggleDialog } = useSqlEditorState()
+export const SQLEditor = () => {
   const [queryResult, setQueryResult] = useState<RawQueryResult>()
-  const [editorMounted, setEditorMounted] = useState(false)
-  const editorRef = useRef<MonakoEditor>()
+  const editorRef = useRef<MonacoEditor>()
   const { sqlEditor: editorSettings } = useSettings()
 
-  const handleEditorDidMount: OnMount = (editor) => {
-    setEditorMounted(true)
-    editorRef.current = editor
-  }
+  const handleEditorDidMount: OnMount = (editor) => (editorRef.current = editor)
 
   return (
-    <Dialog open={isOpen} onOpenChange={toggleDialog}>
-      <DialogContent className="h-5/6 w-5/6 max-w-full p-0">
-        <div className="flex flex-col overflow-auto">
-          <ResizablePanelGroup direction="vertical">
-            <ResizablePanel className="relative">
-              <Editor
-                defaultLanguage="sql"
-                theme="vs-dark"
-                options={{
-                  minimap: { enabled: editorSettings.minimap },
-                  scrollbar: editorSettings.scrollbar,
-                  padding: { top: 10 },
-                  lineNumbersMinChars: 3,
-                  lineDecorationsWidth: 3,
-                  fontSize: editorSettings.fontSize,
-                  overviewRulerBorder: false,
-                  hideCursorInOverviewRuler: true,
-                  cursorBlinking: editorSettings.cursorBlinking
-                }}
-                onMount={handleEditorDidMount}
-              />
-              {editorMounted && editorRef.current && (
-                <RunBtn
-                  editor={editorRef.current}
-                  setQueryResult={setQueryResult}
-                />
-              )}
-            </ResizablePanel>
-            <ResizableHandle />
-            <ResizablePanel>
-              {queryResult &&
-                (queryResult.status === "error" ? (
-                  <pre className="m-4">{`message: ${queryResult.error.message} details: ${queryResult.error.details}`}</pre>
-                ) : (
-                  <ResultTable result={queryResult.data} />
-                ))}
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <div className="flex h-full flex-col overflow-auto">
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel className="relative">
+          <Editor
+            defaultLanguage="sql"
+            theme="vs-dark"
+            options={{
+              minimap: { enabled: editorSettings.minimap },
+              scrollbar: editorSettings.scrollbar,
+              padding: { top: 10 },
+              lineNumbersMinChars: 3,
+              lineDecorationsWidth: 3,
+              fontSize: editorSettings.fontSize,
+              overviewRulerBorder: false,
+              hideCursorInOverviewRuler: true,
+              cursorBlinking: editorSettings.cursorBlinking
+            }}
+            onMount={handleEditorDidMount}
+          />
+          {editorRef.current && (
+            <RunBtn
+              editor={editorRef.current}
+              setQueryResult={setQueryResult}
+            />
+          )}
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel>
+          {queryResult &&
+            (queryResult.status === "error" ? (
+              <pre className="m-4">{`message: ${queryResult.error.message} details: ${queryResult.error.details}`}</pre>
+            ) : (
+              <ResultTable result={queryResult.data} />
+            ))}
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   )
 }
 
-export default SQLDialog
-
 type RunBtnProps = {
-  editor: MonakoEditor
+  editor: MonacoEditor
   setQueryResult: Dispatch<SetStateAction<RawQueryResult | undefined>>
 }
 
@@ -110,7 +97,6 @@ const RunBtn = ({ editor, setQueryResult }: RunBtnProps) => {
       <CustomTooltip side="top" content="Shift + Enter" asChild>
         <Button
           className="absolute bottom-0 right-0 m-3 origin-bottom-right"
-          variant={"secondary"}
           size={"sm"}
           onClick={runQuery}
         >
