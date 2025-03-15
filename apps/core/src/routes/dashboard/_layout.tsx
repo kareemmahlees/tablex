@@ -1,11 +1,8 @@
 import { commands } from "@/bindings"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { focusSearch } from "@/keybindings"
-import { useKeybindings } from "@/keybindings/manager"
 import { unwrapResult } from "@/lib/utils"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { useEffect } from "react"
 import { z } from "zod"
 import AppSidebar from "./-components/app-sidebar"
 
@@ -39,16 +36,6 @@ export const Route = createFileRoute("/dashboard/_layout")({
 function DashboardLayout() {
   // const data = Route.useLoaderData()
   // const [tables, _] = useState<string[]>(data.tables)
-  const keybindingsManager = useKeybindings()
-
-  useEffect(() => {
-    keybindingsManager.registerKeybindings([
-      {
-        command: "focusSearch",
-        handler: () => focusSearch()
-      }
-    ])
-  }, [keybindingsManager])
 
   return (
     <SidebarProvider>
