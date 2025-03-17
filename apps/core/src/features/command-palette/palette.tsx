@@ -1,4 +1,5 @@
 import { commands } from "@/bindings"
+import { Button } from "@/components/ui/button"
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,12 +8,7 @@ import {
   CommandItem
 } from "@/components/ui/command"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  useCommandPaletteState,
-  useMetaXState,
-  usePreferencesState,
-  useSqlEditorState
-} from "@/state/dialogState"
+import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
 import {
@@ -23,6 +19,7 @@ import {
   Settings2,
   Terminal
 } from "lucide-react"
+import { useCommandPaletteState } from "./state"
 
 const CommandPalette = () => {
   const { isOpen, toggleDialog } = useCommandPaletteState()
@@ -30,35 +27,40 @@ const CommandPalette = () => {
   hotkeys("ctrl+k,command+k", () => toggleDialog(!isOpen))
 
   return (
-    <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
-      <CommandInput placeholder="Type a command or search..." />
-      <CommandEmpty>No results found.</CommandEmpty>
-      <ScrollArea className="max-h-[300px] overflow-auto">
-        <GeneralGroup />
-        <ConnectionsGroup />
-        <UtilitiesGroup />
-        <ConfigurationGroup />
-      </ScrollArea>
-    </CommandDialog>
+    <>
+      <Button
+        onClick={() => toggleDialog(true)}
+        variant="outline"
+        className={cn(
+          "bg-muted/50 text-muted-foreground relative h-8 w-full justify-start rounded-[0.5rem] text-sm font-normal shadow-none"
+        )}
+      >
+        Search...
+      </Button>
+      <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandEmpty>No results found.</CommandEmpty>
+        <ScrollArea className="max-h-[300px] overflow-auto">
+          <GeneralGroup />
+          <ConnectionsGroup />
+          <UtilitiesGroup />
+          <ConfigurationGroup />
+        </ScrollArea>
+      </CommandDialog>
+    </>
   )
 }
 
 export default CommandPalette
 
 const GeneralGroup = () => {
-  const { toggleDialog: togglePreferences } = usePreferencesState()
-  const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
+  const navigate = useNavigate()
 
   return (
     <CommandGroup heading="General">
-      <CommandItem
-        onSelect={() => {
-          toggleCommandPalette()
-          togglePreferences()
-        }}
-      >
+      <CommandItem onSelect={() => navigate({ to: "/dashboard/settings" })}>
         <Settings2 />
-        Preferences
+        Settings
       </CommandItem>
     </CommandGroup>
   )
@@ -81,16 +83,15 @@ const ConnectionsGroup = () => {
 }
 
 const UtilitiesGroup = () => {
-  const { toggleDialog: toggleCommandPalette } = useCommandPaletteState()
-  const { toggleDialog: toggleMetaXDialog } = useMetaXState()
-  const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
+  const { toggleDialog } = useCommandPaletteState()
+  const navigate = useNavigate()
 
   return (
     <CommandGroup heading="Utilities">
       <CommandItem
         onSelect={() => {
-          toggleCommandPalette()
-          toggleMetaXDialog()
+          toggleDialog()
+          navigate({ to: "/dashboard/api-docs" })
         }}
       >
         <FileText className="h-4 w-4" />
@@ -98,8 +99,8 @@ const UtilitiesGroup = () => {
       </CommandItem>
       <CommandItem
         onSelect={() => {
-          toggleCommandPalette()
-          toggleSqlEditor()
+          toggleDialog()
+          navigate({ to: "/dashboard/sql-editor" })
         }}
       >
         <Terminal className="h-4 w-4" />

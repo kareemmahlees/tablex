@@ -110,6 +110,15 @@ pub async fn establish_connection(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn drop_connection(state: State<'_, Mutex<SharedState>>) -> Result<()> {
+    let mut state = state.lock().await;
+    state.cleanup().await;
+
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn kill_metax(_state: State<'_, Mutex<SharedState>>) -> Result<()> {
     #[cfg(feature = "metax")]
     {

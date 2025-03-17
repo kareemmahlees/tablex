@@ -1,76 +1,22 @@
-import SQLDialog from "@/components/dialogs/sql-dialog"
 import { Button } from "@/components/ui/button"
-import { useSqlEditorState } from "@/state/dialogState"
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { TableLocalStorage } from "@/types"
 import type { Table } from "@tanstack/react-table"
 import {
   ArrowLeft,
   ArrowRight,
   ChevronsLeft,
   ChevronsRight,
-  Settings2,
-  Terminal
+  Settings2
 } from "lucide-react"
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { useTableState } from "@/state/tableState"
-import { TableLocalStorage } from "@/types"
-import { useDebounceCallback, useLocalStorage } from "usehooks-ts"
-
-type TableActionsProps = {
-  table: Table<any>
-  connectionId?: string
-}
-
-const TableActions = ({ table, connectionId }: TableActionsProps) => {
-  const { toggleDialog: toggleSqlEditor } = useSqlEditorState()
-  const { tableName, setGlobalFilter } = useTableState()
-  const debounced = useDebounceCallback(
-    (filter: string) => setGlobalFilter(filter),
-    500
-  )
-  return (
-    <>
-      <div className="flex items-end justify-between p-4">
-        <div className="flex h-full flex-col items-start gap-y-3">
-          <h1 className="text-center text-xl font-bold lg:text-3xl">
-            {tableName}
-          </h1>
-          <Input
-            className="hidden min-w-[500px] placeholder:text-white/50 lg:block"
-            placeholder="Type something to filter..."
-            onChange={(value) => debounced(String(value.currentTarget.value))}
-          />
-        </div>
-        <div className="flex flex-col items-end gap-y-1 lg:gap-y-3">
-          <DataTablePagination table={table} connectionId={connectionId} />
-          <div className="flex items-center gap-x-3">
-            <DataTableViewOptions table={table} />
-            <Button
-              variant={"outline"}
-              size={"sm"}
-              onClick={() => toggleSqlEditor()}
-              className="hidden h-8 items-center gap-x-3 lg:flex"
-            >
-              <Terminal className="h-4 w-4" />
-              SQL
-            </Button>
-          </div>
-        </div>
-      </div>
-      <SQLDialog />
-    </>
-  )
-}
-
-export default TableActions
+import { useLocalStorage } from "usehooks-ts"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -175,7 +121,7 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="bg-muted/50 ml-auto hidden h-8 lg:flex"
         >
           <Settings2 className="mr-2 h-4 w-4" />
           View

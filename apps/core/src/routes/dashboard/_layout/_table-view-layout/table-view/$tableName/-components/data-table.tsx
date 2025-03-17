@@ -18,6 +18,7 @@ import {
 
 import { events, type ColumnProps } from "@/bindings"
 import { deleteRowsCmd } from "@/commands/row"
+import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import LoadingSpinner from "@/components/loading-spinner"
 import EditRowSheet from "@/components/sheets/edit-row-sheet"
 import {
@@ -29,13 +30,14 @@ import {
 } from "@/components/ui/context-menu"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Sheet } from "@/components/ui/sheet"
+import { useKeybindings } from "@/features/keybindings"
+import { copyRows } from "@/features/keybindings/action-utils"
 import { useSetupReactTable } from "@/hooks/table"
-import { useKeybindings } from "@/keybindings/manager"
-import { copyRows } from "@/keybindings/row"
 import { useEditRowSheetState } from "@/state/sheetState"
 import { useTableState } from "@/state/tableState"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import TableActions from "./table-actions"
 
 interface DataTableProps {
@@ -91,7 +93,10 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleSheet}>
-      <TableActions table={table} connectionId={connectionId} />
+      {createPortal(
+        <TableActions table={table} connectionId={connectionId} />,
+        document.getElementById("table-view-layout")!
+      )}
       {isRowsLoading ? (
         <LoadingSpinner />
       ) : (
@@ -168,6 +173,9 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
             </VirtualTable>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
+          <div className="px-4 pb-2">
+            <DataTablePagination table={table} connectionId={connectionId} />
+          </div>
         </ContextMenu>
       )}
       <EditRowSheet row={contextMenuRow} />

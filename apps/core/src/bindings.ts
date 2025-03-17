@@ -45,6 +45,14 @@ async establishConnection(connString: string, driver: Drivers) : Promise<Result<
     else return { status: "error", error: e  as any };
 }
 },
+async dropConnection() : Promise<Result<null, TxError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("drop_connection") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async connectionsExist() : Promise<Result<boolean, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("connections_exist") };

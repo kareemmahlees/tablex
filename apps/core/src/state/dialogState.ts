@@ -9,14 +9,11 @@ type DialogState = {
  * Because all dialogs' states are basically the same, this helper
  * creates a default state logic for all dialogs.
  */
-const createDialogState = () =>
+export const createDialogState = () =>
   create<DialogState>((set) => ({
     isOpen: false,
     toggleDialog: (open?: boolean) =>
       set((state) => ({ isOpen: open || !state.isOpen }))
   }))
 
-export const useCommandPaletteState = createDialogState()
 export const useMetaXState = createDialogState()
-export const useSqlEditorState = createDialogState()
-export const usePreferencesState = createDialogState()

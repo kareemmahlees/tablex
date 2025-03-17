@@ -69,10 +69,9 @@ export function customToast<T extends string>(
  * @param result Result of executing a Tauri command.
  * @returns The inner data of the `Ok`
  */
-export function unwrapResult<T>(result: Result<T>): false | T {
+export function unwrapResult<T>(result: Result<T>): T {
   if (result.status === "error") {
-    customToast(result)
-    return false
+    throw new Error(result.error.message)
   }
   return result.data
 }

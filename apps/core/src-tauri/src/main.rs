@@ -78,6 +78,7 @@ fn main() {
             create_connection_record,
             delete_connection_record,
             establish_connection,
+            drop_connection,
             connections_exist,
             get_connections,
             get_connection_details,

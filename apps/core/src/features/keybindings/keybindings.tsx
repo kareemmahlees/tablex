@@ -18,13 +18,12 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import { TabsContent } from "@/components/ui/tabs"
-import { useKeybindings, type EditedBinding } from "@/keybindings/manager"
+import { useKeybindings, type EditedBinding } from "@/features/keybindings"
 import { Edit2, FileJson2 } from "lucide-react"
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react"
 import { toast } from "sonner"
 
-const KeybindingsTab = () => {
+export const Keybindings = () => {
   const keybindings = useKeybindings()
   const [editedKeybindings, setEditKeybindings] = useState<EditedBinding[]>([])
 
@@ -40,7 +39,7 @@ const KeybindingsTab = () => {
   }
 
   return (
-    <TabsContent value="keybindings">
+    <section>
       <Table>
         <TableHeader className="font-bold">
           <TableRow>
@@ -84,11 +83,9 @@ const KeybindingsTab = () => {
           <FileJson2 className="h-4 w-4" />
         </Button>
       </div>
-    </TabsContent>
+    </section>
   )
 }
-
-export default KeybindingsTab
 
 type KeyRecorderProps = {
   binding: Keybinding

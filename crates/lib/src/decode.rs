@@ -147,8 +147,6 @@ pub fn to_data_type(v: AnyValueRef) -> DataType {
     let value = AnyValueRef::to_owned(&v);
     let column_type = value.decode::<&str>();
 
-    dbg!(&column_type);
-
     match column_type.to_uppercase().as_str() {
         "\"CHAR\"" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"
         | "LONGTEXT" | "ENUM" | "NAME" => DataType::Text,

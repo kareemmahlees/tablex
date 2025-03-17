@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { Separator } from "@/components/ui/separator"
-import { TabsContent } from "@/components/ui/tabs"
+import { SidebarMenuButton } from "@/components/ui/sidebar"
 import { useQuery } from "@tanstack/react-query"
 import { getVersion } from "@tauri-apps/api/app"
 import { ask } from "@tauri-apps/plugin-dialog"
 import { check } from "@tauri-apps/plugin-updater"
+import { Info } from "lucide-react"
 import { useLayoutEffect, useState } from "react"
 
-const GeneralTab = () => {
+export const About = () => {
   const [appVersion, setAppVersion] = useState<string>()
   const { isLoading, refetch: checkForUpdate } = useCheckForUpdate()
 
@@ -17,33 +19,40 @@ const GeneralTab = () => {
   })
 
   return (
-    <TabsContent value="general" className="flex flex-col items-start gap-y-3">
-      <h3 className="font-bold">App</h3>
-      <Separator className="bg-zinc-700" />
-      <div className="flex w-full items-center justify-between">
-        <div>
-          <p>Current Version: {appVersion}</p>
-          <Button
-            variant={"link"}
+    <Dialog>
+      <DialogTrigger asChild>
+        <SidebarMenuButton className="lg:h-9">
+          <Info />
+          <span className="lg:text-base">{"About"}</span>
+        </SidebarMenuButton>
+      </DialogTrigger>
+
+      <DialogContent className="flex flex-col items-start gap-y-3">
+        <h3 className="font-bold">TableX</h3>
+        <Separator className="bg-zinc-700" />
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <p>Current Version: {appVersion}</p>
+            <Button
+              variant={"link"}
+              size={"sm"}
+              className="text-muted-foreground m-0 p-0"
+            >
+              read the changelog
+            </Button>
+          </div>
+          <LoadingButton
             size={"sm"}
-            className="text-muted-foreground m-0 p-0"
+            loading={isLoading}
+            onClick={async () => await checkForUpdate()}
           >
-            read the changelog
-          </Button>
+            Check for updates
+          </LoadingButton>
         </div>
-        <LoadingButton
-          size={"sm"}
-          loading={isLoading}
-          onClick={async () => await checkForUpdate()}
-        >
-          Check for updates
-        </LoadingButton>
-      </div>
-    </TabsContent>
+      </DialogContent>
+    </Dialog>
   )
 }
-
-export default GeneralTab
 
 const useCheckForUpdate = () => {
   return useQuery({

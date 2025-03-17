@@ -1,5 +1,7 @@
 import { Toaster } from "@/components/ui/sonner"
-import { createRootRoute, Outlet } from "@tanstack/react-router"
+import type { QueryClient } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
 import React, { Suspense } from "react"
 
 const TanStackRouterDevtools =
@@ -12,27 +14,35 @@ const TanStackRouterDevtools =
         }))
       )
 
-export const Route = createRootRoute({
-  component: () => {
-    return (
-      <main className="dark h-full w-full">
-        <Toaster
-          closeButton
-          richColors
-          position="top-right"
-          pauseWhenPageIsHidden
-          toastOptions={{
-            classNames: {
-              toast:
-                "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:pointer-events-auto "
-            }
-          }}
-        />
-        <Outlet />
-        <Suspense>
-          <TanStackRouterDevtools position="bottom-right" />
-        </Suspense>
-      </main>
-    )
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    component: () => {
+      return (
+        <main className="dark h-full w-full">
+          <Toaster
+            closeButton
+            richColors
+            position="top-right"
+            pauseWhenPageIsHidden
+            toastOptions={{
+              classNames: {
+                toast:
+                  "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:pointer-events-auto "
+              }
+            }}
+          />
+          <Outlet />
+          <Suspense>
+            <TanStackRouterDevtools
+              position="bottom-right"
+              toggleButtonProps={{
+                className: "mr-[70px]"
+              }}
+            />
+            <ReactQueryDevtools buttonPosition="bottom-right" />
+          </Suspense>
+        </main>
+      )
+    }
   }
-})
+)
