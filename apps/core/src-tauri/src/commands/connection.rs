@@ -1,4 +1,4 @@
-use crate::{database::DatabaseConnection, state::SharedState};
+use crate::state::SharedState;
 use sqlx::{AnyConnection, Connection};
 use std::path::PathBuf;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime, State};
@@ -7,7 +7,7 @@ use tauri_plugin_shell::process::CommandChild;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
 use tauri_specta::Event;
-use tx_handlers::{Handler, MySQLHandler, PostgresHandler, SQLiteHandler};
+use tx_handlers::{DatabaseConnection, Handler, MySQLHandler, PostgresHandler, SQLiteHandler};
 use tx_lib::{
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},

@@ -23,16 +23,12 @@ impl Handler for MySQLHandler {}
 
 #[async_trait]
 impl TableHandler for MySQLHandler {
-    async fn get_tables(
-        &self,
-        pool: &AnyPool,
-        conn: &DatabaseConnection,
-    ) -> Result<Vec<QueryResult>> {
-        let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
-        let query_str = "show tables;";
+    async fn get_tables(&self, pool: &AnyPool, conn: &DatabaseConnection) -> Result<Vec<AnyRow>> {
+        // let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
+        // let query_str = "show tables;";
 
-        let res = sqlx::query(query_str).fetch_all(pool).await?;
-        Ok(res)
+        // let res = sqlx::query(query_str).fetch_all(pool).await?;
+        Ok(vec![])
     }
     async fn get_columns_props(
         &self,

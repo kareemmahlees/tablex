@@ -99,17 +99,3 @@ pub(crate) enum QueryResultRow {
     SqlxPostgres(PgRow),
     SqlxSqlite(SqliteRow),
 }
-
-impl QueryResultRow {
-    pub fn try_get<'r, T, I>(&'r self, index: I) -> Result<T, sqlx::Error>
-    where
-        I: ColumnIndex<Self>,
-        T: Decode<'r, Self::Database> + Type<Self::Database>,
-    {
-        match self {
-            QueryResultRow::SqlxMySql(row) => row.try_get(index),
-            QueryResultRow::SqlxPostgres(row) => todo!(),
-            QueryResultRow::SqlxSqlite(row) => todo!(),
-        }
-    }
-}

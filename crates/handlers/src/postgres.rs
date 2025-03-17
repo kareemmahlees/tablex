@@ -1,4 +1,7 @@
-use crate::handler::{Handler, RowHandler, TableHandler};
+use crate::{
+    handler::{Handler, RowHandler, TableHandler},
+    DatabaseConnection,
+};
 use async_trait::async_trait;
 use serde_json::Value::{self as JsonValue};
 use sqlx::{any::AnyRow, AnyPool};
@@ -20,7 +23,7 @@ impl Handler for PostgresHandler {}
 
 #[async_trait]
 impl TableHandler for PostgresHandler {
-    async fn get_tables(&self, pool: &AnyPool) -> Result<Vec<AnyRow>> {
+    async fn get_tables(&self, pool: &AnyPool, conn: &DatabaseConnection) -> Result<Vec<AnyRow>> {
         let _ = pool.acquire().await; // This line is only added due to weird behavior when running the CLI
         let query_str = "SELECT \"table_name\"
             FROM information_schema.tables
