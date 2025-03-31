@@ -1,26 +1,26 @@
 use crate::state::SharedState;
 use serde_json::{Map, Value};
-use sqlx::Row;
 use tauri::{async_runtime::Mutex, State};
-use tx_lib::{types::ColumnProps, Result};
+use tx_handlers::ColumnInfo;
+use tx_lib::{
+    types::{self},
+    Result,
+};
 
 #[tauri::command]
 #[specta::specta]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
-    let tables = handler.get_tables(pool, &state.conn).await?;
+    let conn = &state.conn;
+    let tables: Vec<String> = conn
+        .discover()
+        .await
+        .tables
+        .iter()
+        .map(|t| t.name.clone())
+        .collect();
 
-    if tables.is_empty() {
-        return Ok(vec![]);
-    }
-
-    let mut result: Vec<String> = Default::default();
-    for row in tables.iter() {
-        result.push(row.try_get::<String, usize>(0).unwrap())
-    }
-    Ok(result)
+    Ok(tables)
 }
 
 #[tauri::command]
@@ -28,13 +28,13 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
 pub async fn get_columns_props(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
-) -> Result<Vec<ColumnProps>> {
+) -> Result<Vec<ColumnInfo>> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
-    let cols_defs = handler.get_columns_props(pool, table_name).await?;
+    let conn = &state.conn;
+    let tables = conn.discover().await.tables;
+    let cols = tables.iter().find(|t| t.name == table_name).unwrap();
 
-    Ok(cols_defs)
+    Ok(cols.columns.clone())
 }
 
 #[tauri::command]
@@ -42,12 +42,11 @@ pub async fn get_columns_props(
 pub async fn execute_raw_query(
     state: State<'_, Mutex<SharedState>>,
     query: String,
-) -> Result<Vec<Map<String, Value>>> {
+) -> Result<Map<String, Value>> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    let conn = &state.conn;
 
-    let result = handler.execute_raw_query(pool, query).await?;
+    // let result = conn.fetch_all(query).await?;
 
-    Ok(result)
+    Ok(Map::default())
 }

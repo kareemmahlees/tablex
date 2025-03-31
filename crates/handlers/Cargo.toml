@@ -15,7 +15,15 @@ edition.workspace = true
 tokio = { workspace = true }
 sqlx = { workspace = true }
 serde_json = { workspace = true }
+specta = { workspace = true }
+serde = { workspace = true }
 async-trait = { workspace = true }
 log = { workspace = true }
 tx_lib = { path = "../lib" }
 home = "0.5.9"
+sea-schema = { version = "0.16.0", features = [
+    "sqlx-all",
+    "with-serde",
+    "discovery",
+    "runtime-tokio-native-tls",
+], default-features = false }

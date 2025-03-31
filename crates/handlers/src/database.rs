@@ -1,15 +1,19 @@
+use crate::types::{QueryResult, Schema};
+use sea_schema::{
+    mysql::discovery::SchemaDiscovery as MySQLSchemaDiscovery,
+    postgres::discovery::SchemaDiscovery as PostgresSchemaDiscovery,
+    sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
+};
 use sqlx::{
-    mysql::{MySqlConnectOptions, MySqlPool, MySqlRow},
-    postgres::{PgConnectOptions, PgPool, PgRow},
-    sqlite::{SqliteConnectOptions, SqlitePool, SqliteRow},
-    ColumnIndex, Decode, Row,
+    mysql::{MySqlConnectOptions, MySqlPool},
+    postgres::{PgConnectOptions, PgPool},
+    sqlite::{SqliteConnectOptions, SqlitePool},
 };
 use tx_lib::TxError;
 
-#[derive(Debug)]
 pub enum DatabaseConnection {
-    Sqlite(SqlitePool),
-    Postgres(PgPool),
+    Sqlite(SqlitePool, SqliteSchemaDiscovery),
+    Postgres(PgPool, PostgresSchemaDiscovery),
     Mysql(MySqlPool),
 }
 
@@ -17,17 +21,20 @@ impl DatabaseConnection {
     pub async fn connect(url: &str) -> Result<Self, TxError> {
         // TODO: use match statement once if_let_guard feature is stable.
         if let Ok(opts) = url.parse::<SqliteConnectOptions>() {
-            return Ok(DatabaseConnection::Sqlite(
-                SqlitePool::connect_with(opts).await?, // SqliteConnection::connect_with(&opts).await?,
-            ));
+            let pool = SqlitePool::connect_with(opts).await?;
+            Ok(DatabaseConnection::Sqlite(
+                pool.clone(),
+                SqliteSchemaDiscovery::new(pool),
+            ))
         } else if let Ok(opts) = url.parse::<PgConnectOptions>() {
+            let pool = PgPool::connect_with(opts).await?;
             return Ok(DatabaseConnection::Postgres(
-                PgPool::connect_with(opts).await?,
+                pool.clone(),
+                PostgresSchemaDiscovery::new(pool, "public"),
             ));
         } else if let Ok(opts) = url.parse::<MySqlConnectOptions>() {
-            return Ok(DatabaseConnection::Mysql(
-                MySqlPool::connect_with(opts).await?,
-            ));
+            let pool = MySqlPool::connect_with(opts).await?;
+            return Ok(DatabaseConnection::Mysql(pool.clone()));
         } else {
             return Err(TxError::UnsupportedDriver(String::default()));
         }
@@ -35,14 +42,16 @@ impl DatabaseConnection {
 
     pub async fn fetch_all(&self, stmt: &str) -> Result<Vec<QueryResult>, TxError> {
         match self {
-            DatabaseConnection::Sqlite(conn) => match sqlx::query(stmt).fetch_all(conn).await {
+            DatabaseConnection::Sqlite(conn, _) => match sqlx::query(stmt).fetch_all(conn).await {
                 Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
                 Err(err) => Err(err.into()),
             },
-            DatabaseConnection::Postgres(conn) => match sqlx::query(stmt).fetch_all(conn).await {
-                Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                Err(err) => Err(err.into()),
-            },
+            DatabaseConnection::Postgres(conn, _) => {
+                match sqlx::query(stmt).fetch_all(conn).await {
+                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
+                    Err(err) => Err(err.into()),
+                }
+            }
             DatabaseConnection::Mysql(conn) => match sqlx::query(stmt).fetch_all(conn).await {
                 Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
                 Err(err) => Err(err.into()),
@@ -51,51 +60,36 @@ impl DatabaseConnection {
     }
     pub async fn fetch_one(&self, stmt: &str) -> Result<QueryResult, TxError> {
         match self {
-            DatabaseConnection::Sqlite(conn) => match sqlx::query(stmt).fetch_one(conn).await {
+            DatabaseConnection::Sqlite(conn, _) => match sqlx::query(stmt).fetch_one(conn).await {
                 Ok(row) => Ok(row.into()),
                 Err(err) => Err(err.into()),
             },
-            DatabaseConnection::Postgres(conn) => match sqlx::query(stmt).fetch_one(conn).await {
-                Ok(row) => Ok(row.into()),
-                Err(err) => Err(err.into()),
-            },
+            DatabaseConnection::Postgres(conn, _) => {
+                match sqlx::query(stmt).fetch_one(conn).await {
+                    Ok(row) => Ok(row.into()),
+                    Err(err) => Err(err.into()),
+                }
+            }
             DatabaseConnection::Mysql(conn) => match sqlx::query(stmt).fetch_one(conn).await {
                 Ok(row) => Ok(row.into()),
                 Err(err) => Err(err.into()),
             },
         }
     }
-}
 
-pub struct QueryResult {
-    pub(crate) row: QueryResultRow,
-}
-
-impl From<MySqlRow> for QueryResult {
-    fn from(row: MySqlRow) -> QueryResult {
-        QueryResult {
-            row: QueryResultRow::SqlxMySql(row),
+    pub async fn discover(&self) -> Schema {
+        match self {
+            DatabaseConnection::Sqlite(_, discoverer) => {
+                discoverer.discover().await.unwrap().into()
+            }
+            DatabaseConnection::Postgres(_, discoverer) => {
+                discoverer.discover().await.unwrap().into()
+            }
+            DatabaseConnection::Mysql(pool) => MySQLSchemaDiscovery::new(pool.clone(), "public")
+                .discover()
+                .await
+                .unwrap()
+                .into(),
         }
     }
-}
-impl From<PgRow> for QueryResult {
-    fn from(row: PgRow) -> QueryResult {
-        QueryResult {
-            row: QueryResultRow::SqlxPostgres(row),
-        }
-    }
-}
-impl From<SqliteRow> for QueryResult {
-    fn from(row: SqliteRow) -> QueryResult {
-        QueryResult {
-            row: QueryResultRow::SqlxSqlite(row),
-        }
-    }
-}
-
-#[allow(clippy::enum_variant_names)]
-pub(crate) enum QueryResultRow {
-    SqlxMySql(MySqlRow),
-    SqlxPostgres(PgRow),
-    SqlxSqlite(SqliteRow),
 }

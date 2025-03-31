@@ -35,8 +35,8 @@ pub type ConnectionsFileSchema = HashMap<String, ConnConfig>;
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PaginatedRows {
-    data: Vec<JsonMap<String, JsonValue>>,
-    page_count: u32,
+    pub data: Vec<JsonMap<String, JsonValue>>,
+    pub page_count: u32,
 }
 
 impl PaginatedRows {

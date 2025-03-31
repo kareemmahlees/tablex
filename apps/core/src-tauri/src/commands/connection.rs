@@ -81,20 +81,11 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    let pool = tx_handlers::establish_connection(&conn_string, &driver).await?;
     let conn = DatabaseConnection::connect(&conn_string).await?;
-
-    let handler: Box<dyn Handler> = match driver {
-        Drivers::SQLite => SQLiteHandler::new(),
-        Drivers::PostgreSQL => PostgresHandler::new(),
-        Drivers::MySQL => MySQLHandler::new(),
-    };
 
     #[allow(unused_mut)]
     let mut state = SharedState::new(
         conn,
-        handler,
-        pool,
         #[cfg(feature = "metax")]
         None,
     );

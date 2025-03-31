@@ -23,8 +23,7 @@ pub enum DataType {
     DateTime,
     Time,
     Json,
-    Unsupported,
-    Null,
+    Binary,
 }
 
 /// Utility to decode *most* of db types into serializable rust types.
@@ -141,14 +140,14 @@ pub fn to_json(v: AnyValueRef) -> Result<JsonValue> {
 /// consumed by the fronted.
 pub fn to_data_type(v: AnyValueRef) -> DataType {
     if v.is_null() {
-        return DataType::Null;
+        return DataType::Binary;
     }
 
     // let value = AnyValueRef::to_owned(&v);
     // let column_type = value.decode::<&str>();
 
     // dbg!(&column_type);
-    DataType::Unsupported
+    DataType::Binary
 
     // match column_type.to_uppercase().as_str() {
     //     "\"CHAR\"" | "VARCHAR" | "CHARACTER VARYING" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT"

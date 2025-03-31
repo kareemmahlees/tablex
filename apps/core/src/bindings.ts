@@ -117,7 +117,7 @@ async getTables() : Promise<Result<string[], TxError>> {
     else return { status: "error", error: e  as any };
 }
 },
-async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], TxError>> {
+async getColumnsProps(tableName: string) : Promise<Result<ColumnInfo[], TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_columns_props", { tableName }) };
 } catch (e) {
@@ -125,7 +125,7 @@ async getColumnsProps(tableName: string) : Promise<Result<ColumnProps[], TxError
     else return { status: "error", error: e  as any };
 }
 },
-async executeRawQuery(query: string) : Promise<Result<{ [key in string]: JsonValue }[], TxError>> {
+async executeRawQuery(query: string) : Promise<Result<{ [key in string]: JsonValue }, TxError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("execute_raw_query", { query }) };
 } catch (e) {
@@ -193,7 +193,7 @@ export const SETTINGS_FILE_NAME = "settings.json" as const;
 
 /** user-defined types **/
 
-export type ColumnProps = { columnName: string; type: DataType; isNullable: boolean; defaultValue: JsonValue; isPK: boolean; hasFkRelations: boolean; isAutoIncrement: boolean }
+export type ColumnInfo = { name: string; nullable: boolean; pk: boolean; type: CustomColumnType }
 export type ConfigFile = "settings" | "keybindings" | "logs"
 /**
  * Connection Config Stored inside `connections.json` file.
@@ -204,10 +204,7 @@ export type ConnectionsChanged = null
  * Behavior of the cursor blinking style.
  */
 export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "phase"
-/**
- * Representation for database columns data types.
- */
-export type DataType = "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "time" | "json" | "unsupported" | "null"
+export type CustomColumnType = "string" | "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "time" | "year" | "json" | "binary" | "custom"
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
  */

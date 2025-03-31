@@ -13,12 +13,14 @@ mod handler;
 mod mysql;
 mod postgres;
 mod sqlite;
+mod types;
 
-pub use database::{DatabaseConnection, QueryResult};
+pub use database::DatabaseConnection;
 pub use handler::{Handler, RowHandler, TableHandler};
 pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
 pub use sqlite::SQLiteHandler;
+pub use types::{ColumnInfo, QueryResult};
 
 /// Replaces homedir-relative paths `~` with the users home dir.
 fn expand_conn_string(conn_string: &str) -> Result<String> {

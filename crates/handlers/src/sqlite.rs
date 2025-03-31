@@ -1,14 +1,5 @@
-use crate::{
-    handler::{Handler, RowHandler, TableHandler},
-    DatabaseConnection,
-};
-use async_trait::async_trait;
-use serde_json::Value::{self as JsonValue};
-use sqlx::{any::AnyRow, AnyPool};
-use tx_lib::{
-    types::{ColumnProps, FKRows, FkRelation},
-    Result,
-};
+use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo};
+use sea_schema::sea_query::ColumnType as SeaColumnType;
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -19,86 +10,76 @@ impl SQLiteHandler {
     }
 }
 
-impl Handler for SQLiteHandler {}
-
-#[async_trait]
-impl TableHandler for SQLiteHandler {
-    async fn get_tables(&self, pool: &AnyPool, conn: &DatabaseConnection) -> Result<Vec<AnyRow>> {
-        let query_str = "SELECT name
-            FROM sqlite_schema
-            WHERE type ='table' 
-            AND name NOT LIKE 'sqlite_%';";
-
-        let res = sqlx::query(query_str).fetch_all(pool).await?;
-
-        Ok(res)
-    }
-
-    async fn get_columns_props(
-        &self,
-        pool: &AnyPool,
-        table_name: String,
-    ) -> Result<Vec<ColumnProps>> {
-        let query_str = "
-            SELECT ti.name AS column_name,
-                    ti.type AS data_type,
-                    CASE WHEN ti.\"notnull\" = 1
-                        THEN 0
-                        ELSE 1
-                        END AS is_nullable,
-                    ti.dflt_value AS default_value,
-                    ti.pk AS is_pk,
-            CASE WHEN ti.name in (SELECt \"from\" FROM PRAGMA_FOREIGN_KEY_LIST($1) WHERE \"from\" = ti.name)
-                THEN 1
-                ELSE 0
-                END AS has_fk_relations
-            FROM PRAGMA_TABLE_INFO($1) as ti;
-            ";
-
-        let result = sqlx::query_as::<_, ColumnProps>(query_str)
-            .bind(&table_name)
-            .fetch_all(pool)
-            .await?;
-
-        Ok(result)
+impl From<sea_schema::sqlite::def::Schema> for Schema {
+    fn from(value: sea_schema::sqlite::def::Schema) -> Self {
+        Self {
+            tables: value.tables.iter().map(|t| t.into()).collect(),
+        }
     }
 }
 
-#[async_trait]
-impl RowHandler for SQLiteHandler {
-    async fn fk_relations(
-        &self,
-        pool: &AnyPool,
-        table_name: String,
-        column_name: String,
-        cell_value: JsonValue,
-    ) -> Result<Vec<FKRows>> {
-        let query_str =
-            "SELECT \"table\",\"to\" FROM pragma_foreign_key_list($1) WHERE \"from\" = $2;";
-
-        let fk_relations = sqlx::query_as::<_, FkRelation>(query_str)
-            .bind(&table_name)
-            .bind(&column_name)
-            .fetch_all(pool)
-            .await?;
-
-        let mut result = Vec::new();
-
-        for relation in fk_relations.iter() {
-            let query_str = format!(
-                "SELECT * from {table_name} where {to} = {column_value};",
-                table_name = relation.table,
-                to = relation.to,
-                column_value = cell_value,
-            );
-
-            let rows = sqlx::query(&query_str).fetch_all(pool).await?;
-
-            let decoded_row_data = tx_lib::decode::decode_raw_rows(rows)?;
-
-            result.push(FKRows::new(relation.table.clone(), decoded_row_data));
+impl From<&sea_schema::sqlite::def::TableDef> for TableInfo {
+    fn from(value: &sea_schema::sqlite::def::TableDef) -> Self {
+        Self {
+            name: value.name.clone(),
+            columns: value
+                .columns
+                .iter()
+                .map(|c| ColumnInfo {
+                    name: c.name.clone(),
+                    nullable: !c.not_null,
+                    pk: c.primary_key,
+                    r#type: c.r#type.clone().into(),
+                })
+                .collect(),
         }
+    }
+}
 
-        Ok(result)
+impl From<SeaColumnType> for CustomColumnType {
+    fn from(value: SeaColumnType) -> Self {
+        match value {
+            SeaColumnType::Char(_) | SeaColumnType::String(_) => CustomColumnType::String,
+            SeaColumnType::Text => CustomColumnType::Text,
+            SeaColumnType::Blob
+            | SeaColumnType::JsonBinary
+            | SeaColumnType::VarBit(_)
+            | SeaColumnType::Bit(_)
+            | SeaColumnType::VarBinary(_)
+            | SeaColumnType::Binary(_) => CustomColumnType::Binary,
+            SeaColumnType::TinyInteger
+            | SeaColumnType::SmallInteger
+            | SeaColumnType::Integer
+            | SeaColumnType::Money(_)
+            | SeaColumnType::BigInteger => CustomColumnType::Integer,
+            SeaColumnType::TinyUnsigned
+            | SeaColumnType::SmallUnsigned
+            | SeaColumnType::Unsigned
+            | SeaColumnType::BigUnsigned => CustomColumnType::PositiveInteger,
+            SeaColumnType::Float | SeaColumnType::Double | SeaColumnType::Decimal(_) => {
+                CustomColumnType::Float
+            }
+            SeaColumnType::DateTime
+            | SeaColumnType::Timestamp
+            | SeaColumnType::TimestampWithTimeZone => CustomColumnType::DateTime,
+            SeaColumnType::Time => CustomColumnType::Time,
+            SeaColumnType::Date => CustomColumnType::Date,
+            SeaColumnType::Year => CustomColumnType::Year,
+            SeaColumnType::Boolean => CustomColumnType::Boolean,
+            SeaColumnType::Json => CustomColumnType::Json,
+            SeaColumnType::Uuid => CustomColumnType::Uuid,
+            SeaColumnType::Custom(_) => CustomColumnType::Custom,
+            SeaColumnType::Enum {
+                name: _,
+                variants: _,
+            } => todo!(),
+            SeaColumnType::Array(_column_type) => todo!(),
+            SeaColumnType::Vector(_) => todo!(),
+            SeaColumnType::Cidr => todo!(),
+            SeaColumnType::Inet => todo!(),
+            SeaColumnType::MacAddr => todo!(),
+            SeaColumnType::LTree => todo!(),
+            _ => todo!(),
+        }
     }
 }

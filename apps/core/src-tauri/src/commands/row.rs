@@ -19,12 +19,15 @@ pub async fn get_paginated_rows(
     page_size: u32,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    // let pool = &state.pool;
+    // let handler = &state.handler;
 
-    handler
-        .get_paginated_rows(pool, table_name, page_index, page_size)
-        .await
+    // handler
+    //     .get_paginated_rows(pool, table_name, page_index, page_size)
+    //     .await
+    Ok(PaginatedRows {
+        ..Default::default()
+    })
 }
 
 #[tauri::command]
@@ -37,8 +40,8 @@ pub async fn delete_rows(
     table_name: String,
 ) -> Result<String> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    // let pool = &state.pool;
+    // let handler = &state.handler;
 
     let mut params: String = Default::default();
     for val in row_pk_values.iter() {
@@ -51,14 +54,15 @@ pub async fn delete_rows(
     }
     params.pop(); // to remove the last trailing comma
 
-    let result = handler
-        .delete_rows(pool, pk_col_name, table_name, params)
-        .await;
-    if result.is_ok() {
-        TableContentsChanged.emit(&app).unwrap();
-        log::debug!("Event emitted: {:?}", TableContentsChanged);
-    }
-    result
+    // let result = handler
+    //     .delete_rows(pool, pk_col_name, table_name, params)
+    //     .await;
+    // if result.is_ok() {
+    //     TableContentsChanged.emit(&app).unwrap();
+    //     log::debug!("Event emitted: {:?}", TableContentsChanged);
+    // }
+    // result
+    Ok(String::default())
 }
 
 #[tauri::command]
@@ -70,8 +74,8 @@ pub async fn create_row(
     data: HashMap<String, JsonValue>,
 ) -> Result<String> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    // let pool = &state.pool;
+    // let handler = &state.handler;
 
     let columns = data
         .keys()
@@ -97,12 +101,13 @@ pub async fn create_row(
         .join(",")
         .to_string();
 
-    let result = handler.create_row(pool, table_name, columns, values).await;
-    if result.is_ok() {
-        TableContentsChanged.emit(&app).unwrap();
-        log::debug!("Event emitted: {:?}", TableContentsChanged);
-    }
-    result
+    // let result = handler.create_row(pool, table_name, columns, values).await;
+    // if result.is_ok() {
+    //     TableContentsChanged.emit(&app).unwrap();
+    //     log::debug!("Event emitted: {:?}", TableContentsChanged);
+    // }
+    // result
+    Ok(String::default())
 }
 
 #[tauri::command]
@@ -116,8 +121,8 @@ pub async fn update_row(
     data: Map<String, JsonValue>,
 ) -> Result<String> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    // let pool = &state.pool;
+    // let handler = &state.handler;
 
     if data.is_empty() {
         return Ok(String::new());
@@ -128,14 +133,15 @@ pub async fn update_row(
     }
     set_condition.pop(); // to remove the trailing comma
 
-    let result = handler
-        .update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
-        .await;
-    if result.is_ok() {
-        TableContentsChanged.emit(&app).unwrap();
-        log::debug!("Event emitted: {:?}", TableContentsChanged);
-    }
-    result
+    // let result = handler
+    //     .update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
+    //     .await;
+    // if result.is_ok() {
+    //     TableContentsChanged.emit(&app).unwrap();
+    //     log::debug!("Event emitted: {:?}", TableContentsChanged);
+    // }
+    // result
+    Ok(String::default())
 }
 
 #[tauri::command]
@@ -147,10 +153,11 @@ pub async fn get_fk_relations(
     cell_value: JsonValue,
 ) -> Result<Vec<FKRows>> {
     let state = state.lock().await;
-    let pool = &state.pool;
-    let handler = &state.handler;
+    // let pool = &state.pool;
+    // let handler = &state.handler;
 
-    handler
-        .fk_relations(pool, table_name, column_name, cell_value)
-        .await
+    // handler
+    //     .fk_relations(pool, table_name, column_name, cell_value)
+    //     .await
+    Ok(vec![])
 }

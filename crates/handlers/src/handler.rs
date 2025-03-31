@@ -9,7 +9,7 @@ use tx_lib::{
     Result,
 };
 
-use crate::{database::DatabaseConnection, QueryResult};
+use crate::database::DatabaseConnection;
 
 /// **Handler** must be implemented by any logic handling service, which is
 /// therefore persisted in `SharedState`.
