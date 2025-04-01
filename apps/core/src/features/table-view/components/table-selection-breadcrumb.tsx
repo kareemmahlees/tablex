@@ -15,9 +15,11 @@ import {
   getConnectionDetailsQueryOptions,
   getTablesQueryOptions
 } from "@/features/table-view/queries"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { Table2Icon } from "lucide-react"
+import { useLocalStorage } from "usehooks-ts"
 
 export const TableSelectionBreadCrumb = ({
   connectionId
@@ -27,6 +29,10 @@ export const TableSelectionBreadCrumb = ({
   const { data: tables } = useSuspenseQuery(getTablesQueryOptions(connectionId))
   const { data: connectionDetails } = useSuspenseQuery(
     getConnectionDetailsQueryOptions(connectionId)
+  )
+  const [_, setLatestTable, __] = useLocalStorage<string | undefined>(
+    LOCAL_STORAGE.LATEST_TABLE(connectionId),
+    undefined
   )
   const navigate = useNavigate()
   const { tableName } = useParams({ strict: false })
@@ -38,7 +44,8 @@ export const TableSelectionBreadCrumb = ({
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <Select
-            onValueChange={(v) =>
+            onValueChange={(v) => {
+              setLatestTable(v)
               navigate({
                 to: "/dashboard/table-view/$tableName",
                 params: {
@@ -48,7 +55,7 @@ export const TableSelectionBreadCrumb = ({
                   connectionId
                 }
               })
-            }
+            }}
             defaultValue={tableName}
           >
             <SelectTrigger

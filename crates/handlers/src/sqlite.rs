@@ -1,5 +1,5 @@
-use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo};
-use sea_schema::sea_query::ColumnType as SeaColumnType;
+use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames};
+use sea_schema::{sea_query::ColumnType as SeaColumnType, sqlite::def::TableDef};
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -81,5 +81,15 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::LTree => todo!(),
             _ => todo!(),
         }
+    }
+}
+
+impl From<Vec<TableDef>> for TablesNames {
+    fn from(value: Vec<TableDef>) -> Self {
+        let table_names = value
+            .iter()
+            .map(|t| t.name.clone())
+            .collect::<Vec<String>>();
+        TablesNames(table_names)
     }
 }

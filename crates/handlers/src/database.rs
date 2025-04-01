@@ -1,8 +1,8 @@
-use crate::types::{QueryResult, Schema};
+use crate::types::{QueryResult, Schema, TablesNames};
 use sea_schema::{
     mysql::discovery::SchemaDiscovery as MySQLSchemaDiscovery,
     postgres::discovery::SchemaDiscovery as PostgresSchemaDiscovery,
-    sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
+    sqlite::{def::TableDef, discovery::SchemaDiscovery as SqliteSchemaDiscovery},
 };
 use sqlx::{
     mysql::{MySqlConnectOptions, MySqlPool},
@@ -87,6 +87,22 @@ impl DatabaseConnection {
             }
             DatabaseConnection::Mysql(pool) => MySQLSchemaDiscovery::new(pool.clone(), "public")
                 .discover()
+                .await
+                .unwrap()
+                .into(),
+        }
+    }
+
+    pub async fn get_tables(&self) -> TablesNames {
+        match self {
+            DatabaseConnection::Sqlite(_, schema_discovery) => {
+                schema_discovery.discover().await.unwrap().tables.into()
+            }
+            DatabaseConnection::Postgres(_, schema_discovery) => {
+                schema_discovery.discover_tables().await.unwrap().into()
+            }
+            DatabaseConnection::Mysql(pool) => MySQLSchemaDiscovery::new(pool.clone(), "public")
+                .discover_tables()
                 .await
                 .unwrap()
                 .into(),

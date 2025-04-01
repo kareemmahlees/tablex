@@ -12,6 +12,7 @@ mod updater;
 use log::Level;
 
 use commands::{connection::*, fs::*, row::*, table::*};
+use specta_typescript::formatter::prettier;
 #[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
@@ -99,14 +100,16 @@ fn main() {
             update_row,
             get_fk_relations
         ])
-        .events(collect_events![ConnectionsChanged, TableContentsChanged,]);
+        .events(collect_events![ConnectionsChanged, TableContentsChanged,])
+        .error_handling(tauri_specta::ErrorHandlingMode::Throw);
 
     #[cfg(debug_assertions)]
     builder
         .export(
             Typescript::new()
                 .header("// @ts-nocheck")
-                .bigint(BigIntExportBehavior::Number),
+                .bigint(BigIntExportBehavior::Number)
+                .formatter(prettier),
             "../src/bindings.ts",
         )
         .expect("Failed to export typescript bindings");

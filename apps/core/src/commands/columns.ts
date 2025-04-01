@@ -1,11 +1,8 @@
 import { commands } from "@/bindings"
-import { unwrapResult } from "@/lib/utils"
 import { z } from "zod"
 
 export const getZodSchemaFromCols = async (tableName: string) => {
-  const result = await commands.getColumnsProps(tableName)
-  const cols = unwrapResult(result)
-  if (cols === false) return
+  const cols = await commands.getColumnsProps(tableName)
 
   const schemaObject: z.ZodRawShape = {}
 
@@ -80,11 +77,11 @@ export const getZodSchemaFromCols = async (tableName: string) => {
         validationRule = z.any()
     }
 
-    if (colProps.isNullable || colProps.isAutoIncrement) {
+    if (colProps.nullable) {
       validationRule = validationRule.optional()
     }
 
-    schemaObject[colProps.columnName] = validationRule
+    schemaObject[colProps.name] = validationRule
   })
 
   return z.object(schemaObject)

@@ -1,4 +1,4 @@
-use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo};
+use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames};
 use sea_schema::postgres::def::Type as SeaColumnType;
 
 #[derive(Debug)]
@@ -90,5 +90,15 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::Unknown(_) => todo!(),
             SeaColumnType::Enum(_) => todo!(),
         }
+    }
+}
+
+impl From<Vec<sea_schema::postgres::def::TableInfo>> for TablesNames {
+    fn from(value: Vec<sea_schema::postgres::def::TableInfo>) -> Self {
+        let table_names = value
+            .iter()
+            .map(|t| t.name.clone())
+            .collect::<Vec<String>>();
+        TablesNames(table_names)
     }
 }

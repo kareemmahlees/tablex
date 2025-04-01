@@ -1,5 +1,5 @@
-use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo};
-use sea_schema::mysql::def::Type as SeaColumnType;
+use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames};
+use sea_schema::mysql::def::{TableDef, Type as SeaColumnType};
 
 #[derive(Debug)]
 pub struct MySQLHandler;
@@ -81,5 +81,15 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::Json => CustomColumnType::Json,
             SeaColumnType::Unknown(_) => todo!(),
         }
+    }
+}
+
+impl From<Vec<sea_schema::mysql::def::TableInfo>> for TablesNames {
+    fn from(value: Vec<sea_schema::mysql::def::TableInfo>) -> Self {
+        let table_names = value
+            .iter()
+            .map(|t| t.name.clone())
+            .collect::<Vec<String>>();
+        TablesNames(table_names)
     }
 }

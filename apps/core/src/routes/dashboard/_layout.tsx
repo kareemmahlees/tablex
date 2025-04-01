@@ -1,7 +1,6 @@
 import { commands } from "@/bindings"
 import MetaXDialog from "@/components/dialogs/metax-dialog"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { unwrapResult } from "@/lib/utils"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { z } from "zod"
 import AppSidebar from "./-components/app-sidebar"
@@ -18,9 +17,8 @@ export const Route = createFileRoute("/dashboard/_layout")({
   loader: async ({ deps: { connectionId } }) => {
     let connName = ""
     if (connectionId) {
-      const connectionDetailsResult =
+      const connectionDetails =
         await commands.getConnectionDetails(connectionId)
-      const connectionDetails = unwrapResult(connectionDetailsResult)
 
       connName = connectionDetails.connName
     } else {
@@ -29,7 +27,7 @@ export const Route = createFileRoute("/dashboard/_layout")({
 
     return { connName }
   },
-  onLeave: async () => unwrapResult(await commands.killMetax()),
+  onLeave: async () => await commands.killMetax(),
   component: DashboardLayout
 })
 

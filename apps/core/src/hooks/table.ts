@@ -134,7 +134,7 @@ const useSetupPagination = (connectionId?: string) => {
     })
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: persistedPageIndex,
-    pageSize: settings.pageSize
+    pageSize: 0 // TODO: FIX ME
   })
   const defaultData = useMemo(() => [], [])
   const pagination = useMemo(

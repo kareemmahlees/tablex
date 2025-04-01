@@ -1,6 +1,5 @@
 import { commands } from "@/bindings"
 import { getZodSchemaFromCols } from "@/commands/columns"
-import { unwrapResult } from "@/lib/utils"
 import { useQueries, useQuery } from "@tanstack/react-query"
 
 /**
@@ -21,7 +20,7 @@ export const useGetFKRelations = (
         columnName,
         cellValue
       )
-      return unwrapResult(result) || []
+      return result
     },
     enabled: false
   })
@@ -41,11 +40,7 @@ export const useGetPaginatedRows = (
         pageSize
       )
 
-      const res = unwrapResult(result)
-      if (!res) {
-        throw new Error()
-      }
-      return res
+      return result
     }
   })
 }
@@ -67,9 +62,7 @@ export const useGetGeneralColsData = (tableName: string) => {
       {
         queryKey: ["columns_props", tableName],
         queryFn: async () => {
-          const columnsProps = unwrapResult(
-            await commands.getColumnsProps(tableName)
-          )
+          const columnsProps = await commands.getColumnsProps(tableName)
           if (!columnsProps) throw new Error()
           return columnsProps
         }

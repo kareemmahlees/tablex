@@ -1,60 +1,54 @@
 import { type ColumnProps, commands } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
-import { unwrapResult } from "@/lib/utils"
 import type { TableState } from "@/state/tableState"
 import type { ColumnDef } from "@tanstack/react-table"
-import ForeignKeyDropdown from "./fk-dropdown"
 import { DataTableColumnHeader } from "./super-powered-column"
 
 export const generateColumnsDefs = async (
   tableName: string,
   updatePkColumn: TableState["updatePkColumn"]
 ) => {
-  const columnsResult = await commands.getColumnsProps(tableName)
-  const columns = unwrapResult(columnsResult)
-  if (!columns) return
+  const columns = await commands.getColumnsProps(tableName)
 
-  const columnsDefinitions = columns.map(
-    ({ columnName, isPK, hasFkRelations }) => {
-      const columnDefinition: ColumnDef<ColumnProps> = {
-        accessorKey: columnName,
-        id: columnName,
-        header: ({ column }) => {
-          return <DataTableColumnHeader column={column} title={columnName} />
-        },
-        cell: (info) => {
-          // Overcome the fact that tanstack table can't render boolean
-          // values by default.
-          const value =
-            typeof info.getValue() === "boolean"
-              ? String(info.getValue())
-              : (info.getValue() as string)
-          let cellContent = value
-          // Clamp long text.
-          if (value && value.length > 20) {
-            cellContent = value.slice(0, 15) + "..."
-          }
-          return (
-            <span className="flex items-center gap-x-2">
-              {hasFkRelations && (
+  const columnsDefinitions = columns.map(({ name, pk }) => {
+    const columnDefinition: ColumnDef<ColumnProps> = {
+      accessorKey: name,
+      id: name,
+      header: ({ column }) => {
+        return <DataTableColumnHeader column={column} title={name} />
+      },
+      cell: (info) => {
+        // Overcome the fact that tanstack table can't render boolean
+        // values by default.
+        const value =
+          typeof info.getValue() === "boolean"
+            ? String(info.getValue())
+            : (info.getValue() as string)
+        let cellContent = value
+        // Clamp long text.
+        if (value && value.length > 20) {
+          cellContent = value.slice(0, 15) + "..."
+        }
+        return (
+          <span className="flex items-center gap-x-2">
+            {/* {hasFkRelations && (
                 <ForeignKeyDropdown
                   tableName={tableName}
                   columnName={columnName}
                   cellValue={value}
                 />
-              )}
+              )} */}
 
-              {cellContent}
-            </span>
-          )
-        }
+            {cellContent}
+          </span>
+        )
       }
-      if (isPK) {
-        updatePkColumn(columnName)
-      }
-      return columnDefinition
     }
-  )
+    if (pk) {
+      updatePkColumn(name)
+    }
+    return columnDefinition
+  })
 
   appendCheckboxColumn(columnsDefinitions)
 

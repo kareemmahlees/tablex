@@ -72,3 +72,6 @@ pub(crate) enum QueryResultRow {
     SqlxPostgres(PgRow),
     SqlxSqlite(SqliteRow),
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct TablesNames(pub Vec<String>);

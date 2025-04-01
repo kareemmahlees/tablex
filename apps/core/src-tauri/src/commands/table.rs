@@ -2,25 +2,16 @@ use crate::state::SharedState;
 use serde_json::{Map, Value};
 use tauri::{async_runtime::Mutex, State};
 use tx_handlers::ColumnInfo;
-use tx_lib::{
-    types::{self},
-    Result,
-};
+use tx_lib::Result;
 
 #[tauri::command]
 #[specta::specta]
 pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>> {
     let state = state.lock().await;
     let conn = &state.conn;
-    let tables: Vec<String> = conn
-        .discover()
-        .await
-        .tables
-        .iter()
-        .map(|t| t.name.clone())
-        .collect();
+    let tables = conn.get_tables().await;
 
-    Ok(tables)
+    Ok(tables.0)
 }
 
 #[tauri::command]
