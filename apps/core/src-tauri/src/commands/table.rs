@@ -23,6 +23,8 @@ pub async fn get_columns_props(
     let state = state.lock().await;
     let conn = &state.conn;
     let tables = conn.discover().await.tables;
+    dbg!(&tables);
+
     let cols = tables.iter().find(|t| t.name == table_name).unwrap();
 
     Ok(cols.columns.clone())

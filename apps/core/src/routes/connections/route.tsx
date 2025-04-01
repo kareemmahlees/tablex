@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
@@ -44,6 +45,22 @@ function ConnectionsPage() {
       connectionDetails.connString,
       connectionDetails.driver
     )
+    const latestTable = localStorage.getItem(
+      LOCAL_STORAGE.LATEST_TABLE(connectionId)
+    )
+
+    if (latestTable) {
+      return router.navigate({
+        to: "/dashboard/table-view/$tableName",
+        params: {
+          tableName: latestTable
+        },
+        search: {
+          connectionId
+        }
+      })
+    }
+
     router.navigate({
       to: "/dashboard/table-view/land",
       search: { connectionId }

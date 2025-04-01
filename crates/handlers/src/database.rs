@@ -1,8 +1,8 @@
-use crate::types::{QueryResult, Schema, TablesNames};
+use crate::types::{QueryResult, Schema, TableInfo, TablesNames};
 use sea_schema::{
     mysql::discovery::SchemaDiscovery as MySQLSchemaDiscovery,
     postgres::discovery::SchemaDiscovery as PostgresSchemaDiscovery,
-    sqlite::{def::TableDef, discovery::SchemaDiscovery as SqliteSchemaDiscovery},
+    sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
 };
 use sqlx::{
     mysql::{MySqlConnectOptions, MySqlPool},

@@ -1,8 +1,6 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
-import { useSettings } from "@/features/settings/manager"
 import { generateColumnsDefs } from "@/routes/dashboard/_layout/_table-view-layout/table-view/$tableName/-components/columns"
 import { useTableState } from "@/state/tableState"
-import { TableLocalStorage } from "@/types"
 import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
 import { useQuery } from "@tanstack/react-query"
 import {
@@ -12,13 +10,12 @@ import {
   useReactTable,
   type ColumnDef,
   type FilterFn,
-  type PaginationState,
   type Row,
   type SortingState
 } from "@tanstack/react-table"
-import { useMemo, useRef, useState } from "react"
-import { useLocalStorage } from "usehooks-ts"
+import { useRef, useState } from "react"
 import { useGetPaginatedRows } from "./row"
+import { useSetupPagination } from "./use-setup-pagination"
 
 export const useGetTableColumns = (tableName: string) => {
   const { updatePkColumn } = useTableState()
@@ -119,30 +116,4 @@ export const useSetupReactTable = <TData, TValue>({
     tableRef,
     table
   }
-}
-
-/**
- * Sets up the state and memoization for page index & page size
- * to be used in paginating the rows.
- */
-const useSetupPagination = (connectionId?: string) => {
-  const settings = useSettings()
-  const [{ pageIndex: persistedPageIndex }] =
-    useLocalStorage<TableLocalStorage>(`@tablex/${connectionId}`, {
-      tableName: "",
-      pageIndex: 0
-    })
-  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
-    pageIndex: persistedPageIndex,
-    pageSize: 0 // TODO: FIX ME
-  })
-  const defaultData = useMemo(() => [], [])
-  const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize
-    }),
-    [pageIndex, pageSize]
-  )
-  return { defaultData, pagination, setPagination, pageIndex, pageSize }
 }

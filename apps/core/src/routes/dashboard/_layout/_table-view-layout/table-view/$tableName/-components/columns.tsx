@@ -1,4 +1,4 @@
-import { type ColumnProps, commands } from "@/bindings"
+import { type ColumnInfo, commands } from "@/bindings"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { TableState } from "@/state/tableState"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -11,7 +11,7 @@ export const generateColumnsDefs = async (
   const columns = await commands.getColumnsProps(tableName)
 
   const columnsDefinitions = columns.map(({ name, pk }) => {
-    const columnDefinition: ColumnDef<ColumnProps> = {
+    const columnDefinition: ColumnDef<ColumnInfo> = {
       accessorKey: name,
       id: name,
       header: ({ column }) => {
@@ -56,7 +56,7 @@ export const generateColumnsDefs = async (
 }
 
 // Appends an extra checkbox column at the beginning of all columns
-const appendCheckboxColumn = (columns: ColumnDef<ColumnProps>[]) => {
+const appendCheckboxColumn = (columns: ColumnDef<ColumnInfo>[]) => {
   columns.unshift({
     id: "select",
     header: ({ table }) => (

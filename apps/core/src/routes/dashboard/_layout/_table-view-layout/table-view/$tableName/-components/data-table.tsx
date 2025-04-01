@@ -16,7 +16,7 @@ import {
   VirtualTable
 } from "@/components/ui/table"
 
-import { events, type ColumnProps } from "@/bindings"
+import { type ColumnProps } from "@/bindings"
 import { deleteRowsCmd } from "@/commands/row"
 import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import LoadingSpinner from "@/components/loading-spinner"
@@ -33,12 +33,12 @@ import { Sheet } from "@/components/ui/sheet"
 import { useKeybindings } from "@/features/keybindings"
 import { copyRows } from "@/features/keybindings/action-utils"
 import { useSetupReactTable } from "@/hooks/table"
+import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
+import { QUERY_KEYS } from "@/lib/constants"
 import { useEditRowSheetState } from "@/state/sheetState"
 import { useTableState } from "@/state/tableState"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
-import { createPortal } from "react-dom"
-import TableActions from "./table-actions"
 
 interface DataTableProps {
   columns: ColumnDef<ColumnProps>[]
@@ -53,15 +53,12 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
   const keybindingsManager = useKeybindings()
   const { isOpen, toggleSheet } = useEditRowSheetState()
 
-  useEffect(() => {
-    const unlisten = events.tableContentsChanged.listen(() => {
-      queryClient.invalidateQueries({ queryKey: ["table_rows"] })
-    })
-
-    return () => {
-      unlisten.then((f) => f())
-    }
-  }, [queryClient])
+  useTauriEventListener(
+    "tableContentsChanged",
+    () =>
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_TABLE_ROWS] }),
+    [queryClient]
+  )
 
   useEffect(() => {
     keybindingsManager.registerKeybindings([
@@ -93,10 +90,11 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
 
   return (
     <Sheet open={isOpen} onOpenChange={toggleSheet}>
-      {createPortal(
+      {/* TODO: FIX ME */}
+      {/* {createPortal(
         <TableActions table={table} connectionId={connectionId} />,
         document.getElementById("table-view-layout")!
-      )}
+      )} */}
       {isRowsLoading ? (
         <LoadingSpinner />
       ) : (
