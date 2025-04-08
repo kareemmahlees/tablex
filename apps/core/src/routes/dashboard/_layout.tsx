@@ -1,5 +1,4 @@
 import { commands } from "@/bindings"
-import MetaXDialog from "@/components/dialogs/metax-dialog"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { z } from "zod"
@@ -42,7 +41,6 @@ function DashboardLayout() {
       <main className="w-full">
         <Outlet />
       </main>
-      <MetaXDialog />
     </SidebarProvider>
   )
 }
