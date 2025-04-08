@@ -12,6 +12,7 @@ mod database;
 mod handler;
 mod mysql;
 mod postgres;
+mod query;
 mod sqlite;
 mod types;
 
@@ -19,8 +20,9 @@ pub use database::DatabaseConnection;
 pub use handler::{Handler, RowHandler, TableHandler};
 pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
+pub use query::{DecodedRow, ExecResult, QueryResult, QueryResultRow};
 pub use sqlite::SQLiteHandler;
-pub use types::{ColumnInfo, QueryResult, TableInfo};
+pub use types::{ColumnInfo, TableInfo};
 
 /// Replaces homedir-relative paths `~` with the users home dir.
 fn expand_conn_string(conn_string: &str) -> Result<String> {
@@ -49,4 +51,20 @@ pub async fn establish_connection(conn_string: &str, driver: &Drivers) -> Result
         .map_err(|_| TxError::ConnectionError)?;
 
     Ok(pool)
+}
+
+/// Transform/Decode a `Vec<AnyRow>` into a serializable datastructure.
+///
+/// Typically used with `SELECT *`.
+pub fn decode_raw_rows(rows: Vec<QueryResult>) -> Result<Vec<DecodedRow>> {
+    let mut result = Vec::<DecodedRow>::new();
+
+    for row in rows {
+        match row.row {
+            QueryResultRow::SqlxMySql(my_sql_row) => result.push(my_sql_row.into()),
+            QueryResultRow::SqlxPostgres(pg_row) => result.push(pg_row.into()),
+            QueryResultRow::SqlxSqlite(sqlite_row) => result.push(sqlite_row.into()),
+        }
+    }
+    Ok(result)
 }

@@ -35,6 +35,12 @@ sqlx = { version = "0.8", features = [
     "chrono",
     "time",
 ] }
+sea-schema = { version = "0.16.0", features = [
+    "sqlx-all",
+    "with-serde",
+    "discovery",
+    "runtime-tokio-native-tls",
+], default-features = false }
 async-trait = "0.1.80"
 specta = { version = "2.0.0-rc.20", features = ["serde", "serde_json"] }
 tauri-specta = { version = "2.0.0-rc.17", features = ["derive", "typescript"] }

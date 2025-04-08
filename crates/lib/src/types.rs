@@ -1,13 +1,10 @@
 use std::collections::HashMap;
 
-use crate::{
-    decode::{self, DataType},
-    TxError,
-};
+use crate::TxError;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
-use sqlx::{any::AnyRow, Error, FromRow, Row};
+use sqlx::{any::AnyRow, mysql::MySqlRow, postgres::PgRow, sqlite::SqliteRow, Error, FromRow, Row};
 
 pub type Result<T> = std::result::Result<T, TxError>;
 
@@ -31,69 +28,6 @@ pub struct ConnConfig {
 }
 
 pub type ConnectionsFileSchema = HashMap<String, ConnConfig>;
-
-#[derive(Serialize, Deserialize, Default, Debug, Type)]
-#[serde(rename_all = "camelCase")]
-pub struct PaginatedRows {
-    pub data: Vec<JsonMap<String, JsonValue>>,
-    pub page_count: u32,
-}
-
-impl PaginatedRows {
-    pub fn new(data: Vec<JsonMap<String, JsonValue>>, page_count: u32) -> Self {
-        PaginatedRows { data, page_count }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, Default, Type)]
-pub struct ColumnProps {
-    #[serde(rename = "columnName")]
-    pub column_name: String,
-    #[serde(rename = "type")]
-    pub data_type: DataType,
-    #[serde(rename = "isNullable")]
-    pub is_nullable: bool,
-    #[serde(rename = "defaultValue")]
-    pub default_value: JsonValue,
-    #[serde(rename = "isPK")]
-    pub is_pk: bool,
-    #[serde(rename = "hasFkRelations")]
-    pub has_fk_relations: bool,
-    #[serde(rename = "isAutoIncrement")]
-    pub is_auto_increment: bool,
-}
-impl<'r> FromRow<'r, AnyRow> for ColumnProps {
-    fn from_row(row: &'r AnyRow) -> std::result::Result<Self, Error> {
-        let column_name: String = row.try_get("column_name")?;
-        let data_type: DataType = decode::to_data_type(row.try_get_raw("data_type")?);
-        let is_nullable = match row.try_get::<i16, &str>("is_nullable") {
-            Ok(val) => val == 1,
-            Err(_) => row.try_get::<bool, &str>("is_nullable")?,
-        };
-        let default_value: JsonValue = decode::to_json(row.try_get_raw("default_value")?).unwrap();
-        let is_pk = match row.try_get::<i16, &str>("is_pk") {
-            Ok(val) => val == 1,
-            Err(_) => row.try_get::<bool, &str>("is_pk")?,
-        };
-        let has_fk_relations: bool = match row.try_get::<i16, &str>("has_fk_relations") {
-            Ok(val) => val == 1,
-            Err(_) => row.try_get::<bool, &str>("has_fk_relations")?,
-        };
-        let extras = row.try_get::<&str, &str>("extras").unwrap_or("");
-
-        let is_auto_increment = extras.contains("auto_increment")
-            || default_value.as_str().unwrap_or("").contains("nextval");
-        Ok(ColumnProps {
-            column_name,
-            data_type,
-            is_nullable,
-            default_value,
-            is_pk,
-            has_fk_relations,
-            is_auto_increment,
-        })
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug, sqlx::FromRow, Type)]
 pub struct FkRelation {

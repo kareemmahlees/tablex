@@ -42,38 +42,5 @@ pub enum CustomColumnType {
     Custom,
 }
 
-pub struct QueryResult {
-    pub row: QueryResultRow,
-}
-
-impl From<MySqlRow> for QueryResult {
-    fn from(row: MySqlRow) -> QueryResult {
-        QueryResult {
-            row: QueryResultRow::SqlxMySql(row),
-        }
-    }
-}
-impl From<PgRow> for QueryResult {
-    fn from(row: PgRow) -> QueryResult {
-        QueryResult {
-            row: QueryResultRow::SqlxPostgres(row),
-        }
-    }
-}
-impl From<SqliteRow> for QueryResult {
-    fn from(row: SqliteRow) -> QueryResult {
-        QueryResult {
-            row: QueryResultRow::SqlxSqlite(row),
-        }
-    }
-}
-
-#[allow(clippy::enum_variant_names)]
-pub(crate) enum QueryResultRow {
-    SqlxMySql(MySqlRow),
-    SqlxPostgres(PgRow),
-    SqlxSqlite(SqliteRow),
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct TablesNames(pub Vec<String>);

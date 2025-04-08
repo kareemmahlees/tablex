@@ -5007,6 +5007,7 @@ dependencies = [
  "log",
  "open",
  "regex",
+ "sea-schema",
  "serde",
  "serde_json",
  "specta",

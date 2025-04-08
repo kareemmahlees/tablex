@@ -3,11 +3,7 @@ use serde_json::{Map, Value as JsonValue};
 use sqlx::{any::AnyRow, AnyPool, Row};
 use std::fmt::Debug;
 
-use tx_lib::{
-    decode::{self, decode_raw_rows},
-    types::{ColumnProps, FKRows, PaginatedRows},
-    Result,
-};
+use tx_lib::{types::FKRows, Result};
 
 use crate::database::DatabaseConnection;
 
@@ -19,54 +15,26 @@ pub trait Handler: TableHandler + RowHandler + Send + Debug + Sync {}
 /// Every handler must provide it's own implementation of this.
 pub trait TableHandler {
     async fn get_tables(&self, pool: &AnyPool, conn: &DatabaseConnection) -> Result<Vec<AnyRow>>;
-    async fn get_columns_props(
-        &self,
-        pool: &AnyPool,
-        table_name: String,
-    ) -> Result<Vec<ColumnProps>>;
+    // async fn get_columns_props(
+    //     &self,
+    //     pool: &AnyPool,
+    //     table_name: String,
+    // ) -> Result<Vec<ColumnProps>>;
 
-    async fn execute_raw_query(
-        &self,
-        pool: &AnyPool,
-        query: String,
-    ) -> Result<Vec<Map<String, JsonValue>>> {
-        let res = sqlx::query(&query).fetch_all(pool).await?;
-        let decoded = decode_raw_rows(res).unwrap();
-        Ok(decoded)
-    }
+    // async fn execute_raw_query(
+    //     &self,
+    //     pool: &AnyPool,
+    //     query: String,
+    // ) -> Result<Vec<Map<String, JsonValue>>> {
+    //     let res = sqlx::query(&query).fetch_all(pool).await?;
+    //     let decoded = decode_raw_rows(res).unwrap();
+    //     Ok(decoded)
+    // }
 }
 
 #[async_trait]
 /// The logic for this trait is almost identical between all drivers, so default implementation is created.
 pub trait RowHandler {
-    #[allow(clippy::incompatible_msrv)]
-    async fn get_paginated_rows(
-        &self,
-        pool: &AnyPool,
-        table_name: String,
-        page_index: u16,
-        page_size: u32,
-    ) -> Result<PaginatedRows> {
-        let query_str = format!(
-            "SELECT * FROM {} limit {} offset {};",
-            table_name,
-            page_size,
-            page_index as u32 * page_size
-        );
-
-        let rows = sqlx::query(&query_str).fetch_all(pool).await?;
-
-        let query_str = format!("SELECT COUNT(*) from {}", table_name);
-
-        let page_count_result = sqlx::query(&query_str).fetch_one(pool).await?;
-        let page_count =
-            (page_count_result.try_get::<i64, usize>(0).unwrap() as u32).div_ceil(page_size);
-
-        let paginated_rows = PaginatedRows::new(decode::decode_raw_rows(rows)?, page_count);
-
-        Ok(paginated_rows)
-    }
-
     async fn delete_rows(
         &self,
         pool: &AnyPool,

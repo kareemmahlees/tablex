@@ -1,13 +1,22 @@
-use crate::types::{QueryResult, Schema, TableInfo, TablesNames};
+use crate::{
+    query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
+    types::{Schema, TablesNames},
+};
 use sea_schema::{
     mysql::discovery::SchemaDiscovery as MySQLSchemaDiscovery,
     postgres::discovery::SchemaDiscovery as PostgresSchemaDiscovery,
+    sea_query::{
+        extension::sqlite, MysqlQueryBuilder, PostgresQueryBuilder, QueryBuilder,
+        SqliteQueryBuilder,
+    },
     sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
 };
+use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
     mysql::{MySqlConnectOptions, MySqlPool},
     postgres::{PgConnectOptions, PgPool},
     sqlite::{SqliteConnectOptions, SqlitePool},
+    Column, Row,
 };
 use tx_lib::TxError;
 
@@ -39,7 +48,13 @@ impl DatabaseConnection {
             return Err(TxError::UnsupportedDriver(String::default()));
         }
     }
-
+    pub fn into_builder(&self) -> Box<dyn QueryBuilder> {
+        match self {
+            DatabaseConnection::Sqlite(_, _) => Box::new(SqliteQueryBuilder),
+            DatabaseConnection::Postgres(_, _) => Box::new(PostgresQueryBuilder),
+            DatabaseConnection::Mysql(_) => Box::new(MysqlQueryBuilder),
+        }
+    }
     pub async fn fetch_all(&self, stmt: &str) -> Result<Vec<QueryResult>, TxError> {
         match self {
             DatabaseConnection::Sqlite(conn, _) => match sqlx::query(stmt).fetch_all(conn).await {
@@ -76,7 +91,15 @@ impl DatabaseConnection {
             },
         }
     }
+    pub async fn execute(&self, stmt: &str) -> Result<ExecResult, TxError> {
+        let res: ExecResult = match self {
+            DatabaseConnection::Sqlite(conn, _) => sqlx::query(stmt).execute(conn).await?.into(),
+            DatabaseConnection::Postgres(conn, _) => sqlx::query(stmt).execute(conn).await?.into(),
+            DatabaseConnection::Mysql(conn) => sqlx::query(stmt).execute(conn).await?.into(),
+        };
 
+        Ok(res)
+    }
     pub async fn discover(&self) -> Schema {
         match self {
             DatabaseConnection::Sqlite(_, discoverer) => {

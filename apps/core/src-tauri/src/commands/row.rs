@@ -1,14 +1,31 @@
 use crate::state::SharedState;
+use sea_schema::sea_query::Alias;
+use sea_schema::sea_query::Asterisk;
+use sea_schema::sea_query::Query;
+use serde::{Deserialize, Serialize};
 use serde_json::Map;
 use serde_json::Value as JsonValue;
+use specta::Type;
 use std::collections::HashMap;
 use tauri::{async_runtime::Mutex, AppHandle, State};
 use tauri_specta::Event;
-use tx_lib::{
-    events::TableContentsChanged,
-    types::{FKRows, PaginatedRows},
-    Result,
-};
+use tx_handlers::decode_raw_rows;
+use tx_handlers::DecodedRow;
+use tx_handlers::ExecResult;
+use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
+
+#[derive(Serialize, Deserialize, Default, Debug, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PaginatedRows {
+    pub data: Vec<DecodedRow>,
+    pub page_count: usize,
+}
+
+impl PaginatedRows {
+    pub fn new(data: Vec<DecodedRow>, page_count: usize) -> Self {
+        PaginatedRows { data, page_count }
+    }
+}
 
 #[tauri::command]
 #[specta::specta]
@@ -16,18 +33,25 @@ pub async fn get_paginated_rows(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     page_index: u16,
-    page_size: u32,
+    page_size: u64,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
-    // let pool = &state.pool;
-    // let handler = &state.handler;
+    let conn = &state.conn;
+    let (stmt, _) = Query::select()
+        .column(Asterisk)
+        // .exprs([Expr::val("from"), Expr::val(table_name)])
+        .from(Alias::new(table_name))
+        .limit(page_size)
+        .offset(page_index as u64 * page_size)
+        .build_any(conn.into_builder().as_ref());
 
-    // handler
-    //     .get_paginated_rows(pool, table_name, page_index, page_size)
-    //     .await
-    Ok(PaginatedRows {
-        ..Default::default()
-    })
+    let rows = conn.fetch_all(&stmt).await?;
+
+    let page_count = rows.len().div_ceil(page_size as usize);
+
+    let paginated_rows = PaginatedRows::new(decode_raw_rows(rows).unwrap(), page_count);
+
+    Ok(paginated_rows)
 }
 
 #[tauri::command]
@@ -40,19 +64,22 @@ pub async fn delete_rows(
     table_name: String,
 ) -> Result<String> {
     let state = state.lock().await;
-    // let pool = &state.pool;
-    // let handler = &state.handler;
+    let conn = &state.conn;
 
-    let mut params: String = Default::default();
-    for val in row_pk_values.iter() {
-        // this should cover most cases of primary keys
-        if val.is_number() {
-            params.push_str(format!("'{}',", val.as_i64().unwrap()).as_str());
-        } else {
-            params.push_str(format!("'{}',", val.as_str().unwrap()).as_str());
-        }
-    }
-    params.pop(); // to remove the last trailing comma
+    // let mut params: String = Default::default();
+    // for val in row_pk_values.iter() {
+    //     // this should cover most cases of primary keys
+    //     if val.is_number() {
+    //         params.push_str(format!("'{}',", val.as_i64().unwrap()).as_str());
+    //     } else {
+    //         params.push_str(format!("'{}',", val.as_str().unwrap()).as_str());
+    //     }
+    // }
+    // params.pop(); // to remove the last trailing comma
+
+    // let stmt = Query::delete()
+    //     .from_table(Alias::new(table_name))
+    //     .cond_where(Expr::col(Alias::new()));
 
     // let result = handler
     //     .delete_rows(pool, pk_col_name, table_name, params)
@@ -72,42 +99,23 @@ pub async fn create_row(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
     data: HashMap<String, JsonValue>,
-) -> Result<String> {
+) -> Result<ExecResult> {
     let state = state.lock().await;
-    // let pool = &state.pool;
-    // let handler = &state.handler;
+    let conn = &state.conn;
+    let (stmt, _) = Query::insert()
+        .into_table(Alias::new(table_name))
+        .columns(data.keys().map(Alias::new))
+        .values_panic(data.values().map(|v| v.to_string().into()))
+        .build_any(conn.into_builder().as_ref());
 
-    let columns = data
-        .keys()
-        .map(|key| key.to_string())
-        .collect::<Vec<String>>()
-        .join(",")
-        .to_string();
-    let values = data
-        .values()
-        .map(|value| {
-            // HACK: handle json quotation marks until a better
-            // solution is found.
-            let mut value = value.to_string();
-            if value.starts_with("\"{") && value.ends_with("}\"") {
-                value = serde_json::from_str::<String>(value.as_str()).unwrap();
-                value = format!("'{value}'").to_string();
-            } else {
-                value = value.replace('\"', "'");
-            }
-            value
-        })
-        .collect::<Vec<String>>()
-        .join(",")
-        .to_string();
+    let result = conn.execute(stmt.as_str()).await;
 
-    // let result = handler.create_row(pool, table_name, columns, values).await;
-    // if result.is_ok() {
-    //     TableContentsChanged.emit(&app).unwrap();
-    //     log::debug!("Event emitted: {:?}", TableContentsChanged);
-    // }
-    // result
-    Ok(String::default())
+    if result.is_ok() {
+        TableContentsChanged.emit(&app).unwrap();
+        log::debug!("Event emitted: {:?}", TableContentsChanged);
+    }
+
+    result
 }
 
 #[tauri::command]
