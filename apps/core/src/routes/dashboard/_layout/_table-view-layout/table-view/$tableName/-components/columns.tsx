@@ -8,7 +8,9 @@ export const generateColumnsDefs = async (
   tableName: string,
   updatePkColumn: TableState["updatePkColumn"]
 ) => {
-  const columns = await commands.getColumnsProps(tableName)
+  const { columns } = (await commands.discoverDbSchema()).find(
+    (t) => t.name === tableName
+  )!
 
   const columnsDefinitions = columns.map(({ name, pk }) => {
     const columnDefinition: ColumnDef<ColumnInfo> = {

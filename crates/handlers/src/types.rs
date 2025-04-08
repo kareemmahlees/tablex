@@ -7,7 +7,7 @@ pub struct Schema {
     pub tables: Vec<TableInfo>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, Type)]
 pub struct TableInfo {
     pub name: String,
     pub columns: Vec<ColumnInfo>,

@@ -91,7 +91,7 @@ fn main() {
             write_into_keybindings_file,
             // Table commands.
             get_tables,
-            get_columns_props,
+            discover_db_schema,
             execute_raw_query,
             // Row commands.
             get_paginated_rows,

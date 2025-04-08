@@ -1,7 +1,7 @@
 use crate::state::SharedState;
 use serde_json::{Map, Value};
 use tauri::{async_runtime::Mutex, State};
-use tx_handlers::ColumnInfo;
+use tx_handlers::TableInfo;
 use tx_lib::Result;
 
 #[tauri::command]
@@ -16,18 +16,12 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_columns_props(
-    state: State<'_, Mutex<SharedState>>,
-    table_name: String,
-) -> Result<Vec<ColumnInfo>> {
+pub async fn discover_db_schema(state: State<'_, Mutex<SharedState>>) -> Result<Vec<TableInfo>> {
     let state = state.lock().await;
     let conn = &state.conn;
-    let tables = conn.discover().await.tables;
-    dbg!(&tables);
+    let schema_discovery = conn.discover().await.tables;
 
-    let cols = tables.iter().find(|t| t.name == table_name).unwrap();
-
-    Ok(cols.columns.clone())
+    Ok(schema_discovery)
 }
 
 #[tauri::command]

@@ -57,8 +57,8 @@ export const commands = {
   async getTables(): Promise<string[]> {
     return await TAURI_INVOKE("get_tables")
   },
-  async getColumnsProps(tableName: string): Promise<ColumnInfo[]> {
-    return await TAURI_INVOKE("get_columns_props", { tableName })
+  async discoverDbSchema(): Promise<TableInfo[]> {
+    return await TAURI_INVOKE("discover_db_schema")
   },
   async executeRawQuery(
     query: string
@@ -261,6 +261,7 @@ export type Settings = {
 export type Sidebar = "focusSearch"
 export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null
+export type TableInfo = { name: string; columns: ColumnInfo[] }
 /**
  * Global error object returned by all commands
  */
