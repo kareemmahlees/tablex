@@ -9,6 +9,7 @@
         "lucide-react": "^0.292.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
+        "react-virtuoso": "^4.12.6",
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
       },
@@ -2023,6 +2024,8 @@
     "react-scan": ["react-scan@0.3.3", "", { "dependencies": { "@babel/core": "^7.26.0", "@babel/generator": "^7.26.2", "@babel/types": "^7.26.0", "@clack/core": "^0.3.5", "@clack/prompts": "^0.8.2", "@pivanov/utils": "0.0.2", "@preact/signals": "^1.3.1", "@rollup/pluginutils": "^5.1.3", "@types/node": "^20.17.9", "bippy": "^0.3.8", "esbuild": "^0.24.0", "estree-walker": "^3.0.3", "kleur": "^4.1.5", "mri": "^1.2.0", "playwright": "^1.49.0", "preact": "^10.25.1", "tsx": "^4.0.0" }, "optionalDependencies": { "unplugin": "2.1.0" }, "peerDependencies": { "@remix-run/react": ">=1.0.0", "next": ">=13.0.0", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-router": "^5.0.0 || ^6.0.0 || ^7.0.0", "react-router-dom": "^5.0.0 || ^6.0.0 || ^7.0.0" }, "optionalPeers": ["@remix-run/react", "next", "react-router", "react-router-dom"], "bin": { "react-scan": "bin/cli.js" } }, "sha512-ntYe380/WhKaSpHcu6tFmW0bH0epOGmNcX+bjodBGRXCkbi6o3pkJWNZHIAlo928r/YQ99icRhV5NA6XiqOWZg=="],
 
     "react-style-singleton": ["react-style-singleton@2.2.1", "", { "dependencies": { "get-nonce": "^1.0.0", "invariant": "^2.2.4", "tslib": "^2.0.0" }, "peerDependencies": { "@types/react": "^16.8.0 || ^17.0.0 || ^18.0.0", "react": "^16.8.0 || ^17.0.0 || ^18.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g=="],
+
+    "react-virtuoso": ["react-virtuoso@4.12.6", "", { "peerDependencies": { "react": ">=16 || >=17 || >= 18 || >= 19", "react-dom": ">=16 || >=17 || >= 18 || >=19" } }, "sha512-bfvS6aCL1ehXmq39KRiz/vxznGUbtA27I5I24TYCe1DhMf84O3aVNCIwrSjYQjkJGJGzY46ihdN8WkYlemuhMQ=="],
 
     "read-cache": ["read-cache@1.0.0", "", { "dependencies": { "pify": "^2.3.0" } }, "sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA=="],
 
