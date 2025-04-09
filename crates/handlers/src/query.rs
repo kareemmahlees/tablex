@@ -3,9 +3,9 @@ use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
 use sqlx::{
     mysql::{MySqlQueryResult, MySqlRow},
-    postgres::{PgQueryResult, PgRow},
+    postgres::{PgQueryResult, PgRow, PgValue, PgValueRef},
     sqlite::{SqliteQueryResult, SqliteRow},
-    Column, Row,
+    Column, Database, Decode, Postgres, Row, Value, ValueRef,
 };
 
 pub struct QueryResult {
@@ -34,9 +34,20 @@ impl From<MySqlRow> for DecodedRow {
     fn from(value: MySqlRow) -> Self {
         let mut row_data = JsonMap::default();
         for (i, column) in value.columns().iter().enumerate() {
-            let v = value.get(i);
+            let v = value.try_get_raw(i).unwrap();
+            let decoded = if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
+                JsonValue::String(v)
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
+                JsonValue::from(v)
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
+                JsonValue::Number(v.into())
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<bool>() {
+                JsonValue::Bool(v)
+            } else {
+                JsonValue::String(ValueRef::to_owned(&v).decode())
+            };
 
-            row_data.insert(column.name().to_string(), v);
+            row_data.insert(column.name().to_string(), decoded);
         }
         DecodedRow(row_data)
     }
@@ -54,9 +65,21 @@ impl From<PgRow> for DecodedRow {
     fn from(value: PgRow) -> Self {
         let mut row_data = JsonMap::default();
         for (i, column) in value.columns().iter().enumerate() {
-            let v = value.get(i);
+            let v = value.try_get_raw(i).unwrap();
 
-            row_data.insert(column.name().to_string(), v);
+            let decoded = if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
+                JsonValue::String(v)
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
+                JsonValue::from(v)
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
+                JsonValue::Number(v.into())
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<bool>() {
+                JsonValue::Bool(v)
+            } else {
+                JsonValue::String(ValueRef::to_owned(&v).decode())
+            };
+
+            row_data.insert(column.name().to_string(), decoded);
         }
         DecodedRow(row_data)
     }
@@ -74,9 +97,21 @@ impl From<SqliteRow> for DecodedRow {
     fn from(value: SqliteRow) -> Self {
         let mut row_data = JsonMap::default();
         for (i, column) in value.columns().iter().enumerate() {
-            let v = value.get(i);
+            let v = value.try_get_raw(i).unwrap();
 
-            row_data.insert(column.name().to_string(), v);
+            let decoded = if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
+                JsonValue::String(v)
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
+                JsonValue::from(v)
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
+                JsonValue::Number(v.into())
+            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<bool>() {
+                JsonValue::Bool(v)
+            } else {
+                JsonValue::String(ValueRef::to_owned(&v).decode())
+            };
+
+            row_data.insert(column.name().to_string(), decoded);
         }
         DecodedRow(row_data)
     }

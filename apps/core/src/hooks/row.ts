@@ -40,6 +40,8 @@ export const useGetPaginatedRows = (
         pageSize
       )
 
+      console.log("result", result)
+
       return result
     }
   })

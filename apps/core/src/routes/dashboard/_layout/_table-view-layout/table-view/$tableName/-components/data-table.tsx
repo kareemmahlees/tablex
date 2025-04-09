@@ -16,7 +16,7 @@ import {
   VirtualTable
 } from "@/components/ui/table"
 
-import { type ColumnProps } from "@/bindings"
+import type { ColumnInfo } from "@/bindings"
 import { deleteRowsCmd } from "@/commands/row"
 import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import LoadingSpinner from "@/components/loading-spinner"
@@ -41,12 +41,13 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
 
 interface DataTableProps {
-  columns: ColumnDef<ColumnProps>[]
+  columns: ColumnDef<ColumnInfo>[]
+  tableName: string
   connectionId?: string
 }
 
-const DataTable = ({ columns, connectionId }: DataTableProps) => {
-  const { tableName, pkColumn } = useTableState()
+const DataTable = ({ columns, connectionId, tableName }: DataTableProps) => {
+  const { pkColumn } = useTableState()
   const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
     useSetupReactTable({ columns, tableName, connectionId })
   const queryClient = useQueryClient()
@@ -88,6 +89,8 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
     debug: import.meta.env.DEV
   })
 
+  if (isRowsLoading) return <LoadingSpinner />
+
   return (
     <Sheet open={isOpen} onOpenChange={toggleSheet}>
       {/* TODO: FIX ME */}
@@ -95,87 +98,83 @@ const DataTable = ({ columns, connectionId }: DataTableProps) => {
         <TableActions table={table} connectionId={connectionId} />,
         document.getElementById("table-view-layout")!
       )} */}
-      {isRowsLoading ? (
-        <LoadingSpinner />
-      ) : (
-        <ContextMenu>
-          <ScrollArea className="relative h-full w-full overflow-auto">
-            <VirtualTable
-              ref={tableRef}
-              virtualizer={virtualizer}
-              virtualizerRef={parentRef}
-            >
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow
-                    key={headerGroup.id}
-                    className="sticky top-0 backdrop-blur-lg"
-                  >
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead
-                          key={header.id}
-                          className="text-sm font-bold lg:text-base"
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <ContextMenuTrigger asChild>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    virtualizer.getVirtualItems().map((virtualRow) => {
-                      const row = rows[virtualRow.index]
-                      return (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && "selected"}
-                          className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
-                          onContextMenu={() => setContextMenuRow(row)}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      )
-                    })
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
+      <ContextMenu>
+        <ScrollArea className="relative h-full w-full overflow-auto">
+          <VirtualTable
+            ref={tableRef}
+            virtualizer={virtualizer}
+            virtualizerRef={parentRef}
+          >
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="sticky top-0 backdrop-blur-lg"
+                >
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className="text-sm font-bold lg:text-base"
                       >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  <TableContextMenuContent
-                    table={table}
-                    contextMenuRow={contextMenuRow}
-                  />
-                </TableBody>
-              </ContextMenuTrigger>
-            </VirtualTable>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-          <div className="px-4 pb-2">
-            <DataTablePagination table={table} connectionId={connectionId} />
-          </div>
-        </ContextMenu>
-      )}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <ContextMenuTrigger asChild>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  virtualizer.getVirtualItems().map((virtualRow) => {
+                    const row = rows[virtualRow.index]
+                    return (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
+                        onContextMenu={() => setContextMenuRow(row)}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableContextMenuContent
+                  table={table}
+                  contextMenuRow={contextMenuRow}
+                />
+              </TableBody>
+            </ContextMenuTrigger>
+          </VirtualTable>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+        <div className="px-4 pb-2">
+          <DataTablePagination table={table} connectionId={connectionId} />
+        </div>
+      </ContextMenu>
       <EditRowSheet row={contextMenuRow} />
     </Sheet>
   )

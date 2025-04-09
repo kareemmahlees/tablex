@@ -1,7 +1,8 @@
 use crate::state::SharedState;
-use sea_schema::sea_query::Alias;
-use sea_schema::sea_query::Asterisk;
-use sea_schema::sea_query::Query;
+use sea_query_binder::SqlxBinder;
+use sea_schema::sea_query::{
+    Alias, Asterisk, Expr, Iden, IntoTableRef, Query, SqliteQueryBuilder, TableRef,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
 use serde_json::Value as JsonValue;
@@ -9,9 +10,7 @@ use specta::Type;
 use std::collections::HashMap;
 use tauri::{async_runtime::Mutex, AppHandle, State};
 use tauri_specta::Event;
-use tx_handlers::decode_raw_rows;
-use tx_handlers::DecodedRow;
-use tx_handlers::ExecResult;
+use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
@@ -27,25 +26,40 @@ impl PaginatedRows {
     }
 }
 
+struct PlainTable(String);
+
+impl Iden for PlainTable {
+    fn unquoted(&self, s: &mut dyn std::fmt::Write) {
+        write!(s, "{}", self.0).unwrap();
+    }
+}
+
+struct PlainColumn(String);
+
+impl Iden for PlainColumn {
+    fn unquoted(&self, s: &mut dyn std::fmt::Write) {
+        write!(s, "{}", self.0).unwrap();
+    }
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn get_paginated_rows(
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
-    page_index: u16,
+    page_index: u64,
     page_size: u64,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let conn = &state.conn;
-    let (stmt, _) = Query::select()
+    let (stmt, values) = Query::select()
         .column(Asterisk)
-        // .exprs([Expr::val("from"), Expr::val(table_name)])
-        .from(Alias::new(table_name))
+        .from(PlainTable(table_name))
         .limit(page_size)
-        .offset(page_index as u64 * page_size)
-        .build_any(conn.into_builder().as_ref());
+        .offset(page_index * page_size)
+        .build_any_sqlx(conn.into_builder().as_ref());
 
-    let rows = conn.fetch_all(&stmt).await?;
+    let rows = conn.fetch_all(&stmt, values).await?;
 
     let page_count = rows.len().div_ceil(page_size as usize);
 
@@ -104,7 +118,7 @@ pub async fn create_row(
     let conn = &state.conn;
     let (stmt, _) = Query::insert()
         .into_table(Alias::new(table_name))
-        .columns(data.keys().map(Alias::new))
+        .columns(data.keys().map(|k| PlainColumn(k.clone())))
         .values_panic(data.values().map(|v| v.to_string().into()))
         .build_any(conn.into_builder().as_ref());
 

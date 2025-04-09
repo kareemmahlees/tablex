@@ -42,7 +42,11 @@ function TableView() {
 
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
-      <DataTable columns={columns!} connectionId={connectionId} />
+      <DataTable
+        columns={columns!}
+        connectionId={connectionId}
+        tableName={tableName}
+      />
     </section>
   )
 }

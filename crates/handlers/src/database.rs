@@ -1,22 +1,20 @@
 use crate::{
-    query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
+    query::{ExecResult, QueryResult},
     types::{Schema, TablesNames},
 };
+use sea_query_binder::SqlxValues;
 use sea_schema::{
     mysql::discovery::SchemaDiscovery as MySQLSchemaDiscovery,
     postgres::discovery::SchemaDiscovery as PostgresSchemaDiscovery,
     sea_query::{
-        extension::sqlite, MysqlQueryBuilder, PostgresQueryBuilder, QueryBuilder,
-        SqliteQueryBuilder,
+        MysqlQueryBuilder, PostgresQueryBuilder, QueryBuilder, SqliteQueryBuilder, Values,
     },
     sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
 };
-use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
     mysql::{MySqlConnectOptions, MySqlPool},
     postgres::{PgConnectOptions, PgPool},
     sqlite::{SqliteConnectOptions, SqlitePool},
-    Column, Row,
 };
 use tx_lib::TxError;
 
@@ -55,22 +53,36 @@ impl DatabaseConnection {
             DatabaseConnection::Mysql(_) => Box::new(MysqlQueryBuilder),
         }
     }
-    pub async fn fetch_all(&self, stmt: &str) -> Result<Vec<QueryResult>, TxError> {
+    pub async fn fetch_all(
+        &self,
+        stmt: &str,
+        values: SqlxValues,
+    ) -> Result<Vec<QueryResult>, TxError> {
         match self {
-            DatabaseConnection::Sqlite(conn, _) => match sqlx::query(stmt).fetch_all(conn).await {
-                Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                Err(err) => Err(err.into()),
-            },
+            DatabaseConnection::Sqlite(conn, _) => {
+                match sqlx::query_with(stmt, values).fetch_all(conn).await {
+                    Ok(rows) => {
+                        dbg!("ok");
+                        Ok(rows.into_iter().map(|r| r.into()).collect())
+                    }
+                    Err(err) => {
+                        dbg!(&err);
+                        Err(err.into())
+                    }
+                }
+            }
             DatabaseConnection::Postgres(conn, _) => {
-                match sqlx::query(stmt).fetch_all(conn).await {
+                match sqlx::query_with(stmt, values).fetch_all(conn).await {
                     Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
                     Err(err) => Err(err.into()),
                 }
             }
-            DatabaseConnection::Mysql(conn) => match sqlx::query(stmt).fetch_all(conn).await {
-                Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                Err(err) => Err(err.into()),
-            },
+            DatabaseConnection::Mysql(conn) => {
+                match sqlx::query_with(stmt, values).fetch_all(conn).await {
+                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
+                    Err(err) => Err(err.into()),
+                }
+            }
         }
     }
     pub async fn fetch_one(&self, stmt: &str) -> Result<QueryResult, TxError> {

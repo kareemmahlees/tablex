@@ -21,4 +21,5 @@ async-trait = { workspace = true }
 log = { workspace = true }
 tx_lib = { path = "../lib" }
 home = "0.5.9"
+sea-query-binder = { workspace = true }
 sea-schema = { workspace = true }
