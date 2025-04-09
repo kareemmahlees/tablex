@@ -8,17 +8,16 @@ import { useLocalStorage } from "usehooks-ts"
  * Sets up the state and memoization for page index & page size
  * to be used in paginating the rows.
  */
-export const useSetupPagination = (connectionId?: string) => {
+export const useSetupPagination = (connectionId: string) => {
   const settings = useSettings()
   const [paginationState] = useLocalStorage<PaginationState>(
-    LOCAL_STORAGE.PAGINATION_STATE(connectionId!),
+    LOCAL_STORAGE.PAGINATION_STATE(connectionId),
     {
       pageIndex: 0,
       pageSize: settings.pageSize
     }
   )
   const [{ pageIndex, pageSize }, setPagination] = useState(paginationState)
-  const defaultData = useMemo(() => [], [])
   const pagination = useMemo(
     () => ({
       pageIndex,
@@ -26,5 +25,5 @@ export const useSetupPagination = (connectionId?: string) => {
     }),
     [pageIndex, pageSize]
   )
-  return { defaultData, pagination, setPagination, pageIndex, pageSize }
+  return { pagination, setPagination }
 }

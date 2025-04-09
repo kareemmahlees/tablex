@@ -22,17 +22,22 @@ export const getTableColumnsOptions = (tableName: string) =>
     staleTime: 60 * 60 * 1000 // 1 hour
   })
 
-// export const getPaginatedRowsOptions = ()=> queryOptions({
-//       queryKey: ["table_rows", tableName, { pageIndex, pageSize }],
-//     queryFn: async () => {
-//       const result = await commands.getPaginatedRows(
-//         tableName,
-//         pageIndex,
-//         pageSize
-//       )
+export const getPaginatedRowsOptions = ({
+  tableName,
+  pageIndex,
+  pageSize
+}: {
+  tableName: string
+  pageIndex: number
+  pageSize: number
+}) => {
+  // const { defaultData, pagination, setPagination, pageIndex, pageSize } =
+  //   useSetupPagination(connectionId)
 
-//       console.log("result", result)
-
-//       return result
-//     }
-// })
+  return queryOptions({
+    queryKey: [QUERY_KEYS.TABLE_ROWS, tableName, { pageIndex, pageSize }],
+    queryFn: async () =>
+      await commands.getPaginatedRows(tableName, pageIndex, pageSize),
+    staleTime: 30 * 60 * 1000 // 30 mins
+  })
+}

@@ -1,20 +1,19 @@
+import { PaginatedRows } from "@/bindings"
 import { getZodSchemaFromCols } from "@/commands/columns"
-import { useTableState } from "@/state/tableState"
 import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
 import { useQuery } from "@tanstack/react-query"
 import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  PaginationState,
   useReactTable,
   type ColumnDef,
   type FilterFn,
   type Row,
   type SortingState
 } from "@tanstack/react-table"
-import { useRef, useState } from "react"
-import { useGetPaginatedRows } from "./row"
-import { useSetupPagination } from "./use-setup-pagination"
+import { Dispatch, SetStateAction, useRef, useState } from "react"
 
 // export const useGetTableColumns = (tableName: string) => {
 //   const { updatePkColumn } = useTableState()
@@ -55,10 +54,13 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
+const FALLBACK_DATA = []
+
 type SetupReactTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
-  tableName: string
-  connectionId?: string
+  data: PaginatedRows
+  pagination: PaginationState
+  setPagination: Dispatch<SetStateAction<PaginationState>>
 }
 
 /**
@@ -66,50 +68,43 @@ type SetupReactTableOptions<TData, TValue> = {
  * with all the necessary attachments and logic.
  */
 export const useSetupReactTable = <TData, TValue>({
-  tableName,
   columns,
-  connectionId
+  data,
+  pagination,
+  setPagination
 }: SetupReactTableOptions<TData, TValue>) => {
-  const { defaultData, pagination, setPagination, pageIndex, pageSize } =
-    useSetupPagination(connectionId)
-  const { globalFilter, setGlobalFilter } = useTableState()
-
-  const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
-    tableName,
-    pageIndex,
-    pageSize
-  )
+  // const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
+  //   tableName,
+  //   pageIndex,
+  //   pageSize
+  // )
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const tableRef = useRef<HTMLTableElement>(null)
   const table = useReactTable({
-    data: (rows?.data as TData[]) ?? defaultData,
+    data: (data?.data as TData[]) ?? FALLBACK_DATA,
     columns,
-    pageCount: rows?.pageCount ?? -1,
+    pageCount: data?.pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "fuzzy",
     filterFns: {
       fuzzy: fuzzyFilter
     },
     state: {
       sorting,
       rowSelection,
-      pagination,
-      globalFilter
+      pagination
     },
     manualPagination: true,
     debugTable: import.meta.env.DEV
   })
 
   return {
-    isRowsLoading,
     contextMenuRow,
     setContextMenuRow,
     tableRef,

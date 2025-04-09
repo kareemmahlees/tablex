@@ -37,9 +37,9 @@ export function DataTablePagination<TData>({
     })
 
   return (
-    <div className={cn("flex items-center justify-between px-2", className)}>
+    <div className={cn("flex items-center gap-x-5", className)}>
       <div className="flex items-center space-x-4 lg:space-x-2">
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex items-start text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
         </div>

@@ -1,13 +1,17 @@
 import { TableSelectionBreadCrumb } from "@/features/table-view/components/table-selection-breadcrumb"
-import { getConnectionDetailsQueryOptions } from "@/features/table-view/queries"
+import {
+  getConnectionDetailsQueryOptions,
+  getTablesQueryOptions
+} from "@/features/table-view/queries"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/dashboard/_layout/_table-view-layout")({
   loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
-  loader: ({ context: { queryClient }, deps: { connectionId } }) =>
-    queryClient.ensureQueryData(
-      getConnectionDetailsQueryOptions(connectionId!)
-    ),
+  loader: ({ context: { queryClient }, deps: { connectionId } }) => {
+    queryClient.ensureQueryData(getTablesQueryOptions(connectionId!))
+    queryClient.ensureQueryData(getConnectionDetailsQueryOptions(connectionId!))
+  },
+
   component: TableViewLayout
 })
 

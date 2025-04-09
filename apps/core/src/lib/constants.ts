@@ -1,6 +1,6 @@
 export const QUERY_KEYS = {
   GET_TABLES: "get_tables",
-  GET_TABLE_ROWS: "get_table_rows",
+  TABLE_ROWS: "table_rows",
   GET_CONNECTION_DETAILS: "get_connection_details",
   TABLE_COLUMNS: "table_columns"
 }
