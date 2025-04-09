@@ -22,9 +22,7 @@ function TableViewLayout() {
       >
         <TableSelectionBreadCrumb connectionId={connectionId!} />
       </div>
-      <div className="flex-1">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   )
 }

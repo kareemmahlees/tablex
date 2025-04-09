@@ -1,5 +1,4 @@
 import { getZodSchemaFromCols } from "@/commands/columns"
-import { generateColumnsDefs } from "@/routes/dashboard/_layout/_table-view-layout/table-view/$tableName/-components/columns"
 import { useTableState } from "@/state/tableState"
 import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
 import { useQuery } from "@tanstack/react-query"
@@ -17,13 +16,13 @@ import { useRef, useState } from "react"
 import { useGetPaginatedRows } from "./row"
 import { useSetupPagination } from "./use-setup-pagination"
 
-export const useGetTableColumns = (tableName: string) => {
-  const { updatePkColumn } = useTableState()
-  return useQuery({
-    queryKey: ["table_columns", tableName],
-    queryFn: async () => await generateColumnsDefs(tableName, updatePkColumn)
-  })
-}
+// export const useGetTableColumns = (tableName: string) => {
+//   const { updatePkColumn } = useTableState()
+//   return useQuery({
+//     queryKey: ["table_columns", tableName],
+//     queryFn: async () => await generateColumnsDefs(tableName, updatePkColumn)
+//   })
+// }
 
 /**
  * Calls the backend and returns a generated zod schema

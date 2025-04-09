@@ -35,10 +35,10 @@ function DashboardLayout() {
   // const [tables, _] = useState<string[]>(data.tables)
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-full">
       <AppSidebar />
       {/* {deps.tableName && <AddRowBtn tableName={deps.tableName} />} */}
-      <main className="w-full">
+      <main className="h-full w-full">
         <Outlet />
       </main>
     </SidebarProvider>

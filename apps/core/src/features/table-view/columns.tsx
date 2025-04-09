@@ -1,12 +1,11 @@
 import { type ColumnInfo, commands } from "@/bindings"
+import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
 import { Checkbox } from "@/components/ui/checkbox"
-import type { TableState } from "@/state/tableState"
 import type { ColumnDef } from "@tanstack/react-table"
-import { DataTableColumnHeader } from "./super-powered-column"
 
 export const generateColumnsDefs = async (
-  tableName: string,
-  updatePkColumn: TableState["updatePkColumn"]
+  tableName: string
+  // updatePkColumn: TableState["updatePkColumn"]
 ) => {
   console.log(await commands.discoverDbSchema())
   const { columns } = (await commands.discoverDbSchema()).find(
@@ -47,9 +46,9 @@ export const generateColumnsDefs = async (
         )
       }
     }
-    if (pk) {
-      updatePkColumn(name)
-    }
+    // if (pk) {
+    //   updatePkColumn(name)
+    // }
     return columnDefinition
   })
 

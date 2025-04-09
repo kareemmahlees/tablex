@@ -36,6 +36,7 @@ export const Route = createFileRoute("/connections")({
 
 function ConnectionsPage() {
   const router = useRouter()
+  const navigate = Route.useNavigate()
   const connections = Route.useLoaderData()
 
   const onClickConnect = async (connectionId: string) => {
@@ -50,7 +51,7 @@ function ConnectionsPage() {
     )
 
     if (latestTable) {
-      return router.navigate({
+      navigate({
         to: "/dashboard/table-view/$tableName",
         params: {
           tableName: latestTable
@@ -59,9 +60,10 @@ function ConnectionsPage() {
           connectionId
         }
       })
+      return
     }
 
-    router.navigate({
+    navigate({
       to: "/dashboard/table-view/land",
       search: { connectionId }
     })
