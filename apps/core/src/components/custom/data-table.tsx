@@ -17,10 +17,16 @@ export const DataTable = ({ table }: { table: TanstackTable<ColumnInfo> }) => {
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow
+              key={headerGroup.id}
+              className="bg-sidebar sticky top-0 backdrop-blur-lg"
+            >
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className="text-sm font-bold lg:text-base"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -39,9 +45,10 @@ export const DataTable = ({ table }: { table: TanstackTable<ColumnInfo> }) => {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="w-1">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

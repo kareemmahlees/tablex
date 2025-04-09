@@ -1,4 +1,5 @@
 import { DataTable } from "@/components/custom/data-table"
+import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   getTableColumnsOptions,
@@ -36,17 +37,6 @@ function TableView() {
   const { queryClient } = Route.useRouteContext()
   const { connectionId } = Route.useSearch()
   const { data: columns } = useSuspenseQuery(getTableColumnsOptions(tableName))
-  // const { updateTableName } = useTableState()
-  // const [, setActiveTable] = useLocalStorage<TableLocalStorage | null>(
-  //   `@tablex/${connectionId}`,
-  //   null
-  // )
-
-  // useEffect(() => updateTableName(tableName), [tableName, updateTableName])
-  // useEffect(
-  //   () => setActiveTable({ tableName, pageIndex: 0 }),
-  //   [setActiveTable, tableName]
-  // )
 
   const { isRowsLoading, contextMenuRow, setContextMenuRow, table, tableRef } =
     useSetupReactTable({ columns, tableName, connectionId })
@@ -69,11 +59,7 @@ function TableView() {
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
       <DataTable table={table} />
-      {/* <DataTable
-        columns={columns!}
-        connectionId={connectionId}
-        tableName={tableName}
-      /> */}
+      <DataTablePagination table={table} className="py-2" />
     </section>
   )
 }

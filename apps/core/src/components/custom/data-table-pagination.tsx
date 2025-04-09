@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { TableLocalStorage } from "@/types"
+import { cn } from "@tablex/lib/utils"
 import type { Table } from "@tanstack/react-table"
 import {
   ArrowLeft,
@@ -21,10 +22,12 @@ import { useLocalStorage } from "usehooks-ts"
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
   connectionId?: string
+  className?: string
 }
 
 export function DataTablePagination<TData>({
   table,
+  className,
   connectionId
 }: DataTablePaginationProps<TData>) {
   const [connectionStorage, setConnectionStorage] =
@@ -34,11 +37,7 @@ export function DataTablePagination<TData>({
     })
 
   return (
-    <div className="flex items-center justify-between px-2">
-      <div className="text-muted-foreground hidden text-sm lg:flex">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div>
+    <div className={cn("flex items-center justify-between px-2", className)}>
       <div className="flex items-center space-x-4 lg:space-x-2">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
@@ -103,6 +102,10 @@ export function DataTablePagination<TData>({
             <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>
+      </div>
+      <div className="text-muted-foreground hidden text-sm lg:flex">
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
     </div>
   )
