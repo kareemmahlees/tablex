@@ -50,9 +50,13 @@ function TableView() {
 
   if (isRowsLoading)
     return (
-      <div className="flex h-full flex-col space-y-10">
+      <div className="flex h-full flex-col space-y-5 p-4">
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-full" />
+        <div className="flex justify-between">
+          <Skeleton className="h-10 w-[200px]" />
+          <Skeleton className="h-10 w-[200px]" />
+        </div>
       </div>
     )
 
