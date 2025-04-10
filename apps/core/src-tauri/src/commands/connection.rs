@@ -81,7 +81,7 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    let conn = DatabaseConnection::connect(&conn_string).await?;
+    let conn = DatabaseConnection::connect(&conn_string, driver).await?;
 
     #[allow(unused_mut)]
     let mut state = SharedState::new(

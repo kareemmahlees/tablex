@@ -26,7 +26,7 @@ import type { Row } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import DynamicFormInput from "./components/dynamic-input"
+import DynamicFormInput from "../../features/table-view/components/dynamic-input"
 
 const getColumn = (columnsProps: ColumnInfo[], columnName: string) => {
   return columnsProps.find((col) => col.name == columnName)

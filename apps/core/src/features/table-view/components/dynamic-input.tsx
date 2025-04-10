@@ -1,9 +1,10 @@
 import type { ColumnInfo } from "@/bindings"
+import JsonEditor from "@/components/custom/json-editor"
+import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/text-area"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
-import { Input } from "../../ui/input"
-import { DateTimePicker } from "./date-time-picker"
-import JsonEditor from "./json-editor"
+import { DateTimePicker } from "../../../components/sheets/components/date-time-picker"
 
 /**
  * Remove the effect of timezone differences and return a new date
@@ -75,6 +76,8 @@ const DynamicFormInput = <T extends FieldValues>({
           onCheckedChange={field.onChange}
         />
       )
+    case "text":
+      return <Textarea value={field.value} onChange={field.onChange} />
     default:
       return (
         <Input

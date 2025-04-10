@@ -42,10 +42,14 @@ function ConnectionsPage() {
   const onClickConnect = async (connectionId: string) => {
     const connectionDetails = await commands.getConnectionDetails(connectionId)
 
-    await commands.establishConnection(
-      connectionDetails.connString,
-      connectionDetails.driver
-    )
+    try {
+      await commands.establishConnection(
+        connectionDetails.connString,
+        connectionDetails.driver
+      )
+    } catch (error) {
+      console.log(error)
+    }
     const latestTable = localStorage.getItem(
       LOCAL_STORAGE.LATEST_TABLE(connectionId)
     )

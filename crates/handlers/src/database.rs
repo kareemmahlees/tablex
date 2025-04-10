@@ -16,7 +16,7 @@ use sqlx::{
     postgres::{PgConnectOptions, PgPool},
     sqlite::{SqliteConnectOptions, SqlitePool},
 };
-use tx_lib::TxError;
+use tx_lib::{types::Drivers, TxError};
 
 pub enum DatabaseConnection {
     Sqlite(SqlitePool, SqliteSchemaDiscovery),
@@ -25,26 +25,46 @@ pub enum DatabaseConnection {
 }
 
 impl DatabaseConnection {
-    pub async fn connect(url: &str) -> Result<Self, TxError> {
+    pub async fn connect(url: &str, driver: Drivers) -> Result<Self, TxError> {
         // TODO: use match statement once if_let_guard feature is stable.
-        if let Ok(opts) = url.parse::<SqliteConnectOptions>() {
-            let pool = SqlitePool::connect_with(opts).await?;
-            Ok(DatabaseConnection::Sqlite(
-                pool.clone(),
-                SqliteSchemaDiscovery::new(pool),
-            ))
-        } else if let Ok(opts) = url.parse::<PgConnectOptions>() {
-            let pool = PgPool::connect_with(opts).await?;
-            return Ok(DatabaseConnection::Postgres(
-                pool.clone(),
-                PostgresSchemaDiscovery::new(pool, "public"),
-            ));
-        } else if let Ok(opts) = url.parse::<MySqlConnectOptions>() {
-            let pool = MySqlPool::connect_with(opts).await?;
-            return Ok(DatabaseConnection::Mysql(pool.clone()));
-        } else {
-            return Err(TxError::UnsupportedDriver(String::default()));
-        }
+        let con = match driver {
+            Drivers::SQLite => {
+                let pool = SqlitePool::connect_with(url.parse::<SqliteConnectOptions>()?).await?;
+                DatabaseConnection::Sqlite(pool.clone(), SqliteSchemaDiscovery::new(pool))
+            }
+            Drivers::PostgreSQL => {
+                let pool = PgPool::connect_with(url.parse::<PgConnectOptions>()?).await?;
+                DatabaseConnection::Postgres(
+                    pool.clone(),
+                    PostgresSchemaDiscovery::new(pool, "public"),
+                )
+            }
+            Drivers::MySQL => {
+                let pool = MySqlPool::connect_with(url.parse::<MySqlConnectOptions>()?).await?;
+                DatabaseConnection::Mysql(pool.clone())
+            }
+        };
+        Ok(con)
+
+        // if let Ok(opts) = url.parse::<SqliteConnectOptions>() {
+        //     dbg!("connection is sqlite");
+        //     let pool = SqlitePool::connect_with(opts).await?;
+        //     Ok(DatabaseConnection::Sqlite(
+        //         pool.clone(),
+        //         SqliteSchemaDiscovery::new(pool),
+        //     ))
+        // } else if let Ok(opts) = url.parse::<PgConnectOptions>() {
+        //     let pool = PgPool::connect_with(opts).await?;
+        //     return Ok(DatabaseConnection::Postgres(
+        //         pool.clone(),
+        //         PostgresSchemaDiscovery::new(pool, "public"),
+        //     ));
+        // } else if let Ok(opts) = url.parse::<MySqlConnectOptions>() {
+        //     let pool = MySqlPool::connect_with(opts).await?;
+        //     return Ok(DatabaseConnection::Mysql(pool.clone()));
+        // } else {
+        //     return Err(TxError::UnsupportedDriver(String::default()));
+        // }
     }
     pub fn into_builder(&self) -> Box<dyn QueryBuilder> {
         match self {

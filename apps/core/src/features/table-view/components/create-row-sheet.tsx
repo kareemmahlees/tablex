@@ -28,7 +28,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { TooltipButton } from "../../../components/custom/tooltip-button"
-import DynamicFormInput from "../../../components/sheets/components/dynamic-input"
+import DynamicFormInput from "./dynamic-input"
 
 type AddRowSheetProps = {
   tableName: string
@@ -47,14 +47,14 @@ export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
           <PlusCircle className="h-4 w-4" />
         </TooltipButton>
       </SheetTrigger>
-      <SheetContent>
-        <SheetHeader className="bg-background sticky top-0 mb-4">
-          <SheetTitle>Add new row</SheetTitle>
-          <SheetDescription>
-            Click Save to submit your changes.
-          </SheetDescription>
-        </SheetHeader>
+      <SheetContent className="max-w-lg">
         <ScrollArea className="h-full">
+          <SheetHeader className="bg-background sticky top-0 mb-4">
+            <SheetTitle>Add new row</SheetTitle>
+            <SheetDescription>
+              Click Save to submit your changes.
+            </SheetDescription>
+          </SheetHeader>
           <AddRowForm tableName={tableName} setOpen={setOpen} />
         </ScrollArea>
       </SheetContent>
@@ -117,7 +117,23 @@ const AddRowForm = ({
             )}
           />
         ))}
-        <Button type="submit">Save</Button>
+        <div className="bg-background sticky bottom-0 space-x-4">
+          <Button type="submit">Save</Button>
+          <Button
+            type="button"
+            variant={"secondary"}
+            onClick={() =>
+              form.reset(
+                {},
+                {
+                  keepValues: false
+                }
+              )
+            }
+          >
+            Reset
+          </Button>
+        </div>
       </form>
     </Form>
   )

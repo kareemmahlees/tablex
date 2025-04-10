@@ -1,5 +1,6 @@
 import Editor, { useMonaco } from "@monaco-editor/react"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
+import { Skeleton } from "../ui/skeleton"
 
 type JsonEditorProps<T extends FieldValues> = {
   field: ControllerRenderProps<T>
@@ -29,6 +30,7 @@ const JsonEditor = <T extends FieldValues>({
         value={field.value}
         defaultValue={defaultValue}
         onChange={field.onChange}
+        loading={<Skeleton className="h-[300px] w-full" />}
         options={{
           padding: {
             top: 10
