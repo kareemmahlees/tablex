@@ -1,38 +1,17 @@
-import { PaginatedRows } from "@/bindings"
-import { getZodSchemaFromCols } from "@/commands/columns"
-import { rankItem, type RankingInfo } from "@tanstack/match-sorter-utils"
-import { useQuery } from "@tanstack/react-query"
+import type { PaginatedRows } from "@/bindings"
+import { type RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import {
+  type ColumnDef,
+  type FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  PaginationState,
-  useReactTable,
-  type ColumnDef,
-  type FilterFn,
+  type PaginationState,
   type Row,
-  type SortingState
+  type SortingState,
+  useReactTable
 } from "@tanstack/react-table"
-import { Dispatch, SetStateAction, useRef, useState } from "react"
-
-// export const useGetTableColumns = (tableName: string) => {
-//   const { updatePkColumn } = useTableState()
-//   return useQuery({
-//     queryKey: ["table_columns", tableName],
-//     queryFn: async () => await generateColumnsDefs(tableName, updatePkColumn)
-//   })
-// }
-
-/**
- * Calls the backend and returns a generated zod schema
- * representing the column definition for the given table.
- */
-export const useGetZodSchema = (tableName: string) => {
-  return useQuery({
-    queryKey: [tableName],
-    queryFn: async () => await getZodSchemaFromCols(tableName)
-  })
-}
+import { type Dispatch, type SetStateAction, useRef, useState } from "react"
 
 declare module "@tanstack/react-table" {
   //add fuzzy filter to the filterFns
@@ -56,7 +35,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
 const FALLBACK_DATA = []
 
-type SetupReactTableOptions<TData, TValue> = {
+type SetupDataTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: PaginatedRows
   pagination: PaginationState
@@ -67,12 +46,12 @@ type SetupReactTableOptions<TData, TValue> = {
  * Fetches paginated rows and sets up tanstack table
  * with all the necessary attachments and logic.
  */
-export const useSetupReactTable = <TData, TValue>({
+export const useSetupDataTable = <TData, TValue>({
   columns,
   data,
   pagination,
   setPagination
-}: SetupReactTableOptions<TData, TValue>) => {
+}: SetupDataTableOptions<TData, TValue>) => {
   // const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
   //   tableName,
   //   pageIndex,

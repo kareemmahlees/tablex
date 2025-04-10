@@ -1,4 +1,4 @@
-import type { ColumnProps } from "@/bindings"
+import type { ColumnInfo } from "@/bindings"
 import { Switch } from "@/components/ui/switch"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
 import { Input } from "../../ui/input"
@@ -16,7 +16,7 @@ const normalizeTimezoneOffset = (date: Date) => {
 }
 
 type DynamicInputProps<T extends FieldValues> = {
-  column: ColumnProps
+  column: ColumnInfo
   field: ControllerRenderProps<T>
   defaultValue?: string
 }
@@ -26,7 +26,7 @@ const DynamicFormInput = <T extends FieldValues>({
   field,
   defaultValue
 }: DynamicInputProps<T>) => {
-  const disabled = column.type === "unsupported"
+  const disabled = false // TODO: fixme
 
   switch (column.type) {
     // TODO: use a proper <TimePicker/> component instead.
@@ -81,7 +81,7 @@ const DynamicFormInput = <T extends FieldValues>({
           {...field}
           disabled={disabled}
           defaultValue={defaultValue}
-          placeholder={column.isAutoIncrement ? "Auto Increment" : ""}
+          // placeholder={column.isAutoIncrement ? "Auto Increment" : ""}
         />
       )
   }

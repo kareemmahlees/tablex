@@ -1,5 +1,4 @@
 import { commands } from "@/bindings"
-import { generateColumnsDefs } from "@/features/table-view/columns"
 import { QUERY_KEYS } from "@/lib/constants"
 import { queryOptions } from "@tanstack/react-query"
 
@@ -15,10 +14,13 @@ export const getConnectionDetailsQueryOptions = (connectionId: string) =>
     queryFn: async () => await commands.getConnectionDetails(connectionId)
   })
 
-export const getTableColumnsOptions = (tableName: string) =>
+export const discoverDBSchemaOptions = (tableName: string) =>
   queryOptions({
     queryKey: [QUERY_KEYS.TABLE_COLUMNS, tableName],
-    queryFn: async () => await generateColumnsDefs(tableName),
+    queryFn: async () => {
+      const schema = await commands.discoverDbSchema()
+      return schema.find((t) => t.name === tableName)!
+    },
     staleTime: 60 * 60 * 1000 // 1 hour
   })
 
@@ -31,13 +33,10 @@ export const getPaginatedRowsOptions = ({
   pageIndex: number
   pageSize: number
 }) => {
-  // const { defaultData, pagination, setPagination, pageIndex, pageSize } =
-  //   useSetupPagination(connectionId)
-
   return queryOptions({
     queryKey: [QUERY_KEYS.TABLE_ROWS, tableName, { pageIndex, pageSize }],
     queryFn: async () =>
       await commands.getPaginatedRows(tableName, pageIndex, pageSize),
-    staleTime: 30 * 60 * 1000 // 30 mins
+    staleTime: 10 * 60 * 1000 // 30 mins
   })
 }

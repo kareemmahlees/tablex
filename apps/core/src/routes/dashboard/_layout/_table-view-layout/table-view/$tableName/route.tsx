@@ -2,25 +2,27 @@ import { DataTable } from "@/components/custom/data-table"
 import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import { TooltipButton } from "@/components/custom/tooltip-button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { generateColumnsDefs } from "@/features/table-view/columns"
+import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
 import {
-  getPaginatedRowsOptions,
-  getTableColumnsOptions
+  discoverDBSchemaOptions,
+  getPaginatedRowsOptions
 } from "@/features/table-view/queries"
-import { useSetupReactTable } from "@/hooks/table"
+import { useSetupDataTable } from "@/hooks/use-setup-data-table"
 import { useSetupPagination } from "@/hooks/use-setup-pagination"
 import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
 import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { PlusCircle, RefreshCw } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 
 export const Route = createFileRoute(
   "/dashboard/_layout/_table-view-layout/table-view/$tableName"
 )({
   loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
   loader: ({ context: { queryClient }, params: { tableName } }) => {
-    queryClient.ensureQueryData(getTableColumnsOptions(tableName))
+    queryClient.ensureQueryData(discoverDBSchemaOptions(tableName))
   },
   component: TableView,
   pendingComponent: () => (
@@ -45,7 +47,10 @@ function TableView() {
     "1": { data: rows, refetch: refetchRows, isFetching: isFetchingRows }
   } = useSuspenseQueries({
     queries: [
-      getTableColumnsOptions(tableName),
+      {
+        ...discoverDBSchemaOptions(tableName),
+        select: generateColumnsDefs
+      },
       getPaginatedRowsOptions({
         tableName,
         ...pagination
@@ -53,7 +58,7 @@ function TableView() {
     ]
   })
 
-  const { table } = useSetupReactTable({
+  const { table } = useSetupDataTable({
     columns,
     data: rows,
     pagination,
@@ -69,7 +74,7 @@ function TableView() {
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
       <DataTable table={table} />
-      <div className="flex items-center justify-between p-4">
+      <div className="bg-sidebar flex items-center justify-between p-4">
         <DataTablePagination table={table} />
         <div className="space-x-4">
           <TooltipButton
@@ -82,13 +87,7 @@ function TableView() {
           >
             <RefreshCw className="h-4 w-4" />
           </TooltipButton>
-          <TooltipButton
-            size={"icon"}
-            className="h-8 w-8"
-            tooltipContent="Add Row"
-          >
-            <PlusCircle className="h-4 w-4" />
-          </TooltipButton>
+          <AddRowSheet tableName={tableName} />
         </div>
       </div>
     </section>
