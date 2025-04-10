@@ -1,10 +1,11 @@
 import type { ColumnInfo } from "@/bindings"
+import { DateInput } from "@/components/custom/date-input"
 import JsonEditor from "@/components/custom/json-editor"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/text-area"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
-import { DateTimePicker } from "../../../components/sheets/components/date-time-picker"
+import { DateTimePicker } from "../../../components/custom/date-time-picker"
 
 /**
  * Remove the effect of timezone differences and return a new date
@@ -43,17 +44,22 @@ const DynamicFormInput = <T extends FieldValues>({
       )
     case "date":
       return (
-        <DateTimePicker
-          displayFormat={{ hour24: "yyyy/MM/dd" }}
-          granularity="day"
-          value={defaultValue ? new Date(defaultValue) : field.value}
+        <DateInput
+          value={field.value ?? new Date()}
           disabled={disabled}
-          onChange={(date) => {
-            if (date) {
-              field.onChange(normalizeTimezoneOffset(date))
-            }
-          }}
+          onChange={field.onChange}
         />
+        // <DateTimePicker
+        //   displayFormat={{ hour24: "yyyy/MM/dd" }}
+        //   granularity="day"
+        //   value={defaultValue ? new Date(defaultValue) : field.value}
+        //   disabled={disabled}
+        //   onChange={(date) => {
+        //     if (date) {
+        //       field.onChange(normalizeTimezoneOffset(date))
+        //     }
+        //   }}
+        // />
       )
     case "dateTime":
       return (
