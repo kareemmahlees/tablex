@@ -22,17 +22,19 @@ export const DateInput = ({
 
   return (
     <div
-      {...getRootProps()}
       className={cn(
         buttonVariants({ variant: "outline" }),
-        "flex justify-between hover:bg-transparent"
+        "flex hover:bg-transparent"
       )}
     >
-      <div className="flex flex-1 select-none items-center gap-x-1 [&_input]:border-none [&_input]:bg-transparent [&_input]:outline-none">
+      <div
+        className="flex-1 grow select-none space-x-1 [&_input]:border-none [&_input]:bg-transparent [&_input]:outline-none"
+        {...getRootProps()}
+      >
         <input
           {...getInputProps("years")}
           disabled={disabled}
-          className="focus:rounded-md focus:bg-slate-600 focus:px-[1px] focus:py-[0.5px]"
+          className="w-16 focus:rounded-md focus:bg-slate-600"
         />
         <span>/</span>
         <input
@@ -44,7 +46,7 @@ export const DateInput = ({
         <input
           {...getInputProps("days")}
           disabled={disabled}
-          className="focus:rounded-md focus:bg-slate-600 focus:px-[1px] focus:py-[0.5px]"
+          className="focus:rounded-md focus:bg-slate-600"
         />
       </div>
 

@@ -45,9 +45,12 @@ const DynamicFormInput = <T extends FieldValues>({
     case "date":
       return (
         <DateInput
-          value={field.value ?? new Date()}
+          value={field.value}
           disabled={disabled}
-          onChange={field.onChange}
+          onChange={(v) => {
+            console.log("changed", v)
+            field.onChange(v)
+          }}
         />
         // <DateTimePicker
         //   displayFormat={{ hour24: "yyyy/MM/dd" }}
