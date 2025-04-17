@@ -1,9 +1,8 @@
 import { tablexTailwindPreset } from "@tablex/tailwind"
 import svgToDataUri from "mini-svg-data-uri"
 import type { Config } from "tailwindcss"
-const {
-  default: flattenColorPalette
-} = require("tailwindcss/lib/util/flattenColorPalette")
+// @ts-expect-error workaround for now until migrating to tailwind v4
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette"
 
 // Generated color palettes
 const accent = {
