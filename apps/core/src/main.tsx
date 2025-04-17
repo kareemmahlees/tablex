@@ -3,10 +3,12 @@ import { SettingsContext, SettingsManager } from "@/features/settings/manager"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
+import { scan } from "react-scan"
 import "./index.css"
 import { routeTree } from "./routeTree.gen"
 
 const client = new QueryClient()
+scan({ enabled: import.meta.env.DEV })
 
 // Set up a Router instance
 const router = createRouter({

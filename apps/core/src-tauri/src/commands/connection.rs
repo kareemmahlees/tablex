@@ -7,7 +7,7 @@ use tauri_plugin_shell::process::CommandChild;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
 use tauri_specta::Event;
-use tx_handlers::{Handler, MySQLHandler, PostgresHandler, SQLiteHandler};
+use tx_handlers::{DatabaseConnection, Handler, MySQLHandler, PostgresHandler, SQLiteHandler};
 use tx_lib::{
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},
@@ -81,18 +81,11 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    let pool = tx_handlers::establish_connection(&conn_string, &driver).await?;
-
-    let handler: Box<dyn Handler> = match driver {
-        Drivers::SQLite => SQLiteHandler::new(),
-        Drivers::PostgreSQL => PostgresHandler::new(),
-        Drivers::MySQL => MySQLHandler::new(),
-    };
+    let conn = DatabaseConnection::connect(&conn_string, driver).await?;
 
     #[allow(unused_mut)]
     let mut state = SharedState::new(
-        handler,
-        pool,
+        conn,
         #[cfg(feature = "metax")]
         None,
     );

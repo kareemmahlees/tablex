@@ -1,33 +1,28 @@
 use sqlx::AnyPool;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
-use tx_handlers::Handler;
+use tx_handlers::{DatabaseConnection, Handler};
 
-#[derive(Debug)]
 pub struct SharedState {
-    pub handler: Box<dyn Handler>,
+    pub conn: DatabaseConnection,
     /// `pool` is passed to the Handler
-    pub pool: AnyPool,
     #[cfg(feature = "metax")]
     pub metax: Option<CommandChild>,
 }
 
 impl SharedState {
     pub fn new(
-        handler: Box<dyn Handler>,
-        pool: AnyPool,
+        conn: DatabaseConnection,
         #[cfg(feature = "metax")] metax: Option<CommandChild>,
     ) -> Self {
         Self {
-            handler,
-            pool,
+            conn,
             #[cfg(feature = "metax")]
             metax,
         }
     }
 
     pub async fn cleanup(&mut self) {
-        self.pool.close().await;
         log::debug!("Connection pool closed.");
 
         #[cfg(feature = "metax")]

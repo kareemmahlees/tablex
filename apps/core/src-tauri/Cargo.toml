@@ -41,6 +41,8 @@ json-patch = "2.0.0"
 tauri-plugin-log = "2.0.0-rc.0"
 log = { workspace = true }
 time = "0.3.36"
+sea-schema = { workspace = true }
+sea-query-binder = { workspace = true }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

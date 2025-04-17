@@ -15,7 +15,11 @@ edition.workspace = true
 tokio = { workspace = true }
 sqlx = { workspace = true }
 serde_json = { workspace = true }
+specta = { workspace = true }
+serde = { workspace = true }
 async-trait = { workspace = true }
 log = { workspace = true }
 tx_lib = { path = "../lib" }
 home = "0.5.9"
+sea-query-binder = { workspace = true }
+sea-schema = { workspace = true }

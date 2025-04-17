@@ -17,15 +17,22 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ["**/dist", "src/components/ui", "src/bindings.ts"]
+    ignores: ["**/dist", "src/components/ui", "src/bindings.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
+    }
   },
-  ...fixupConfigRules(
-    compat.extends(
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react-hooks/recommended"
-    )
-  ),
+  {
+    ...fixupConfigRules(
+      compat.extends(
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react-hooks/recommended"
+      )
+    ),
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
+  },
   {
     plugins: {
       "react-refresh": reactRefresh
@@ -45,9 +52,7 @@ export default [
         {
           allowConstantExport: true
         }
-      ],
-
-      "@typescript-eslint/no-explicit-any": "off"
+      ]
     }
   }
 ]

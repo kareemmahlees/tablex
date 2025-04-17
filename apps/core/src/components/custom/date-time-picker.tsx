@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { ReactNode } from "@tanstack/react-router"
 import { DayPicker } from "react-day-picker"
 
 // ---------- utils start ----------
@@ -550,6 +551,7 @@ type DateTimePickerProps = {
   value?: Date
   onChange?: (date: Date | undefined) => void
   disabled?: boolean
+  children?: ReactNode
   /** showing `AM/PM` or not. */
   hourCycle?: 12 | 24
   placeholder?: string
@@ -585,6 +587,7 @@ const DateTimePicker = React.forwardRef<DateTimePickerRef, DateTimePickerProps>(
       locale = enUS,
       value,
       onChange,
+      children,
       hourCycle = 24,
       yearRange = 50,
       disabled = false,
@@ -632,29 +635,31 @@ const DateTimePicker = React.forwardRef<DateTimePickerRef, DateTimePickerProps>(
     return (
       <Popover>
         <PopoverTrigger asChild disabled={disabled}>
-          <Button
-            variant="outline"
-            className={cn(
-              "w-[280px] justify-start text-left font-normal",
-              !value && "text-muted-foreground"
-            )}
-            ref={buttonRef}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {value ? (
-              format(
-                value,
-                hourCycle === 24
-                  ? initHourFormat.hour24
-                  : initHourFormat.hour12,
-                {
-                  locale
-                }
-              )
-            ) : (
-              <span>{placeholder}</span>
-            )}
-          </Button>
+          {children ?? (
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[280px] justify-start text-left font-normal",
+                !value && "text-muted-foreground"
+              )}
+              ref={buttonRef}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {value ? (
+                format(
+                  value,
+                  hourCycle === 24
+                    ? initHourFormat.hour24
+                    : initHourFormat.hour12,
+                  {
+                    locale
+                  }
+                )
+              ) : (
+                <span>{placeholder}</span>
+              )}
+            </Button>
+          )}
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar

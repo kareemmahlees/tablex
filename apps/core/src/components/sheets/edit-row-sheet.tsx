@@ -1,4 +1,4 @@
-import { ColumnProps } from "@/bindings"
+import { ColumnInfo } from "@/bindings"
 import { updateRowCmd } from "@/commands/row"
 import LoadingSpinner from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
@@ -26,10 +26,10 @@ import type { Row } from "@tanstack/react-table"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import DynamicFormInput from "./components/dynamic-input"
+import DynamicFormInput from "../../features/table-view/components/dynamic-input"
 
-const getColumn = (columnsProps: ColumnProps[], columnName: string) => {
-  return columnsProps.find((col) => col.columnName == columnName)
+const getColumn = (columnsProps: ColumnInfo[], columnName: string) => {
+  return columnsProps.find((col) => col.name == columnName)
 }
 
 interface EditRowSheetProps {

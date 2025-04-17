@@ -1,9 +1,11 @@
-import type { ColumnProps } from "@/bindings"
+import type { ColumnInfo } from "@/bindings"
+import { DateInput } from "@/components/custom/date-input"
+import JsonEditor from "@/components/custom/json-editor"
+import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/text-area"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
-import { Input } from "../../ui/input"
-import { DateTimePicker } from "./date-time-picker"
-import JsonEditor from "./json-editor"
+import { DateTimePicker } from "../../../components/custom/date-time-picker"
 
 /**
  * Remove the effect of timezone differences and return a new date
@@ -16,7 +18,7 @@ const normalizeTimezoneOffset = (date: Date) => {
 }
 
 type DynamicInputProps<T extends FieldValues> = {
-  column: ColumnProps
+  column: ColumnInfo
   field: ControllerRenderProps<T>
   defaultValue?: string
 }
@@ -26,7 +28,7 @@ const DynamicFormInput = <T extends FieldValues>({
   field,
   defaultValue
 }: DynamicInputProps<T>) => {
-  const disabled = column.type === "unsupported"
+  const disabled = false // TODO: fixme
 
   switch (column.type) {
     // TODO: use a proper <TimePicker/> component instead.
@@ -42,17 +44,25 @@ const DynamicFormInput = <T extends FieldValues>({
       )
     case "date":
       return (
-        <DateTimePicker
-          displayFormat={{ hour24: "yyyy/MM/dd" }}
-          granularity="day"
-          value={defaultValue ? new Date(defaultValue) : field.value}
+        <DateInput
+          value={field.value}
           disabled={disabled}
-          onChange={(date) => {
-            if (date) {
-              field.onChange(normalizeTimezoneOffset(date))
-            }
+          onChange={(v) => {
+            console.log("changed", v)
+            field.onChange(v)
           }}
         />
+        // <DateTimePicker
+        //   displayFormat={{ hour24: "yyyy/MM/dd" }}
+        //   granularity="day"
+        //   value={defaultValue ? new Date(defaultValue) : field.value}
+        //   disabled={disabled}
+        //   onChange={(date) => {
+        //     if (date) {
+        //       field.onChange(normalizeTimezoneOffset(date))
+        //     }
+        //   }}
+        // />
       )
     case "dateTime":
       return (
@@ -75,13 +85,15 @@ const DynamicFormInput = <T extends FieldValues>({
           onCheckedChange={field.onChange}
         />
       )
+    case "text":
+      return <Textarea value={field.value} onChange={field.onChange} />
     default:
       return (
         <Input
           {...field}
           disabled={disabled}
           defaultValue={defaultValue}
-          placeholder={column.isAutoIncrement ? "Auto Increment" : ""}
+          // placeholder={column.isAutoIncrement ? "Auto Increment" : ""}
         />
       )
   }

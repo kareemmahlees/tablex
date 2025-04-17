@@ -2,6 +2,7 @@ import { commands } from "@/bindings"
 import { deleteConnectionCmd } from "@/commands/connection"
 import CreateConnectionBtn from "@/components/create-connection-btn"
 import LoadingSpinner from "@/components/loading-spinner"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,10 +10,16 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
-import { unwrapResult } from "@/lib/utils"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash } from "lucide-react"
 import { Suspense } from "react"
+
+// const DRIVERS_ICONS: Record<keyof typeof Drivers, ReactNode> = {
+//   [Drivers.SQLite]: <SQLite width={30} height={30} />,
+//   [Drivers.PostgreSQL]: <PostgreSQL width={30} height={30} />,
+//   [Drivers.MySQL]: <MySQL width={30} height={30} />
+// }
 
 export const Route = createFileRoute("/connections")({
   // beforeLoad: async () => {
@@ -22,42 +29,45 @@ export const Route = createFileRoute("/connections")({
   //     throw redirect({ to: "/" })
   //   }
   // },
-  loader: async () => unwrapResult(await commands.getConnections()),
+  loader: () => commands.getConnections(),
   staleTime: 0,
   component: ConnectionsPage
 })
 
 function ConnectionsPage() {
   const router = useRouter()
+  const navigate = Route.useNavigate()
   const connections = Route.useLoaderData()
 
   const onClickConnect = async (connectionId: string) => {
-    const connectionDetails = unwrapResult(
-      await commands.getConnectionDetails(connectionId)
-    )
+    const connectionDetails = await commands.getConnectionDetails(connectionId)
 
-    unwrapResult(
+    try {
       await commands.establishConnection(
         connectionDetails.connString,
         connectionDetails.driver
       )
+    } catch (error) {
+      console.log(error)
+    }
+    const latestTable = localStorage.getItem(
+      LOCAL_STORAGE.LATEST_TABLE(connectionId)
     )
 
-    // const connectionStorageData = localStorage.getItem(
-    //   `@tablex/${connectionId}`
-    // )
+    if (latestTable) {
+      navigate({
+        to: "/dashboard/table-view/$tableName",
+        params: {
+          tableName: latestTable
+        },
+        search: {
+          connectionId
+        }
+      })
+      return
+    }
 
-    // if (connectionStorageData) {
-    // const parsedConnectionData: TableLocalStorage = JSON.parse(
-    //   connectionStorageData
-    // )
-    //   return router.navigate({
-    //     to: "/dashboard/table-view/land",
-    //     search: { connectionId }
-    //   })
-    // }
-
-    router.navigate({
+    navigate({
       to: "/dashboard/table-view/land",
       search: { connectionId }
     })
@@ -71,19 +81,26 @@ function ConnectionsPage() {
             return (
               <li key={id}>
                 <div className="flex justify-between">
-                  <div
-                    className="w-full"
+                  {/* {DRIVERS_ICONS[config.driver]} */}
+                  <Button
+                    variant={"ghost"}
+                    className="flex flex-1 justify-start"
                     onClick={() => onClickConnect(id)}
-                    role="button"
                   >
-                    <p className="font-medium lg:text-lg">{config.connName}</p>
-                    <p className="text-muted-foreground text-sm lg:text-lg">
-                      {config.driver}
-                    </p>
-                  </div>
+                    <div className="flex items-end gap-x-2">
+                      <p className="text-lg font-medium lg:text-xl">
+                        {config.connName}
+                      </p>
+                      <p className="text-muted-foreground mb-1 text-xs lg:text-sm">
+                        {config.driver}
+                      </p>
+                    </div>
+                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
-                      <MoreHorizontal className="h-5 w-5 lg:h-6 lg:w-6" />
+                      <Button variant={"ghost"} size={"icon"}>
+                        <MoreHorizontal className="h-5 w-5 lg:h-6 lg:w-6" />
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem
