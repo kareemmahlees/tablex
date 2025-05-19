@@ -35,6 +35,7 @@
     "@tablex/lib": "workspace:^",
     "@tablex/tailwind": "workspace:^",
     "@tanstack/match-sorter-utils": "^8.19.4",
+    "@tanstack/react-form": "^1.11.2",
     "@tanstack/react-query": "^5.52.1",
     "@tanstack/react-router": "^1.112.0",
     "@tanstack/react-table": "^8.21.3",
