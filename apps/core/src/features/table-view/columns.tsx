@@ -143,17 +143,14 @@ export const getZodSchemaFromCols = (table: TableInfo) => {
         validationRule = z.coerce.date()
         break
       case "json": {
-        const literalSchema = z.union([
-          z.string(),
-          z.number(),
-          z.boolean(),
-          z.null()
-        ])
-        type Literal = z.infer<typeof literalSchema>
-        type Json = Literal | { [key: string]: Json } | Json[]
-        const jsonSchema: z.ZodType<Json> = z.lazy(() =>
-          z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])
-        )
+        const jsonSchema = z.string().transform((str, ctx) => {
+          try {
+            return JSON.parse(str)
+          } catch (e) {
+            ctx.addIssue({ code: "custom", message: "Invalid JSON" })
+            return z.NEVER
+          }
+        })
         validationRule = jsonSchema
         break
       }
