@@ -29,15 +29,15 @@ regex = "1.10.3"
 specta = { workspace = true }
 specta-typescript = "0.0.7"
 tauri-specta = { workspace = true }
-tauri-plugin-dialog = "2.0.0-rc"
-tauri-plugin-clipboard-manager = "2.0.0-rc"
-tauri-plugin-shell = "2.0.0-rc"
-tauri-plugin-fs = { version = "2.0.0-rc", features = ["watch"] }
+tauri-plugin-dialog = "2.2.2"
+tauri-plugin-clipboard-manager = "2.2.2"
+tauri-plugin-fs = { version = "2.3.0", features = ["watch"] }
+tauri-plugin-shell = "2.2.1"
 # NOTE: this should be optional but tauri can't yet offer a way
 # to individually manipulate capabilites at runtime.
-tauri-plugin-updater = "2.0.0-rc"
+tauri-plugin-updater = "2.7.1"
 json-patch = "2.0.0"
-tauri-plugin-log = "2.0.0-rc.0"
+tauri-plugin-log = "2.4.0"
 log = { workspace = true }
 time = "0.3.36"
 sea-schema = { workspace = true }
