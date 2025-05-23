@@ -6,8 +6,7 @@ import { createContext, useContext } from "react"
  * through {@link useSettings} context hook.
  */
 export class SettingsManager {
-  //@ts-expect-error it's assigned in the constructor but typescript cannot detect it
-  settings: Settings
+  settings!: Settings
 
   constructor() {
     commands.loadSettingsFile().then((result) => {
