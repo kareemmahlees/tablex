@@ -121,7 +121,6 @@ fn main() {
         .plugin(setup_logging_plugin().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
@@ -167,6 +166,11 @@ fn main() {
                 rt.shutdown_background();
             }
         });
+
+    #[cfg(feature = "metax")]
+    {
+        tauri_builder = tauri_builder.plugin(tauri_plugin_shell::init());
+    }
 
     tauri_builder
         .run(tauri::generate_context!())
