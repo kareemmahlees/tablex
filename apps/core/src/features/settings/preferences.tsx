@@ -14,7 +14,7 @@ import {
   SettingsContent,
   SettingsHeader,
   SettingsSection
-} from "../components/settings"
+} from "./components/settings"
 
 const formSchema = z.object({
   checkForUpdates: z.boolean(),
@@ -28,7 +28,7 @@ const formSchema = z.object({
   })
 })
 
-export const PreferencesTab = () => {
+export const Preferences = () => {
   const settings = useSettings()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,7 +51,10 @@ export const PreferencesTab = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10 space-y-16">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mx-auto mt-10 w-1/2 space-y-16"
+      >
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-semibold">Preferences</h1>
           <div className="flex flex-row-reverse items-center gap-x-3">
