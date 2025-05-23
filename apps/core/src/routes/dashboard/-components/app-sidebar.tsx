@@ -24,7 +24,8 @@ import {
   FileRoutesByPath,
   getRouteApi,
   Link,
-  useRouter
+  useRouter,
+  useRouterState
 } from "@tanstack/react-router"
 import {
   ArrowLeft,
@@ -98,6 +99,7 @@ const items: SidebarItem[] = [
 
 const AppSidebar = () => {
   const router = useRouter()
+  const location = useRouterState({ select: (s) => s.location })
   const search = getRouteApi("/dashboard/_layout").useSearch()
   return (
     <Sidebar>
@@ -144,7 +146,11 @@ const AppSidebar = () => {
                 if (item.type === "single") {
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton className="lg:h-9" asChild>
+                      <SidebarMenuButton
+                        className="lg:h-9"
+                        isActive={location.pathname === item.url}
+                        asChild
+                      >
                         <Link
                           to={item.url}
                           search={{ connectionId: search.connectionId }}
@@ -176,7 +182,7 @@ const AppSidebar = () => {
                               <SidebarMenuSubItem key={item.title}>
                                 <SidebarMenuSubButton
                                   asChild
-                                  // isActive={item.isActive}
+                                  isActive={location.pathname === item.url}
                                 >
                                   <Link
                                     to={item.url}
