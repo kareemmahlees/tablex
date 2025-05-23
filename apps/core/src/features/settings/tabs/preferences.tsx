@@ -40,11 +40,7 @@ export const PreferencesTab = () => {
       await commands.writeIntoSettingsFile(data)
 
       return toast.success("Successfully updated settings", {
-        description: "A hard refresh is required",
-        action: {
-          label: "Refresh",
-          onClick: () => location.reload()
-        }
+        position: "bottom-center"
       })
     } catch (error) {
       return toast.error("Failed to update settings.", {
@@ -59,7 +55,11 @@ export const PreferencesTab = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-semibold">Preferences</h1>
           <div className="flex flex-row-reverse items-center gap-x-3">
-            <Button type="submit" size={"sm"}>
+            <Button
+              type="submit"
+              size={"sm"}
+              disabled={form.formState.isSubmitting}
+            >
               Save
             </Button>
             <Button
