@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button"
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible"
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -8,7 +13,10 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem
 } from "@/components/ui/sidebar"
 import { About } from "@/features/about/about"
 import CommandPalette from "@/features/command-palette/palette"
@@ -16,11 +24,13 @@ import {
   FileRoutesByPath,
   getRouteApi,
   Link,
-  useRouter
+  useRouter,
+  useRouterState
 } from "@tanstack/react-router"
 import {
   ArrowLeft,
   ArrowRight,
+  ChevronRight,
   Keyboard,
   LucideIcon,
   RotateCw,
@@ -32,36 +42,64 @@ import {
 
 type Routes = FileRoutesByPath[keyof FileRoutesByPath]["fullPath"]
 
-const items: { title: string; url: Routes; icon: LucideIcon }[] = [
+type SidebarItem =
+  | {
+      type: "single"
+      title: string
+      icon?: LucideIcon
+      url: Routes
+    }
+  | {
+      type: "collapsible"
+      title: string
+      icon?: LucideIcon
+      items: {
+        title: string
+        url: Routes
+      }[]
+    }
+
+const items: SidebarItem[] = [
   {
+    type: "single",
     title: "Tables",
     url: "/dashboard/table-view/land",
     icon: Table2
   },
   {
+    type: "single",
     title: "SQL Editor",
     url: "/dashboard/sql-editor",
     icon: Terminal
   },
   {
+    type: "single",
     title: "API Docs",
     url: `/dashboard/api-docs`,
     icon: StickyNote
   },
   {
+    type: "single",
     title: "Keybindings",
     url: `/dashboard/keybindings`,
     icon: Keyboard
   },
   {
+    type: "collapsible",
     title: "Settings",
-    url: `/dashboard/settings`,
-    icon: Settings
+    icon: Settings,
+    items: [
+      {
+        title: "Preferences",
+        url: "/dashboard/settings/preferences"
+      }
+    ]
   }
 ]
 
 const AppSidebar = () => {
   const router = useRouter()
+  const location = useRouterState({ select: (s) => s.location })
   const search = getRouteApi("/dashboard/_layout").useSearch()
   return (
     <Sidebar>
@@ -104,19 +142,66 @@ const AppSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton className="lg:h-9" asChild>
-                    <Link
-                      to={item.url}
-                      search={{ connectionId: search.connectionId }}
+              {items.map((item, index) => {
+                if (item.type === "single") {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        className="lg:h-9"
+                        isActive={location.pathname === item.url}
+                        asChild
+                      >
+                        <Link
+                          to={item.url}
+                          search={{ connectionId: search.connectionId }}
+                        >
+                          {item.icon && <item.icon />}
+                          <span className="lg:text-base">{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                } else if (item.type === "collapsible") {
+                  return (
+                    <Collapsible
+                      key={item.title}
+                      defaultOpen={index === 1}
+                      className="group/collapsible"
                     >
-                      <item.icon />
-                      <span className="lg:text-base">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton className="flex items-center justify-between">
+                            {item.icon && <item.icon />}
+                            {item.title}{" "}
+                            <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items.map((item) => (
+                              <SidebarMenuSubItem key={item.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={location.pathname === item.url}
+                                >
+                                  <Link
+                                    to={item.url}
+                                    search={{
+                                      connectionId: search.connectionId
+                                    }}
+                                  >
+                                    {item.title}
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  )
+                }
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -19,9 +19,9 @@ import { Route as IndexRouteImport } from './routes/index/route'
 import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
 import { Route as DashboardLayoutTableViewLayoutImport } from './routes/dashboard/_layout/_table-view-layout'
 import { Route as DashboardLayoutSqlEditorRouteImport } from './routes/dashboard/_layout/sql-editor/route'
-import { Route as DashboardLayoutSettingsRouteImport } from './routes/dashboard/_layout/settings/route'
 import { Route as DashboardLayoutKeybindingsRouteImport } from './routes/dashboard/_layout/keybindings/route'
 import { Route as DashboardLayoutApiDocsRouteImport } from './routes/dashboard/_layout/api-docs/route'
+import { Route as DashboardLayoutSettingsPreferencesRouteImport } from './routes/dashboard/_layout/settings/preferences/route'
 import { Route as DashboardLayoutTableViewLayoutTableViewLandRouteImport } from './routes/dashboard/_layout/_table-view-layout/table-view/land/route'
 import { Route as DashboardLayoutTableViewLayoutTableViewTableNameRouteImport } from './routes/dashboard/_layout/_table-view-layout/table-view/$tableName/route'
 
@@ -68,12 +68,6 @@ const DashboardLayoutSqlEditorRouteRoute =
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
-const DashboardLayoutSettingsRouteRoute =
-  DashboardLayoutSettingsRouteImport.update({
-    path: '/settings',
-    getParentRoute: () => DashboardLayoutRoute,
-  } as any)
-
 const DashboardLayoutKeybindingsRouteRoute =
   DashboardLayoutKeybindingsRouteImport.update({
     path: '/keybindings',
@@ -83,6 +77,12 @@ const DashboardLayoutKeybindingsRouteRoute =
 const DashboardLayoutApiDocsRouteRoute =
   DashboardLayoutApiDocsRouteImport.update({
     path: '/api-docs',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
+const DashboardLayoutSettingsPreferencesRouteRoute =
+  DashboardLayoutSettingsPreferencesRouteImport.update({
+    path: '/settings/preferences',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -151,13 +151,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutKeybindingsRouteImport
       parentRoute: typeof DashboardLayoutImport
     }
-    '/dashboard/_layout/settings': {
-      id: '/dashboard/_layout/settings'
-      path: '/settings'
-      fullPath: '/dashboard/settings'
-      preLoaderRoute: typeof DashboardLayoutSettingsRouteImport
-      parentRoute: typeof DashboardLayoutImport
-    }
     '/dashboard/_layout/sql-editor': {
       id: '/dashboard/_layout/sql-editor'
       path: '/sql-editor'
@@ -170,6 +163,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardLayoutTableViewLayoutImport
+      parentRoute: typeof DashboardLayoutImport
+    }
+    '/dashboard/_layout/settings/preferences': {
+      id: '/dashboard/_layout/settings/preferences'
+      path: '/settings/preferences'
+      fullPath: '/dashboard/settings/preferences'
+      preLoaderRoute: typeof DashboardLayoutSettingsPreferencesRouteImport
       parentRoute: typeof DashboardLayoutImport
     }
     '/dashboard/_layout/_table-view-layout/table-view/$tableName': {
@@ -199,13 +199,13 @@ export const routeTree = rootRoute.addChildren({
     DashboardLayoutRoute: DashboardLayoutRoute.addChildren({
       DashboardLayoutApiDocsRouteRoute,
       DashboardLayoutKeybindingsRouteRoute,
-      DashboardLayoutSettingsRouteRoute,
       DashboardLayoutSqlEditorRouteRoute,
       DashboardLayoutTableViewLayoutRoute:
         DashboardLayoutTableViewLayoutRoute.addChildren({
           DashboardLayoutTableViewLayoutTableViewTableNameRouteRoute,
           DashboardLayoutTableViewLayoutTableViewLandRouteRoute,
         }),
+      DashboardLayoutSettingsPreferencesRouteRoute,
     }),
   }),
 })
@@ -245,9 +245,9 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/dashboard/_layout/api-docs",
         "/dashboard/_layout/keybindings",
-        "/dashboard/_layout/settings",
         "/dashboard/_layout/sql-editor",
-        "/dashboard/_layout/_table-view-layout"
+        "/dashboard/_layout/_table-view-layout",
+        "/dashboard/_layout/settings/preferences"
       ]
     },
     "/dashboard/_layout/api-docs": {
@@ -256,10 +256,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/dashboard/_layout/keybindings": {
       "filePath": "dashboard/_layout/keybindings/route.tsx",
-      "parent": "/dashboard/_layout"
-    },
-    "/dashboard/_layout/settings": {
-      "filePath": "dashboard/_layout/settings/route.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/sql-editor": {
@@ -273,6 +269,10 @@ export const routeTree = rootRoute.addChildren({
         "/dashboard/_layout/_table-view-layout/table-view/$tableName",
         "/dashboard/_layout/_table-view-layout/table-view/land"
       ]
+    },
+    "/dashboard/_layout/settings/preferences": {
+      "filePath": "dashboard/_layout/settings/preferences/route.tsx",
+      "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/_table-view-layout/table-view/$tableName": {
       "filePath": "dashboard/_layout/_table-view-layout/table-view/$tableName/route.tsx",

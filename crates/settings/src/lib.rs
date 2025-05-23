@@ -5,5 +5,5 @@
 mod fs;
 mod schema;
 
-pub use fs::{ensure_settings_file_exist, get_settings_file_path, SETTINGS_FILE_NAME};
+pub use fs::{ensure_settings_file_exist, get_settings_file_path, SETTINGS_FILE_PATH};
 pub use schema::Settings;

@@ -23,6 +23,14 @@
       ]
     },
     {
+      "identifier":"fs:allow-watch",
+      "allow": [
+        {
+          "path": "$APPCONFIG/**/*.json"
+        }
+      ]
+    },
+    {
       "identifier": "fs:allow-read-text-file",
       "allow": [
         {
