@@ -71,8 +71,8 @@ fn main() {
     let builder = Builder::<tauri::Wry>::new()
         .typ::<Keybinding>()
         .typ::<Settings>()
-        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
         .constant("SETTINGS_FILE_PATH", SETTINGS_FILE_PATH)
+        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
         .commands(collect_commands![
             kill_metax,
             // Connection commands.

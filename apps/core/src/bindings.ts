@@ -131,8 +131,8 @@ export const events = __makeEvents__<{
 
 /** user-defined constants **/
 
-export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const
 export const SETTINGS_FILE_PATH = "dev/settings.json" as const
+export const KEYBINDINGS_FILE_NAME = "keybindings.json" as const
 
 /** user-defined types **/
 
