@@ -66,6 +66,7 @@ export const Preferences = () => {
               Save
             </Button>
             <Button
+              type="button"
               variant={"secondary"}
               size={"icon"}
               onClick={async () =>

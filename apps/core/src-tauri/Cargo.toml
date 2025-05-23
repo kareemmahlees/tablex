@@ -18,7 +18,6 @@ tx_lib = { path = "../../../crates/lib" }
 tx_handlers = { path = "../../../crates/handlers" }
 tx_keybindings = { path = "../../../crates/keybindings" }
 tx_settings = { path = "../../../crates/settings" }
-open = "5"
 uuid = { version = "1.6.1", features = ["v4", "fast-rng", "macro-diagnostics"] }
 serde_json = { workspace = true }
 serde = { workspace = true }
@@ -43,6 +42,7 @@ log = { workspace = true }
 time = "0.3.36"
 sea-schema = { workspace = true }
 sea-query-binder = { workspace = true }
+tauri-plugin-opener = "2.2.7"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

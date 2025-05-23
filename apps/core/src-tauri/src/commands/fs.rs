@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use specta::Type;
 use tauri::{AppHandle, Manager};
+use tauri_plugin_opener::OpenerExt;
 use tx_keybindings::{get_keybindings_file_path, Keybinding};
 use tx_lib::{
     fs::{read_from_json, write_into_json},
@@ -30,7 +31,10 @@ pub fn open_in_external_editor(app: AppHandle, file: ConfigFile) -> Result<(), T
         ConfigFile::Logs => app.path().app_log_dir()?,
     };
     log::debug!("Opening {} in external editor.", path.to_str().unwrap());
-    Ok(open::that_detached(path)?)
+    app.opener()
+        .open_path(path.to_str().unwrap(), None::<&str>)
+        .unwrap();
+    Ok(())
 }
 
 #[tauri::command]

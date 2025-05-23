@@ -23,10 +23,26 @@
       ]
     },
     {
-      "identifier":"fs:allow-watch",
+      "identifier": "fs:allow-watch",
       "allow": [
         {
           "path": "$APPCONFIG/**/*.json"
+        }
+      ]
+    },
+    {
+      "identifier":"opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$APPCONFIG/**/*.json"
+        }
+      ]
+    },
+    {
+      "identifier":"opener:allow-open-url",
+      "allow": [
+        {
+          "path": "http://localhost:5522/*"
         }
       ]
     },

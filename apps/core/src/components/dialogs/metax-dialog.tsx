@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dialog"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useMetaXState } from "@/state/dialogState"
-import { open as openInBrowser } from "@tauri-apps/plugin-shell"
+import { openUrl } from "@tauri-apps/plugin-opener"
 import { Globe, PlayCircle } from "lucide-react"
 import CustomTooltip from "../custom-tooltip"
 
@@ -25,7 +25,7 @@ const MetaXDialog = () => {
               <div
                 className="group/globe brightness-50 transition-all hover:brightness-100"
                 role="button"
-                onClick={() => openInBrowser("http://localhost:5522")}
+                onClick={() => openUrl("http://localhost:5522")}
               >
                 <Globe className="h-12 w-12" strokeWidth={1.2} />
                 <Globe
@@ -38,7 +38,7 @@ const MetaXDialog = () => {
               <div
                 className="group/swagger relative h-12 w-12 opacity-50 invert hover:opacity-100"
                 role="button"
-                onClick={() => openInBrowser("http://localhost:5522/swagger")}
+                onClick={() => openUrl("http://localhost:5522/swagger")}
               >
                 <img src={"/icons/swagger.svg"} alt="swagger" />
                 <img
@@ -52,7 +52,7 @@ const MetaXDialog = () => {
               <div
                 className="group/graphql relative h-12 w-12 opacity-50 invert hover:opacity-100"
                 role="button"
-                onClick={() => openInBrowser("http://localhost:5522/graphql")}
+                onClick={() => openUrl("http://localhost:5522/graphql")}
               >
                 <img src={"/icons/graphql.svg"} alt="graphql" />
                 <img
@@ -66,9 +66,7 @@ const MetaXDialog = () => {
               <div
                 className="group/play brightness-50 hover:brightness-100"
                 role="button"
-                onClick={() =>
-                  openInBrowser("http://localhost:5522/playground")
-                }
+                onClick={() => openUrl("http://localhost:5522/playground")}
               >
                 <PlayCircle className="h-12 w-12" strokeWidth={1.2} />
                 <PlayCircle
