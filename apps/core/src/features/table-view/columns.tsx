@@ -2,6 +2,7 @@ import type { ColumnInfo, TableInfo } from "@/bindings"
 import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
 export const generateColumnsDefs = (
@@ -71,7 +72,13 @@ const appendCheckboxColumn = (columns: ColumnDef<ColumnInfo>[]) => {
           }
         }}
         aria-label="Select or Deselect all"
-      />
+      >
+        {table.getIsSomeRowsSelected() || table.getIsAllRowsSelected() ? (
+          <Minus className="size-4" />
+        ) : (
+          <Check className="size-4" />
+        )}
+      </Checkbox>
     ),
     cell: ({ row }) => {
       return (
