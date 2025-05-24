@@ -16,6 +16,7 @@ pub struct TableInfo {
 #[derive(Serialize, Deserialize, Type, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ColumnInfo {
+    pub auto_generated: bool,
     pub name: String,
     pub nullable: bool,
     pub pk: bool,

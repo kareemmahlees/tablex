@@ -1,5 +1,6 @@
 use crate::state::SharedState;
 use sea_query_binder::SqlxBinder;
+use sea_schema::sea_query;
 use sea_schema::sea_query::{
     Alias, Asterisk, Expr, Iden, IntoTableRef, Query, SqliteQueryBuilder, TableRef,
 };
@@ -116,13 +117,23 @@ pub async fn create_row(
 ) -> Result<ExecResult> {
     let state = state.lock().await;
     let conn = &state.conn;
-    let (stmt, _) = Query::insert()
+    dbg!(&data);
+    let (stmt, values) = Query::insert()
         .into_table(Alias::new(table_name))
         .columns(data.keys().map(|k| PlainColumn(k.clone())))
-        .values_panic(data.values().map(|v| v.to_string().into()))
-        .build_any(conn.into_builder().as_ref());
+        .values_panic(data.values().map(|val| match val {
+            JsonValue::Bool(v) => (*v).into(),
+            JsonValue::Number(v) => v.as_f64().unwrap().into(),
+            JsonValue::String(v) => v.into(),
+            JsonValue::Null | JsonValue::Array(_) | JsonValue::Object(_) => {
+                sea_query::Value::String(None).into()
+            }
+        }))
+        .build_any_sqlx(conn.into_builder().as_ref());
 
-    let result = conn.execute(stmt.as_str()).await;
+    dbg!(&values);
+    let result = conn.execute_with(stmt.as_str(), values).await;
+    dbg!(&result);
 
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();

@@ -19,6 +19,7 @@ impl From<sea_schema::postgres::def::Schema> for Schema {
 }
 
 impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
+    #[allow(clippy::incompatible_msrv)]
     fn from(value: &sea_schema::postgres::def::TableDef) -> Self {
         Self {
             name: value.info.name.clone(),
@@ -26,6 +27,10 @@ impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
                 .columns
                 .iter()
                 .map(|c| ColumnInfo {
+                    auto_generated: c.generated.is_some()
+                        || c.default
+                            .as_ref()
+                            .is_some_and(|exp| exp.0.starts_with("nextval")),
                     name: c.name.clone(),
                     nullable: c.not_null.is_none(),
                     pk: c.is_identity,
