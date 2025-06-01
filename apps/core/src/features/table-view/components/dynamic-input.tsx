@@ -1,6 +1,6 @@
 import type { ColumnInfo } from "@/bindings"
 import { DateTimeInput } from "@/components/custom/date-input"
-import JsonEditor from "@/components/custom/json-editor"
+import MonacoEditor from "@/components/custom/monaco-editor"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/text-area"
@@ -58,7 +58,7 @@ const DynamicFormInput = <T extends FieldValues>({
       )
     case "json":
       return (
-        <JsonEditor
+        <MonacoEditor
           value={field.value}
           onChange={field.onChange}
           defaultValue={defaultValue}

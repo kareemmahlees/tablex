@@ -1,6 +1,6 @@
 import type { ColumnInfo, TableInfo } from "@/bindings"
 import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
-import JsonEditor from "@/components/custom/json-editor"
+import MonacoEditor from "@/components/custom/monaco-editor"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -22,7 +22,6 @@ export const generateColumnsDefs = (table: TableInfo) => {
       },
       cell: (info) => {
         let value = info.getValue<string | undefined>()
-        console.log("value", value)
 
         if (type === "json" && value !== null) {
           return (
@@ -33,14 +32,41 @@ export const generateColumnsDefs = (table: TableInfo) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[300px]" align="end">
-                <JsonEditor
+                <MonacoEditor
                   defaultValue={JSON.stringify(value, undefined, 2)}
-                  readOnly
+                  options={{
+                    readOnly: true
+                  }}
                 />
               </DropdownMenuContent>
             </DropdownMenu>
           )
         }
+
+        if (type === "text" && value !== null) {
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button size={"sm"} className="h-6 px-4 font-semibold">
+                  TEXT
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[300px]" align="end">
+                <MonacoEditor
+                  defaultLanguage="text"
+                  defaultValue={value}
+                  options={{
+                    lineNumbers: "off",
+                    readOnly: true,
+                    wordWrap: "wordWrapColumn",
+                    wordWrapColumn: 50
+                  }}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
+        }
+
         if (type === "boolean" && value !== null) {
           value = String(value)
         }

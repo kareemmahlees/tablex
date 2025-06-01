@@ -1,19 +1,21 @@
-import Editor, { useMonaco } from "@monaco-editor/react"
+import Editor, { EditorProps, useMonaco } from "@monaco-editor/react"
 import { Skeleton } from "../ui/skeleton"
 
-type JsonEditorProps = {
+type MonacoEditorProps = {
   value?: string
   defaultValue?: string
   onChange?: (v) => void
-  readOnly: boolean
+  defaultLanguage?: string
+  options: EditorProps["options"]
 }
 
-const JsonEditor = ({
+const MonacoEditor = ({
   value,
   onChange,
   defaultValue,
-  readOnly = false
-}: JsonEditorProps) => {
+  defaultLanguage = "json",
+  options
+}: MonacoEditorProps) => {
   const monaco = useMonaco()
   monaco?.editor.defineTheme("custom-theme", {
     base: "vs-dark",
@@ -28,14 +30,13 @@ const JsonEditor = ({
     <section className="border-[1.5px]">
       <Editor
         className="h-[200px] lg:h-[350px]"
-        defaultLanguage="json"
+        defaultLanguage={defaultLanguage}
         theme="custom-theme"
         value={value}
         defaultValue={defaultValue}
         onChange={onChange}
         loading={<Skeleton className="h-[300px] w-full" />}
         options={{
-          readOnly,
           padding: {
             top: 10
           },
@@ -44,11 +45,12 @@ const JsonEditor = ({
           minimap: { enabled: false },
           scrollbar: { vertical: "hidden" },
           overviewRulerBorder: false,
-          hideCursorInOverviewRuler: true
+          hideCursorInOverviewRuler: true,
+          ...options
         }}
       />
     </section>
   )
 }
 
-export default JsonEditor
+export default MonacoEditor
