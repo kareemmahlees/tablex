@@ -1,6 +1,7 @@
+use sea_schema::sea_query;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use sqlx::{mysql::MySqlRow, postgres::PgRow, sqlite::SqliteRow, Row};
+use sqlx::Row;
 
 #[derive(Debug)]
 pub struct Schema {

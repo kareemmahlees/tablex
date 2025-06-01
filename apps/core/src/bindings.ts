@@ -87,10 +87,7 @@ export const commands = {
       tableName
     })
   },
-  async createRow(
-    tableName: string,
-    data: { [key in string]: JsonValue }
-  ): Promise<ExecResult> {
+  async createRow(tableName: string, data: RowData[]): Promise<ExecResult> {
     return await TAURI_INVOKE("create_row", { tableName, data })
   },
   async updateRow(
@@ -216,6 +213,11 @@ export type JsonValue =
 export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
 export type KeybindingCommand = Sidebar | Table
 export type PaginatedRows = { data: DecodedRow[]; pageCount: number }
+export type RowData = {
+  column_name: string
+  value: JsonValue
+  column_type: CustomColumnType
+}
 /**
  * Configuration for the SQL editor.
  */

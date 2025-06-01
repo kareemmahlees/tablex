@@ -33,7 +33,6 @@ sqlx = { version = "0.8", features = [
     "postgres",
     "mysql",
     "chrono",
-    "time",
 ] }
 sea-schema = { version = "0.16.0", features = [
     "sqlx-all",
@@ -41,7 +40,11 @@ sea-schema = { version = "0.16.0", features = [
     "discovery",
     "runtime-tokio-native-tls",
 ], default-features = false }
-sea-query-binder = "0.7.0"
+sea-query-binder = { version = "0.7.0", features = [
+    "with-json",
+    "with-chrono",
+    "with-uuid",
+] }
 async-trait = "0.1.80"
 specta = { version = "2.0.0-rc.20", features = ["serde", "serde_json"] }
 tauri-specta = { version = "2.0.0-rc.17", features = ["derive", "typescript"] }

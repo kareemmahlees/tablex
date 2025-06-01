@@ -57,11 +57,18 @@ const DynamicFormInput = <T extends FieldValues>({
         />
       )
     case "json":
-      return <JsonEditor field={field} defaultValue={defaultValue} />
+      return (
+        <JsonEditor
+          value={field.value}
+          onChange={field.onChange}
+          defaultValue={defaultValue}
+        />
+      )
     case "boolean":
       return (
         <Switch
-          checked={field.value || Boolean(defaultValue)}
+          checked={field.value}
+          defaultChecked={true}
           onCheckedChange={field.onChange}
         />
       )

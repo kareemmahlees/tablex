@@ -43,6 +43,11 @@ time = "0.3.36"
 sea-schema = { workspace = true }
 sea-query-binder = { workspace = true }
 tauri-plugin-opener = "2.2.7"
+sea-query = { version = "0.32.6", features = [
+    "with-json",
+    "with-chrono",
+    "with-uuid",
+] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

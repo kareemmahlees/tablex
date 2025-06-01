@@ -1,7 +1,6 @@
-use sqlx::AnyPool;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
-use tx_handlers::{DatabaseConnection, Handler};
+use tx_handlers::DatabaseConnection;
 
 pub struct SharedState {
     pub conn: DatabaseConnection,

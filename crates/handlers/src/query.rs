@@ -5,6 +5,7 @@ use sqlx::{
     mysql::{MySqlQueryResult, MySqlRow},
     postgres::{PgQueryResult, PgRow},
     sqlite::{SqliteQueryResult, SqliteRow},
+    types::chrono::{NaiveDate, NaiveDateTime, NaiveTime},
     Column, Row, Value, ValueRef,
 };
 
@@ -87,8 +88,16 @@ impl From<PgRow> for DecodedRow {
             }
 
             let decoded = match v.type_info().to_string().as_str() {
-                "CHAR" | "VARCHAR" | "TEXT" | "NAME" | "UUID" | "TIME" | "TIMESTAMP"
-                | "TIMESTAMPTZ" | "JSON" => JsonValue::String(v.decode::<String>()),
+                "CHAR" | "VARCHAR" | "TEXT" | "NAME" | "UUID" => {
+                    JsonValue::String(v.decode::<String>())
+                }
+                // "UUID"=>JsonValue::String(v.decode::<uuid>())
+                "DATE" => JsonValue::String(v.decode::<NaiveDate>().to_string()),
+                "TIME" => JsonValue::String(v.decode::<NaiveTime>().to_string()),
+                "TIMESTAMP" | "TIMESTAMPTZ" => {
+                    JsonValue::String(v.decode::<NaiveDateTime>().to_string())
+                }
+                "JSON" => v.decode(),
                 "FLOAT4" => JsonValue::from(v.decode::<f32>()),
                 "FLOAT8" => JsonValue::from(v.decode::<f64>()),
                 "INT2" => JsonValue::Number(v.decode::<i16>().into()),
