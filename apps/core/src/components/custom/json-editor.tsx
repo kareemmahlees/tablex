@@ -1,16 +1,19 @@
 import Editor, { useMonaco } from "@monaco-editor/react"
-import type { ControllerRenderProps, FieldValues } from "react-hook-form"
 import { Skeleton } from "../ui/skeleton"
 
-type JsonEditorProps<T extends FieldValues> = {
-  field: ControllerRenderProps<T>
+type JsonEditorProps = {
+  value?: string
   defaultValue?: string
+  onChange?: (v) => void
+  readOnly: boolean
 }
 
-const JsonEditor = <T extends FieldValues>({
-  field,
-  defaultValue
-}: JsonEditorProps<T>) => {
+const JsonEditor = ({
+  value,
+  onChange,
+  defaultValue,
+  readOnly = false
+}: JsonEditorProps) => {
   const monaco = useMonaco()
   monaco?.editor.defineTheme("custom-theme", {
     base: "vs-dark",
@@ -27,11 +30,12 @@ const JsonEditor = <T extends FieldValues>({
         className="h-[200px] lg:h-[350px]"
         defaultLanguage="json"
         theme="custom-theme"
-        value={field.value}
+        value={value}
         defaultValue={defaultValue}
-        onChange={field.onChange}
+        onChange={onChange}
         loading={<Skeleton className="h-[300px] w-full" />}
         options={{
+          readOnly,
           padding: {
             top: 10
           },

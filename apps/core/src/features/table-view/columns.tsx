@@ -1,15 +1,19 @@
 import type { ColumnInfo, TableInfo } from "@/bindings"
 import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
+import JsonEditor from "@/components/custom/json-editor"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
-export const generateColumnsDefs = (
-  table: TableInfo
-  // updatePkColumn: TableState["updatePkColumn"]
-) => {
-  const columnsDefinitions = table.columns.map(({ name, pk }) => {
+export const generateColumnsDefs = (table: TableInfo) => {
+  const columnsDefinitions = table.columns.map(({ name, type }) => {
     const columnDefinition: ColumnDef<ColumnInfo> = {
       accessorKey: name,
       id: name,
@@ -17,16 +21,28 @@ export const generateColumnsDefs = (
         return <DataTableColumnHeader column={column} title={name} />
       },
       cell: (info) => {
-        // Overcome the fact that tanstack table can't render boolean
-        // values by default.
-        const value =
-          typeof info.getValue() === "boolean"
-            ? String(info.getValue())
-            : (info.getValue() as string)
-        let cellContent = value
-        // Clamp long text.
-        if (value && value.length > 20) {
-          cellContent = value.slice(0, 15) + "..."
+        let value = info.getValue<string | undefined>()
+        console.log("value", value)
+
+        if (type === "json" && value !== null) {
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button size={"sm"} className="h-6 px-4 font-semibold">
+                  JSON
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[300px]" align="end">
+                <JsonEditor
+                  defaultValue={JSON.stringify(value, undefined, 2)}
+                  readOnly
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
+        }
+        if (type === "boolean" && value !== null) {
+          value = String(value)
         }
         return (
           <span className="flex items-center gap-x-2">
@@ -38,7 +54,7 @@ export const generateColumnsDefs = (
                 />
               )} */}
 
-            {cellContent}
+            {value}
           </span>
         )
       }
