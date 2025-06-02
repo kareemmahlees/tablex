@@ -1,12 +1,11 @@
-use crate::state::SharedState;
+use crate::AppState;
 use serde_json::{Map, Value};
-use tauri::{async_runtime::Mutex, State};
 use tx_handlers::TableInfo;
 use tx_lib::Result;
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<String>> {
+pub async fn get_tables(state: AppState<'_>) -> Result<Vec<String>> {
     let state = state.lock().await;
     let conn = &state.conn;
     let tables = conn.get_tables().await;
@@ -16,7 +15,7 @@ pub async fn get_tables(state: State<'_, Mutex<SharedState>>) -> Result<Vec<Stri
 
 #[tauri::command]
 #[specta::specta]
-pub async fn discover_db_schema(state: State<'_, Mutex<SharedState>>) -> Result<Vec<TableInfo>> {
+pub async fn discover_db_schema(state: AppState<'_>) -> Result<Vec<TableInfo>> {
     let state = state.lock().await;
     let conn = &state.conn;
     let schema_discovery = conn.discover().await.tables;
@@ -26,10 +25,7 @@ pub async fn discover_db_schema(state: State<'_, Mutex<SharedState>>) -> Result<
 
 #[tauri::command]
 #[specta::specta]
-pub async fn execute_raw_query(
-    state: State<'_, Mutex<SharedState>>,
-    query: String,
-) -> Result<Map<String, Value>> {
+pub async fn execute_raw_query(state: AppState<'_>, query: String) -> Result<Map<String, Value>> {
     let state = state.lock().await;
     let conn = &state.conn;
 

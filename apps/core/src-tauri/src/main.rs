@@ -16,7 +16,7 @@ use specta_typescript::formatter::prettier;
 #[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
-use tauri::{async_runtime::Mutex, AppHandle, Manager, WindowEvent};
+use tauri::{async_runtime::Mutex, AppHandle, Manager, State, WindowEvent};
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
@@ -66,6 +66,8 @@ fn setup_logging_plugin() -> tauri_plugin_log::Builder {
 
     builder
 }
+
+type AppState<'a> = State<'a, Mutex<SharedState>>;
 
 fn main() {
     let builder = Builder::<tauri::Wry>::new()
@@ -155,10 +157,6 @@ fn main() {
         })
         .on_window_event(move |window, event| {
             if let WindowEvent::Destroyed = event {
-                // If the destroyed window is for e.g splashscreen then don't cleanup
-                if window.label() != "main" {
-                    return;
-                }
                 let state = window.state::<Mutex<SharedState>>();
                 let rt = tokio::runtime::Runtime::new().unwrap();
                 let mut stt = rt.block_on(state.lock());
