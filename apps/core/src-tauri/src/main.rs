@@ -127,13 +127,14 @@ fn main() {
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             let app_handle = app.app_handle();
-            let rt = tokio::runtime::Runtime::new().unwrap();
+
+            tauri::async_runtime::block_on(async move {
+                cli::handle_cli_args(app_handle, args, cmd).await;
+            });
 
             ensure_config_files_exist(app_handle)?;
 
             builder.mount_events(app);
-
-            rt.block_on(cli::handle_cli_args(app_handle, args, cmd));
 
             #[cfg(debug_assertions)]
             {
@@ -158,10 +159,10 @@ fn main() {
         .on_window_event(move |window, event| {
             if let WindowEvent::Destroyed = event {
                 let state = window.state::<Mutex<SharedState>>();
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                let mut stt = rt.block_on(state.lock());
-                rt.block_on(stt.cleanup());
-                rt.shutdown_background();
+                tauri::async_runtime::block_on(async move {
+                    let mut state = state.lock().await;
+                    state.cleanup().await
+                });
             }
         });
 
