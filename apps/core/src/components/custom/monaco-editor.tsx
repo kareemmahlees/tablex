@@ -6,7 +6,7 @@ type MonacoEditorProps = {
   defaultValue?: string
   onChange?: (v) => void
   defaultLanguage?: string
-  options: EditorProps["options"]
+  options?: EditorProps["options"]
 }
 
 const MonacoEditor = ({

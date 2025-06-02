@@ -174,6 +174,7 @@ export type CustomColumnType =
   | "json"
   | "binary"
   | "custom"
+  | "unSupported"
 export type DecodedRow = { [key in string]: JsonValue }
 /**
  * Supported drivers, stored inside connection config in `connections.json`.

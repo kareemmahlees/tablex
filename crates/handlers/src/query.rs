@@ -97,14 +97,20 @@ impl From<PgRow> for DecodedRow {
                 "TIMESTAMP" | "TIMESTAMPTZ" => {
                     JsonValue::String(v.decode::<NaiveDateTime>().to_string())
                 }
-                "JSON" => v.decode(),
+                "JSON" | "JSONB" => v.decode(),
                 "FLOAT4" => JsonValue::from(v.decode::<f32>()),
                 "FLOAT8" => JsonValue::from(v.decode::<f64>()),
                 "INT2" => JsonValue::Number(v.decode::<i16>().into()),
                 "INT4" => JsonValue::Number(v.decode::<i32>().into()),
                 "INT8" => JsonValue::Number(v.decode::<i64>().into()),
                 "BOOL" => JsonValue::Bool(v.decode::<bool>()),
-                "JSONB" | "BYTEA" | "VOID" => JsonValue::Null,
+                "BYTEA" => JsonValue::Array(
+                    v.decode::<Vec<u8>>()
+                        .into_iter()
+                        .map(|n| JsonValue::Number(n.into()))
+                        .collect(),
+                ),
+                "VOID" => JsonValue::Null,
                 _ => JsonValue::Null,
             };
             row_data.insert(column.name().to_string(), decoded);

@@ -74,6 +74,9 @@ const DynamicFormInput = <T extends FieldValues>({
       )
     case "text":
       return <Textarea value={field.value} onChange={field.onChange} />
+    case "binary":
+    case "unSupported":
+      return null
     default:
       return (
         <Input

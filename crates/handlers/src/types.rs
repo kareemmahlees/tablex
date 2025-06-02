@@ -42,6 +42,7 @@ pub enum CustomColumnType {
     Json,
     Binary,
     Custom,
+    UnSupported,
 }
 
 #[derive(Serialize, Deserialize)]

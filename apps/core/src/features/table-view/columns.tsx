@@ -71,6 +71,14 @@ export const generateColumnsDefs = (table: TableInfo) => {
           value = String(value)
         }
 
+        if ((type === "binary" || type === "unSupported") && value !== null) {
+          return (
+            <Button size={"sm"} className="h-6 px-4 font-semibold" disabled>
+              UnSupported
+            </Button>
+          )
+        }
+
         return (
           <span className="flex items-center gap-x-2">
             {/* {hasFkRelations && (

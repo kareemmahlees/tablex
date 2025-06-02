@@ -131,6 +131,7 @@ impl From<RowData> for sea_query::Value {
                 CustomColumnType::Json => sea_query::Value::Json(None),
                 CustomColumnType::Binary => sea_query::Value::Bytes(None),
                 CustomColumnType::Custom => todo!(),
+                CustomColumnType::UnSupported => todo!(),
             },
             JsonValue::Bool(v) => sea_query::Value::Bool(Some(v)),
             JsonValue::Number(number) => {
@@ -187,15 +188,12 @@ pub async fn create_row(
         .into_table(Alias::new(table_name))
         .columns(data.iter().map(|k| PlainColumn(k.column_name.clone())))
         .values_panic(data.iter().map(|val| {
-            dbg!(&val);
             let sea_query_val: sea_query::Value = val.clone().into();
             sea_query::SimpleExpr::Value(sea_query_val)
         }))
         .build_any_sqlx(conn.into_builder().as_ref());
 
-    dbg!(&values);
     let result = conn.execute_with(stmt.as_str(), values).await;
-    dbg!(&result);
 
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();
