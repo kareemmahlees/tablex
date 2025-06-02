@@ -72,7 +72,7 @@ fn main() {
         .typ::<Keybinding>()
         .typ::<Settings>()
         .constant("SETTINGS_FILE_PATH", SETTINGS_FILE_PATH)
-        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
+        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_PATH)
         .commands(collect_commands![
             kill_metax,
             // Connection commands.

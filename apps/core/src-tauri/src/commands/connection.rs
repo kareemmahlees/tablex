@@ -16,7 +16,11 @@ use tx_lib::{
 };
 use uuid::Uuid;
 
-const CONNECTIONS_FILE_NAME: &str = "connections.json";
+const CONNECTIONS_FILE_PATH: &str = if cfg!(debug_assertions) {
+    "dev/connections.json"
+} else {
+    "connections.json"
+};
 
 #[tauri::command]
 #[specta::specta]
@@ -190,7 +194,7 @@ pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<
 /// Make sure `connections.json` file exist, if not will create an empty json file for it.
 pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
     if path.exists() {
-        log::debug!("{} exists, skipping creation.", CONNECTIONS_FILE_NAME);
+        log::debug!("{} exists, skipping creation.", CONNECTIONS_FILE_PATH);
         return Ok(());
     }
     create_json_file_recursively(path)?;
@@ -203,9 +207,6 @@ pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
 pub(crate) fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf> {
     let mut config_dir = app.path().app_config_dir()?;
 
-    #[cfg(debug_assertions)]
-    config_dir.push("dev");
-
-    config_dir.push(CONNECTIONS_FILE_NAME);
+    config_dir.push(CONNECTIONS_FILE_PATH);
     Ok(config_dir)
 }
