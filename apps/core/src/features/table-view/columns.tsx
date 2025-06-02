@@ -53,7 +53,7 @@ export const generateColumnsDefs = (table: TableInfo) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[300px]" align="end">
                 <MonacoEditor
-                  defaultLanguage="text"
+                  defaultLanguage="plaintext"
                   defaultValue={value}
                   options={{
                     lineNumbers: "off",
@@ -70,6 +70,7 @@ export const generateColumnsDefs = (table: TableInfo) => {
         if (type === "boolean" && value !== null) {
           value = String(value)
         }
+
         return (
           <span className="flex items-center gap-x-2">
             {/* {hasFkRelations && (

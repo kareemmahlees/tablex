@@ -46,6 +46,7 @@ const MonacoEditor = ({
           scrollbar: { vertical: "hidden" },
           overviewRulerBorder: false,
           hideCursorInOverviewRuler: true,
+          overviewRulerLanes: 0,
           ...options
         }}
       />
