@@ -4322,12 +4322,15 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "sea-query"
-version = "0.32.3"
+version = "0.32.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5a24d8b9fcd2674a6c878a3d871f4f1380c6c43cc3718728ac96864d888458e"
+checksum = "64c91783d1514b99754fc6a4079081dcc2c587dadbff65c48c7f62297443536a"
 dependencies = [
+ "chrono",
  "inherent",
  "sea-query-derive",
+ "serde_json",
+ "uuid",
 ]
 
 [[package]]
@@ -4336,8 +4339,11 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b0019f47430f7995af63deda77e238c17323359af241233ec768aba1faea7608"
 dependencies = [
+ "chrono",
  "sea-query",
+ "serde_json",
  "sqlx",
+ "uuid",
 ]
 
 [[package]]
@@ -4845,11 +4851,11 @@ dependencies = [
  "sha2",
  "smallvec",
  "thiserror 2.0.11",
- "time",
  "tokio",
  "tokio-stream",
  "tracing",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -4930,8 +4936,8 @@ dependencies = [
  "sqlx-core",
  "stringprep",
  "thiserror 2.0.11",
- "time",
  "tracing",
+ "uuid",
  "whoami",
 ]
 
@@ -4969,8 +4975,8 @@ dependencies = [
  "sqlx-core",
  "stringprep",
  "thiserror 2.0.11",
- "time",
  "tracing",
+ "uuid",
  "whoami",
 ]
 
@@ -4994,9 +5000,9 @@ dependencies = [
  "serde",
  "serde_urlencoded",
  "sqlx-core",
- "time",
  "tracing",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -5135,6 +5141,7 @@ dependencies = [
  "json-patch 2.0.0",
  "log",
  "regex",
+ "sea-query",
  "sea-query-binder",
  "sea-schema",
  "serde",

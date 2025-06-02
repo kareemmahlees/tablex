@@ -3,9 +3,10 @@ use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
 use sqlx::{
     mysql::{MySqlQueryResult, MySqlRow},
-    postgres::{PgQueryResult, PgRow, PgValue, PgValueRef},
+    postgres::{PgQueryResult, PgRow},
     sqlite::{SqliteQueryResult, SqliteRow},
-    Column, Database, Decode, Postgres, Row, Value, ValueRef,
+    types::chrono::{NaiveDate, NaiveDateTime, NaiveTime},
+    Column, Row, Value, ValueRef,
 };
 
 pub struct QueryResult {
@@ -34,17 +35,30 @@ impl From<MySqlRow> for DecodedRow {
     fn from(value: MySqlRow) -> Self {
         let mut row_data = JsonMap::default();
         for (i, column) in value.columns().iter().enumerate() {
-            let v = value.try_get_raw(i).unwrap();
-            let decoded = if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
-                JsonValue::String(v)
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
-                JsonValue::from(v)
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
-                JsonValue::Number(v.into())
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<bool>() {
-                JsonValue::Bool(v)
-            } else {
-                JsonValue::String(ValueRef::to_owned(&v).decode())
+            let value_ref = value.try_get_raw(i).unwrap();
+            let v = ValueRef::to_owned(&value_ref);
+
+            if v.is_null() {
+                row_data.insert(column.name().to_string(), JsonValue::Null);
+                continue;
+            }
+
+            let decoded = match v.type_info().to_string().as_str() {
+                "CHAR" | "VARCHAR" | "TINYTEXT" | "TEXT" | "MEDIUMTEXT" | "LONGTEXT" | "ENUM"
+                | "DATE" | "TIME" | "DATETIME" | "TIMESTAMP" | "JSON" => {
+                    JsonValue::String(v.decode())
+                }
+                "FLOAT" => JsonValue::from(v.decode::<f32>()),
+                "DOUBLE" => JsonValue::from(v.decode::<f64>()),
+                "TINYINT" | "SMALLINT" | "INT" | "MEDIUMINT" | "BIGINT" => {
+                    JsonValue::Number(v.decode::<i64>().into())
+                }
+                "TINYINT UNSIGNED" | "SMALLINT UNSIGNED" | "INT UNSIGNED"
+                | "MEDIUMINT UNSIGNED" | "BIGINT UNSIGNED" | "YEAR" => {
+                    JsonValue::Number(v.decode::<u64>().into())
+                }
+                "BOOLEAN" => JsonValue::Bool(v.decode::<bool>()),
+                _ => JsonValue::Null,
             };
 
             row_data.insert(column.name().to_string(), decoded);
@@ -65,20 +79,40 @@ impl From<PgRow> for DecodedRow {
     fn from(value: PgRow) -> Self {
         let mut row_data = JsonMap::default();
         for (i, column) in value.columns().iter().enumerate() {
-            let v = value.try_get_raw(i).unwrap();
+            let value_ref = value.try_get_raw(i).unwrap();
+            let v = ValueRef::to_owned(&value_ref);
 
-            let decoded = if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
-                JsonValue::String(v)
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
-                JsonValue::from(v)
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
-                JsonValue::Number(v.into())
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<bool>() {
-                JsonValue::Bool(v)
-            } else {
-                JsonValue::String(ValueRef::to_owned(&v).decode())
+            if v.is_null() {
+                row_data.insert(column.name().to_string(), JsonValue::Null);
+                continue;
+            }
+
+            let decoded = match v.type_info().to_string().as_str() {
+                "CHAR" | "VARCHAR" | "TEXT" | "NAME" | "UUID" => {
+                    JsonValue::String(v.decode::<String>())
+                }
+                // "UUID"=>JsonValue::String(v.decode::<uuid>())
+                "DATE" => JsonValue::String(v.decode::<NaiveDate>().to_string()),
+                "TIME" => JsonValue::String(v.decode::<NaiveTime>().to_string()),
+                "TIMESTAMP" | "TIMESTAMPTZ" => {
+                    JsonValue::String(v.decode::<NaiveDateTime>().to_string())
+                }
+                "JSON" | "JSONB" => v.decode(),
+                "FLOAT4" => JsonValue::from(v.decode::<f32>()),
+                "FLOAT8" => JsonValue::from(v.decode::<f64>()),
+                "INT2" => JsonValue::Number(v.decode::<i16>().into()),
+                "INT4" => JsonValue::Number(v.decode::<i32>().into()),
+                "INT8" => JsonValue::Number(v.decode::<i64>().into()),
+                "BOOL" => JsonValue::Bool(v.decode::<bool>()),
+                "BYTEA" => JsonValue::Array(
+                    v.decode::<Vec<u8>>()
+                        .into_iter()
+                        .map(|n| JsonValue::Number(n.into()))
+                        .collect(),
+                ),
+                "VOID" => JsonValue::Null,
+                _ => JsonValue::Null,
             };
-
             row_data.insert(column.name().to_string(), decoded);
         }
         DecodedRow(row_data)
@@ -97,18 +131,20 @@ impl From<SqliteRow> for DecodedRow {
     fn from(value: SqliteRow) -> Self {
         let mut row_data = JsonMap::default();
         for (i, column) in value.columns().iter().enumerate() {
-            let v = value.try_get_raw(i).unwrap();
+            let value_ref = value.try_get_raw(i).unwrap();
+            let v = ValueRef::to_owned(&value_ref);
 
-            let decoded = if let Ok(v) = ValueRef::to_owned(&v).try_decode() {
-                JsonValue::String(v)
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<f64>() {
-                JsonValue::from(v)
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<i64>() {
-                JsonValue::Number(v.into())
-            } else if let Ok(v) = ValueRef::to_owned(&v).try_decode::<bool>() {
-                JsonValue::Bool(v)
-            } else {
-                JsonValue::String(ValueRef::to_owned(&v).decode())
+            if v.is_null() {
+                row_data.insert(column.name().to_string(), JsonValue::Null);
+                continue;
+            }
+
+            let decoded = match v.type_info().to_string().as_str() {
+                "TEXT" | "DATE" | "TIME" | "DATETIME" => JsonValue::String(v.decode()),
+                "REAL" => JsonValue::from(v.decode::<f64>()),
+                "INTEGER" | "NUMERIC" => JsonValue::Number(v.decode::<i64>().into()),
+                "BOOLEAN" => JsonValue::Bool(v.decode::<bool>()),
+                _ => JsonValue::Null,
             };
 
             row_data.insert(column.name().to_string(), decoded);

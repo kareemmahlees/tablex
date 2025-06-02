@@ -1,14 +1,19 @@
 import type { ColumnInfo, TableInfo } from "@/bindings"
 import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
+import MonacoEditor from "@/components/custom/monaco-editor"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
-export const generateColumnsDefs = (
-  table: TableInfo
-  // updatePkColumn: TableState["updatePkColumn"]
-) => {
-  const columnsDefinitions = table.columns.map(({ name, pk }) => {
+export const generateColumnsDefs = (table: TableInfo) => {
+  const columnsDefinitions = table.columns.map(({ name, type }) => {
     const columnDefinition: ColumnDef<ColumnInfo> = {
       accessorKey: name,
       id: name,
@@ -16,17 +21,64 @@ export const generateColumnsDefs = (
         return <DataTableColumnHeader column={column} title={name} />
       },
       cell: (info) => {
-        // Overcome the fact that tanstack table can't render boolean
-        // values by default.
-        const value =
-          typeof info.getValue() === "boolean"
-            ? String(info.getValue())
-            : (info.getValue() as string)
-        let cellContent = value
-        // Clamp long text.
-        if (value && value.length > 20) {
-          cellContent = value.slice(0, 15) + "..."
+        let value = info.getValue<string | undefined>()
+
+        if (type === "json" && value !== null) {
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button size={"sm"} className="h-6 px-4 font-semibold">
+                  JSON
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[300px]" align="end">
+                <MonacoEditor
+                  defaultValue={JSON.stringify(value, undefined, 2)}
+                  options={{
+                    readOnly: true
+                  }}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
         }
+
+        if (type === "text" && value !== null) {
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button size={"sm"} className="h-6 px-4 font-semibold">
+                  TEXT
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[300px]" align="end">
+                <MonacoEditor
+                  defaultLanguage="plaintext"
+                  defaultValue={value}
+                  options={{
+                    lineNumbers: "off",
+                    readOnly: true,
+                    wordWrap: "wordWrapColumn",
+                    wordWrapColumn: 50
+                  }}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
+        }
+
+        if (type === "boolean" && value !== null) {
+          value = String(value)
+        }
+
+        if ((type === "binary" || type === "unSupported") && value !== null) {
+          return (
+            <Button size={"sm"} className="h-6 px-4 font-semibold" disabled>
+              UnSupported
+            </Button>
+          )
+        }
+
         return (
           <span className="flex items-center gap-x-2">
             {/* {hasFkRelations && (
@@ -37,7 +89,7 @@ export const generateColumnsDefs = (
                 />
               )} */}
 
-            {cellContent}
+            {value}
           </span>
         )
       }
@@ -71,7 +123,13 @@ const appendCheckboxColumn = (columns: ColumnDef<ColumnInfo>[]) => {
           }
         }}
         aria-label="Select or Deselect all"
-      />
+      >
+        {table.getIsSomeRowsSelected() || table.getIsAllRowsSelected() ? (
+          <Minus className="size-4" />
+        ) : (
+          <Check className="size-4" />
+        )}
+      </Checkbox>
     ),
     cell: ({ row }) => {
       return (
@@ -111,10 +169,7 @@ export const getZodSchemaFromCols = (table: TableInfo) => {
       case "float":
         validationRule = z
           .number()
-          .refine(
-            (n) => !z.number().int().safeParse(n).success,
-            "Field must be a valid float"
-          )
+          .int({ message: "Field must be a valid float" })
         break
 
       case "text":
@@ -143,17 +198,14 @@ export const getZodSchemaFromCols = (table: TableInfo) => {
         validationRule = z.coerce.date()
         break
       case "json": {
-        const literalSchema = z.union([
-          z.string(),
-          z.number(),
-          z.boolean(),
-          z.null()
-        ])
-        type Literal = z.infer<typeof literalSchema>
-        type Json = Literal | { [key: string]: Json } | Json[]
-        const jsonSchema: z.ZodType<Json> = z.lazy(() =>
-          z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])
-        )
+        const jsonSchema = z.string().transform((str, ctx) => {
+          try {
+            return JSON.parse(str)
+          } catch (e) {
+            ctx.addIssue({ code: "custom", message: "Invalid JSON" })
+            return z.NEVER
+          }
+        })
         validationRule = jsonSchema
         break
       }
@@ -161,8 +213,9 @@ export const getZodSchemaFromCols = (table: TableInfo) => {
         validationRule = z.any()
     }
 
-    if (colProps.nullable) {
+    if (colProps.nullable || colProps.autoGenerated) {
       validationRule = validationRule.optional()
+      // .refine((v) => (v === undefined ? null : v))
     }
 
     schemaObject[colProps.name] = validationRule

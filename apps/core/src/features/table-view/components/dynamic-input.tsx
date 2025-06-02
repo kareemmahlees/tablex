@@ -1,11 +1,10 @@
 import type { ColumnInfo } from "@/bindings"
-import { DateInput } from "@/components/custom/date-input"
-import JsonEditor from "@/components/custom/json-editor"
+import { DateTimeInput } from "@/components/custom/date-input"
+import MonacoEditor from "@/components/custom/monaco-editor"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/text-area"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
-import { DateTimePicker } from "../../../components/custom/date-time-picker"
 
 /**
  * Remove the effect of timezone differences and return a new date
@@ -33,40 +32,20 @@ const DynamicFormInput = <T extends FieldValues>({
   switch (column.type) {
     // TODO: use a proper <TimePicker/> component instead.
     case "time":
-      return (
-        <Input
-          {...field}
-          disabled={disabled}
-          className="w-[280px]"
-          placeholder="HH:MM:SS"
-          defaultValue={defaultValue}
-        />
-      )
+      return <DateTimeInput {...field} disabled={disabled} type="time" />
     case "date":
       return (
-        <DateInput
+        <DateTimeInput
+          {...field}
           value={field.value}
           disabled={disabled}
-          onChange={(v) => {
-            console.log("changed", v)
-            field.onChange(v)
-          }}
+          onChange={(v) => field.onChange(v)}
+          type="date"
         />
-        // <DateTimePicker
-        //   displayFormat={{ hour24: "yyyy/MM/dd" }}
-        //   granularity="day"
-        //   value={defaultValue ? new Date(defaultValue) : field.value}
-        //   disabled={disabled}
-        //   onChange={(date) => {
-        //     if (date) {
-        //       field.onChange(normalizeTimezoneOffset(date))
-        //     }
-        //   }}
-        // />
       )
     case "dateTime":
       return (
-        <DateTimePicker
+        <DateTimeInput
           value={defaultValue ? new Date(defaultValue) : field.value}
           disabled={disabled}
           onChange={(date) => {
@@ -74,19 +53,30 @@ const DynamicFormInput = <T extends FieldValues>({
               field.onChange(normalizeTimezoneOffset(date))
             }
           }}
+          type="datetime"
         />
       )
     case "json":
-      return <JsonEditor field={field} defaultValue={defaultValue} />
+      return (
+        <MonacoEditor
+          value={field.value}
+          onChange={field.onChange}
+          defaultValue={defaultValue}
+        />
+      )
     case "boolean":
       return (
         <Switch
-          checked={field.value || Boolean(defaultValue)}
+          checked={field.value}
+          defaultChecked={true}
           onCheckedChange={field.onChange}
         />
       )
     case "text":
       return <Textarea value={field.value} onChange={field.onChange} />
+    case "binary":
+    case "unSupported":
+      return null
     default:
       return (
         <Input

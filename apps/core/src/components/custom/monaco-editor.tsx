@@ -1,16 +1,21 @@
-import Editor, { useMonaco } from "@monaco-editor/react"
-import type { ControllerRenderProps, FieldValues } from "react-hook-form"
+import Editor, { EditorProps, useMonaco } from "@monaco-editor/react"
 import { Skeleton } from "../ui/skeleton"
 
-type JsonEditorProps<T extends FieldValues> = {
-  field: ControllerRenderProps<T>
+type MonacoEditorProps = {
+  value?: string
   defaultValue?: string
+  onChange?: (v) => void
+  defaultLanguage?: string
+  options?: EditorProps["options"]
 }
 
-const JsonEditor = <T extends FieldValues>({
-  field,
-  defaultValue
-}: JsonEditorProps<T>) => {
+const MonacoEditor = ({
+  value,
+  onChange,
+  defaultValue,
+  defaultLanguage = "json",
+  options
+}: MonacoEditorProps) => {
   const monaco = useMonaco()
   monaco?.editor.defineTheme("custom-theme", {
     base: "vs-dark",
@@ -25,11 +30,11 @@ const JsonEditor = <T extends FieldValues>({
     <section className="border-[1.5px]">
       <Editor
         className="h-[200px] lg:h-[350px]"
-        defaultLanguage="json"
+        defaultLanguage={defaultLanguage}
         theme="custom-theme"
-        value={field.value}
+        value={value}
         defaultValue={defaultValue}
-        onChange={field.onChange}
+        onChange={onChange}
         loading={<Skeleton className="h-[300px] w-full" />}
         options={{
           padding: {
@@ -40,11 +45,13 @@ const JsonEditor = <T extends FieldValues>({
           minimap: { enabled: false },
           scrollbar: { vertical: "hidden" },
           overviewRulerBorder: false,
-          hideCursorInOverviewRuler: true
+          hideCursorInOverviewRuler: true,
+          overviewRulerLanes: 0,
+          ...options
         }}
       />
     </section>
   )
 }
 
-export default JsonEditor
+export default MonacoEditor

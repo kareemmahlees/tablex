@@ -19,6 +19,7 @@ impl From<sea_schema::postgres::def::Schema> for Schema {
 }
 
 impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
+    #[allow(clippy::incompatible_msrv)]
     fn from(value: &sea_schema::postgres::def::TableDef) -> Self {
         Self {
             name: value.info.name.clone(),
@@ -26,6 +27,10 @@ impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
                 .columns
                 .iter()
                 .map(|c| ColumnInfo {
+                    auto_generated: c.generated.is_some()
+                        || c.default
+                            .as_ref()
+                            .is_some_and(|exp| exp.0.starts_with("nextval")),
                     name: c.name.clone(),
                     nullable: c.not_null.is_none(),
                     pk: c.is_identity,
@@ -57,38 +62,38 @@ impl From<SeaColumnType> for CustomColumnType {
             }
             SeaColumnType::Date => CustomColumnType::Date,
             SeaColumnType::Time(_) | SeaColumnType::TimeWithTimeZone(_) => CustomColumnType::Time,
-            SeaColumnType::Interval(_) => todo!(),
+            SeaColumnType::Interval(_) => CustomColumnType::UnSupported,
             SeaColumnType::Boolean => CustomColumnType::Boolean,
-            SeaColumnType::Point => todo!(),
-            SeaColumnType::Line => todo!(),
-            SeaColumnType::Lseg => todo!(),
-            SeaColumnType::Box => todo!(),
-            SeaColumnType::Path => todo!(),
-            SeaColumnType::Polygon => todo!(),
-            SeaColumnType::Circle => todo!(),
-            SeaColumnType::Cidr => todo!(),
-            SeaColumnType::Inet => todo!(),
-            SeaColumnType::MacAddr => todo!(),
-            SeaColumnType::MacAddr8 => todo!(),
+            SeaColumnType::Point => CustomColumnType::UnSupported,
+            SeaColumnType::Line => CustomColumnType::UnSupported,
+            SeaColumnType::Lseg => CustomColumnType::UnSupported,
+            SeaColumnType::Box => CustomColumnType::UnSupported,
+            SeaColumnType::Path => CustomColumnType::UnSupported,
+            SeaColumnType::Polygon => CustomColumnType::UnSupported,
+            SeaColumnType::Circle => CustomColumnType::UnSupported,
+            SeaColumnType::Cidr => CustomColumnType::UnSupported,
+            SeaColumnType::Inet => CustomColumnType::UnSupported,
+            SeaColumnType::MacAddr => CustomColumnType::UnSupported,
+            SeaColumnType::MacAddr8 => CustomColumnType::UnSupported,
             SeaColumnType::JsonBinary
             | SeaColumnType::Bytea
             | SeaColumnType::Bit(_)
-            | SeaColumnType::VarBit(_) => todo!(),
-            SeaColumnType::TsVector => todo!(),
-            SeaColumnType::TsQuery => todo!(),
+            | SeaColumnType::VarBit(_) => CustomColumnType::Binary,
+            SeaColumnType::TsVector => CustomColumnType::UnSupported,
+            SeaColumnType::TsQuery => CustomColumnType::UnSupported,
             SeaColumnType::Uuid => CustomColumnType::Uuid,
-            SeaColumnType::Xml => todo!(),
+            SeaColumnType::Xml => CustomColumnType::UnSupported,
             SeaColumnType::Json => CustomColumnType::Json,
-            SeaColumnType::Array(_) => todo!(),
-            SeaColumnType::Int4Range => todo!(),
-            SeaColumnType::Int8Range => todo!(),
-            SeaColumnType::NumRange => todo!(),
-            SeaColumnType::TsRange => todo!(),
-            SeaColumnType::TsTzRange => todo!(),
-            SeaColumnType::DateRange => todo!(),
-            SeaColumnType::PgLsn => todo!(),
-            SeaColumnType::Unknown(_) => todo!(),
-            SeaColumnType::Enum(_) => todo!(),
+            SeaColumnType::Array(_) => CustomColumnType::UnSupported,
+            SeaColumnType::Int4Range => CustomColumnType::UnSupported,
+            SeaColumnType::Int8Range => CustomColumnType::UnSupported,
+            SeaColumnType::NumRange => CustomColumnType::UnSupported,
+            SeaColumnType::TsRange => CustomColumnType::UnSupported,
+            SeaColumnType::TsTzRange => CustomColumnType::UnSupported,
+            SeaColumnType::DateRange => CustomColumnType::UnSupported,
+            SeaColumnType::PgLsn => CustomColumnType::UnSupported,
+            SeaColumnType::Unknown(_) => CustomColumnType::UnSupported,
+            SeaColumnType::Enum(_) => CustomColumnType::UnSupported,
         }
     }
 }

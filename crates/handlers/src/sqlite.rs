@@ -26,6 +26,7 @@ impl From<&sea_schema::sqlite::def::TableDef> for TableInfo {
                 .columns
                 .iter()
                 .map(|c| ColumnInfo {
+                    auto_generated: c.primary_key && value.auto_increment,
                     name: c.name.clone(),
                     nullable: !c.not_null,
                     pk: c.primary_key,

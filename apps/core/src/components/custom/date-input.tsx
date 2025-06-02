@@ -1,19 +1,17 @@
-import { cn } from "@tablex/lib/utils"
-import { CalendarIcon } from "lucide-react"
 import { useTimescape } from "timescape/react"
-import { buttonVariants } from "../ui/button"
-import { DateTimePicker } from "./date-time-picker"
 
 type DateInputProps = {
   value: Date
   onChange: (v?: Date) => void
   disabled?: boolean
+  type?: "date" | "time" | "datetime"
 }
 
-export const DateInput = ({
+export const DateTimeInput = ({
   value,
   onChange,
-  disabled = false
+  disabled = false,
+  type = "datetime"
 }: DateInputProps) => {
   const { getRootProps, getInputProps } = useTimescape({
     date: value,
@@ -22,43 +20,58 @@ export const DateInput = ({
 
   return (
     <div
-      className={cn(
-        buttonVariants({ variant: "outline" }),
-        "flex hover:bg-transparent"
-      )}
+      {...getRootProps()}
+      className="border-input flex h-10 w-full select-none items-center rounded-md border px-3 py-2 text-sm"
     >
-      <div
-        className="flex-1 grow select-none space-x-1 [&_input]:border-none [&_input]:bg-transparent [&_input]:outline-none"
-        {...getRootProps()}
-      >
-        <input
-          {...getInputProps("years")}
-          disabled={disabled}
-          className="w-16 focus:rounded-md focus:bg-slate-600"
-        />
-        <span>/</span>
-        <input
-          {...getInputProps("months")}
-          disabled={disabled}
-          className="focus:rounded-md focus:bg-slate-600 focus:px-[1px] focus:py-[0.5px]"
-        />
-        <span>/</span>
-        <input
-          {...getInputProps("days")}
-          disabled={disabled}
-          className="focus:rounded-md focus:bg-slate-600"
-        />
-      </div>
+      {(type === "date" || type === "datetime") && (
+        <div className="inline-flex h-full w-full select-none items-center gap-x-1">
+          <input
+            {...getInputProps("days")}
+            disabled={disabled}
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            placeholder="DD"
+          />
+          <span>/</span>
+          <input
+            {...getInputProps("months")}
+            disabled={disabled}
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            placeholder="MM"
+          />
+          <span>/</span>
+          <input
+            {...getInputProps("years")}
+            disabled={disabled}
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            placeholder="YYYY"
+          />
+        </div>
+      )}
 
-      <DateTimePicker
-        displayFormat={{ hour24: "yyyy/MM/dd" }}
-        granularity="day"
-        value={value}
-        disabled={disabled}
-        onChange={onChange}
-      >
-        <CalendarIcon className="h-4 w-4 hover:cursor-pointer" />
-      </DateTimePicker>
+      {(type === "time" || type === "datetime") && (
+        <div className="flex h-full w-full select-none items-center gap-x-1">
+          <input
+            {...getInputProps("hours")}
+            disabled={disabled}
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            placeholder="HH"
+          />
+          <span>:</span>
+          <input
+            {...getInputProps("minutes")}
+            disabled={disabled}
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            placeholder="MM"
+          />
+          <span>:</span>
+          <input
+            {...getInputProps("seconds")}
+            disabled={disabled}
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            placeholder="SS"
+          />
+        </div>
+      )}
     </div>
   )
 }

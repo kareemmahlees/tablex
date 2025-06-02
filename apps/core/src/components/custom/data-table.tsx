@@ -45,7 +45,7 @@ export const DataTable = ({ table }: { table: TanstackTable<ColumnInfo> }) => {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-muted/70 data-[state=selected]:bg-muted/70 transition-colors"
+                className="hover:bg-muted/70 data-[state=selected]:bg-muted/70"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="w-1">

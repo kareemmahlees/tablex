@@ -1,5 +1,5 @@
 use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames};
-use sea_schema::mysql::def::{TableDef, Type as SeaColumnType};
+use sea_schema::mysql::def::{ColumnKey, TableDef, Type as SeaColumnType};
 
 #[derive(Debug)]
 pub struct MySQLHandler;
@@ -26,9 +26,10 @@ impl From<&sea_schema::mysql::def::TableDef> for TableInfo {
                 .columns
                 .iter()
                 .map(|c| ColumnInfo {
+                    auto_generated: c.expression.is_some(),
                     name: c.name.clone(),
                     nullable: c.null,
-                    pk: false,
+                    pk: c.key == ColumnKey::Primary,
                     r#type: c.col_type.clone().into(),
                 })
                 .collect(),

@@ -1,6 +1,7 @@
+use sea_schema::sea_query;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use sqlx::{mysql::MySqlRow, postgres::PgRow, sqlite::SqliteRow, Row};
+use sqlx::Row;
 
 #[derive(Debug)]
 pub struct Schema {
@@ -16,6 +17,7 @@ pub struct TableInfo {
 #[derive(Serialize, Deserialize, Type, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ColumnInfo {
+    pub auto_generated: bool,
     pub name: String,
     pub nullable: bool,
     pub pk: bool,
@@ -40,6 +42,7 @@ pub enum CustomColumnType {
     Json,
     Binary,
     Custom,
+    UnSupported,
 }
 
 #[derive(Serialize, Deserialize)]

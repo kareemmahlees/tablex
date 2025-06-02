@@ -132,6 +132,25 @@ impl DatabaseConnection {
 
         Ok(res)
     }
+    pub async fn execute_with(
+        &self,
+        stmt: &str,
+        values: SqlxValues,
+    ) -> Result<ExecResult, TxError> {
+        let res: ExecResult = match self {
+            DatabaseConnection::Sqlite(conn, _) => {
+                sqlx::query_with(stmt, values).execute(conn).await?.into()
+            }
+            DatabaseConnection::Postgres(conn, _) => {
+                sqlx::query_with(stmt, values).execute(conn).await?.into()
+            }
+            DatabaseConnection::Mysql(conn) => {
+                sqlx::query_with(stmt, values).execute(conn).await?.into()
+            }
+        };
+
+        Ok(res)
+    }
     pub async fn discover(&self) -> Schema {
         match self {
             DatabaseConnection::Sqlite(_, discoverer) => {

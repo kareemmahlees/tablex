@@ -25,7 +25,10 @@ export const TableSelectionBreadCrumb = ({
   )
   const [_, setLatestTable, __] = useLocalStorage<string | undefined>(
     LOCAL_STORAGE.LATEST_TABLE(connectionId),
-    undefined
+    undefined,
+    {
+      serializer: (v) => v ?? ""
+    }
   )
   const navigate = useNavigate()
   const { tableName } = useParams({ strict: false })

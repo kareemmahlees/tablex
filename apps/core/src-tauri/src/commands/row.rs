@@ -1,17 +1,17 @@
 use crate::state::SharedState;
 use sea_query_binder::SqlxBinder;
-use sea_schema::sea_query::{
-    Alias, Asterisk, Expr, Iden, IntoTableRef, Query, SqliteQueryBuilder, TableRef,
-};
+use sea_schema::sea_query;
+use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
 use serde_json::Value as JsonValue;
 use specta::Type;
-use std::collections::HashMap;
+use sqlx::types::chrono::{DateTime, Utc};
 use tauri::{async_runtime::Mutex, AppHandle, State};
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult};
+use tx_handlers::{decode_raw_rows, CustomColumnType, DecodedRow, ExecResult};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
 #[serde(rename_all = "camelCase")]
@@ -106,23 +106,94 @@ pub async fn delete_rows(
     Ok(String::default())
 }
 
+#[derive(Serialize, Deserialize, Type, Clone, Debug)]
+pub struct RowData {
+    column_name: String,
+    value: JsonValue,
+    column_type: tx_handlers::CustomColumnType,
+}
+
+impl From<RowData> for sea_query::Value {
+    fn from(value: RowData) -> Self {
+        match value.value {
+            JsonValue::Null => match value.column_type {
+                CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
+                    sea_query::Value::String(None)
+                }
+                CustomColumnType::Uuid => sea_query::Value::Uuid(None),
+                CustomColumnType::Float => sea_query::Value::Double(None),
+                CustomColumnType::PositiveInteger => sea_query::Value::BigInt(None),
+                CustomColumnType::Boolean => sea_query::Value::Bool(None),
+                CustomColumnType::Integer => sea_query::Value::BigUnsigned(None),
+                CustomColumnType::Date => sea_query::Value::ChronoDate(None),
+                CustomColumnType::DateTime => sea_query::Value::ChronoDateTime(None),
+                CustomColumnType::Time => sea_query::Value::ChronoTime(None),
+                CustomColumnType::Json => sea_query::Value::Json(None),
+                CustomColumnType::Binary => sea_query::Value::Bytes(None),
+                CustomColumnType::Custom => todo!(),
+                CustomColumnType::UnSupported => todo!(),
+            },
+            JsonValue::Bool(v) => sea_query::Value::Bool(Some(v)),
+            JsonValue::Number(number) => {
+                if number.is_f64() {
+                    sea_query::Value::Double(number.as_f64())
+                } else if number.is_i64() {
+                    sea_query::Value::BigInt(number.as_i64())
+                } else if number.is_u64() {
+                    sea_query::Value::BigUnsigned(number.as_u64())
+                } else {
+                    todo!()
+                }
+            }
+            JsonValue::String(v) => match value.column_type {
+                CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
+                    sea_query::Value::String(Some(Box::new(v)))
+                }
+                CustomColumnType::Uuid => {
+                    sea_query::Value::Uuid(Some(Box::new(Uuid::parse_str(v.as_str()).unwrap())))
+                }
+                CustomColumnType::Date => {
+                    let date = v.parse::<DateTime<Utc>>().unwrap();
+                    sea_query::Value::ChronoDate(Some(Box::new(date.date_naive())))
+                }
+                CustomColumnType::DateTime => {
+                    let date = v.parse::<DateTime<Utc>>().unwrap();
+                    sea_query::Value::ChronoDateTime(Some(Box::new(date.naive_utc())))
+                }
+                CustomColumnType::Time => {
+                    let date = v.parse::<DateTime<Utc>>().unwrap();
+                    sea_query::Value::ChronoTime(Some(Box::new(date.time())))
+                }
+                _ => unimplemented!(),
+            },
+            JsonValue::Array(values) => todo!(),
+            JsonValue::Object(map) => {
+                sea_query::Value::Json(Some(Box::new(JsonValue::Object(map))))
+            }
+        }
+    }
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn create_row(
     app: AppHandle,
     state: State<'_, Mutex<SharedState>>,
     table_name: String,
-    data: HashMap<String, JsonValue>,
+    data: Vec<RowData>,
 ) -> Result<ExecResult> {
     let state = state.lock().await;
     let conn = &state.conn;
-    let (stmt, _) = Query::insert()
+    let (stmt, values) = Query::insert()
         .into_table(Alias::new(table_name))
-        .columns(data.keys().map(|k| PlainColumn(k.clone())))
-        .values_panic(data.values().map(|v| v.to_string().into()))
-        .build_any(conn.into_builder().as_ref());
+        .columns(data.iter().map(|k| PlainColumn(k.column_name.clone())))
+        .values_panic(data.iter().map(|val| {
+            let sea_query_val: sea_query::Value = val.clone().into();
+            sea_query::SimpleExpr::Value(sea_query_val)
+        }))
+        .build_any_sqlx(conn.into_builder().as_ref());
 
-    let result = conn.execute(stmt.as_str()).await;
+    let result = conn.execute_with(stmt.as_str(), values).await;
 
     if result.is_ok() {
         TableContentsChanged.emit(&app).unwrap();

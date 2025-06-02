@@ -7,9 +7,11 @@ import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/dashboard/_layout/_table-view-layout")({
   loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
-  loader: ({ context: { queryClient }, deps: { connectionId } }) => {
-    queryClient.ensureQueryData(getTablesQueryOptions(connectionId!))
-    queryClient.ensureQueryData(getConnectionDetailsQueryOptions(connectionId!))
+  loader: async ({ context: { queryClient }, deps: { connectionId } }) => {
+    await Promise.all([
+      queryClient.prefetchQuery(getTablesQueryOptions(connectionId!)),
+      queryClient.prefetchQuery(getConnectionDetailsQueryOptions(connectionId!))
+    ])
   },
 
   component: TableViewLayout

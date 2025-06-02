@@ -22,7 +22,7 @@ pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
 pub use query::{DecodedRow, ExecResult, QueryResult, QueryResultRow};
 pub use sqlite::SQLiteHandler;
-pub use types::{ColumnInfo, TableInfo};
+pub use types::{ColumnInfo, CustomColumnType, TableInfo};
 
 /// Replaces homedir-relative paths `~` with the users home dir.
 fn expand_conn_string(conn_string: &str) -> Result<String> {
