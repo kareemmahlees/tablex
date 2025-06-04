@@ -51,7 +51,7 @@ pub async fn get_paginated_rows(
     page_size: u64,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
-    let conn = &state.conn;
+    let conn = state.conn.as_ref().unwrap();
     let (stmt, values) = Query::select()
         .column(Asterisk)
         .from(PlainTable(table_name))
@@ -183,7 +183,7 @@ pub async fn create_row(
     data: Vec<RowData>,
 ) -> Result<ExecResult> {
     let state = state.lock().await;
-    let conn = &state.conn;
+    let conn = state.conn.as_ref().unwrap();
     let (stmt, values) = Query::insert()
         .into_table(Alias::new(table_name))
         .columns(data.iter().map(|k| PlainColumn(k.column_name.clone())))

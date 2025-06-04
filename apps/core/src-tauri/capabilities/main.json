@@ -50,7 +50,7 @@
       "identifier": "fs:allow-read-text-file",
       "allow": [
         {
-          "path": "$APPDATA/*.json"
+          "path": "$APPCONFIG/**/*.json"
         }
       ]
     },

@@ -85,22 +85,17 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
+    let state = app.state::<Mutex<SharedState>>();
+    let mut state = state.lock().await;
     let conn = DatabaseConnection::connect(&conn_string, driver).await?;
 
-    #[allow(unused_mut)]
-    let mut state = SharedState::new(
-        conn,
-        #[cfg(feature = "metax")]
-        None,
-    );
+    state.conn = Some(conn);
 
     #[cfg(feature = "metax")]
     {
         let child = spawn_sidecar(&app, driver, conn_string);
         state.metax = Some(child);
     }
-
-    app.manage(Mutex::new(state));
 
     Ok(())
 }
