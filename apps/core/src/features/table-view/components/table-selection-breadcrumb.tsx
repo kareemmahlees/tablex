@@ -10,7 +10,7 @@ import {
   getTablesQueryOptions
 } from "@/features/table-view/queries"
 import { LOCAL_STORAGE } from "@/lib/constants"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { useLocalStorage } from "usehooks-ts"
 
@@ -19,10 +19,15 @@ export const TableSelectionBreadCrumb = ({
 }: {
   connectionId: string
 }) => {
-  const { data: tables } = useSuspenseQuery(getTablesQueryOptions(connectionId))
-  const { data: connectionDetails } = useSuspenseQuery(
-    getConnectionDetailsQueryOptions(connectionId)
-  )
+  const {
+    "0": { data: tables },
+    "1": { data: connectionDetails }
+  } = useSuspenseQueries({
+    queries: [
+      getTablesQueryOptions(connectionId),
+      getConnectionDetailsQueryOptions(connectionId)
+    ]
+  })
   const [_, setLatestTable, __] = useLocalStorage<string | undefined>(
     LOCAL_STORAGE.LATEST_TABLE(connectionId),
     undefined,
@@ -33,6 +38,8 @@ export const TableSelectionBreadCrumb = ({
   )
   const navigate = useNavigate()
   const { tableName } = useParams({ strict: false })
+
+  console.log("tables", tables)
 
   return (
     <Breadcrumb>
@@ -49,6 +56,7 @@ export const TableSelectionBreadCrumb = ({
             placeholder="Select Table"
             emptyMsg="No Tables Found"
             onValueChange={(v) => {
+              console.log("table value", v)
               setLatestTable(v)
               navigate({
                 to: "/dashboard/table-view/$tableName",

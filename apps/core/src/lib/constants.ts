@@ -2,7 +2,7 @@ export const QUERY_KEYS = {
   GET_TABLES: "get_tables",
   TABLE_ROWS: "table_rows",
   GET_CONNECTION_DETAILS: "get_connection_details",
-  TABLE_COLUMNS: "table_columns"
+  DB_SCHEMA: "db_schema"
 }
 
 export const LOCAL_STORAGE = {
