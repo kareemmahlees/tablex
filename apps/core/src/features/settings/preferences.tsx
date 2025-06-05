@@ -9,6 +9,7 @@ import { FileJson } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
+import { EnumSelectInput } from "./components/enum-select-input"
 import {
   Setting,
   SettingsContent,
@@ -24,7 +25,13 @@ const formSchema = z.object({
     fontSize: z.coerce
       .number()
       .min(1, { message: "This field is required" })
-      .max(64)
+      .max(64),
+    scrollbar: z.object({
+      vertical: z.enum(["visible", "hidden", "auto"]),
+      horizontal: z.enum(["visible", "hidden", "auto"])
+    }),
+
+    cursorBlinking: z.enum(["blink", "expand", "smooth", "phase", "solid"])
   })
 })
 
@@ -143,6 +150,60 @@ export const Preferences = () => {
                     <Input type="number" {...field} className="w-[100px]" />
                     <FormMessage />
                   </div>
+                </Setting>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sqlEditor.scrollbar.vertical"
+              render={({ field }) => (
+                <Setting
+                  label="Vertical scrollbar"
+                  description="Scrollbar visibility for vertical scrolling."
+                >
+                  <EnumSelectInput
+                    values={
+                      formSchema.shape.sqlEditor.shape.scrollbar.shape.vertical
+                        .Enum
+                    }
+                    {...field}
+                  />
+                </Setting>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sqlEditor.scrollbar.horizontal"
+              render={({ field }) => (
+                <Setting
+                  label="Horizontal scrollbar"
+                  description="Scrollbar visibility for horizontal scrolling."
+                >
+                  <EnumSelectInput
+                    values={
+                      formSchema.shape.sqlEditor.shape.scrollbar.shape
+                        .horizontal.Enum
+                    }
+                    {...field}
+                  />
+                </Setting>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sqlEditor.cursorBlinking"
+              render={({ field }) => (
+                <Setting
+                  label="Cursor Blinking"
+                  description="Blinking style of the cursor."
+                >
+                  <EnumSelectInput
+                    values={
+                      formSchema.shape.sqlEditor.shape.cursorBlinking.Enum
+                    }
+                    {...field}
+                  />
                 </Setting>
               )}
             />
