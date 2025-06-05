@@ -21,8 +21,8 @@ export const Route = createFileRoute(
   "/dashboard/_layout/_table-view-layout/table-view/$tableName"
 )({
   loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
-  loader: ({ context: { queryClient }, params: { tableName } }) => {
-    queryClient.ensureQueryData(discoverDBSchemaOptions(tableName))
+  loader: async ({ context: { queryClient }, params: { tableName } }) => {
+    await queryClient.prefetchQuery(discoverDBSchemaOptions(tableName))
   },
   component: TableView,
   pendingComponent: () => (

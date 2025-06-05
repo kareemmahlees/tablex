@@ -3,7 +3,7 @@ import {
   KeybindingCommand,
   KEYBINDINGS_FILE_NAME
 } from "@/bindings"
-import { BaseDirectory, readTextFile } from "@tauri-apps/plugin-fs"
+import { BaseDirectory, readFile } from "@tauri-apps/plugin-fs"
 import { debug } from "@tauri-apps/plugin-log"
 import hotkeys from "hotkeys-js"
 import { createContext, useContext } from "react"
@@ -29,9 +29,14 @@ export class KeybindingsManager {
   registeredKeybindings: RegisteredBinding[] = []
 
   constructor() {
-    readTextFile(KEYBINDINGS_FILE_NAME, {
+    // HACK: idk what's wrong but `readTextFile` from tauri seems to always
+    // return an `ArrayBuffer` instead of string for some reason for some reason.
+    readFile(KEYBINDINGS_FILE_NAME, {
       baseDir: BaseDirectory.AppConfig
-    }).then((bindings) => (this.bindings = JSON.parse(bindings)))
+    }).then((bindings) => {
+      const decodedBindings = new TextDecoder("utf-8").decode(bindings)
+      this.bindings = JSON.parse(decodedBindings)
+    })
   }
 
   /**

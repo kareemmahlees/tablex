@@ -22,7 +22,7 @@ import { Route as DashboardLayoutSqlEditorRouteImport } from './routes/dashboard
 import { Route as DashboardLayoutKeybindingsRouteImport } from './routes/dashboard/_layout/keybindings/route'
 import { Route as DashboardLayoutApiDocsRouteImport } from './routes/dashboard/_layout/api-docs/route'
 import { Route as DashboardLayoutSettingsPreferencesRouteImport } from './routes/dashboard/_layout/settings/preferences/route'
-import { Route as DashboardLayoutTableViewLayoutTableViewLandRouteImport } from './routes/dashboard/_layout/_table-view-layout/table-view/land/route'
+import { Route as DashboardLayoutTableViewLayoutTableViewEmptyRouteImport } from './routes/dashboard/_layout/_table-view-layout/table-view/empty/route'
 import { Route as DashboardLayoutTableViewLayoutTableViewTableNameRouteImport } from './routes/dashboard/_layout/_table-view-layout/table-view/$tableName/route'
 
 // Create Virtual Routes
@@ -86,9 +86,9 @@ const DashboardLayoutSettingsPreferencesRouteRoute =
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
-const DashboardLayoutTableViewLayoutTableViewLandRouteRoute =
-  DashboardLayoutTableViewLayoutTableViewLandRouteImport.update({
-    path: '/table-view/land',
+const DashboardLayoutTableViewLayoutTableViewEmptyRouteRoute =
+  DashboardLayoutTableViewLayoutTableViewEmptyRouteImport.update({
+    path: '/table-view/empty',
     getParentRoute: () => DashboardLayoutTableViewLayoutRoute,
   } as any)
 
@@ -179,11 +179,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutTableViewLayoutTableViewTableNameRouteImport
       parentRoute: typeof DashboardLayoutTableViewLayoutImport
     }
-    '/dashboard/_layout/_table-view-layout/table-view/land': {
-      id: '/dashboard/_layout/_table-view-layout/table-view/land'
-      path: '/table-view/land'
-      fullPath: '/dashboard/table-view/land'
-      preLoaderRoute: typeof DashboardLayoutTableViewLayoutTableViewLandRouteImport
+    '/dashboard/_layout/_table-view-layout/table-view/empty': {
+      id: '/dashboard/_layout/_table-view-layout/table-view/empty'
+      path: '/table-view/empty'
+      fullPath: '/dashboard/table-view/empty'
+      preLoaderRoute: typeof DashboardLayoutTableViewLayoutTableViewEmptyRouteImport
       parentRoute: typeof DashboardLayoutTableViewLayoutImport
     }
   }
@@ -203,7 +203,7 @@ export const routeTree = rootRoute.addChildren({
       DashboardLayoutTableViewLayoutRoute:
         DashboardLayoutTableViewLayoutRoute.addChildren({
           DashboardLayoutTableViewLayoutTableViewTableNameRouteRoute,
-          DashboardLayoutTableViewLayoutTableViewLandRouteRoute,
+          DashboardLayoutTableViewLayoutTableViewEmptyRouteRoute,
         }),
       DashboardLayoutSettingsPreferencesRouteRoute,
     }),
@@ -267,7 +267,7 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/dashboard/_layout",
       "children": [
         "/dashboard/_layout/_table-view-layout/table-view/$tableName",
-        "/dashboard/_layout/_table-view-layout/table-view/land"
+        "/dashboard/_layout/_table-view-layout/table-view/empty"
       ]
     },
     "/dashboard/_layout/settings/preferences": {
@@ -278,8 +278,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "dashboard/_layout/_table-view-layout/table-view/$tableName/route.tsx",
       "parent": "/dashboard/_layout/_table-view-layout"
     },
-    "/dashboard/_layout/_table-view-layout/table-view/land": {
-      "filePath": "dashboard/_layout/_table-view-layout/table-view/land/route.tsx",
+    "/dashboard/_layout/_table-view-layout/table-view/empty": {
+      "filePath": "dashboard/_layout/_table-view-layout/table-view/empty/route.tsx",
       "parent": "/dashboard/_layout/_table-view-layout"
     }
   }

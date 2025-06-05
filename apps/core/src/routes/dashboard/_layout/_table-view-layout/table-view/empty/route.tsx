@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
-  "/dashboard/_layout/_table-view-layout/table-view/land"
+  "/dashboard/_layout/_table-view-layout/table-view/empty"
 )({
   component: DashboardPage
 })
