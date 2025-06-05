@@ -1,4 +1,5 @@
 import { commands } from "@/bindings"
+import { TooltipButton } from "@/components/custom/tooltip-button"
 import { Button } from "@/components/ui/button"
 import { Form, FormField, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -72,7 +73,8 @@ export const Preferences = () => {
             >
               Save
             </Button>
-            <Button
+            <TooltipButton
+              tooltipContent="Open settings.json"
               type="button"
               variant={"secondary"}
               size={"icon"}
@@ -81,7 +83,7 @@ export const Preferences = () => {
               }
             >
               <FileJson className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
           </div>
         </div>
 
