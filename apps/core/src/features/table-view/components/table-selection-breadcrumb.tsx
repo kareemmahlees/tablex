@@ -57,7 +57,8 @@ export const TableSelectionBreadCrumb = ({
                 },
                 search: {
                   connectionId
-                }
+                },
+                replace: true
               })
             }}
           />
