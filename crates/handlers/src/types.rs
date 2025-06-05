@@ -1,7 +1,5 @@
-use sea_schema::sea_query;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use sqlx::Row;
 
 #[derive(Debug)]
 pub struct Schema {

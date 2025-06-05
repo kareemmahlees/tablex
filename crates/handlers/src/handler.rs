@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use serde_json::{Map, Value as JsonValue};
-use sqlx::{any::AnyRow, AnyPool, Row};
+use serde_json::Value as JsonValue;
+use sqlx::{any::AnyRow, AnyPool};
 use std::fmt::Debug;
 
 use tx_lib::{types::FKRows, Result};
