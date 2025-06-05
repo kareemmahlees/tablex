@@ -27,7 +27,7 @@ export const generateColumnsDefs = (table: TableInfo) => {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Button size={"sm"} className="h-6 px-4 font-semibold">
+                <Button size={"sm"} className="h-6 px-4 text-xs font-semibold">
                   JSON
                 </Button>
               </DropdownMenuTrigger>
@@ -47,7 +47,10 @@ export const generateColumnsDefs = (table: TableInfo) => {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Button size={"sm"} className="h-6 px-4 font-semibold">
+                <Button
+                  size={"sm"}
+                  className="h-6 bg-gray-100 px-4 text-xs font-semibold"
+                >
                   TEXT
                 </Button>
               </DropdownMenuTrigger>
@@ -73,14 +76,18 @@ export const generateColumnsDefs = (table: TableInfo) => {
 
         if ((type === "binary" || type === "unSupported") && value !== null) {
           return (
-            <Button size={"sm"} className="h-6 px-4 font-semibold" disabled>
+            <Button
+              size={"sm"}
+              className="h-6 px-4 text-xs font-semibold"
+              disabled
+            >
               UnSupported
             </Button>
           )
         }
 
         return (
-          <span className="flex items-center gap-x-2">
+          <span className="flex items-center gap-x-2 whitespace-nowrap">
             {/* {hasFkRelations && (
                 <ForeignKeyDropdown
                   tableName={tableName}

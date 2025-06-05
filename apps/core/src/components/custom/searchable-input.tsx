@@ -64,9 +64,9 @@ export const SearchableInput = ({
                   <CommandItem
                     key={item.value}
                     value={item.value}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue)
-                      onValueChange(currentValue)
+                    onSelect={() => {
+                      setValue(item.value === value ? "" : item.value)
+                      onValueChange(item.value)
                       setOpen(false)
                     }}
                   >

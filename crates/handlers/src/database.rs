@@ -6,9 +6,7 @@ use sea_query_binder::SqlxValues;
 use sea_schema::{
     mysql::discovery::SchemaDiscovery as MySQLSchemaDiscovery,
     postgres::discovery::SchemaDiscovery as PostgresSchemaDiscovery,
-    sea_query::{
-        MysqlQueryBuilder, PostgresQueryBuilder, QueryBuilder, SqliteQueryBuilder, Values,
-    },
+    sea_query::{MysqlQueryBuilder, PostgresQueryBuilder, QueryBuilder, SqliteQueryBuilder},
     sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
 };
 use sqlx::{

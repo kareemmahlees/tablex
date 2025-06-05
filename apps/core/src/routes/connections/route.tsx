@@ -68,7 +68,7 @@ function ConnectionsPage() {
     }
 
     navigate({
-      to: "/dashboard/table-view/land",
+      to: "/dashboard/table-view/empty",
       search: { connectionId }
     })
   }

@@ -6,18 +6,22 @@ use tx_lib::{
     TxError,
 };
 
-pub const KEYBINDINGS_FILE_NAME: &str = "keybindings.json";
+pub const KEYBINDINGS_FILE_PATH: &str = if cfg!(debug_assertions) {
+    "dev/keybindings.json"
+} else {
+    "keybindings.json"
+};
 
 /// make sure that `keybindings.json` file exist and if not will create it
 /// with the default keybindings.
 pub fn ensure_keybindings_file_exist(path: &PathBuf) -> Result<(), TxError> {
     if path.exists() {
-        log::debug!("{} exists, skipping creation.", KEYBINDINGS_FILE_NAME);
+        log::debug!("{} exists, skipping creation.", KEYBINDINGS_FILE_PATH);
         return Ok(());
     }
     create_json_file_recursively(path)?;
     write_into_json(path, get_default_keybindings())?;
-    log::info!("Wrote default keybindings to {}", KEYBINDINGS_FILE_NAME);
+    log::info!("Wrote default keybindings to {}", KEYBINDINGS_FILE_PATH);
 
     Ok(())
 }
@@ -30,9 +34,6 @@ pub fn get_keybindings_file_path<R: Runtime>(
 ) -> Result<PathBuf, TxError> {
     let mut config_dir = app.path().app_config_dir()?;
 
-    #[cfg(debug_assertions)]
-    config_dir.push("dev");
-
-    config_dir.push(KEYBINDINGS_FILE_NAME);
+    config_dir.push(KEYBINDINGS_FILE_PATH);
     Ok(config_dir)
 }

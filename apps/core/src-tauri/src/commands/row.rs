@@ -1,4 +1,4 @@
-use crate::state::SharedState;
+use crate::AppState;
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
 use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
@@ -7,7 +7,7 @@ use serde_json::Map;
 use serde_json::Value as JsonValue;
 use specta::Type;
 use sqlx::types::chrono::{DateTime, Utc};
-use tauri::{async_runtime::Mutex, AppHandle, State};
+use tauri::AppHandle;
 use tauri_specta::Event;
 use tx_handlers::{decode_raw_rows, CustomColumnType, DecodedRow, ExecResult};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
@@ -45,13 +45,13 @@ impl Iden for PlainColumn {
 #[tauri::command]
 #[specta::specta]
 pub async fn get_paginated_rows(
-    state: State<'_, Mutex<SharedState>>,
+    state: AppState<'_>,
     table_name: String,
     page_index: u64,
     page_size: u64,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
-    let conn = &state.conn;
+    let conn = state.conn.as_ref().unwrap();
     let (stmt, values) = Query::select()
         .column(Asterisk)
         .from(PlainTable(table_name))
@@ -72,7 +72,7 @@ pub async fn get_paginated_rows(
 #[specta::specta]
 pub async fn delete_rows(
     app: AppHandle,
-    state: State<'_, Mutex<SharedState>>,
+    state: AppState<'_>,
     pk_col_name: String,
     row_pk_values: Vec<JsonValue>,
     table_name: String,
@@ -178,12 +178,12 @@ impl From<RowData> for sea_query::Value {
 #[specta::specta]
 pub async fn create_row(
     app: AppHandle,
-    state: State<'_, Mutex<SharedState>>,
+    state: AppState<'_>,
     table_name: String,
     data: Vec<RowData>,
 ) -> Result<ExecResult> {
     let state = state.lock().await;
-    let conn = &state.conn;
+    let conn = state.conn.as_ref().unwrap();
     let (stmt, values) = Query::insert()
         .into_table(Alias::new(table_name))
         .columns(data.iter().map(|k| PlainColumn(k.column_name.clone())))
@@ -207,7 +207,7 @@ pub async fn create_row(
 #[specta::specta]
 pub async fn update_row(
     app: AppHandle,
-    state: State<'_, Mutex<SharedState>>,
+    state: AppState<'_>,
     table_name: String,
     pk_col_name: String,
     pk_col_value: JsonValue,
@@ -240,7 +240,7 @@ pub async fn update_row(
 #[tauri::command]
 #[specta::specta]
 pub async fn get_fk_relations(
-    state: tauri::State<'_, Mutex<SharedState>>,
+    state: AppState<'_>,
     table_name: String,
     column_name: String,
     cell_value: JsonValue,

@@ -16,7 +16,7 @@ use specta_typescript::formatter::prettier;
 #[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
-use tauri::{async_runtime::Mutex, AppHandle, Manager, WindowEvent};
+use tauri::{async_runtime::Mutex, AppHandle, Manager, State, WindowEvent};
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 use tauri_specta::{collect_commands, collect_events, Builder};
 use tx_keybindings::*;
@@ -67,12 +67,14 @@ fn setup_logging_plugin() -> tauri_plugin_log::Builder {
     builder
 }
 
+type AppState<'a> = State<'a, Mutex<SharedState>>;
+
 fn main() {
     let builder = Builder::<tauri::Wry>::new()
         .typ::<Keybinding>()
         .typ::<Settings>()
         .constant("SETTINGS_FILE_PATH", SETTINGS_FILE_PATH)
-        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_NAME)
+        .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_PATH)
         .commands(collect_commands![
             kill_metax,
             // Connection commands.
@@ -117,6 +119,7 @@ fn main() {
     let (args, cmd) = cli::parse_cli_args();
 
     let tauri_builder = tauri::Builder::default()
+        .manage(Mutex::new(SharedState::default()))
         .plugin(tauri_plugin_opener::init())
         .plugin(setup_logging_plugin().build())
         .plugin(tauri_plugin_fs::init())
@@ -125,13 +128,14 @@ fn main() {
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             let app_handle = app.app_handle();
-            let rt = tokio::runtime::Runtime::new().unwrap();
+
+            tauri::async_runtime::block_on(async move {
+                cli::handle_cli_args(app_handle, args, cmd).await;
+            });
 
             ensure_config_files_exist(app_handle)?;
 
             builder.mount_events(app);
-
-            rt.block_on(cli::handle_cli_args(app_handle, args, cmd));
 
             #[cfg(debug_assertions)]
             {
@@ -155,15 +159,11 @@ fn main() {
         })
         .on_window_event(move |window, event| {
             if let WindowEvent::Destroyed = event {
-                // If the destroyed window is for e.g splashscreen then don't cleanup
-                if window.label() != "main" {
-                    return;
-                }
                 let state = window.state::<Mutex<SharedState>>();
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                let mut stt = rt.block_on(state.lock());
-                rt.block_on(stt.cleanup());
-                rt.shutdown_background();
+                tauri::async_runtime::block_on(async move {
+                    let mut state = state.lock().await;
+                    state.cleanup().await
+                });
             }
         });
 

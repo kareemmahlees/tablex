@@ -1,13 +1,13 @@
-use crate::state::SharedState;
+use crate::{state::SharedState, AppState};
 use sqlx::{AnyConnection, Connection};
 use std::path::PathBuf;
-use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime, State};
+use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime};
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
 use tauri_specta::Event;
-use tx_handlers::{DatabaseConnection, Handler, MySQLHandler, PostgresHandler, SQLiteHandler};
+use tx_handlers::DatabaseConnection;
 use tx_lib::{
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},
@@ -16,7 +16,11 @@ use tx_lib::{
 };
 use uuid::Uuid;
 
-const CONNECTIONS_FILE_NAME: &str = "connections.json";
+const CONNECTIONS_FILE_PATH: &str = if cfg!(debug_assertions) {
+    "dev/connections.json"
+} else {
+    "connections.json"
+};
 
 #[tauri::command]
 #[specta::specta]
@@ -81,14 +85,11 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
+    let state = app.state::<Mutex<SharedState>>();
+    let mut state = state.lock().await;
     let conn = DatabaseConnection::connect(&conn_string, driver).await?;
 
-    #[allow(unused_mut)]
-    let mut state = SharedState::new(
-        conn,
-        #[cfg(feature = "metax")]
-        None,
-    );
+    state.conn = Some(conn);
 
     #[cfg(feature = "metax")]
     {
@@ -96,14 +97,12 @@ pub async fn establish_connection(
         state.metax = Some(child);
     }
 
-    app.manage(Mutex::new(state));
-
     Ok(())
 }
 
 #[tauri::command]
 #[specta::specta]
-pub async fn drop_connection(state: State<'_, Mutex<SharedState>>) -> Result<()> {
+pub async fn drop_connection(state: AppState<'_>) -> Result<()> {
     let mut state = state.lock().await;
     state.cleanup().await;
 
@@ -112,7 +111,7 @@ pub async fn drop_connection(state: State<'_, Mutex<SharedState>>) -> Result<()>
 
 #[tauri::command]
 #[specta::specta]
-pub async fn kill_metax(_state: State<'_, Mutex<SharedState>>) -> Result<()> {
+pub async fn kill_metax(_state: AppState<'_>) -> Result<()> {
     #[cfg(feature = "metax")]
     {
         if let Some(metax) = _state.lock().await.metax.take() {
@@ -190,7 +189,7 @@ pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<
 /// Make sure `connections.json` file exist, if not will create an empty json file for it.
 pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
     if path.exists() {
-        log::debug!("{} exists, skipping creation.", CONNECTIONS_FILE_NAME);
+        log::debug!("{} exists, skipping creation.", CONNECTIONS_FILE_PATH);
         return Ok(());
     }
     create_json_file_recursively(path)?;
@@ -203,9 +202,6 @@ pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
 pub(crate) fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf> {
     let mut config_dir = app.path().app_config_dir()?;
 
-    #[cfg(debug_assertions)]
-    config_dir.push("dev");
-
-    config_dir.push(CONNECTIONS_FILE_NAME);
+    config_dir.push(CONNECTIONS_FILE_PATH);
     Ok(config_dir)
 }

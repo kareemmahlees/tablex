@@ -16,7 +16,7 @@ export const getConnectionDetailsQueryOptions = (connectionId: string) =>
 
 export const discoverDBSchemaOptions = (tableName: string) =>
   queryOptions({
-    queryKey: [QUERY_KEYS.TABLE_COLUMNS, tableName],
+    queryKey: [QUERY_KEYS.DB_SCHEMA, tableName],
     queryFn: async () => {
       const schema = await commands.discoverDbSchema()
       return schema.find((t) => t.name === tableName)!

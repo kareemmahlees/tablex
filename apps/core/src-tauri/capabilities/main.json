@@ -47,10 +47,18 @@
       ]
     },
     {
+      "identifier": "fs:allow-read-file",
+      "allow": [
+        {
+          "path": "$APPCONFIG/**/*.json"
+        }
+      ]
+    },
+    {
       "identifier": "fs:allow-read-text-file",
       "allow": [
         {
-          "path": "$APPDATA/*.json"
+          "path": "$APPCONFIG/**/*.json"
         }
       ]
     },

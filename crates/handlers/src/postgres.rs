@@ -1,5 +1,14 @@
-use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames};
+use crate::{
+    query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
+    types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
+};
 use sea_schema::postgres::def::Type as SeaColumnType;
+use serde_json::{Map as JsonMap, Value as JsonValue};
+use sqlx::{
+    postgres::{PgQueryResult, PgRow},
+    types::chrono::{NaiveDate, NaiveDateTime, NaiveTime},
+    Column, Row, Value, ValueRef,
+};
 
 #[derive(Debug)]
 pub struct PostgresHandler;
@@ -75,15 +84,14 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::Inet => CustomColumnType::UnSupported,
             SeaColumnType::MacAddr => CustomColumnType::UnSupported,
             SeaColumnType::MacAddr8 => CustomColumnType::UnSupported,
-            SeaColumnType::JsonBinary
-            | SeaColumnType::Bytea
-            | SeaColumnType::Bit(_)
-            | SeaColumnType::VarBit(_) => CustomColumnType::Binary,
+            SeaColumnType::Bytea | SeaColumnType::Bit(_) | SeaColumnType::VarBit(_) => {
+                CustomColumnType::Binary
+            }
             SeaColumnType::TsVector => CustomColumnType::UnSupported,
             SeaColumnType::TsQuery => CustomColumnType::UnSupported,
             SeaColumnType::Uuid => CustomColumnType::Uuid,
             SeaColumnType::Xml => CustomColumnType::UnSupported,
-            SeaColumnType::Json => CustomColumnType::Json,
+            SeaColumnType::Json | SeaColumnType::JsonBinary => CustomColumnType::Json,
             SeaColumnType::Array(_) => CustomColumnType::UnSupported,
             SeaColumnType::Int4Range => CustomColumnType::UnSupported,
             SeaColumnType::Int8Range => CustomColumnType::UnSupported,
@@ -105,5 +113,65 @@ impl From<Vec<sea_schema::postgres::def::TableInfo>> for TablesNames {
             .map(|t| t.name.clone())
             .collect::<Vec<String>>();
         TablesNames(table_names)
+    }
+}
+
+impl From<PgRow> for QueryResult {
+    fn from(row: PgRow) -> QueryResult {
+        QueryResult {
+            row: QueryResultRow::SqlxPostgres(row),
+        }
+    }
+}
+
+impl From<PgRow> for DecodedRow {
+    fn from(value: PgRow) -> Self {
+        let mut row_data = JsonMap::default();
+        for (i, column) in value.columns().iter().enumerate() {
+            let value_ref = value.try_get_raw(i).unwrap();
+            let v = ValueRef::to_owned(&value_ref);
+
+            if v.is_null() {
+                row_data.insert(column.name().to_string(), JsonValue::Null);
+                continue;
+            }
+
+            let decoded = match v.type_info().to_string().as_str() {
+                "CHAR" | "VARCHAR" | "TEXT" | "NAME" | "UUID" => {
+                    JsonValue::String(v.decode::<String>())
+                }
+                // "UUID"=>JsonValue::String(v.decode::<uuid>())
+                "DATE" => JsonValue::String(v.decode::<NaiveDate>().to_string()),
+                "TIME" => JsonValue::String(v.decode::<NaiveTime>().to_string()),
+                "TIMESTAMP" | "TIMESTAMPTZ" => {
+                    JsonValue::String(v.decode::<NaiveDateTime>().to_string())
+                }
+                "JSON" | "JSONB" => v.decode(),
+                "FLOAT4" => JsonValue::from(v.decode::<f32>()),
+                "FLOAT8" => JsonValue::from(v.decode::<f64>()),
+                "INT2" => JsonValue::Number(v.decode::<i16>().into()),
+                "INT4" => JsonValue::Number(v.decode::<i32>().into()),
+                "INT8" => JsonValue::Number(v.decode::<i64>().into()),
+                "BOOL" => JsonValue::Bool(v.decode::<bool>()),
+                "BYTEA" => JsonValue::Array(
+                    v.decode::<Vec<u8>>()
+                        .into_iter()
+                        .map(|n| JsonValue::Number(n.into()))
+                        .collect(),
+                ),
+                "VOID" => JsonValue::Null,
+                _ => JsonValue::Null,
+            };
+            row_data.insert(column.name().to_string(), decoded);
+        }
+        DecodedRow(row_data)
+    }
+}
+
+impl From<PgQueryResult> for ExecResult {
+    fn from(value: PgQueryResult) -> Self {
+        Self {
+            rows_affected: value.rows_affected(),
+        }
     }
 }

@@ -1,5 +1,13 @@
-use crate::types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames};
+use crate::{
+    types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
+    DecodedRow, ExecResult, QueryResult, QueryResultRow,
+};
 use sea_schema::{sea_query::ColumnType as SeaColumnType, sqlite::def::TableDef};
+use serde_json::{Map as JsonMap, Value as JsonValue};
+use sqlx::{
+    sqlite::{SqliteQueryResult, SqliteRow},
+    Column, Row, Value, ValueRef,
+};
 
 #[derive(Debug)]
 pub struct SQLiteHandler;
@@ -92,5 +100,47 @@ impl From<Vec<TableDef>> for TablesNames {
             .map(|t| t.name.clone())
             .collect::<Vec<String>>();
         TablesNames(table_names)
+    }
+}
+
+impl From<SqliteRow> for QueryResult {
+    fn from(row: SqliteRow) -> QueryResult {
+        QueryResult {
+            row: QueryResultRow::SqlxSqlite(row),
+        }
+    }
+}
+
+impl From<SqliteRow> for DecodedRow {
+    fn from(value: SqliteRow) -> Self {
+        let mut row_data = JsonMap::default();
+        for (i, column) in value.columns().iter().enumerate() {
+            let value_ref = value.try_get_raw(i).unwrap();
+            let v = ValueRef::to_owned(&value_ref);
+
+            if v.is_null() {
+                row_data.insert(column.name().to_string(), JsonValue::Null);
+                continue;
+            }
+
+            let decoded = match v.type_info().to_string().as_str() {
+                "TEXT" | "DATE" | "TIME" | "DATETIME" => JsonValue::String(v.decode()),
+                "REAL" => JsonValue::from(v.decode::<f64>()),
+                "INTEGER" | "NUMERIC" => JsonValue::Number(v.decode::<i64>().into()),
+                "BOOLEAN" => JsonValue::Bool(v.decode::<bool>()),
+                _ => JsonValue::Null,
+            };
+
+            row_data.insert(column.name().to_string(), decoded);
+        }
+        DecodedRow(row_data)
+    }
+}
+
+impl From<SqliteQueryResult> for ExecResult {
+    fn from(value: SqliteQueryResult) -> Self {
+        Self {
+            rows_affected: value.rows_affected(),
+        }
     }
 }

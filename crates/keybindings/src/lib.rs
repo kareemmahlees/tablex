@@ -9,5 +9,5 @@ mod default;
 mod fs;
 mod schema;
 
-pub use fs::{ensure_keybindings_file_exist, get_keybindings_file_path, KEYBINDINGS_FILE_NAME};
+pub use fs::{ensure_keybindings_file_exist, get_keybindings_file_path, KEYBINDINGS_FILE_PATH};
 pub use schema::{Keybinding, KeybindingCommand};
