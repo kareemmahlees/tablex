@@ -1,5 +1,5 @@
 import { commands, Settings, SETTINGS_FILE_PATH } from "@/bindings"
-import { BaseDirectory, watchImmediate } from "@tauri-apps/plugin-fs"
+import { BaseDirectory, watch } from "@tauri-apps/plugin-fs"
 import { createContext, useContext, useEffect, useState } from "react"
 
 /**
@@ -28,7 +28,7 @@ export const useSettings = () => {
   const [settings, setSettings] = useState(settingsManager.settings)
 
   useEffect(() => {
-    void watchImmediate(
+    void watch(
       SETTINGS_FILE_PATH,
       async () => {
         const newSettings = await commands.loadSettingsFile()
@@ -36,7 +36,8 @@ export const useSettings = () => {
         setSettings(newSettings)
       },
       {
-        baseDir: BaseDirectory.AppConfig
+        baseDir: BaseDirectory.AppConfig,
+        recursive: true
       }
     )
   }, [])
