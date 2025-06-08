@@ -31,6 +31,14 @@
       ]
     },
     {
+      "identifier": "fs:allow-unwatch",
+      "allow": [
+        {
+          "path": "$APPCONFIG/**/*.json"
+        }
+      ]
+    },
+    {
       "identifier":"opener:allow-open-path",
       "allow": [
         {

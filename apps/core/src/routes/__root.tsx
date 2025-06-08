@@ -22,7 +22,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           <Toaster
             closeButton
             richColors
-            position="top-right"
+            position="bottom-center"
             pauseWhenPageIsHidden
             toastOptions={{
               classNames: {
