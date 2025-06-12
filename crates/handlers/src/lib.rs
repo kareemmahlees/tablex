@@ -4,28 +4,24 @@
 //! and `mysql`..
 
 use home::home_dir;
-use sqlx::{any::AnyPoolOptions, AnyPool};
-use std::time::Duration;
-use tx_lib::{types::Drivers, Result, TxError};
+use tx_lib::{Result, TxError};
 
 mod database;
-mod db_schema;
-mod handler;
 mod mysql;
 mod postgres;
 mod query;
+mod schema;
 mod sqlite;
 
 pub use database::DatabaseConnection;
-pub use db_schema::{ColumnInfo, ColumnRecord, CustomColumnType, IdenJsonValue, TableInfo};
-pub use handler::{Handler, RowHandler, TableHandler};
 pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
 pub use query::{DecodedRow, ExecResult, QueryResult, QueryResultRow};
+pub use schema::{ColumnInfo, CustomColumnType, IdenJsonValue, RowRecord, TableInfo};
 pub use sqlite::SQLiteHandler;
 
 /// Replaces homedir-relative paths `~` with the users home dir.
-fn expand_conn_string(conn_string: &str) -> Result<String> {
+fn _expand_conn_string(conn_string: &str) -> Result<String> {
     let home_dir = home_dir();
 
     match home_dir {
@@ -35,22 +31,6 @@ fn expand_conn_string(conn_string: &str) -> Result<String> {
         }
         None => Err(TxError::HomeDirResolution),
     }
-}
-
-pub async fn establish_connection(conn_string: &str, driver: &Drivers) -> Result<AnyPool> {
-    let conn_string = match driver {
-        Drivers::SQLite => expand_conn_string(conn_string)?,
-        _ => conn_string.to_string(),
-    };
-
-    let pool = AnyPoolOptions::new()
-        .acquire_timeout(Duration::from_secs(5))
-        .test_before_acquire(true)
-        .connect(conn_string.as_str())
-        .await
-        .map_err(|_| TxError::ConnectionError)?;
-
-    Ok(pool)
 }
 
 /// Transform/Decode a `Vec<AnyRow>` into a serializable datastructure.

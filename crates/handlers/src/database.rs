@@ -1,6 +1,6 @@
 use crate::{
-    db_schema::{Schema, TablesNames},
     query::{ExecResult, QueryResult},
+    schema::{Schema, TablesNames},
 };
 use sea_query_binder::SqlxValues;
 use sea_schema::{

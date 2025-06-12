@@ -1,5 +1,5 @@
 use crate::{
-    db_schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
+    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
     DecodedRow, ExecResult, QueryResult, QueryResultRow,
 };
 use sea_schema::mysql::def::{ColumnKey, Type as SeaColumnType};

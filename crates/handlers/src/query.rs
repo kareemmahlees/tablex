@@ -15,6 +15,10 @@ pub enum QueryResultRow {
 }
 
 #[derive(Debug, Serialize, Deserialize, Type)]
+/// Represents the transformation result of a series of database `ValueRef`
+/// into a `JsonMap` that can be understood and serialized by the frontend.
+///
+/// Result is a map whose key is the column name and value is the column value in the row.
 pub struct DecodedRow(pub(crate) JsonMap<String, JsonValue>);
 
 #[derive(Debug, Serialize, Deserialize, Type)]

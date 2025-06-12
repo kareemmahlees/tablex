@@ -31,6 +31,9 @@ pub struct TablesNames(pub Vec<String>);
 
 #[derive(Serialize, Deserialize, Default, Clone, Copy, Type, Debug)]
 #[serde(rename_all = "camelCase")]
+/// Acts as a unified interface for all databases' datatypes.
+/// Each database implements the conversion of it's datatypes to the
+/// corresponding `CustomColumnType`.
 pub enum CustomColumnType {
     #[default]
     String,
@@ -51,14 +54,16 @@ pub enum CustomColumnType {
 }
 
 #[derive(Serialize, Deserialize, Type, Clone, Debug)]
-pub struct ColumnRecord {
+/// Represents a cell info in a row. Used primarily for when performing
+/// operations on rows (`Insert`, `Update`, `Delete`)
+pub struct RowRecord {
     pub column_name: String,
     pub value: JsonValue,
     column_type: CustomColumnType,
 }
 
-impl From<ColumnRecord> for sea_query::Value {
-    fn from(value: ColumnRecord) -> Self {
+impl From<RowRecord> for sea_query::Value {
+    fn from(value: RowRecord) -> Self {
         match value.value {
             JsonValue::Null => match value.column_type {
                 CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
@@ -119,6 +124,8 @@ impl From<ColumnRecord> for sea_query::Value {
 }
 
 #[derive(Serialize, Deserialize)]
+/// A wrapper around [serde_json::Value] that implements [sea_query::Iden] for json values.
+/// It's used to get a format [serde_json::Value] that can be put in a sql query.
 pub struct IdenJsonValue(pub JsonValue);
 
 impl sea_query::Iden for IdenJsonValue {

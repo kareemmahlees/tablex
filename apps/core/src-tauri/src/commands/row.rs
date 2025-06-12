@@ -9,7 +9,7 @@ use serde_json::Value as JsonValue;
 use specta::Type;
 use tauri::AppHandle;
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, ColumnRecord, DecodedRow, ExecResult, IdenJsonValue};
+use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult, IdenJsonValue, RowRecord};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
@@ -72,7 +72,7 @@ pub async fn get_paginated_rows(
 pub async fn delete_rows(
     app_handle: AppHandle,
     state: AppState<'_>,
-    pk_cols: Vec<Vec<ColumnRecord>>,
+    pk_cols: Vec<Vec<RowRecord>>,
     table_name: String,
 ) -> Result<ExecResult> {
     let state = state.lock().await;
@@ -111,7 +111,7 @@ pub async fn create_row(
     app: AppHandle,
     state: AppState<'_>,
     table_name: String,
-    data: Vec<ColumnRecord>,
+    data: Vec<RowRecord>,
 ) -> Result<ExecResult> {
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
