@@ -6016,8 +6016,10 @@ name = "tx_handlers"
 version = "0.3.9"
 dependencies = [
  "async-trait",
+ "chrono",
  "home",
  "log",
+ "sea-query",
  "sea-query-binder",
  "sea-schema",
  "serde",
@@ -6026,6 +6028,7 @@ dependencies = [
  "sqlx",
  "tokio",
  "tx_lib",
+ "uuid",
 ]
 
 [[package]]
@@ -6045,7 +6048,6 @@ name = "tx_lib"
 version = "0.3.9"
 dependencies = [
  "async-trait",
- "chrono",
  "log",
  "serde",
  "serde_json",

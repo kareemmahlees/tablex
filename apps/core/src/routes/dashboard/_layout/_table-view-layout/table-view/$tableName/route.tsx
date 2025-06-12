@@ -16,14 +16,14 @@ import { cn } from "@tablex/lib/utils"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { RefreshCw } from "lucide-react"
+import { useMemo } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
+import { toast } from "sonner"
 
 export const Route = createFileRoute(
   "/dashboard/_layout/_table-view-layout/table-view/$tableName"
 )({
   loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
-  loader: async ({ context: { queryClient }, params: { tableName } }) => {
-    await queryClient.prefetchQuery(discoverDBSchemaOptions(tableName))
-  },
   component: TableView,
   pendingComponent: () => (
     <div className="flex h-full flex-col space-y-5 p-4">
@@ -57,6 +57,11 @@ function TableView() {
       })
     ]
   })
+  const pkCols = useMemo(
+    () =>
+      columns.filter((col) => col.meta?.isPk && col.id).map((col) => col.id!),
+    [columns]
+  )
 
   const { table } = useSetupDataTable({
     columns,
@@ -70,6 +75,15 @@ function TableView() {
     () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TABLE_ROWS] }),
     [queryClient]
   )
+
+  useHotkeys("delete", async () => {
+    if (pkCols.length === 0)
+      return toast.warning("No primary key defined for this table.")
+
+    const rr = table
+      .getSelectedRowModel()
+      .flatRows.map((r) => pkCols.map((colId) => r.getValue(colId)))
+  })
 
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">

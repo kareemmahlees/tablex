@@ -9,20 +9,20 @@ use std::time::Duration;
 use tx_lib::{types::Drivers, Result, TxError};
 
 mod database;
+mod db_schema;
 mod handler;
 mod mysql;
 mod postgres;
 mod query;
 mod sqlite;
-mod types;
 
 pub use database::DatabaseConnection;
+pub use db_schema::{ColumnInfo, ColumnRecord, CustomColumnType, IdenJsonValue, TableInfo};
 pub use handler::{Handler, RowHandler, TableHandler};
 pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
 pub use query::{DecodedRow, ExecResult, QueryResult, QueryResultRow};
 pub use sqlite::SQLiteHandler;
-pub use types::{ColumnInfo, CustomColumnType, TableInfo};
 
 /// Replaces homedir-relative paths `~` with the users home dir.
 fn expand_conn_string(conn_string: &str) -> Result<String> {

@@ -23,3 +23,6 @@ tx_lib = { path = "../lib" }
 home = "0.5.9"
 sea-query-binder = { workspace = true }
 sea-schema = { workspace = true }
+sea-query = { workspace = true }
+uuid = { workspace = true }
+chrono = "0.4.38"

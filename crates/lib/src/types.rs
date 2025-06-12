@@ -4,7 +4,6 @@ use crate::TxError;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use specta::Type;
-use sqlx::{any::AnyRow, mysql::MySqlRow, postgres::PgRow, sqlite::SqliteRow, Error, FromRow, Row};
 
 pub type Result<T> = std::result::Result<T, TxError>;
 

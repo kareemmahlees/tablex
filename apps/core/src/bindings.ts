@@ -77,17 +77,15 @@ export const commands = {
     })
   },
   async deleteRows(
-    pkColName: string,
-    rowPkValues: JsonValue[],
+    pkCols: ColumnRecord[][],
     tableName: string
-  ): Promise<string> {
-    return await TAURI_INVOKE("delete_rows", {
-      pkColName,
-      rowPkValues,
-      tableName
-    })
+  ): Promise<ExecResult> {
+    return await TAURI_INVOKE("delete_rows", { pkCols, tableName })
   },
-  async createRow(tableName: string, data: RowData[]): Promise<ExecResult> {
+  async createRow(
+    tableName: string,
+    data: ColumnRecord[]
+  ): Promise<ExecResult> {
     return await TAURI_INVOKE("create_row", { tableName, data })
   },
   async updateRow(
@@ -128,8 +126,8 @@ export const events = __makeEvents__<{
 
 /** user-defined constants **/
 
-export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const
 export const SETTINGS_FILE_PATH = "dev/settings.json" as const
+export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const
 
 /** user-defined types **/
 
@@ -139,6 +137,11 @@ export type ColumnInfo = {
   nullable: boolean
   pk: boolean
   type: CustomColumnType
+}
+export type ColumnRecord = {
+  column_name: string
+  value: JsonValue
+  column_type: CustomColumnType
 }
 export type ConfigFile = "settings" | "keybindings" | "logs"
 /**
@@ -214,11 +217,6 @@ export type JsonValue =
 export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
 export type KeybindingCommand = Sidebar | Table
 export type PaginatedRows = { data: DecodedRow[]; pageCount: number }
-export type RowData = {
-  column_name: string
-  value: JsonValue
-  column_type: CustomColumnType
-}
 /**
  * Configuration for the SQL editor.
  */

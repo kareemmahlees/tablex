@@ -1,6 +1,6 @@
 use crate::{
+    db_schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
     query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
-    types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
 };
 use sea_schema::postgres::def::Type as SeaColumnType;
 use serde_json::{Map as JsonMap, Value as JsonValue};
