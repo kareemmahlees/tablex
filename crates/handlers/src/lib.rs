@@ -17,7 +17,7 @@ pub use database::DatabaseConnection;
 pub use mysql::MySQLHandler;
 pub use postgres::PostgresHandler;
 pub use query::{DecodedRow, ExecResult, QueryResult, QueryResultRow};
-pub use schema::{ColumnInfo, CustomColumnType, IdenJsonValue, RowRecord, TableInfo};
+pub use schema::{ColumnInfo, CustomColumnType, RowRecord, TableInfo};
 pub use sqlite::SQLiteHandler;
 
 /// Replaces homedir-relative paths `~` with the users home dir.

@@ -2,7 +2,6 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use specta::Type;
-use std::fmt;
 use uuid::Uuid;
 
 #[derive(Debug)]
@@ -54,6 +53,7 @@ pub enum CustomColumnType {
 }
 
 #[derive(Serialize, Deserialize, Type, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 /// Represents a cell info in a row. Used primarily for when performing
 /// operations on rows (`Insert`, `Update`, `Delete`)
 pub struct RowRecord {
@@ -120,28 +120,5 @@ impl From<RowRecord> for sea_query::Value {
                 sea_query::Value::Json(Some(Box::new(JsonValue::Object(map))))
             }
         }
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-/// A wrapper around [serde_json::Value] that implements [sea_query::Iden] for json values.
-/// It's used to get a format [serde_json::Value] that can be put in a sql query.
-pub struct IdenJsonValue(pub JsonValue);
-
-impl sea_query::Iden for IdenJsonValue {
-    fn unquoted(&self, s: &mut dyn fmt::Write) {
-        let iden = match &self.0 {
-            JsonValue::Null => String::from("null"),
-            JsonValue::Bool(v) => match v {
-                true => String::from("true"),
-                false => String::from("false"),
-            },
-            JsonValue::Number(number) => number.to_string(),
-            JsonValue::String(string) => string.clone(),
-            JsonValue::Array(_) => todo!(),
-            JsonValue::Object(_) => todo!(),
-        };
-
-        write!(s, "{}", iden).unwrap();
     }
 }

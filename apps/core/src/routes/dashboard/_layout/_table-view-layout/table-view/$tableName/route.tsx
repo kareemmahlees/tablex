@@ -1,3 +1,4 @@
+import { commands, RowRecord } from "@/bindings"
 import { DataTable } from "@/components/custom/data-table"
 import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import { TooltipButton } from "@/components/custom/tooltip-button"
@@ -43,26 +44,18 @@ function TableView() {
   const { connectionId } = Route.useSearch()
   const { pagination, setPagination } = useSetupPagination(connectionId!)
   const {
-    "0": { data: columns },
+    "0": { data: tableSchema },
     "1": { data: rows, refetch: refetchRows, isFetching: isFetchingRows }
   } = useSuspenseQueries({
     queries: [
-      {
-        ...discoverDBSchemaOptions(tableName),
-        select: generateColumnsDefs
-      },
+      discoverDBSchemaOptions(tableName),
       getPaginatedRowsOptions({
         tableName,
         ...pagination
       })
     ]
   })
-  const pkCols = useMemo(
-    () =>
-      columns.filter((col) => col.meta?.isPk && col.id).map((col) => col.id!),
-    [columns]
-  )
-
+  const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
   const { table } = useSetupDataTable({
     columns,
     data: rows,
@@ -77,12 +70,29 @@ function TableView() {
   )
 
   useHotkeys("delete", async () => {
+    const pkCols = tableSchema.columns.filter((c) => c.pk)
     if (pkCols.length === 0)
       return toast.warning("No primary key defined for this table.")
 
-    const rr = table
+    const rowsToDelete: RowRecord[][] = table
       .getSelectedRowModel()
-      .flatRows.map((r) => pkCols.map((colId) => r.getValue(colId)))
+      .flatRows.map((r) =>
+        pkCols.map((col) => ({
+          columnName: col.name,
+          value: r.getValue(col.name),
+          columnType: col.type
+        }))
+      )
+    toast.promise(commands.deleteRows(rowsToDelete, tableName), {
+      success: () => {
+        table.toggleAllRowsSelected(false)
+        return `Successfully deleted ${rowsToDelete.length} row(s).`
+      },
+      error: (err) => {
+        console.log(err)
+        return "Something went wrong."
+      }
+    })
   })
 
   return (

@@ -1,6 +1,6 @@
 use crate::{
-    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
     query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
+    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
 };
 use sea_schema::postgres::def::Type as SeaColumnType;
 use serde_json::{Map as JsonMap, Value as JsonValue};
@@ -30,6 +30,7 @@ impl From<sea_schema::postgres::def::Schema> for Schema {
 impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
     #[allow(clippy::incompatible_msrv)]
     fn from(value: &sea_schema::postgres::def::TableDef) -> Self {
+        dbg!(&value.primary_key_constraints);
         Self {
             name: value.info.name.clone(),
             columns: value
@@ -42,7 +43,10 @@ impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
                             .is_some_and(|exp| exp.0.starts_with("nextval")),
                     name: c.name.clone(),
                     nullable: c.not_null.is_none(),
-                    pk: c.is_identity,
+                    pk: value
+                        .primary_key_constraints
+                        .iter()
+                        .any(|pk| pk.columns.contains(&c.name)),
                     r#type: c.col_type.clone().into(),
                 })
                 .collect(),

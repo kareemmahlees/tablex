@@ -21,7 +21,7 @@ export const discoverDBSchemaOptions = (tableName: string) =>
       const schema = await commands.discoverDbSchema()
       return schema.find((t) => t.name === tableName)!
     },
-    staleTime: 60 * 60 * 1000 // 1 hour
+    staleTime: 10 * 60 * 1000 // 1 hour
   })
 
 export const getPaginatedRowsOptions = ({

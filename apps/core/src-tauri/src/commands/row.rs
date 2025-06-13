@@ -9,7 +9,7 @@ use serde_json::Value as JsonValue;
 use specta::Type;
 use tauri::AppHandle;
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult, IdenJsonValue, RowRecord};
+use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult, RowRecord};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
@@ -80,11 +80,11 @@ pub async fn delete_rows(
 
     let mut delete_condition = Cond::any();
 
-    for col1 in pk_cols {
+    for matrix in pk_cols {
         let mut sub_condition = Cond::all();
-        for col2 in col1 {
-            sub_condition = sub_condition
-                .add(Expr::col(PlainColumn(col2.column_name)).equals(IdenJsonValue(col2.value)))
+        for record in matrix {
+            sub_condition =
+                sub_condition.add(Expr::col(PlainColumn(record.column_name.clone())).eq(record))
         }
 
         delete_condition = delete_condition.add(sub_condition);
