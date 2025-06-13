@@ -65,7 +65,10 @@ function TableView() {
 
   useTauriEventListener(
     "tableContentsChanged",
-    () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TABLE_ROWS] }),
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.TABLE_ROWS, tableName]
+      }),
     [queryClient]
   )
 
