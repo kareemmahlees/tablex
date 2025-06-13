@@ -77,17 +77,12 @@ export const commands = {
     })
   },
   async deleteRows(
-    pkColName: string,
-    rowPkValues: JsonValue[],
+    pkCols: RowRecord[][],
     tableName: string
-  ): Promise<string> {
-    return await TAURI_INVOKE("delete_rows", {
-      pkColName,
-      rowPkValues,
-      tableName
-    })
+  ): Promise<ExecResult> {
+    return await TAURI_INVOKE("delete_rows", { pkCols, tableName })
   },
-  async createRow(tableName: string, data: RowData[]): Promise<ExecResult> {
+  async createRow(tableName: string, data: RowRecord[]): Promise<ExecResult> {
     return await TAURI_INVOKE("create_row", { tableName, data })
   },
   async updateRow(
@@ -159,6 +154,11 @@ export type CursorBlinkingStyle =
   | "smooth"
   | "solid"
   | "phase"
+/**
+ * Acts as a unified interface for all databases' datatypes.
+ * Each database implements the conversion of it's datatypes to the
+ * corresponding `CustomColumnType`.
+ */
 export type CustomColumnType =
   | "string"
   | "text"
@@ -175,6 +175,12 @@ export type CustomColumnType =
   | "binary"
   | "custom"
   | "unSupported"
+/**
+ * Represents the transformation result of a series of database `ValueRef`
+ * into a `JsonMap` that can be understood and serialized by the frontend.
+ *
+ * Result is a map whose key is the column name and value is the column value in the row.
+ */
 export type DecodedRow = { [key in string]: JsonValue }
 /**
  * Supported drivers, stored inside connection config in `connections.json`.
@@ -214,10 +220,14 @@ export type JsonValue =
 export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
 export type KeybindingCommand = Sidebar | Table
 export type PaginatedRows = { data: DecodedRow[]; pageCount: number }
-export type RowData = {
-  column_name: string
+/**
+ * Represents a cell info in a row. Used primarily for when performing
+ * operations on rows (`Insert`, `Update`, `Delete`)
+ */
+export type RowRecord = {
+  columnName: string
   value: JsonValue
-  column_type: CustomColumnType
+  columnType: CustomColumnType
 }
 /**
  * Configuration for the SQL editor.

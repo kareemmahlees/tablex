@@ -8,12 +8,19 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import type { ColumnDef } from "@tanstack/react-table"
+import "@tanstack/react-table"
+import type { ColumnDef, RowData } from "@tanstack/react-table"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    isPk: boolean
+  }
+}
+
 export const generateColumnsDefs = (table: TableInfo) => {
-  const columnsDefinitions = table.columns.map(({ name, type }) => {
+  const columnsDefinitions = table.columns.map(({ name, type, pk }) => {
     const columnDefinition: ColumnDef<ColumnInfo> = {
       accessorKey: name,
       id: name,
@@ -99,11 +106,11 @@ export const generateColumnsDefs = (table: TableInfo) => {
             {value}
           </span>
         )
+      },
+      meta: {
+        isPk: pk
       }
     }
-    // if (pk) {
-    //   updatePkColumn(name)
-    // }
     return columnDefinition
   })
 

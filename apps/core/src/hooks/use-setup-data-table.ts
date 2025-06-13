@@ -52,11 +52,6 @@ export const useSetupDataTable = <TData, TValue>({
   pagination,
   setPagination
 }: SetupDataTableOptions<TData, TValue>) => {
-  // const { data: rows, isLoading: isRowsLoading } = useGetPaginatedRows(
-  //   tableName,
-  //   pageIndex,
-  //   pageSize
-  // )
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})

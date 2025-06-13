@@ -1,6 +1,6 @@
 import type { ColumnInfo } from "@/bindings"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { flexRender, Table as TanstackTable } from "@tanstack/react-table"
+import { flexRender, Row, Table as TanstackTable } from "@tanstack/react-table"
 import { ScrollBar } from "../ui/scroll-area"
 import {
   Table,
@@ -11,7 +11,12 @@ import {
   TableRow
 } from "../ui/table"
 
-export const DataTable = ({ table }: { table: TanstackTable<ColumnInfo> }) => {
+type DataTableProps = {
+  table: TanstackTable<ColumnInfo>
+  onContextMenuRow?: (row: Row<ColumnInfo>) => void
+}
+
+export const DataTable = ({ table, onContextMenuRow }: DataTableProps) => {
   return (
     <ScrollArea className="relative h-full w-full">
       <Table>
@@ -46,6 +51,11 @@ export const DataTable = ({ table }: { table: TanstackTable<ColumnInfo> }) => {
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 className="hover:bg-muted/70 data-[state=selected]:bg-muted/70"
+                onContextMenu={() => {
+                  if (onContextMenuRow) {
+                    onContextMenuRow(row)
+                  }
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="w-1">

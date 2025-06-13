@@ -1,3 +1,4 @@
+import { commands, RowRecord } from "@/bindings"
 import { DataTable } from "@/components/custom/data-table"
 import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import { TooltipButton } from "@/components/custom/tooltip-button"
@@ -16,14 +17,14 @@ import { cn } from "@tablex/lib/utils"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { RefreshCw } from "lucide-react"
+import { useMemo } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
+import { toast } from "sonner"
 
 export const Route = createFileRoute(
   "/dashboard/_layout/_table-view-layout/table-view/$tableName"
 )({
   loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
-  loader: async ({ context: { queryClient }, params: { tableName } }) => {
-    await queryClient.prefetchQuery(discoverDBSchemaOptions(tableName))
-  },
   component: TableView,
   pendingComponent: () => (
     <div className="flex h-full flex-col space-y-5 p-4">
@@ -43,21 +44,18 @@ function TableView() {
   const { connectionId } = Route.useSearch()
   const { pagination, setPagination } = useSetupPagination(connectionId!)
   const {
-    "0": { data: columns },
+    "0": { data: tableSchema },
     "1": { data: rows, refetch: refetchRows, isFetching: isFetchingRows }
   } = useSuspenseQueries({
     queries: [
-      {
-        ...discoverDBSchemaOptions(tableName),
-        select: generateColumnsDefs
-      },
+      discoverDBSchemaOptions(tableName),
       getPaginatedRowsOptions({
         tableName,
         ...pagination
       })
     ]
   })
-
+  const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
   const { table } = useSetupDataTable({
     columns,
     data: rows,
@@ -67,9 +65,38 @@ function TableView() {
 
   useTauriEventListener(
     "tableContentsChanged",
-    () => queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.TABLE_ROWS] }),
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.TABLE_ROWS, tableName]
+      }),
     [queryClient]
   )
+
+  useHotkeys("delete", async () => {
+    const pkCols = tableSchema.columns.filter((c) => c.pk)
+    if (pkCols.length === 0)
+      return toast.warning("No primary key defined for this table.")
+
+    const rowsToDelete: RowRecord[][] = table
+      .getSelectedRowModel()
+      .flatRows.map((r) =>
+        pkCols.map((col) => ({
+          columnName: col.name,
+          value: r.getValue(col.name),
+          columnType: col.type
+        }))
+      )
+    toast.promise(commands.deleteRows(rowsToDelete, tableName), {
+      success: () => {
+        table.toggleAllRowsSelected(false)
+        return `Successfully deleted ${rowsToDelete.length} row(s).`
+      },
+      error: (err) => {
+        console.log(err)
+        return "Something went wrong."
+      }
+    })
+  })
 
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">

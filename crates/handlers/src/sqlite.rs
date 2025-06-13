@@ -1,5 +1,5 @@
 use crate::{
-    types::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
+    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
     DecodedRow, ExecResult, QueryResult, QueryResultRow,
 };
 use sea_schema::{sea_query::ColumnType as SeaColumnType, sqlite::def::TableDef};

@@ -1,4 +1,5 @@
 use crate::AppState;
+use sea_query::{Cond, Expr, ExprTrait};
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
 use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
@@ -6,12 +7,10 @@ use serde::{Deserialize, Serialize};
 use serde_json::Map;
 use serde_json::Value as JsonValue;
 use specta::Type;
-use sqlx::types::chrono::{DateTime, Utc};
 use tauri::AppHandle;
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, CustomColumnType, DecodedRow, ExecResult};
+use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult, RowRecord};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
-use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
 #[serde(rename_all = "camelCase")]
@@ -71,107 +70,39 @@ pub async fn get_paginated_rows(
 #[tauri::command]
 #[specta::specta]
 pub async fn delete_rows(
-    app: AppHandle,
+    app_handle: AppHandle,
     state: AppState<'_>,
-    pk_col_name: String,
-    row_pk_values: Vec<JsonValue>,
+    pk_cols: Vec<Vec<RowRecord>>,
     table_name: String,
-) -> Result<String> {
+) -> Result<ExecResult> {
     let state = state.lock().await;
-    let conn = &state.conn;
+    let conn = state.conn.as_ref().unwrap();
 
-    // let mut params: String = Default::default();
-    // for val in row_pk_values.iter() {
-    //     // this should cover most cases of primary keys
-    //     if val.is_number() {
-    //         params.push_str(format!("'{}',", val.as_i64().unwrap()).as_str());
-    //     } else {
-    //         params.push_str(format!("'{}',", val.as_str().unwrap()).as_str());
-    //     }
-    // }
-    // params.pop(); // to remove the last trailing comma
+    let mut delete_condition = Cond::any();
 
-    // let stmt = Query::delete()
-    //     .from_table(Alias::new(table_name))
-    //     .cond_where(Expr::col(Alias::new()));
-
-    // let result = handler
-    //     .delete_rows(pool, pk_col_name, table_name, params)
-    //     .await;
-    // if result.is_ok() {
-    //     TableContentsChanged.emit(&app).unwrap();
-    //     log::debug!("Event emitted: {:?}", TableContentsChanged);
-    // }
-    // result
-    Ok(String::default())
-}
-
-#[derive(Serialize, Deserialize, Type, Clone, Debug)]
-pub struct RowData {
-    column_name: String,
-    value: JsonValue,
-    column_type: tx_handlers::CustomColumnType,
-}
-
-impl From<RowData> for sea_query::Value {
-    fn from(value: RowData) -> Self {
-        match value.value {
-            JsonValue::Null => match value.column_type {
-                CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
-                    sea_query::Value::String(None)
-                }
-                CustomColumnType::Uuid => sea_query::Value::Uuid(None),
-                CustomColumnType::Float => sea_query::Value::Double(None),
-                CustomColumnType::PositiveInteger => sea_query::Value::BigInt(None),
-                CustomColumnType::Boolean => sea_query::Value::Bool(None),
-                CustomColumnType::Integer => sea_query::Value::BigUnsigned(None),
-                CustomColumnType::Date => sea_query::Value::ChronoDate(None),
-                CustomColumnType::DateTime => sea_query::Value::ChronoDateTime(None),
-                CustomColumnType::Time => sea_query::Value::ChronoTime(None),
-                CustomColumnType::Json => sea_query::Value::Json(None),
-                CustomColumnType::Binary => sea_query::Value::Bytes(None),
-                CustomColumnType::Custom => todo!(),
-                CustomColumnType::UnSupported => todo!(),
-            },
-            JsonValue::Bool(v) => sea_query::Value::Bool(Some(v)),
-            JsonValue::Number(number) => {
-                if number.is_f64() {
-                    sea_query::Value::Double(number.as_f64())
-                } else if number.is_i64() {
-                    sea_query::Value::BigInt(number.as_i64())
-                } else if number.is_u64() {
-                    sea_query::Value::BigUnsigned(number.as_u64())
-                } else {
-                    todo!()
-                }
-            }
-            JsonValue::String(v) => match value.column_type {
-                CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
-                    sea_query::Value::String(Some(Box::new(v)))
-                }
-                CustomColumnType::Uuid => {
-                    sea_query::Value::Uuid(Some(Box::new(Uuid::parse_str(v.as_str()).unwrap())))
-                }
-                CustomColumnType::Date => {
-                    let date = v.parse::<DateTime<Utc>>().unwrap();
-                    sea_query::Value::ChronoDate(Some(Box::new(date.date_naive())))
-                }
-                CustomColumnType::DateTime => {
-                    let date = v.parse::<DateTime<Utc>>().unwrap();
-                    sea_query::Value::ChronoDateTime(Some(Box::new(date.naive_utc())))
-                }
-                CustomColumnType::Time => {
-                    let date = v.parse::<DateTime<Utc>>().unwrap();
-                    sea_query::Value::ChronoTime(Some(Box::new(date.time())))
-                }
-                _ => unimplemented!(),
-            },
-            JsonValue::Array(values) => todo!(),
-            JsonValue::Object(map) => {
-                sea_query::Value::Json(Some(Box::new(JsonValue::Object(map))))
-            }
+    for matrix in pk_cols {
+        let mut sub_condition = Cond::all();
+        for record in matrix {
+            sub_condition =
+                sub_condition.add(Expr::col(PlainColumn(record.column_name.clone())).eq(record))
         }
+
+        delete_condition = delete_condition.add(sub_condition);
     }
+
+    let (stmt, values) = Query::delete()
+        .from_table(PlainTable(table_name))
+        .cond_where(delete_condition)
+        .build_any_sqlx(conn.into_builder().as_ref());
+
+    let result = conn.execute_with(stmt.as_str(), values).await;
+
+    if result.is_ok() {
+        TableContentsChanged.emit(&app_handle).unwrap();
+        log::debug!("Event emitted: {:?}", TableContentsChanged);
+    }
+
+    result
 }
 
 #[tauri::command]
@@ -180,7 +111,7 @@ pub async fn create_row(
     app: AppHandle,
     state: AppState<'_>,
     table_name: String,
-    data: Vec<RowData>,
+    data: Vec<RowRecord>,
 ) -> Result<ExecResult> {
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();

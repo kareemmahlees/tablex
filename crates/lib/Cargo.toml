@@ -16,6 +16,5 @@ tauri = { workspace = true }
 async-trait = { workspace = true }
 specta = { workspace = true }
 tauri-specta = { workspace = true }
-chrono = "0.4.38"
 thiserror = "1.0.63"
 log = { workspace = true }
