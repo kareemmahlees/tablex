@@ -46,10 +46,12 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
         "resizable": true,
         "title": "TableX",
-        "width": 800,
+      "width": 1400,
+      "height": 750,
+      "minWidth": 768,
+      "minHeight": 500,
         "center": true      }
     ],
     "security": {
