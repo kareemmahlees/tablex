@@ -19,9 +19,10 @@ export const SQLiteConnectionForm = () => {
         control={form.control}
         name="connectionOpts.filePath"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="mt-4 flex w-full flex-col items-center">
             <FormControl>
               <Button
+                type="button"
                 variant={"secondary"}
                 onClick={async () => {
                   const file = await open({
@@ -42,15 +43,16 @@ export const SQLiteConnectionForm = () => {
                   })
                   field.onChange(file)
                 }}
+                className="w-1/2"
               >
                 Select DB file
               </Button>
             </FormControl>
+            <code>{field.value}</code>
             <FormMessage />
           </FormItem>
         )}
       />
-      {/* {selectedPath && <ConnectionForm selectedPath={selectedPath} />} */}
     </>
   )
 }

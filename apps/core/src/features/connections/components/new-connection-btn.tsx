@@ -41,6 +41,7 @@ import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
 import { NewConnectionFormSchema } from "../schema"
+import { PgMySQLConnectionForm } from "./pg-mysql-connection"
 import { SQLiteConnectionForm } from "./sqlite-connection-form"
 
 export const NewConnectionBtn = () => {
@@ -82,7 +83,7 @@ const NewConnectionForm = () => {
         return <SQLiteConnectionForm />
       case "postgresql":
       case "mysql":
-        return null
+        return <PgMySQLConnectionForm />
     }
   }
 
@@ -131,7 +132,12 @@ const NewConnectionForm = () => {
 
   return (
     <Form {...form}>
-      <form className="flex h-full flex-col items-center justify-center gap-y-9 overflow-hidden">
+      <form
+        className={cn(
+          "flex h-full flex-col items-center justify-center overflow-hidden",
+          driver === "sqlite" && "gap-y-9"
+        )}
+      >
         <div className="flex w-full items-end gap-x-4">
           <FormField
             control={form.control}
@@ -148,7 +154,7 @@ const NewConnectionForm = () => {
         {renderDriverInputFields()}
 
         {driver && (
-          <div className="col-span-full flex items-center justify-center gap-x-4">
+          <div className="col-span-full mt-4 flex items-center justify-center gap-x-4">
             <Button
               type="button"
               variant={"secondary"}
