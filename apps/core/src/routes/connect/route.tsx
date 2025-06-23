@@ -1,9 +1,9 @@
-import { Drivers } from "@/bindings"
+import type { Drivers } from "@/bindings"
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import DriverSelector from "./-components/driver-selector"
-import PgMySQLConnection from "./-components/pg-mysql-connection"
-import SqliteConnection from "./-components/sqlite-connection"
+// import PgMySQLConnection from "./-components/pg-mysql-connection"
+// import SqliteConnection from "./-components/sqlite-connection"
 
 export const Route = createFileRoute("/connect")({
   component: CreateConnection
@@ -18,11 +18,11 @@ function CreateConnection() {
         selectedDriver={selectedDriver}
         setSelectedDriver={setSelectedDriver}
       />
-      {selectedDriver === "sqlite" ? (
+      {/* {selectedDriver === "sqlite" ? (
         <SqliteConnection />
       ) : (
         selectedDriver && <PgMySQLConnection driver={selectedDriver} />
-      )}
+      )} */}
       <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
     </section>
   )

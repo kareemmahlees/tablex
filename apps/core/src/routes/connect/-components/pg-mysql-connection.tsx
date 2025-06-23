@@ -17,7 +17,8 @@ import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import ConnectionActions from "./connection-actions"
+
+// import ConnectionActions from "./connection-actions"
 
 interface ConnectionParamsProps {
   driver: Exclude<Drivers, "sqlite">
@@ -293,11 +294,11 @@ const ConnectionStringForm = ({ driver }: ConnectionStringFormProps) => {
             </FormItem>
           )}
         />
-        <ConnectionActions
+        {/* <ConnectionActions
           onClickConnect={form.handleSubmit(onClickConnect)}
           onClickSave={form.handleSubmit(onClickSave)}
           onClickTest={form.handleSubmit(onClickTest)}
-        />
+        /> */}
       </form>
     </Form>
   )

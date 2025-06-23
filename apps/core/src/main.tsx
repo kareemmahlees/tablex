@@ -1,7 +1,7 @@
 import { KeybindingsContext, KeybindingsManager } from "@/features/keybindings"
 import { SettingsContext, SettingsManager } from "@/features/settings/manager"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { RouterProvider, createRouter } from "@tanstack/react-router"
+import { createRouter, RouterProvider } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
 import { scan } from "react-scan"
 import "./index.css"
