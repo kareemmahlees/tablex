@@ -79,14 +79,8 @@ impl DatabaseConnection {
         match self {
             DatabaseConnection::Sqlite(conn, _) => {
                 match sqlx::query_with(stmt, values).fetch_all(conn).await {
-                    Ok(rows) => {
-                        dbg!("ok");
-                        Ok(rows.into_iter().map(|r| r.into()).collect())
-                    }
-                    Err(err) => {
-                        dbg!(&err);
-                        Err(err.into())
-                    }
+                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
+                    Err(err) => Err(err.into())
                 }
             }
             DatabaseConnection::Postgres(conn, _) => {

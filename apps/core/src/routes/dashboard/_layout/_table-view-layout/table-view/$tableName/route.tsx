@@ -92,7 +92,6 @@ function TableView() {
         return `Successfully deleted ${rowsToDelete.length} row(s).`
       },
       error: (err) => {
-        console.log(err)
         return "Something went wrong."
       }
     })

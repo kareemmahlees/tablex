@@ -39,8 +39,6 @@ export const TableSelectionBreadCrumb = ({
   const navigate = useNavigate()
   const { tableName } = useParams({ strict: false })
 
-  console.log("tables", tables)
-
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -56,7 +54,6 @@ export const TableSelectionBreadCrumb = ({
             placeholder="Select Table"
             emptyMsg="No Tables Found"
             onValueChange={(v) => {
-              console.log("table value", v)
               setLatestTable(v)
               navigate({
                 to: "/dashboard/table-view/$tableName",

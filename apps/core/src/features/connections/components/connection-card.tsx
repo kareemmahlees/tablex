@@ -23,7 +23,6 @@ type ConnectionCardProps = {
 }
 
 export const ConnectionCard = ({ config }: ConnectionCardProps) => {
-  console.log(config)
   return (
     <Card className="bg-sidebar transition-all hover:border hover:border-white">
       <CardHeader className="p-4">

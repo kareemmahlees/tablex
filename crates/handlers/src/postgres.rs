@@ -30,7 +30,6 @@ impl From<sea_schema::postgres::def::Schema> for Schema {
 impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
     #[allow(clippy::incompatible_msrv)]
     fn from(value: &sea_schema::postgres::def::TableDef) -> Self {
-        dbg!(&value.primary_key_constraints);
         Self {
             name: value.info.name.clone(),
             columns: value
