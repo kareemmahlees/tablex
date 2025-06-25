@@ -11,14 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
-import {
-  FileJson2,
-  FileText,
-  Globe2,
-  Link,
-  Settings2,
-  Terminal
-} from "lucide-react"
+import { FileJson2, FileText, Globe2, Settings2, Terminal } from "lucide-react"
 import { useCommandPaletteState } from "./state"
 
 const CommandPalette = () => {
@@ -55,10 +48,16 @@ export default CommandPalette
 
 const GeneralGroup = () => {
   const navigate = useNavigate()
+  const { toggleDialog } = useCommandPaletteState()
 
   return (
     <CommandGroup heading="General">
-      <CommandItem onSelect={() => navigate({ to: "/dashboard/settings" })}>
+      <CommandItem
+        onSelect={() => {
+          navigate({ to: "/dashboard/settings/preferences" })
+          toggleDialog()
+        }}
+      >
         <Settings2 />
         Settings
       </CommandItem>
@@ -68,15 +67,17 @@ const GeneralGroup = () => {
 
 const ConnectionsGroup = () => {
   const navigate = useNavigate()
+  const { toggleDialog } = useCommandPaletteState()
   return (
     <CommandGroup heading="Connections">
-      <CommandItem onSelect={() => navigate({ to: "/connections" })}>
+      <CommandItem
+        onSelect={() => {
+          navigate({ to: "/" })
+          toggleDialog()
+        }}
+      >
         <Globe2 />
         Go to Connections
-      </CommandItem>
-      <CommandItem onSelect={() => navigate({ to: "/connect" })}>
-        <Link className="h-4 w-4" />
-        Create Connection
       </CommandItem>
     </CommandGroup>
   )
