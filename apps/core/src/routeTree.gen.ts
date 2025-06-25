@@ -13,8 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ConnectionsRouteImport } from './routes/connections/route'
-import { Route as ConnectRouteImport } from './routes/connect/route'
 import { Route as IndexRouteImport } from './routes/index/route'
 import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
 import { Route as DashboardLayoutTableViewLayoutImport } from './routes/dashboard/_layout/_table-view-layout'
@@ -33,16 +31,6 @@ const DashboardImport = createFileRoute('/dashboard')()
 
 const DashboardRoute = DashboardImport.update({
   path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ConnectionsRouteRoute = ConnectionsRouteImport.update({
-  path: '/connections',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ConnectRouteRoute = ConnectRouteImport.update({
-  path: '/connect',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -107,20 +95,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/connect': {
-      id: '/connect'
-      path: '/connect'
-      fullPath: '/connect'
-      preLoaderRoute: typeof ConnectRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/connections': {
-      id: '/connections'
-      path: '/connections'
-      fullPath: '/connections'
-      preLoaderRoute: typeof ConnectionsRouteImport
       parentRoute: typeof rootRoute
     }
     '/dashboard': {
@@ -193,8 +167,6 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRouteRoute,
-  ConnectRouteRoute,
-  ConnectionsRouteRoute,
   DashboardRoute: DashboardRoute.addChildren({
     DashboardLayoutRoute: DashboardLayoutRoute.addChildren({
       DashboardLayoutApiDocsRouteRoute,
@@ -219,19 +191,11 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/connect",
-        "/connections",
         "/dashboard"
       ]
     },
     "/": {
       "filePath": "index/route.tsx"
-    },
-    "/connect": {
-      "filePath": "connect/route.tsx"
-    },
-    "/connections": {
-      "filePath": "connections/route.tsx"
     },
     "/dashboard": {
       "filePath": "dashboard",

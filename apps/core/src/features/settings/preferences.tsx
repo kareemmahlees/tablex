@@ -44,22 +44,19 @@ export const Preferences = () => {
   })
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    try {
-      await commands.writeIntoSettingsFile(data)
-      return toast.success("Successfully updated settings")
-    } catch (error) {
-      return toast.error("Failed to update settings.", {
-        description: error.details
-      })
-    }
+    toast.promise(commands.writeIntoSettingsFile(data), {
+      id: "update_settings",
+      success: "Successfully updated settings",
+      error: "Failed to update settings."
+    })
   }
 
   return (
-    <ScrollArea className="min-h-0 flex-col overflow-y-auto">
+    <ScrollArea className="h-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="mx-auto my-10 min-h-0 w-2/3 space-y-16 lg:w-1/2"
+          className="mx-auto my-10 w-2/3 space-y-16 lg:w-1/2"
         >
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-semibold">Preferences</h1>

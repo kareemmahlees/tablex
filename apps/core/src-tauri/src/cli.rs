@@ -91,7 +91,7 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
         );
         let _ = main_window.eval(format!("window.location.replace('{url}')").as_str());
     } else {
-        normal_navigation(app, main_window);
+        return;
     }
 }
 
@@ -110,13 +110,4 @@ async fn establish_on_the_fly_connection(app: &AppHandle, conn_string: &String) 
     establish_connection(app.to_owned(), conn_string.into(), driver.clone()).await?;
 
     Ok(driver)
-}
-
-/// If the app is ran without CLI args
-fn normal_navigation(app: &AppHandle, main_window: WebviewWindow) {
-    let exist = connections_exist(app.clone()).unwrap();
-
-    if exist {
-        let _ = main_window.eval("window.location.replace('/connections')");
-    }
 }

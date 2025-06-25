@@ -1,26 +1,76 @@
-import CreateConnectionBtn from "@/components/create-connection-btn"
+import { commands } from "@/bindings"
+import { ConnectionCard } from "@/features/connections/components/connection-card"
+import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute } from "@tanstack/react-router"
+import { toast } from "sonner"
 
 export const Route = createFileRoute("/")({
+  loader: commands.getConnections,
   component: Index
 })
 
 function Index() {
+  const navigate = Route.useNavigate()
+  const connections = Route.useLoaderData()
+
+  const onClickConnect = async (connectionId: string) => {
+    const connectionDetails = await commands.getConnectionDetails(connectionId)
+
+    try {
+      await commands.establishConnection(
+        connectionDetails.connString,
+        connectionDetails.driver
+      )
+    } catch (error) {
+      return toast.error("Something went wrong.", {
+        description: error as string
+      })
+    }
+    const latestTable = localStorage.getItem(
+      LOCAL_STORAGE.LATEST_TABLE(connectionId)
+    )
+
+    if (latestTable) {
+      navigate({
+        to: "/dashboard/table-view/$tableName",
+        params: {
+          tableName: latestTable
+        },
+        search: {
+          connectionId
+        }
+      })
+      return
+    }
+
+    navigate({
+      to: "/dashboard/table-view/empty",
+      search: { connectionId }
+    })
+  }
+
   return (
-    <div className="dark:bg-dot-white/[0.4] bg-dot-black/[0.4] relative flex h-full flex-col items-center justify-center gap-y-20 bg-white dark:bg-black">
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
-      <div className="flex items-end">
-        <h1 className="z-10 text-6xl font-bold text-white lg:text-[100px]">
-          Table
-        </h1>
-        <img
-          src={"/logo.svg"}
-          alt="logo"
-          aria-hidden
-          className="mb-1 h-[50px] w-[50px] lg:mb-2 lg:h-[70px] lg:w-[70px]"
-        />
+    <main className="flex h-full w-full flex-col items-center py-10">
+      <div className="flex w-2/3 flex-col items-center gap-y-10">
+        <div className="flex w-full items-center justify-between">
+          <h1 className="text-2xl font-bold">Connections</h1>
+          <NewConnectionBtn />
+        </div>
+        <ul className="grid h-full w-full grid-cols-3 gap-5 overflow-y-auto">
+          {Object.entries(connections).map(([id, config]) => {
+            return (
+              <li
+                key={id}
+                onClick={() => onClickConnect(id)}
+                className="hover:cursor-pointer"
+              >
+                <ConnectionCard config={config} />
+              </li>
+            )
+          })}
+        </ul>
       </div>
-      <CreateConnectionBtn />
-    </div>
+    </main>
   )
 }

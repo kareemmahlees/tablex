@@ -13,8 +13,9 @@ use sqlx::{
     mysql::{MySqlConnectOptions, MySqlPool},
     postgres::{PgConnectOptions, PgPool},
     sqlite::{SqliteConnectOptions, SqlitePool},
+    Connection,
 };
-use tx_lib::{types::Drivers, TxError};
+use tx_lib::{types::Drivers, Result, TxError};
 
 pub enum DatabaseConnection {
     Sqlite(SqlitePool, SqliteSchemaDiscovery),
@@ -23,7 +24,7 @@ pub enum DatabaseConnection {
 }
 
 impl DatabaseConnection {
-    pub async fn connect(url: &str, driver: Drivers) -> Result<Self, TxError> {
+    pub async fn connect(url: &str, driver: Drivers) -> Result<Self> {
         // TODO: use match statement once if_let_guard feature is stable.
         let con = match driver {
             Drivers::SQLite => {
@@ -71,22 +72,34 @@ impl DatabaseConnection {
             DatabaseConnection::Mysql(_) => Box::new(MysqlQueryBuilder),
         }
     }
-    pub async fn fetch_all(
-        &self,
-        stmt: &str,
-        values: SqlxValues,
-    ) -> Result<Vec<QueryResult>, TxError> {
+    pub async fn ping(&self) -> Result<()> {
+        match self {
+            DatabaseConnection::Sqlite(pool, _) => pool
+                .acquire()
+                .await?
+                .ping()
+                .await
+                .map_err(|_| TxError::PingError),
+            DatabaseConnection::Postgres(pool, _) => pool
+                .acquire()
+                .await?
+                .ping()
+                .await
+                .map_err(|_| TxError::PingError),
+            DatabaseConnection::Mysql(pool) => pool
+                .acquire()
+                .await?
+                .ping()
+                .await
+                .map_err(|_| TxError::PingError),
+        }
+    }
+    pub async fn fetch_all(&self, stmt: &str, values: SqlxValues) -> Result<Vec<QueryResult>> {
         match self {
             DatabaseConnection::Sqlite(conn, _) => {
                 match sqlx::query_with(stmt, values).fetch_all(conn).await {
-                    Ok(rows) => {
-                        dbg!("ok");
-                        Ok(rows.into_iter().map(|r| r.into()).collect())
-                    }
-                    Err(err) => {
-                        dbg!(&err);
-                        Err(err.into())
-                    }
+                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
+                    Err(err) => Err(err.into()),
                 }
             }
             DatabaseConnection::Postgres(conn, _) => {
@@ -103,7 +116,7 @@ impl DatabaseConnection {
             }
         }
     }
-    pub async fn fetch_one(&self, stmt: &str) -> Result<QueryResult, TxError> {
+    pub async fn fetch_one(&self, stmt: &str) -> Result<QueryResult> {
         match self {
             DatabaseConnection::Sqlite(conn, _) => match sqlx::query(stmt).fetch_one(conn).await {
                 Ok(row) => Ok(row.into()),
@@ -121,7 +134,7 @@ impl DatabaseConnection {
             },
         }
     }
-    pub async fn execute(&self, stmt: &str) -> Result<ExecResult, TxError> {
+    pub async fn execute(&self, stmt: &str) -> Result<ExecResult> {
         let res: ExecResult = match self {
             DatabaseConnection::Sqlite(conn, _) => sqlx::query(stmt).execute(conn).await?.into(),
             DatabaseConnection::Postgres(conn, _) => sqlx::query(stmt).execute(conn).await?.into(),
@@ -130,11 +143,7 @@ impl DatabaseConnection {
 
         Ok(res)
     }
-    pub async fn execute_with(
-        &self,
-        stmt: &str,
-        values: SqlxValues,
-    ) -> Result<ExecResult, TxError> {
+    pub async fn execute_with(&self, stmt: &str, values: SqlxValues) -> Result<ExecResult> {
         let res: ExecResult = match self {
             DatabaseConnection::Sqlite(conn, _) => {
                 sqlx::query_with(stmt, values).execute(conn).await?.into()
@@ -178,6 +187,14 @@ impl DatabaseConnection {
                 .await
                 .unwrap()
                 .into(),
+        }
+    }
+
+    pub async fn close(&self) {
+        match self {
+            DatabaseConnection::Sqlite(pool, _) => pool.close().await,
+            DatabaseConnection::Postgres(pool, _) => pool.close().await,
+            DatabaseConnection::Mysql(pool) => pool.close().await,
         }
     }
 }

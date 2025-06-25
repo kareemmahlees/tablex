@@ -1,5 +1,4 @@
 use crate::{state::SharedState, AppState};
-use sqlx::{AnyConnection, Connection};
 use std::path::PathBuf;
 use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime};
 #[cfg(feature = "metax")]
@@ -24,15 +23,13 @@ const CONNECTIONS_FILE_PATH: &str = if cfg!(debug_assertions) {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn test_connection(conn_string: String) -> Result<String> {
-    let mut con = AnyConnection::connect(conn_string.as_str())
-        .await
-        .map_err(|_| TxError::ConnectionError)?;
-    con.ping().await.map_err(|_| TxError::PingError)?;
+pub async fn test_connection(conn_string: String, driver: Drivers) -> Result<()> {
+    let con = DatabaseConnection::connect(conn_string.as_str(), driver).await?;
+    con.ping().await?;
 
-    let _ = con.close().await;
+    con.close().await;
 
-    Ok("Connection is healthy".into())
+    Ok(())
 }
 
 #[tauri::command]

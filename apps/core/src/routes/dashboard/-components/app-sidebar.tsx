@@ -63,7 +63,7 @@ const items: SidebarItem[] = [
   {
     type: "single",
     title: "Tables",
-    url: "/dashboard/table-view/land",
+    url: "/dashboard/table-view/empty",
     icon: Table2
   },
   {
@@ -154,6 +154,7 @@ const AppSidebar = () => {
                         <Link
                           to={item.url}
                           search={{ connectionId: search.connectionId }}
+                          // params={{tableName:router.par}}
                         >
                           {item.icon && <item.icon />}
                           <span className="lg:text-base">{item.title}</span>
