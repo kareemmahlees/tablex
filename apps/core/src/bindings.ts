@@ -7,8 +7,8 @@ export const commands = {
   async killMetax(): Promise<null> {
     return await TAURI_INVOKE("kill_metax")
   },
-  async testConnection(connString: string): Promise<string> {
-    return await TAURI_INVOKE("test_connection", { connString })
+  async testConnection(connString: string, driver: Drivers): Promise<null> {
+    return await TAURI_INVOKE("test_connection", { connString, driver })
   },
   async createConnectionRecord(
     connString: string,

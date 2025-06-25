@@ -91,14 +91,19 @@ const NewConnectionForm = () => {
     const connString = constructConnectionString({
       ...data.connectionOpts
     })
-    try {
-      await commands.establishConnection(connString, data.connectionOpts.driver)
-      navigate({
-        to: "/dashboard/table-view/empty"
-      })
-    } catch (_) {
-      return toast.error("Failed to establish connection")
-    }
+    toast.promise(
+      commands.establishConnection(connString, data.connectionOpts.driver),
+      {
+        id: "establish_connection",
+        success: () => {
+          navigate({
+            to: "/dashboard/table-view/empty"
+          })
+          return null
+        },
+        error: "Failed to establish connection"
+      }
+    )
   }
 
   const onSave = async (data: z.infer<typeof NewConnectionFormSchema>) => {
@@ -112,6 +117,7 @@ const NewConnectionForm = () => {
         data.connectionOpts.driver
       ),
       {
+        id: "save_connection",
         loading: "Saving connection...",
         success: () => "Closes me",
         error: "Couldn't save connection"
@@ -123,11 +129,15 @@ const NewConnectionForm = () => {
     const connString = constructConnectionString({
       ...data.connectionOpts
     })
-    return toast.promise(commands.testConnection(connString), {
-      loading: "Testing connection...",
-      success: "Connection is healthy",
-      error: "Connection is unhealthy"
-    })
+    return toast.promise(
+      commands.testConnection(connString, data.connectionOpts.driver),
+      {
+        id: "test_connection",
+        loading: "Testing connection...",
+        success: "Connection is healthy",
+        error: "Connection is unhealthy"
+      }
+    )
   }
 
   return (
