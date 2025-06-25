@@ -34,9 +34,9 @@ import { MappedDrivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@tablex/lib/utils"
-import { useNavigate } from "@tanstack/react-router"
+import { useRouter } from "@tanstack/react-router"
 import { Check, ChevronsUpDown, PlusCircle } from "lucide-react"
-import { useState } from "react"
+import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import type { z } from "zod"
@@ -45,8 +45,10 @@ import { PgMySQLConnectionForm } from "./pg-mysql-connection"
 import { SQLiteConnectionForm } from "./sqlite-connection-form"
 
 export const NewConnectionBtn = () => {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button size={"sm"} className="space-x-2">
           <PlusCircle className="size-4" />
@@ -60,14 +62,18 @@ export const NewConnectionBtn = () => {
             Add a new connection to the list
           </DialogDescription>
         </DialogHeader>
-        <NewConnectionForm />
+        <NewConnectionForm setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   )
 }
 
-const NewConnectionForm = () => {
-  const navigate = useNavigate()
+const NewConnectionForm = ({
+  setOpen
+}: {
+  setOpen: Dispatch<SetStateAction<boolean>>
+}) => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof NewConnectionFormSchema>>({
     resolver: zodResolver(NewConnectionFormSchema)
   })
@@ -96,9 +102,7 @@ const NewConnectionForm = () => {
       {
         id: "establish_connection",
         success: () => {
-          navigate({
-            to: "/dashboard/table-view/empty"
-          })
+          router.navigate({ to: "/dashboard/table-view/empty" })
           return null
         },
         error: "Failed to establish connection"
@@ -119,7 +123,11 @@ const NewConnectionForm = () => {
       {
         id: "save_connection",
         loading: "Saving connection...",
-        success: () => "Closes me",
+        success: () => {
+          router.invalidate({ filter: (d) => d.fullPath === "/" })
+          setOpen(false)
+          return "Successfully saved connection"
+        },
         error: "Couldn't save connection"
       }
     )
