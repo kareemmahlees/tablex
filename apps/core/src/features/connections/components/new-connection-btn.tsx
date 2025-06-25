@@ -1,13 +1,6 @@
 import { commands } from "@/bindings"
+import { SearchableInput } from "@/components/custom/searchable-input"
 import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from "@/components/ui/command"
 import {
   Dialog,
   DialogContent,
@@ -18,24 +11,18 @@ import {
 } from "@/components/ui/dialog"
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
 import { MappedDrivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@tablex/lib/utils"
 import { useRouter } from "@tanstack/react-router"
-import { Check, ChevronsUpDown, PlusCircle } from "lucide-react"
+import { PlusCircle } from "lucide-react"
 import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
@@ -207,7 +194,6 @@ const NewConnectionForm = ({
 
 const DriverSelector = () => {
   const form = useFormContext<z.infer<typeof NewConnectionFormSchema>>()
-  const [open, setIsOpen] = useState(false)
 
   return (
     <FormField
@@ -216,50 +202,16 @@ const DriverSelector = () => {
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>Driver</FormLabel>
-          <Popover open={open} onOpenChange={setIsOpen}>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button role="combobox" className="w-[230px] justify-between">
-                  {field.value
-                    ? MappedDrivers.find(
-                        (driver) => driver.value === field.value
-                      )?.label
-                    : "Select a Database Driver"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput placeholder="Search driver..." className="h-9" />
-                <CommandList>
-                  <CommandEmpty>No drivers found.</CommandEmpty>
-                  <CommandGroup>
-                    {MappedDrivers.map((driver) => (
-                      <CommandItem
-                        key={driver.value}
-                        value={driver.value}
-                        onSelect={(currValue) => {
-                          field.onChange(currValue)
-                          setIsOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            driver.value === field.value
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                        {driver.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <SearchableInput
+            items={MappedDrivers.map((driver) => ({
+              value: driver.value,
+              label: driver.label
+            }))}
+            placeholder="Select a Database Driver"
+            emptyMsg="No drivers found."
+            onValueChange={field.onChange}
+            preventUnselect
+          />
           <FormMessage />
         </FormItem>
       )}

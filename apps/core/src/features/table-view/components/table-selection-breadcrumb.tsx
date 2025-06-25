@@ -66,6 +66,7 @@ export const TableSelectionBreadCrumb = ({
                 replace: true
               })
             }}
+            preventUnselect
           />
         </BreadcrumbItem>
       </BreadcrumbList>

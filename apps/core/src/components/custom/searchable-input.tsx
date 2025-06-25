@@ -1,8 +1,5 @@
 "use client"
 
-import { Check, ChevronsUpDown } from "lucide-react"
-import * as React from "react"
-
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -18,6 +15,8 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { cn } from "@tablex/lib/utils"
+import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react"
 import { ScrollArea } from "../ui/scroll-area"
 
 type SearchableInputProps = {
@@ -26,6 +25,7 @@ type SearchableInputProps = {
   placeholder: string
   emptyMsg: string
   defaultValue?: string
+  preventUnselect?: boolean
 }
 
 export const SearchableInput = ({
@@ -33,7 +33,8 @@ export const SearchableInput = ({
   onValueChange,
   placeholder,
   emptyMsg,
-  defaultValue
+  defaultValue,
+  preventUnselect
 }: SearchableInputProps) => {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(defaultValue)
@@ -45,11 +46,13 @@ export const SearchableInput = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[150px] justify-between text-sm"
+          className="w-fit min-w-[150px] justify-between space-x-2 text-sm"
         >
-          {value
-            ? items.find((item) => item.value === value)?.label
-            : placeholder}
+          <span>
+            {value
+              ? items.find((item) => item.value === value)?.label
+              : placeholder}
+          </span>
           <ChevronsUpDown className="h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -65,6 +68,7 @@ export const SearchableInput = ({
                     key={item.value}
                     value={item.value}
                     onSelect={() => {
+                      if (item.value === value && preventUnselect) return
                       setValue(item.value === value ? "" : item.value)
                       onValueChange(item.value)
                       setOpen(false)
