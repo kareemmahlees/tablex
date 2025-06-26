@@ -1,8 +1,6 @@
 import type { PaginatedRows } from "@/bindings"
-import { type RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import {
   type ColumnDef,
-  type FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
@@ -12,26 +10,6 @@ import {
   useReactTable
 } from "@tanstack/react-table"
 import { type Dispatch, type SetStateAction, useRef, useState } from "react"
-
-declare module "@tanstack/react-table" {
-  //add fuzzy filter to the filterFns
-  interface FilterFns {
-    fuzzy: FilterFn<unknown>
-  }
-  interface FilterMeta {
-    itemRank: RankingInfo
-  }
-}
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  addMeta({
-    itemRank
-  })
-
-  return itemRank.passed
-}
 
 const FALLBACK_DATA = []
 
@@ -66,9 +44,6 @@ export const useSetupDataTable = <TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
     state: {
       sorting,
       rowSelection,
