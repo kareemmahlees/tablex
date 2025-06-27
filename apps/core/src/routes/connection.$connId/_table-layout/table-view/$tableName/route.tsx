@@ -22,7 +22,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 
 export const Route = createFileRoute(
-  "/_table-layout/connection/$connId/table-view/_table-view-layout/$tableName"
+  "/connection/$connId/_table-layout/table-view/$tableName"
 )({
   component: TableView,
   pendingComponent: () => (

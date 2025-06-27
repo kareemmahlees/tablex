@@ -26,6 +26,7 @@ type SearchableInputProps = {
   emptyMsg: string
   defaultValue?: string
   preventUnselect?: boolean
+  children?: (v: string | undefined) => React.ReactNode
 }
 
 export const SearchableInput = ({
@@ -34,7 +35,8 @@ export const SearchableInput = ({
   placeholder,
   emptyMsg,
   defaultValue,
-  preventUnselect
+  preventUnselect,
+  children
 }: SearchableInputProps) => {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(defaultValue)
@@ -42,19 +44,27 @@ export const SearchableInput = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          role="combobox"
-          aria-expanded={open}
-          className="h-9 w-fit max-w-[150px] space-x-2 px-2.5 py-0 text-sm"
-        >
-          <span>
-            {value
+        {children ? (
+          children(
+            value
               ? items.find((item) => item.value === value)?.label
-              : placeholder}
-          </span>
-          <ChevronsUpDown className="h-4 w-4 opacity-50" />
-        </Button>
+              : placeholder
+          )
+        ) : (
+          <Button
+            variant="ghost"
+            role="combobox"
+            aria-expanded={open}
+            className="h-7 w-fit max-w-[150px] space-x-2 px-2.5 py-0 text-sm"
+          >
+            <span>
+              {value
+                ? items.find((item) => item.value === value)?.label
+                : placeholder}
+            </span>
+            <ChevronsUpDown className="h-4 w-4 opacity-50" />
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent className="max-w-fit p-0" align="start">
         <Command>

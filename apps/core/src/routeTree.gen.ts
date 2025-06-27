@@ -13,29 +13,21 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TableLayoutImport } from './routes/_table-layout'
 import { Route as SettingsLayoutImport } from './routes/_settings-layout'
 import { Route as IndexRouteImport } from './routes/index/route'
+import { Route as ConnectionConnIdTableLayoutImport } from './routes/connection.$connId/_table-layout'
 import { Route as SettingsLayoutSettingsPreferencesRouteImport } from './routes/_settings-layout.settings/preferences/route'
 import { Route as SettingsLayoutSettingsKeybindingsRouteImport } from './routes/_settings-layout.settings/keybindings/route'
-import { Route as TableLayoutConnectionConnIdSqlEditorRouteImport } from './routes/_table-layout.connection.$connId/sql-editor/route'
-import { Route as TableLayoutConnectionConnIdApiDocsRouteImport } from './routes/_table-layout.connection.$connId/api-docs/route'
-import { Route as TableLayoutConnectionConnIdTableViewTableViewLayoutImport } from './routes/_table-layout.connection.$connId/table-view/_table-view-layout'
-import { Route as TableLayoutConnectionConnIdTableViewTableViewLayoutEmptyRouteImport } from './routes/_table-layout.connection.$connId/table-view/_table-view-layout/empty/route'
-import { Route as TableLayoutConnectionConnIdTableViewTableViewLayoutTableNameRouteImport } from './routes/_table-layout.connection.$connId/table-view/_table-view-layout/$tableName/route'
+import { Route as ConnectionConnIdTableLayoutSqlEditorRouteImport } from './routes/connection.$connId/_table-layout/sql-editor/route'
+import { Route as ConnectionConnIdTableLayoutApiDocsRouteImport } from './routes/connection.$connId/_table-layout/api-docs/route'
+import { Route as ConnectionConnIdTableLayoutTableViewEmptyRouteImport } from './routes/connection.$connId/_table-layout/table-view/empty/route'
+import { Route as ConnectionConnIdTableLayoutTableViewTableNameRouteImport } from './routes/connection.$connId/_table-layout/table-view/$tableName/route'
 
 // Create Virtual Routes
 
-const TableLayoutConnectionConnIdTableViewImport = createFileRoute(
-  '/_table-layout/connection/$connId/table-view',
-)()
+const ConnectionConnIdImport = createFileRoute('/connection/$connId')()
 
 // Create/Update Routes
-
-const TableLayoutRoute = TableLayoutImport.update({
-  id: '/_table-layout',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const SettingsLayoutRoute = SettingsLayoutImport.update({
   id: '/_settings-layout',
@@ -46,6 +38,17 @@ const IndexRouteRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any)
+
+const ConnectionConnIdRoute = ConnectionConnIdImport.update({
+  path: '/connection/$connId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ConnectionConnIdTableLayoutRoute =
+  ConnectionConnIdTableLayoutImport.update({
+    id: '/_table-layout',
+    getParentRoute: () => ConnectionConnIdRoute,
+  } as any)
 
 const SettingsLayoutSettingsPreferencesRouteRoute =
   SettingsLayoutSettingsPreferencesRouteImport.update({
@@ -59,45 +62,29 @@ const SettingsLayoutSettingsKeybindingsRouteRoute =
     getParentRoute: () => SettingsLayoutRoute,
   } as any)
 
-const TableLayoutConnectionConnIdTableViewRoute =
-  TableLayoutConnectionConnIdTableViewImport.update({
-    path: '/connection/$connId/table-view',
-    getParentRoute: () => TableLayoutRoute,
+const ConnectionConnIdTableLayoutSqlEditorRouteRoute =
+  ConnectionConnIdTableLayoutSqlEditorRouteImport.update({
+    path: '/sql-editor',
+    getParentRoute: () => ConnectionConnIdTableLayoutRoute,
   } as any)
 
-const TableLayoutConnectionConnIdSqlEditorRouteRoute =
-  TableLayoutConnectionConnIdSqlEditorRouteImport.update({
-    path: '/connection/$connId/sql-editor',
-    getParentRoute: () => TableLayoutRoute,
+const ConnectionConnIdTableLayoutApiDocsRouteRoute =
+  ConnectionConnIdTableLayoutApiDocsRouteImport.update({
+    path: '/api-docs',
+    getParentRoute: () => ConnectionConnIdTableLayoutRoute,
   } as any)
 
-const TableLayoutConnectionConnIdApiDocsRouteRoute =
-  TableLayoutConnectionConnIdApiDocsRouteImport.update({
-    path: '/connection/$connId/api-docs',
-    getParentRoute: () => TableLayoutRoute,
+const ConnectionConnIdTableLayoutTableViewEmptyRouteRoute =
+  ConnectionConnIdTableLayoutTableViewEmptyRouteImport.update({
+    path: '/table-view/empty',
+    getParentRoute: () => ConnectionConnIdTableLayoutRoute,
   } as any)
 
-const TableLayoutConnectionConnIdTableViewTableViewLayoutRoute =
-  TableLayoutConnectionConnIdTableViewTableViewLayoutImport.update({
-    id: '/_table-view-layout',
-    getParentRoute: () => TableLayoutConnectionConnIdTableViewRoute,
+const ConnectionConnIdTableLayoutTableViewTableNameRouteRoute =
+  ConnectionConnIdTableLayoutTableViewTableNameRouteImport.update({
+    path: '/table-view/$tableName',
+    getParentRoute: () => ConnectionConnIdTableLayoutRoute,
   } as any)
-
-const TableLayoutConnectionConnIdTableViewTableViewLayoutEmptyRouteRoute =
-  TableLayoutConnectionConnIdTableViewTableViewLayoutEmptyRouteImport.update({
-    path: '/empty',
-    getParentRoute: () =>
-      TableLayoutConnectionConnIdTableViewTableViewLayoutRoute,
-  } as any)
-
-const TableLayoutConnectionConnIdTableViewTableViewLayoutTableNameRouteRoute =
-  TableLayoutConnectionConnIdTableViewTableViewLayoutTableNameRouteImport.update(
-    {
-      path: '/$tableName',
-      getParentRoute: () =>
-        TableLayoutConnectionConnIdTableViewTableViewLayoutRoute,
-    } as any,
-  )
 
 // Populate the FileRoutesByPath interface
 
@@ -117,13 +104,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsLayoutImport
       parentRoute: typeof rootRoute
     }
-    '/_table-layout': {
-      id: '/_table-layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof TableLayoutImport
-      parentRoute: typeof rootRoute
-    }
     '/_settings-layout/settings/keybindings': {
       id: '/_settings-layout/settings/keybindings'
       path: '/settings/keybindings'
@@ -138,47 +118,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsLayoutSettingsPreferencesRouteImport
       parentRoute: typeof SettingsLayoutImport
     }
-    '/_table-layout/connection/$connId/api-docs': {
-      id: '/_table-layout/connection/$connId/api-docs'
-      path: '/connection/$connId/api-docs'
+    '/connection/$connId': {
+      id: '/connection/$connId'
+      path: '/connection/$connId'
+      fullPath: '/connection/$connId'
+      preLoaderRoute: typeof ConnectionConnIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/connection/$connId/_table-layout': {
+      id: '/connection/$connId/_table-layout'
+      path: '/connection/$connId'
+      fullPath: '/connection/$connId'
+      preLoaderRoute: typeof ConnectionConnIdTableLayoutImport
+      parentRoute: typeof ConnectionConnIdRoute
+    }
+    '/connection/$connId/_table-layout/api-docs': {
+      id: '/connection/$connId/_table-layout/api-docs'
+      path: '/api-docs'
       fullPath: '/connection/$connId/api-docs'
-      preLoaderRoute: typeof TableLayoutConnectionConnIdApiDocsRouteImport
-      parentRoute: typeof TableLayoutImport
+      preLoaderRoute: typeof ConnectionConnIdTableLayoutApiDocsRouteImport
+      parentRoute: typeof ConnectionConnIdTableLayoutImport
     }
-    '/_table-layout/connection/$connId/sql-editor': {
-      id: '/_table-layout/connection/$connId/sql-editor'
-      path: '/connection/$connId/sql-editor'
+    '/connection/$connId/_table-layout/sql-editor': {
+      id: '/connection/$connId/_table-layout/sql-editor'
+      path: '/sql-editor'
       fullPath: '/connection/$connId/sql-editor'
-      preLoaderRoute: typeof TableLayoutConnectionConnIdSqlEditorRouteImport
-      parentRoute: typeof TableLayoutImport
+      preLoaderRoute: typeof ConnectionConnIdTableLayoutSqlEditorRouteImport
+      parentRoute: typeof ConnectionConnIdTableLayoutImport
     }
-    '/_table-layout/connection/$connId/table-view': {
-      id: '/_table-layout/connection/$connId/table-view'
-      path: '/connection/$connId/table-view'
-      fullPath: '/connection/$connId/table-view'
-      preLoaderRoute: typeof TableLayoutConnectionConnIdTableViewImport
-      parentRoute: typeof TableLayoutImport
-    }
-    '/_table-layout/connection/$connId/table-view/_table-view-layout': {
-      id: '/_table-layout/connection/$connId/table-view/_table-view-layout'
-      path: '/connection/$connId/table-view'
-      fullPath: '/connection/$connId/table-view'
-      preLoaderRoute: typeof TableLayoutConnectionConnIdTableViewTableViewLayoutImport
-      parentRoute: typeof TableLayoutConnectionConnIdTableViewRoute
-    }
-    '/_table-layout/connection/$connId/table-view/_table-view-layout/$tableName': {
-      id: '/_table-layout/connection/$connId/table-view/_table-view-layout/$tableName'
-      path: '/$tableName'
+    '/connection/$connId/_table-layout/table-view/$tableName': {
+      id: '/connection/$connId/_table-layout/table-view/$tableName'
+      path: '/table-view/$tableName'
       fullPath: '/connection/$connId/table-view/$tableName'
-      preLoaderRoute: typeof TableLayoutConnectionConnIdTableViewTableViewLayoutTableNameRouteImport
-      parentRoute: typeof TableLayoutConnectionConnIdTableViewTableViewLayoutImport
+      preLoaderRoute: typeof ConnectionConnIdTableLayoutTableViewTableNameRouteImport
+      parentRoute: typeof ConnectionConnIdTableLayoutImport
     }
-    '/_table-layout/connection/$connId/table-view/_table-view-layout/empty': {
-      id: '/_table-layout/connection/$connId/table-view/_table-view-layout/empty'
-      path: '/empty'
+    '/connection/$connId/_table-layout/table-view/empty': {
+      id: '/connection/$connId/_table-layout/table-view/empty'
+      path: '/table-view/empty'
       fullPath: '/connection/$connId/table-view/empty'
-      preLoaderRoute: typeof TableLayoutConnectionConnIdTableViewTableViewLayoutEmptyRouteImport
-      parentRoute: typeof TableLayoutConnectionConnIdTableViewTableViewLayoutImport
+      preLoaderRoute: typeof ConnectionConnIdTableLayoutTableViewEmptyRouteImport
+      parentRoute: typeof ConnectionConnIdTableLayoutImport
     }
   }
 }
@@ -191,16 +171,13 @@ export const routeTree = rootRoute.addChildren({
     SettingsLayoutSettingsKeybindingsRouteRoute,
     SettingsLayoutSettingsPreferencesRouteRoute,
   }),
-  TableLayoutRoute: TableLayoutRoute.addChildren({
-    TableLayoutConnectionConnIdApiDocsRouteRoute,
-    TableLayoutConnectionConnIdSqlEditorRouteRoute,
-    TableLayoutConnectionConnIdTableViewRoute:
-      TableLayoutConnectionConnIdTableViewRoute.addChildren({
-        TableLayoutConnectionConnIdTableViewTableViewLayoutRoute:
-          TableLayoutConnectionConnIdTableViewTableViewLayoutRoute.addChildren({
-            TableLayoutConnectionConnIdTableViewTableViewLayoutTableNameRouteRoute,
-            TableLayoutConnectionConnIdTableViewTableViewLayoutEmptyRouteRoute,
-          }),
+  ConnectionConnIdRoute: ConnectionConnIdRoute.addChildren({
+    ConnectionConnIdTableLayoutRoute:
+      ConnectionConnIdTableLayoutRoute.addChildren({
+        ConnectionConnIdTableLayoutApiDocsRouteRoute,
+        ConnectionConnIdTableLayoutSqlEditorRouteRoute,
+        ConnectionConnIdTableLayoutTableViewTableNameRouteRoute,
+        ConnectionConnIdTableLayoutTableViewEmptyRouteRoute,
       }),
   }),
 })
@@ -215,7 +192,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/_settings-layout",
-        "/_table-layout"
+        "/connection/$connId"
       ]
     },
     "/": {
@@ -228,14 +205,6 @@ export const routeTree = rootRoute.addChildren({
         "/_settings-layout/settings/preferences"
       ]
     },
-    "/_table-layout": {
-      "filePath": "_table-layout.tsx",
-      "children": [
-        "/_table-layout/connection/$connId/api-docs",
-        "/_table-layout/connection/$connId/sql-editor",
-        "/_table-layout/connection/$connId/table-view"
-      ]
-    },
     "/_settings-layout/settings/keybindings": {
       "filePath": "_settings-layout.settings/keybindings/route.tsx",
       "parent": "/_settings-layout"
@@ -244,36 +213,37 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_settings-layout.settings/preferences/route.tsx",
       "parent": "/_settings-layout"
     },
-    "/_table-layout/connection/$connId/api-docs": {
-      "filePath": "_table-layout.connection.$connId/api-docs/route.tsx",
-      "parent": "/_table-layout"
-    },
-    "/_table-layout/connection/$connId/sql-editor": {
-      "filePath": "_table-layout.connection.$connId/sql-editor/route.tsx",
-      "parent": "/_table-layout"
-    },
-    "/_table-layout/connection/$connId/table-view": {
-      "filePath": "_table-layout.connection.$connId/table-view",
-      "parent": "/_table-layout",
+    "/connection/$connId": {
+      "filePath": "connection.$connId",
       "children": [
-        "/_table-layout/connection/$connId/table-view/_table-view-layout"
+        "/connection/$connId/_table-layout"
       ]
     },
-    "/_table-layout/connection/$connId/table-view/_table-view-layout": {
-      "filePath": "_table-layout.connection.$connId/table-view/_table-view-layout.tsx",
-      "parent": "/_table-layout/connection/$connId/table-view",
+    "/connection/$connId/_table-layout": {
+      "filePath": "connection.$connId/_table-layout.tsx",
+      "parent": "/connection/$connId",
       "children": [
-        "/_table-layout/connection/$connId/table-view/_table-view-layout/$tableName",
-        "/_table-layout/connection/$connId/table-view/_table-view-layout/empty"
+        "/connection/$connId/_table-layout/api-docs",
+        "/connection/$connId/_table-layout/sql-editor",
+        "/connection/$connId/_table-layout/table-view/$tableName",
+        "/connection/$connId/_table-layout/table-view/empty"
       ]
     },
-    "/_table-layout/connection/$connId/table-view/_table-view-layout/$tableName": {
-      "filePath": "_table-layout.connection.$connId/table-view/_table-view-layout/$tableName/route.tsx",
-      "parent": "/_table-layout/connection/$connId/table-view/_table-view-layout"
+    "/connection/$connId/_table-layout/api-docs": {
+      "filePath": "connection.$connId/_table-layout/api-docs/route.tsx",
+      "parent": "/connection/$connId/_table-layout"
     },
-    "/_table-layout/connection/$connId/table-view/_table-view-layout/empty": {
-      "filePath": "_table-layout.connection.$connId/table-view/_table-view-layout/empty/route.tsx",
-      "parent": "/_table-layout/connection/$connId/table-view/_table-view-layout"
+    "/connection/$connId/_table-layout/sql-editor": {
+      "filePath": "connection.$connId/_table-layout/sql-editor/route.tsx",
+      "parent": "/connection/$connId/_table-layout"
+    },
+    "/connection/$connId/_table-layout/table-view/$tableName": {
+      "filePath": "connection.$connId/_table-layout/table-view/$tableName/route.tsx",
+      "parent": "/connection/$connId/_table-layout"
+    },
+    "/connection/$connId/_table-layout/table-view/empty": {
+      "filePath": "connection.$connId/_table-layout/table-view/empty/route.tsx",
+      "parent": "/connection/$connId/_table-layout"
     }
   }
 }

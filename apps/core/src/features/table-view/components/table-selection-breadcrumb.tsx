@@ -5,6 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   getConnectionDetailsQueryOptions,
   getTablesQueryOptions
@@ -12,6 +13,7 @@ import {
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
+import { ChevronsUpDown } from "lucide-react"
 import { useLocalStorage } from "usehooks-ts"
 
 export const TableSelectionBreadCrumb = ({ connId }: { connId: string }) => {
@@ -61,7 +63,30 @@ export const TableSelectionBreadCrumb = ({ connId }: { connId: string }) => {
               })
             }}
             preventUnselect
-          />
+          >
+            {(value) => (
+              <button className="flex h-7 w-fit max-w-[150px] items-center space-x-2 text-sm transition-colors hover:text-white">
+                <span>{value}</span>
+                <ChevronsUpDown className="-mb-1 size-4" />
+              </button>
+            )}
+          </SearchableInput>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  )
+}
+
+export const TableSelectionSkeleton = () => {
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <Skeleton className="h-9 w-20" />
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <Skeleton className="h-9 w-20" />
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
