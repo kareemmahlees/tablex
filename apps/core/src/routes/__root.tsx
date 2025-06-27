@@ -1,8 +1,7 @@
 import { Toaster } from "@/components/ui/sonner"
 import type { QueryClient } from "@tanstack/react-query"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
-import React, { Suspense } from "react"
+import React from "react"
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -32,15 +31,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             }}
           />
           <Outlet />
-          <Suspense>
+          {/* <Suspense>
             <TanStackRouterDevtools
               position="bottom-left"
               toggleButtonProps={{
-                className: "ml-[70px]"
+                className: "ml-[70px] mb-[100px]"
               }}
             />
             <ReactQueryDevtools buttonPosition="bottom-left" />
-          </Suspense>
+          </Suspense> */}
         </main>
       )
     }

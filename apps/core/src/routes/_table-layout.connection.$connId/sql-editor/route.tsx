@@ -1,7 +1,7 @@
 import { SQLEditor } from "@/features/sql-editor/editor"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/dashboard/_layout/sql-editor")({
+export const Route = createFileRoute("/_table-layout/connection/$connId/sql-editor")({
   component: SQLEditorRoute
 })
 

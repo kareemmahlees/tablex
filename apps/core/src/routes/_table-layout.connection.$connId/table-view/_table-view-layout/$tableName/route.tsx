@@ -22,9 +22,8 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 
 export const Route = createFileRoute(
-  "/dashboard/_layout/_table-view-layout/table-view/$tableName"
+  "/_table-layout/connection/$connId/table-view/_table-view-layout/$tableName"
 )({
-  loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
   component: TableView,
   pendingComponent: () => (
     <div className="flex h-full flex-col space-y-5 p-4">
@@ -39,10 +38,9 @@ export const Route = createFileRoute(
 })
 
 function TableView() {
-  const { tableName } = Route.useParams()
+  const { tableName, connId } = Route.useParams()
   const { queryClient } = Route.useRouteContext()
-  const { connectionId } = Route.useSearch()
-  const { pagination, setPagination } = useSetupPagination(connectionId!)
+  const { pagination, setPagination } = useSetupPagination(connId)
   const {
     "0": { data: tableSchema },
     "1": { data: rows, refetch: refetchRows, isFetching: isFetchingRows }

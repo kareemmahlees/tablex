@@ -20,90 +20,38 @@ import {
 } from "@/components/ui/sidebar"
 import { About } from "@/features/about/about"
 import CommandPalette from "@/features/command-palette/palette"
-import {
-  FileRoutesByPath,
-  getRouteApi,
-  Link,
-  useRouter,
-  useRouterState
-} from "@tanstack/react-router"
+import { SidebarItem } from "@/types"
+import { Link, useMatchRoute, useRouter } from "@tanstack/react-router"
 import {
   ArrowLeft,
   ArrowRight,
   ChevronRight,
   Keyboard,
-  LucideIcon,
   RotateCw,
-  Settings,
-  StickyNote,
-  Table2,
-  Terminal
+  Settings2
 } from "lucide-react"
-
-type Routes = FileRoutesByPath[keyof FileRoutesByPath]["fullPath"]
-
-type SidebarItem =
-  | {
-      type: "single"
-      title: string
-      icon?: LucideIcon
-      url: Routes
-    }
-  | {
-      type: "collapsible"
-      title: string
-      icon?: LucideIcon
-      items: {
-        title: string
-        url: Routes
-      }[]
-    }
 
 const items: SidebarItem[] = [
   {
     type: "single",
-    title: "Tables",
-    url: "/dashboard/table-view/empty",
-    icon: Table2
-  },
-  {
-    type: "single",
-    title: "SQL Editor",
-    url: "/dashboard/sql-editor",
-    icon: Terminal
-  },
-  {
-    type: "single",
-    title: "API Docs",
-    url: `/dashboard/api-docs`,
-    icon: StickyNote
+    title: "Preferences",
+    icon: Settings2,
+    url: "/settings/preferences"
   },
   {
     type: "single",
     title: "Keybindings",
-    url: `/dashboard/keybindings`,
+    url: `/settings/keybindings`,
     icon: Keyboard
-  },
-  {
-    type: "collapsible",
-    title: "Settings",
-    icon: Settings,
-    items: [
-      {
-        title: "Preferences",
-        url: "/dashboard/settings/preferences"
-      }
-    ]
   }
 ]
 
-const AppSidebar = () => {
+export const SettingsSideBar = () => {
   const router = useRouter()
-  const location = useRouterState({ select: (s) => s.location })
-  const search = getRouteApi("/dashboard/_layout").useSearch()
+  const matchRoute = useMatchRoute()
   return (
     <Sidebar>
-      <SidebarHeader className="space-y-1.5">
+      <SidebarHeader className="space-y-2.5">
         <div className="flex w-full items-center justify-between">
           <div>
             <Button
@@ -148,14 +96,10 @@ const AppSidebar = () => {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         className="lg:h-9"
-                        isActive={location.pathname === item.url}
+                        isActive={matchRoute({ to: item.url }) !== false}
                         asChild
                       >
-                        <Link
-                          to={item.url}
-                          search={{ connectionId: search.connectionId }}
-                          // params={{tableName:router.par}}
-                        >
+                        <Link to={item.url}>
                           {item.icon && <item.icon />}
                           <span className="lg:text-base">{item.title}</span>
                         </Link>
@@ -183,16 +127,11 @@ const AppSidebar = () => {
                               <SidebarMenuSubItem key={item.title}>
                                 <SidebarMenuSubButton
                                   asChild
-                                  isActive={location.pathname === item.url}
+                                  isActive={
+                                    matchRoute({ to: item.url }) !== false
+                                  }
                                 >
-                                  <Link
-                                    to={item.url}
-                                    search={{
-                                      connectionId: search.connectionId
-                                    }}
-                                  >
-                                    {item.title}
-                                  </Link>
+                                  <Link to={item.url}>{item.title}</Link>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}
@@ -213,5 +152,3 @@ const AppSidebar = () => {
     </Sidebar>
   )
 }
-
-export default AppSidebar

@@ -14,8 +14,8 @@ function Index() {
   const navigate = Route.useNavigate()
   const connections = Route.useLoaderData()
 
-  const onClickConnect = async (connectionId: string) => {
-    const connectionDetails = await commands.getConnectionDetails(connectionId)
+  const onClickConnect = async (connId: string) => {
+    const connectionDetails = await commands.getConnectionDetails(connId)
 
     try {
       await commands.establishConnection(
@@ -27,26 +27,21 @@ function Index() {
         description: error as string
       })
     }
-    const latestTable = localStorage.getItem(
-      LOCAL_STORAGE.LATEST_TABLE(connectionId)
-    )
+    const latestTable = localStorage.getItem(LOCAL_STORAGE.LATEST_TABLE(connId))
 
     if (latestTable) {
-      navigate({
-        to: "/dashboard/table-view/$tableName",
+      return navigate({
+        to: "/connection/$connId/table-view/$tableName",
         params: {
+          connId,
           tableName: latestTable
-        },
-        search: {
-          connectionId
         }
       })
-      return
     }
 
     navigate({
-      to: "/dashboard/table-view/empty",
-      search: { connectionId }
+      to: "/connection/$connId/table-view/empty",
+      params: { connId }
     })
   }
 

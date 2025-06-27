@@ -43,10 +43,10 @@ export const SearchableInput = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           role="combobox"
           aria-expanded={open}
-          className="w-fit min-w-[150px] justify-between space-x-2 text-sm"
+          className="h-9 w-fit max-w-[150px] space-x-2 px-2.5 py-0 text-sm"
         >
           <span>
             {value

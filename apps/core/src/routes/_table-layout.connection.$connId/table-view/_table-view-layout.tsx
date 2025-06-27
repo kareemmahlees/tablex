@@ -7,28 +7,25 @@ import {
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { ArrowDownUp } from "lucide-react"
 
-export const Route = createFileRoute("/dashboard/_layout/_table-view-layout")({
-  loaderDeps: ({ search }) => ({ connectionId: search.connectionId }),
-  loader: async ({ context: { queryClient }, deps: { connectionId } }) => {
+export const Route = createFileRoute(
+  "/_table-layout/connection/$connId/table-view/_table-view-layout"
+)({
+  loader: async ({ context: { queryClient }, params: { connId } }) => {
     await Promise.all([
-      queryClient.prefetchQuery(getTablesQueryOptions(connectionId!)),
-      queryClient.prefetchQuery(getConnectionDetailsQueryOptions(connectionId!))
+      queryClient.prefetchQuery(getTablesQueryOptions(connId)),
+      queryClient.prefetchQuery(getConnectionDetailsQueryOptions(connId))
     ])
   },
-
   component: TableViewLayout
 })
 
 function TableViewLayout() {
-  const { connectionId } = Route.useSearch()
+  const connId = Route.useParams({ select: (s) => s.connId })
 
   return (
-    <div className="flex h-full flex-col">
-      <div
-        className="flex items-center justify-between p-4"
-        id="table-view-layout"
-      >
-        <TableSelectionBreadCrumb connectionId={connectionId!} />
+    <div className="flex h-full w-full flex-1 flex-grow flex-col">
+      <div className="flex w-full items-center justify-between p-4">
+        <TableSelectionBreadCrumb connId={connId} />
         <Button size={"sm"} variant={"outline"} className="h-8 space-x-2">
           <ArrowDownUp className="size-4" />
           <span>Sort</span>
