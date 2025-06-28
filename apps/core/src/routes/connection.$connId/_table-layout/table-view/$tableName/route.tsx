@@ -2,6 +2,7 @@ import { commands, RowRecord } from "@/bindings"
 import { DataTable } from "@/components/custom/data-table"
 import { DataTablePagination } from "@/components/custom/data-table-pagination"
 import { TooltipButton } from "@/components/custom/tooltip-button"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { generateColumnsDefs } from "@/features/table-view/columns"
 import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
@@ -16,7 +17,7 @@ import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { RefreshCw } from "lucide-react"
+import { ArrowUpDown, Filter, RefreshCw } from "lucide-react"
 import { useMemo } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
@@ -97,6 +98,19 @@ function TableView() {
 
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
+      <div className="flex items-center justify-between px-3 py-2.5">
+        <div className="flex items-center gap-x-3">
+          <Button size={"sm"} variant={"outline"} className="h-8 space-x-2">
+            <Filter className="size-3" />
+            <span>Filter</span>
+          </Button>
+          <Button size={"sm"} variant={"outline"} className="h-8 space-x-2">
+            <ArrowUpDown className="size-3" />
+            <span>Sort</span>
+          </Button>
+        </div>
+        <AddRowSheet tableName={tableName} />
+      </div>
       <DataTable table={table} />
       <div className="bg-sidebar flex items-center justify-between p-4">
         <DataTablePagination table={table} />
@@ -111,7 +125,6 @@ function TableView() {
           >
             <RefreshCw className="h-4 w-4" />
           </TooltipButton>
-          <AddRowSheet tableName={tableName} />
         </div>
       </div>
     </section>
