@@ -1,6 +1,6 @@
 import type { ColumnInfo, TableInfo } from "@/bindings"
-import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
 import MonacoEditor from "@/components/custom/monaco-editor"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -9,18 +9,11 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import "@tanstack/react-table"
-import type { ColumnDef, RowData } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
-
-declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData extends RowData, TValue> {
-    isPk: boolean
-  }
-}
-
 export const generateColumnsDefs = (table: TableInfo) => {
-  const columnsDefinitions = table.columns.map(({ name, type, pk }) => {
+  const columnsDefinitions = table.columns.map(({ name, type }) => {
     const columnDefinition: ColumnDef<ColumnInfo> = {
       accessorKey: name,
       id: name,
@@ -106,9 +99,6 @@ export const generateColumnsDefs = (table: TableInfo) => {
             {value}
           </span>
         )
-      },
-      meta: {
-        isPk: pk
       }
     }
     return columnDefinition

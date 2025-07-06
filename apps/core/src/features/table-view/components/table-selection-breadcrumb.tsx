@@ -5,6 +5,8 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useSettings } from "@/features/settings/manager"
 import {
   getConnectionDetailsQueryOptions,
   getTablesQueryOptions
@@ -12,24 +14,23 @@ import {
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
+import { ChevronsUpDown } from "lucide-react"
 import { useLocalStorage } from "usehooks-ts"
 
-export const TableSelectionBreadCrumb = ({
-  connectionId
-}: {
-  connectionId: string
-}) => {
+export const TableSelectionBreadCrumb = ({ connId }: { connId: string }) => {
+  const settings = useSettings()
+  const { tableName } = useParams({ strict: false })
   const {
     "0": { data: tables },
     "1": { data: connectionDetails }
   } = useSuspenseQueries({
     queries: [
-      getTablesQueryOptions(connectionId),
-      getConnectionDetailsQueryOptions(connectionId)
+      getTablesQueryOptions(connId),
+      getConnectionDetailsQueryOptions(connId)
     ]
   })
   const [_, setLatestTable, __] = useLocalStorage<string | undefined>(
-    LOCAL_STORAGE.LATEST_TABLE(connectionId),
+    LOCAL_STORAGE.LATEST_TABLE(connId),
     undefined,
     {
       serializer: (v) => v ?? "",
@@ -37,7 +38,6 @@ export const TableSelectionBreadCrumb = ({
     }
   )
   const navigate = useNavigate()
-  const { tableName } = useParams({ strict: false })
 
   return (
     <Breadcrumb>
@@ -56,18 +56,43 @@ export const TableSelectionBreadCrumb = ({
             onValueChange={(v) => {
               setLatestTable(v)
               navigate({
-                to: "/dashboard/table-view/$tableName",
+                to: "/connection/$connId/table-view/$tableName",
                 params: {
+                  connId,
                   tableName: v
                 },
                 search: {
-                  connectionId
+                  sorting: [],
+                  pagination: { pageIndex: 0, pageSize: settings.pageSize }
                 },
                 replace: true
               })
             }}
             preventUnselect
-          />
+          >
+            {(value) => (
+              <button className="flex h-7 w-fit max-w-[150px] items-center space-x-2 text-sm transition-colors hover:text-white">
+                <span>{value}</span>
+                <ChevronsUpDown className="-mb-1 size-4" />
+              </button>
+            )}
+          </SearchableInput>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  )
+}
+
+export const TableSelectionSkeleton = () => {
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <Skeleton className="h-9 w-20" />
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <Skeleton className="h-9 w-20" />
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

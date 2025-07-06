@@ -1,5 +1,5 @@
 use crate::AppState;
-use sea_query::{Cond, Expr, ExprTrait};
+use sea_query::{Cond, Expr, Order, OrderedStatement};
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
 use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
@@ -41,26 +41,61 @@ impl Iden for PlainColumn {
     }
 }
 
+#[derive(Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct GetRowsPayload {
+    table_name: String,
+    pagination: PaginationData,
+    sorting: Vec<SortingData>,
+}
+
+#[derive(Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+struct PaginationData {
+    page_index: u64,
+    page_size: u64,
+}
+
+#[derive(Serialize, Deserialize, Type)]
+struct SortingData {
+    column: String,
+    ordering: ColumnOrdering,
+}
+
+#[derive(Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+enum ColumnOrdering {
+    Asc,
+    Desc,
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn get_paginated_rows(
     state: AppState<'_>,
-    table_name: String,
-    page_index: u64,
-    page_size: u64,
+    payload: GetRowsPayload,
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
     let (stmt, values) = Query::select()
         .column(Asterisk)
-        .from(PlainTable(table_name))
-        .limit(page_size)
-        .offset(page_index * page_size)
+        .from(PlainTable(payload.table_name))
+        .limit(payload.pagination.page_size)
+        .offset(payload.pagination.page_index * payload.pagination.page_size)
+        .order_by_columns(payload.sorting.iter().map(|s| {
+            (
+                PlainColumn(s.column.clone()),
+                match s.ordering {
+                    ColumnOrdering::Asc => Order::Asc,
+                    ColumnOrdering::Desc => Order::Desc,
+                },
+            )
+        }))
         .build_any_sqlx(conn.into_builder().as_ref());
 
     let rows = conn.fetch_all(&stmt, values).await?;
 
-    let page_count = rows.len().div_ceil(page_size as usize);
+    let page_count = rows.len().div_ceil(payload.pagination.page_size as usize);
 
     let paginated_rows = PaginatedRows::new(decode_raw_rows(rows).unwrap(), page_count);
 

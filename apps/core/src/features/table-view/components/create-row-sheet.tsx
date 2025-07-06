@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sheet"
 
 import { type ColumnInfo, commands, type RowRecord } from "@/bindings"
+import { TooltipButton } from "@/components/custom/tooltip-button"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -28,7 +29,6 @@ import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { TooltipButton } from "../../../components/custom/tooltip-button"
 import DynamicFormInput from "./dynamic-input"
 
 type AddRowSheetProps = {
@@ -41,11 +41,11 @@ export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
         <TooltipButton
-          size={"icon"}
-          className="h-8 w-8"
+          size={"sm"}
           tooltipContent="Add Row"
+          className="h-8 w-8 p-0"
         >
-          <PlusCircle className="h-4 w-4" />
+          <PlusCircle className="size-4" />
         </TooltipButton>
       </SheetTrigger>
       <SheetContent className="max-w-lg">
@@ -140,11 +140,7 @@ const AddRowForm = ({
             render={({ field }) => (
               <FormItem className="flex flex-col px-1">
                 <FormLabel>{column.name}</FormLabel>
-                <FormControl
-                // defaultValue={
-                //   column.type === "unsupported" ? "Unsupported" : ""
-                // }
-                >
+                <FormControl>
                   <DynamicFormInput column={column} field={field} />
                 </FormControl>
                 {renderInputDescription(column)}

@@ -1,37 +1,15 @@
 import type { PaginatedRows } from "@/bindings"
-import { type RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import {
   type ColumnDef,
-  type FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  OnChangeFn,
   type PaginationState,
   type Row,
-  type SortingState,
   useReactTable
 } from "@tanstack/react-table"
-import { type Dispatch, type SetStateAction, useRef, useState } from "react"
-
-declare module "@tanstack/react-table" {
-  //add fuzzy filter to the filterFns
-  interface FilterFns {
-    fuzzy: FilterFn<unknown>
-  }
-  interface FilterMeta {
-    itemRank: RankingInfo
-  }
-}
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  addMeta({
-    itemRank
-  })
-
-  return itemRank.passed
-}
+import { useRef, useState } from "react"
 
 const FALLBACK_DATA = []
 
@@ -39,7 +17,7 @@ type SetupDataTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: PaginatedRows
   pagination: PaginationState
-  setPagination: Dispatch<SetStateAction<PaginationState>>
+  onPaginationChange: OnChangeFn<PaginationState>
 }
 
 /**
@@ -50,10 +28,9 @@ export const useSetupDataTable = <TData, TValue>({
   columns,
   data,
   pagination,
-  setPagination
+  onPaginationChange
 }: SetupDataTableOptions<TData, TValue>) => {
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
-  const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const tableRef = useRef<HTMLTableElement>(null)
   const table = useReactTable({
@@ -61,20 +38,16 @@ export const useSetupDataTable = <TData, TValue>({
     columns,
     pageCount: data?.pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
+    onPaginationChange,
     state: {
-      sorting,
       rowSelection,
       pagination
     },
     manualPagination: true,
+    manualSorting: true,
     debugTable: import.meta.env.DEV
   })
 

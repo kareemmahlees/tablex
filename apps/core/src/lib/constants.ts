@@ -1,4 +1,5 @@
 export const QUERY_KEYS = {
+  GET_APP_VERSION: "get_app_version",
   GET_TABLES: "get_tables",
   TABLE_ROWS: "table_rows",
   GET_CONNECTION_DETAILS: "get_connection_details",

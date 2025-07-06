@@ -1,6 +1,6 @@
-import { commands } from "@/bindings"
+import { commands, GetRowsPayload } from "@/bindings"
 import { QUERY_KEYS } from "@/lib/constants"
-import { queryOptions } from "@tanstack/react-query"
+import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 
 export const getTablesQueryOptions = (connectionId: string) =>
   queryOptions({
@@ -24,19 +24,11 @@ export const discoverDBSchemaOptions = (tableName: string) =>
     staleTime: 10 * 60 * 1000 // 1 hour
   })
 
-export const getPaginatedRowsOptions = ({
-  tableName,
-  pageIndex,
-  pageSize
-}: {
-  tableName: string
-  pageIndex: number
-  pageSize: number
-}) => {
+export const getPaginatedRowsOptions = (data: GetRowsPayload) => {
   return queryOptions({
-    queryKey: [QUERY_KEYS.TABLE_ROWS, tableName, { pageIndex, pageSize }],
-    queryFn: async () =>
-      await commands.getPaginatedRows(tableName, pageIndex, pageSize),
-    staleTime: 10 * 60 * 1000 // 30 mins
+    queryKey: [QUERY_KEYS.TABLE_ROWS, data.tableName, { ...data }],
+    queryFn: async () => await commands.getPaginatedRows(data),
+    staleTime: 10 * 60 * 1000, // 30 mins
+    placeholderData: keepPreviousData
   })
 }
