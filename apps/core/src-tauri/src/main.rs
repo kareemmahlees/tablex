@@ -110,8 +110,7 @@ fn main() {
         .export(
             Typescript::new()
                 .header("// @ts-nocheck")
-                .bigint(BigIntExportBehavior::Number)
-                .formatter(prettier),
+                .bigint(BigIntExportBehavior::Number),
             "../src/bindings.ts",
         )
         .expect("Failed to export typescript bindings");

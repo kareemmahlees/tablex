@@ -6,7 +6,6 @@ import {
   getSortedRowModel,
   type PaginationState,
   type Row,
-  type SortingState,
   useReactTable
 } from "@tanstack/react-table"
 import { type Dispatch, type SetStateAction, useRef, useState } from "react"
@@ -31,7 +30,6 @@ export const useSetupDataTable = <TData, TValue>({
   setPagination
 }: SetupDataTableOptions<TData, TValue>) => {
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
-  const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const tableRef = useRef<HTMLTableElement>(null)
   const table = useReactTable({
@@ -39,17 +37,16 @@ export const useSetupDataTable = <TData, TValue>({
     columns,
     pageCount: data?.pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     state: {
-      sorting,
       rowSelection,
       pagination
     },
     manualPagination: true,
+    manualSorting: true,
     debugTable: import.meta.env.DEV
   })
 

@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import { TableLocalStorage } from "@/types"
 import { cn } from "@tablex/lib/utils"
 import type { Table } from "@tanstack/react-table"
@@ -21,7 +22,7 @@ import { useLocalStorage } from "usehooks-ts"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
-  connectionId?: string
+  connectionId: string
   className?: string
 }
 
@@ -31,14 +32,17 @@ export function DataTablePagination<TData>({
   connectionId
 }: DataTablePaginationProps<TData>) {
   const [connectionStorage, setConnectionStorage] =
-    useLocalStorage<TableLocalStorage>(`@tablex/${connectionId}`, {
-      tableName: "",
-      pageIndex: 0
-    })
+    useLocalStorage<TableLocalStorage>(
+      LOCAL_STORAGE.PAGINATION_STATE(connectionId),
+      {
+        tableName: "",
+        pageIndex: 0
+      }
+    )
 
   return (
     <div className={cn("flex items-center gap-x-5", className)}>
-      <div className="flex items-center space-x-4 lg:space-x-2">
+      <div className="flex items-center gap-x-4">
         <div className="flex items-start text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}

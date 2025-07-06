@@ -1,6 +1,6 @@
 import type { Table } from "@tanstack/react-table"
 
-import { DataTableViewOptions } from "@/components/custom/data-table-pagination"
+import { DataTableViewOptions } from "@/components/data-table/data-table-pagination"
 
 type TableActionsProps = {
   table: Table<any>

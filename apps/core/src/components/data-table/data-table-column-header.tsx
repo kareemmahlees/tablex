@@ -1,12 +1,11 @@
 import type { Column } from "@tanstack/react-table"
-import { ArrowDown, ArrowUp, EyeOff } from "lucide-react"
+import { ArrowDown, ArrowUp, EyeOff, Pin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@tablex/lib/utils"
@@ -44,15 +43,10 @@ export function DataTableColumnHeader<TData, TValue>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <ArrowUp className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
-            Asc
+          <DropdownMenuItem>
+            <Pin className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
+            Pin
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <ArrowDown className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
-            Desc
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
             <EyeOff className="text-muted-foreground/70 mr-2 h-3.5 w-3.5" />
             Hide

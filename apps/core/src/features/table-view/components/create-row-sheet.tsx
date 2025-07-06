@@ -43,10 +43,9 @@ export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
         <TooltipButton
           size={"sm"}
           tooltipContent="Add Row"
-          className="h-8 space-x-2"
+          className="h-8 w-8 p-0"
         >
           <PlusCircle className="size-4" />
-          <span>Insert</span>
         </TooltipButton>
       </SheetTrigger>
       <SheetContent className="max-w-lg">

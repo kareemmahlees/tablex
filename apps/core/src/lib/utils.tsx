@@ -1,4 +1,4 @@
-import type { ColumnProps, TxError } from "@/bindings"
+import type { TxError } from "@/bindings"
 import ErrorDialog from "@/components/dialogs/error-dialog"
 import { Button } from "@/components/ui/button"
 import { cn } from "@tablex/lib/utils"
@@ -92,13 +92,20 @@ export function dirtyValues(
   )
 }
 
-/**
- * Determine wether the given column's data type is supported or not.
- */
-export const isUnsupported = (columns: ColumnProps[], colName: string) => {
-  return findColumn(columns, colName)?.type == "unsupported"
-}
+export function formatDate(
+  date: Date | string | number | undefined,
+  opts: Intl.DateTimeFormatOptions = {}
+) {
+  if (!date) return ""
 
-export const findColumn = (columns: ColumnProps[], colName: string) => {
-  return columns.find((col) => col.columnName === colName)
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      month: opts.month ?? "long",
+      day: opts.day ?? "numeric",
+      year: opts.year ?? "numeric",
+      ...opts
+    }).format(new Date(date))
+  } catch (_err) {
+    return ""
+  }
 }

@@ -1,6 +1,6 @@
 import type { ColumnInfo, TableInfo } from "@/bindings"
-import { DataTableColumnHeader } from "@/components/custom/data-table-column-header"
 import MonacoEditor from "@/components/custom/monaco-editor"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
