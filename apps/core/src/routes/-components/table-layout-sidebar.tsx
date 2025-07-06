@@ -92,7 +92,7 @@ export const TableViewSidebar = () => {
           <Button
             variant={"ghost"}
             size={"sm"}
-            className="hover:bg-muted-foreground/20 -mb-2 h-6 w-fit px-1 py-2"
+            className="hover:bg-muted-foreground/20 h-6 w-fit px-1 py-2"
             onClick={() => window.location.reload()}
           >
             <RotateCw className="h-4 w-4" color="gray" />
