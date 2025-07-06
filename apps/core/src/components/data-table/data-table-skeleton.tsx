@@ -1,22 +1,22 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { cn } from "@tablex/lib/utils";
+  TableRow
+} from "@/components/ui/table"
+import { cn } from "@tablex/lib/utils"
 
 interface DataTableSkeletonProps extends React.ComponentProps<"div"> {
-  columnCount: number;
-  rowCount?: number;
-  filterCount?: number;
-  cellWidths?: string[];
-  withViewOptions?: boolean;
-  withPagination?: boolean;
-  shrinkZero?: boolean;
+  columnCount: number
+  rowCount?: number
+  filterCount?: number
+  cellWidths?: string[]
+  withViewOptions?: boolean
+  withPagination?: boolean
+  shrinkZero?: boolean
 }
 
 export function DataTableSkeleton({
@@ -32,8 +32,8 @@ export function DataTableSkeleton({
 }: DataTableSkeletonProps) {
   const cozyCellWidths = Array.from(
     { length: columnCount },
-    (_, index) => cellWidths[index % cellWidths.length] ?? "auto",
-  );
+    (_, index) => cellWidths[index % cellWidths.length] ?? "auto"
+  )
 
   return (
     <div
@@ -62,7 +62,7 @@ export function DataTableSkeleton({
                     key={j}
                     style={{
                       width: cozyCellWidths[j],
-                      minWidth: shrinkZero ? cozyCellWidths[j] : "auto",
+                      minWidth: shrinkZero ? cozyCellWidths[j] : "auto"
                     }}
                   >
                     <Skeleton className="h-6 w-full" />
@@ -79,7 +79,7 @@ export function DataTableSkeleton({
                     key={j}
                     style={{
                       width: cozyCellWidths[j],
-                      minWidth: shrinkZero ? cozyCellWidths[j] : "auto",
+                      minWidth: shrinkZero ? cozyCellWidths[j] : "auto"
                     }}
                   >
                     <Skeleton className="h-6 w-full" />
@@ -98,7 +98,7 @@ export function DataTableSkeleton({
               <Skeleton className="h-7 w-24" />
               <Skeleton className="h-7 w-[4.5rem]" />
             </div>
-            <div className="flex items-center justify-center font-medium text-sm">
+            <div className="flex items-center justify-center text-sm font-medium">
               <Skeleton className="h-7 w-20" />
             </div>
             <div className="flex items-center gap-2">
@@ -111,5 +111,5 @@ export function DataTableSkeleton({
         </div>
       ) : null}
     </div>
-  );
+  )
 }
