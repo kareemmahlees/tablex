@@ -6,6 +6,7 @@ import {
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useSettings } from "@/features/settings/manager"
 import {
   getConnectionDetailsQueryOptions,
   getTablesQueryOptions
@@ -17,6 +18,7 @@ import { ChevronsUpDown } from "lucide-react"
 import { useLocalStorage } from "usehooks-ts"
 
 export const TableSelectionBreadCrumb = ({ connId }: { connId: string }) => {
+  const settings = useSettings()
   const { tableName } = useParams({ strict: false })
   const {
     "0": { data: tables },
@@ -58,6 +60,10 @@ export const TableSelectionBreadCrumb = ({ connId }: { connId: string }) => {
                 params: {
                   connId,
                   tableName: v
+                },
+                search: {
+                  sorting: [],
+                  pagination: { pageIndex: 0, pageSize: settings.pageSize }
                 },
                 replace: true
               })

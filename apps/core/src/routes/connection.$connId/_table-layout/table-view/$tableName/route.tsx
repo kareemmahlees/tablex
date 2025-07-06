@@ -12,7 +12,6 @@ import {
   getPaginatedRowsOptions
 } from "@/features/table-view/queries"
 import { useSetupDataTable } from "@/hooks/use-setup-data-table"
-import { useSetupPagination } from "@/hooks/use-setup-pagination"
 import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
 import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
@@ -35,7 +34,11 @@ export const Route = createFileRoute(
           ordering: z.enum(["asc", "desc"])
         })
       )
-      .default([])
+      .default([]),
+    pagination: z.object({
+      pageIndex: z.number(),
+      pageSize: z.number()
+    })
   }),
   component: TableView,
   pendingComponent: TableLoadingSkeleton
@@ -43,10 +46,9 @@ export const Route = createFileRoute(
 
 function TableView() {
   const { tableName, connId } = Route.useParams()
-  const { sorting } = Route.useSearch()
+  const { sorting, pagination } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const navigate = Route.useNavigate()
-  const { pagination, setPagination } = useSetupPagination(connId)
   const { data: tableSchema } = useSuspenseQuery(
     discoverDBSchemaOptions(tableName)
   )
@@ -67,7 +69,17 @@ function TableView() {
     columns,
     data: rows ?? { pageCount: 0, data: [] },
     pagination,
-    setPagination
+    onPaginationChange: (updater) => {
+      if (typeof updater !== "function") return
+      const newPagination = updater(pagination)
+      navigate({
+        to: ".",
+        search: {
+          sorting,
+          pagination: newPagination
+        }
+      })
+    }
   })
 
   useTauriEventListener(
@@ -117,7 +129,8 @@ function TableView() {
               navigate({
                 to: ".",
                 search: {
-                  sorting: data
+                  sorting: data,
+                  pagination
                 }
               })
             }

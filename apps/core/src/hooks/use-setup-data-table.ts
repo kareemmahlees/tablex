@@ -4,11 +4,12 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  OnChangeFn,
   type PaginationState,
   type Row,
   useReactTable
 } from "@tanstack/react-table"
-import { type Dispatch, type SetStateAction, useRef, useState } from "react"
+import { useRef, useState } from "react"
 
 const FALLBACK_DATA = []
 
@@ -16,7 +17,7 @@ type SetupDataTableOptions<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: PaginatedRows
   pagination: PaginationState
-  setPagination: Dispatch<SetStateAction<PaginationState>>
+  onPaginationChange: OnChangeFn<PaginationState>
 }
 
 /**
@@ -27,7 +28,7 @@ export const useSetupDataTable = <TData, TValue>({
   columns,
   data,
   pagination,
-  setPagination
+  onPaginationChange
 }: SetupDataTableOptions<TData, TValue>) => {
   const [contextMenuRow, setContextMenuRow] = useState<Row<any>>()
   const [rowSelection, setRowSelection] = useState({})
@@ -40,7 +41,7 @@ export const useSetupDataTable = <TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
+    onPaginationChange,
     state: {
       rowSelection,
       pagination

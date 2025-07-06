@@ -1,6 +1,7 @@
 import { commands } from "@/bindings"
 import { ConnectionCard } from "@/features/connections/components/connection-card"
 import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
+import { useSettings } from "@/features/settings/manager"
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = Route.useNavigate()
   const connections = Route.useLoaderData()
+  const settings = useSettings()
 
   const onClickConnect = async (connId: string) => {
     const connectionDetails = await commands.getConnectionDetails(connId)
@@ -37,7 +39,8 @@ function Index() {
           tableName: latestTable
         },
         search: {
-          sorting: []
+          sorting: [],
+          pagination: { pageIndex: 0, pageSize: settings.pageSize }
         }
       })
     }
