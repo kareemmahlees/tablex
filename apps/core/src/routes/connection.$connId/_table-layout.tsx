@@ -24,9 +24,9 @@ function TableViewLayout() {
   const { connId } = Route.useParams()
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="overflow-hidden">
       <TableViewSidebar />
-      <main className="flex h-full w-full flex-col">
+      <main className="flex h-full w-full min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-x-6 border-b px-4 py-1.5">
           <SidebarToggleIcon />
           <Suspense fallback={<TableSelectionSkeleton />}>

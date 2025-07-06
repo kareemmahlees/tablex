@@ -11,93 +11,78 @@ import {
 } from "@/components/ui/table"
 import { getCommonPinningStyles } from "@/lib/data-table"
 import { cn } from "@tablex/lib/utils"
+import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>
-  actionBar?: React.ReactNode
 }
 
-export function DataTable<TData>({
-  table,
-  actionBar,
-  children,
-  className,
-  ...props
-}: DataTableProps<TData>) {
+export function DataTable<TData>({ table, className }: DataTableProps<TData>) {
   return (
-    <div
-      className={cn(
-        "flex h-full w-full flex-col gap-2.5 overflow-auto",
-        className
-      )}
-      {...props}
+    <ScrollArea
+      className={cn("flex h-full w-full min-w-0 flex-1 flex-col", className)}
     >
-      {children}
-      <div className="overflow-hidden border-y">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow
+              key={headerGroup.id}
+              className="bg-sidebar sticky top-0 z-50 backdrop-blur-lg"
+            >
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  style={{
+                    ...getCommonPinningStyles({ column: header.column })
+                  }}
+                  className="text-sm font-bold lg:text-base"
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
               <TableRow
-                key={headerGroup.id}
-                className="bg-sidebar sticky top-0 backdrop-blur-lg"
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                className="hover:bg-muted/70 data-[state=selected]:bg-muted/70"
               >
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    colSpan={header.colSpan}
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
                     style={{
-                      ...getCommonPinningStyles({ column: header.column })
+                      ...getCommonPinningStyles({ column: cell.column })
                     }}
-                    className="text-sm font-bold lg:text-base"
+                    className="w-1"
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/70 data-[state=selected]:bg-muted/70"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        ...getCommonPinningStyles({ column: cell.column })
-                      }}
-                      className="w-1"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={table.getAllColumns().length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                className="h-24 text-center"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   )
 }
