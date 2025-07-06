@@ -2,6 +2,7 @@ import { commands, RowRecord } from "@/bindings"
 import { TooltipButton } from "@/components/custom/tooltip-button"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { Skeleton } from "@/components/ui/skeleton"
 import { generateColumnsDefs } from "@/features/table-view/columns"
@@ -15,7 +16,7 @@ import { useSetupPagination } from "@/hooks/use-setup-pagination"
 import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
 import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
-import { useSuspenseQueries } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { RefreshCw } from "lucide-react"
 import { useMemo } from "react"
@@ -37,40 +38,34 @@ export const Route = createFileRoute(
       .default([])
   }),
   component: TableView,
-  pendingComponent: () => (
-    <div className="flex h-full flex-col space-y-5 p-4">
-      <Skeleton className="h-10 w-full" />
-      <Skeleton className="h-full" />
-      <div className="flex justify-between">
-        <Skeleton className="h-10 w-[200px]" />
-        <Skeleton className="h-10 w-[200px]" />
-      </div>
-    </div>
-  )
+  pendingComponent: TableLoadingSkeleton
 })
 
 function TableView() {
   const { tableName, connId } = Route.useParams()
   const { sorting } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
+  const navigate = Route.useNavigate()
   const { pagination, setPagination } = useSetupPagination(connId)
+  const { data: tableSchema } = useSuspenseQuery(
+    discoverDBSchemaOptions(tableName)
+  )
   const {
-    "0": { data: tableSchema },
-    "1": { data: rows, refetch: refetchRows, isFetching: isFetchingRows }
-  } = useSuspenseQueries({
-    queries: [
-      discoverDBSchemaOptions(tableName),
-      getPaginatedRowsOptions({
-        tableName,
-        pagination,
-        sorting
-      })
-    ]
-  })
+    data: rows,
+    refetch: refetchRows,
+    isFetching: isFetchingRows,
+    isPending: isRowsPending
+  } = useQuery(
+    getPaginatedRowsOptions({
+      tableName,
+      pagination,
+      sorting
+    })
+  )
   const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
   const { table } = useSetupDataTable({
     columns,
-    data: rows,
+    data: rows ?? { pageCount: 0, data: [] },
     pagination,
     setPagination
   })
@@ -109,12 +104,26 @@ function TableView() {
     })
   })
 
+  if (isRowsPending) return <TableLoadingSkeleton />
+
   return (
     <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
       <div className="flex items-center justify-between px-3 py-2.5">
         <div className="flex items-center gap-x-3">
-          <DataTableViewOptions table={table} />
+          <DataTableSortList
+            table={table}
+            sorting={sorting}
+            onSortingChange={(data) =>
+              navigate({
+                to: ".",
+                search: {
+                  sorting: data
+                }
+              })
+            }
+          />
         </div>
+        <DataTableViewOptions table={table} />
       </div>
       <DataTable table={table} />
       <div className="bg-sidebar flex items-center justify-between p-4">
@@ -134,5 +143,18 @@ function TableView() {
         </div>
       </div>
     </section>
+  )
+}
+
+function TableLoadingSkeleton() {
+  return (
+    <div className="flex h-full flex-col space-y-5 p-4">
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-full" />
+      <div className="flex justify-between">
+        <Skeleton className="h-10 w-[200px]" />
+        <Skeleton className="h-10 w-[200px]" />
+      </div>
+    </div>
   )
 }
