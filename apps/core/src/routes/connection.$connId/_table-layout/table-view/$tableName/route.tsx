@@ -21,10 +21,21 @@ import { RefreshCw } from "lucide-react"
 import { useMemo } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
+import { z } from "zod"
 
 export const Route = createFileRoute(
   "/connection/$connId/_table-layout/table-view/$tableName"
 )({
+  validateSearch: z.object({
+    sorting: z
+      .array(
+        z.object({
+          column: z.string(),
+          ordering: z.enum(["asc", "desc"])
+        })
+      )
+      .default([])
+  }),
   component: TableView,
   pendingComponent: () => (
     <div className="flex h-full flex-col space-y-5 p-4">
@@ -40,6 +51,7 @@ export const Route = createFileRoute(
 
 function TableView() {
   const { tableName, connId } = Route.useParams()
+  const { sorting } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const { pagination, setPagination } = useSetupPagination(connId)
   const {
@@ -50,7 +62,8 @@ function TableView() {
       discoverDBSchemaOptions(tableName),
       getPaginatedRowsOptions({
         tableName,
-        ...pagination
+        pagination,
+        sorting
       })
     ]
   })

@@ -35,6 +35,9 @@ function Index() {
         params: {
           connId,
           tableName: latestTable
+        },
+        search: {
+          sorting: []
         }
       })
     }
