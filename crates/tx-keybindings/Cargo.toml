@@ -1,6 +1,6 @@
 [package]
-name = "tx_settings"
-description = "TableX Settings for managing configurable user settings"
+name = "tx_keybindings"
+description = "TableX Keybindings for handling keyboard shortcuts"
 version.workspace = true
 license.workspace = true
 authors.workspace = true
@@ -9,10 +9,9 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-schemars = { version = "0.8.21", features = ["preserve_order"] }
 serde = { workspace = true }
-serde_json = { workspace = true }
 specta = { workspace = true }
+tauri-specta = { workspace = true }
 tauri = { workspace = true }
-tx_lib = { path = "../lib" }
 log = { workspace = true }
+tx_lib = { path = "../tx-lib" }

@@ -1,4 +1,4 @@
 {
-  "rust-analyzer.linkedProjects": ["apps/core/src-tauri/Cargo.toml"],
+  "rust-analyzer.linkedProjects": ["apps/desktop/src-tauri/Cargo.toml"],
   "typescript.preferences.autoImportFileExcludePatterns": ["@radix-ui/**"]
 }

@@ -14,10 +14,10 @@ edition.workspace = true
 tauri-build = { version = "2.0.0-beta.19", features = [] }
 
 [dependencies]
-tx_lib = { path = "../../../crates/lib" }
-tx_handlers = { path = "../../../crates/handlers" }
-tx_keybindings = { path = "../../../crates/keybindings" }
-tx_settings = { path = "../../../crates/settings" }
+tx_lib = { path = "../../../crates/tx-lib" }
+tx_handlers = { path = "../../../crates/tx-handlers" }
+tx_keybindings = { path = "../../../crates/tx-keybindings" }
+tx_settings = { path = "../../../crates/tx-settings" }
 serde_json = { workspace = true }
 serde = { workspace = true }
 tauri = { workspace = true }

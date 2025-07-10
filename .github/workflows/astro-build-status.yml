@@ -28,7 +28,7 @@ jobs:
         with:
           sparse-checkout: |
             apps/web
-            apps/core/package.json
+            apps/desktop/package.json
             packages
 
       - uses: oven-sh/setup-bun@v2

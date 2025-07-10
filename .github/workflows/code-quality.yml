@@ -55,7 +55,7 @@ jobs:
         with:
           fetch-depth: 1
           sparse-checkout: |
-            apps/core/src-tauri
+            apps/desktop/src-tauri
             crates
 
       - name: Install tauri specific dependencies
@@ -79,7 +79,7 @@ jobs:
         with:
           sparse-checkout: |
             apps/web
-            apps/core/package.json
+            apps/desktop/package.json
             packages
 
       - uses: oven-sh/setup-bun@v2

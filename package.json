@@ -12,7 +12,7 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "apps/core",
+      "apps/desktop",
       "apps/web",
       "packages/**"
     ]
