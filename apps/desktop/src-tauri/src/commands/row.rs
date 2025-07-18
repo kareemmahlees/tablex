@@ -1,5 +1,6 @@
 use crate::AppState;
-use sea_query::{Cond, Expr, Order, OrderedStatement};
+use sea_query::extension::postgres::PgExpr;
+use sea_query::{Cond, Expr, Order};
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
 use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
@@ -47,6 +48,7 @@ pub struct GetRowsPayload {
     table_name: String,
     pagination: PaginationData,
     sorting: Vec<SortingData>,
+    filtering: Vec<FilteringData>,
 }
 
 #[derive(Serialize, Deserialize, Type)]
@@ -69,6 +71,29 @@ enum ColumnOrdering {
     Desc,
 }
 
+#[derive(Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+struct FilteringData {
+    column: String,
+    filters: Filters,
+}
+
+#[derive(Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+enum Filters {
+    Gt(JsonValue),
+    Gte(JsonValue),
+    Lt(JsonValue),
+    Lte(JsonValue),
+    Eq(JsonValue),
+    Ne(JsonValue),
+    Between(JsonValue, JsonValue),
+    Like(String),
+    NotLike(String),
+    IsEmpty,
+    IsNotEmpty,
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn get_paginated_rows(
@@ -77,7 +102,7 @@ pub async fn get_paginated_rows(
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
-    let (stmt, values) = Query::select()
+    let mut query = Query::select()
         .column(Asterisk)
         .from(PlainTable(payload.table_name))
         .limit(payload.pagination.page_size)
@@ -91,7 +116,28 @@ pub async fn get_paginated_rows(
                 },
             )
         }))
-        .build_any_sqlx(conn.into_builder().as_ref());
+        .to_owned();
+
+    payload.filtering.iter().for_each(|f| {
+        let expression = Expr::col(PlainColumn(f.column.clone()));
+        let simple_express = match &f.filters {
+            Filters::Gt(v) => expression.gt(v.clone()),
+            Filters::Gte(v) => expression.gte(v.clone()),
+            Filters::Lt(v) => expression.lt(v.clone()),
+            Filters::Lte(v) => expression.lte(v.clone()),
+            Filters::Between(a, b) => expression.between(a.clone(), b.clone()),
+            Filters::Eq(v) => expression.eq(v.clone()),
+            Filters::Ne(v) => expression.ne(v.clone()),
+            Filters::Like(v) => expression.like(v),
+            Filters::NotLike(v) => expression.not_like(v),
+            Filters::IsEmpty => expression.is_null(),
+            Filters::IsNotEmpty => expression.is_not_null(),
+        };
+
+        query.and_where(simple_express);
+    });
+
+    let (stmt, values) = query.build_any_sqlx(conn.into_builder().as_ref());
 
     let rows = conn.fetch_all(&stmt, values).await?;
 

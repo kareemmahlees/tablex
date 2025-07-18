@@ -1,4 +1,4 @@
-import { dataTableConfig } from "@/config/data-table"
+import { dataTableConfig } from "@/components/data-table/data-table-config"
 import type {
   ExtendedColumnFilter,
   FilterOperator,
@@ -43,12 +43,12 @@ export function getFilterOperators(filterVariant: FilterVariant) {
   > = {
     text: dataTableConfig.textOperators,
     number: dataTableConfig.numericOperators,
-    range: dataTableConfig.numericOperators,
+    // range: dataTableConfig.numericOperators,
     date: dataTableConfig.dateOperators,
-    dateRange: dataTableConfig.dateOperators,
-    boolean: dataTableConfig.booleanOperators,
-    select: dataTableConfig.selectOperators,
-    multiSelect: dataTableConfig.multiSelectOperators
+    // dateRange: dataTableConfig.dateOperators,
+    boolean: dataTableConfig.booleanOperators
+    // select: dataTableConfig.selectOperators,
+    // multiSelect: dataTableConfig.multiSelectOperators
   }
 
   return operatorMap[filterVariant] ?? dataTableConfig.textOperators

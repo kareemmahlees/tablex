@@ -5,6 +5,7 @@ import { ArrowDownUp, ChevronsUpDown, GripVertical, Trash2 } from "lucide-react"
 import * as React from "react"
 
 import { SortingData } from "@/bindings"
+import { dataTableConfig } from "@/components/data-table/data-table-config"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,7 +35,6 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from "@/components/ui/sortable"
-import { dataTableConfig } from "@/config/data-table"
 import { cn } from "@tablex/lib/utils"
 
 const OPEN_MENU_SHORTCUT = "s"

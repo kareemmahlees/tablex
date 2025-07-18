@@ -40,7 +40,9 @@ function Index() {
         },
         search: {
           sorting: [],
-          pagination: { pageIndex: 0, pageSize: settings.pageSize }
+          pagination: { pageIndex: 0, pageSize: settings.pageSize },
+          filtering: [],
+          joinOperator: "and"
         }
       })
     }

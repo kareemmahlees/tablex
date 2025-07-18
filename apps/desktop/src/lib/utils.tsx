@@ -3,6 +3,7 @@ import ErrorDialog from "@/components/dialogs/error-dialog"
 import { Button } from "@/components/ui/button"
 import { cn } from "@tablex/lib/utils"
 import { error } from "@tauri-apps/plugin-log"
+import { customAlphabet } from "nanoid"
 import { toast } from "sonner"
 import { ConnectionStringParams, Drivers } from "./types"
 
@@ -109,3 +110,35 @@ export function formatDate(
     return ""
   }
 }
+
+const prefixes: Record<string, unknown> = {}
+
+interface GenerateIdOptions {
+  length?: number
+  separator?: string
+}
+
+export function generateId(
+  prefixOrOptions?: keyof typeof prefixes | GenerateIdOptions,
+  inputOptions: GenerateIdOptions = {}
+) {
+  const finalOptions =
+    typeof prefixOrOptions === "object" ? prefixOrOptions : inputOptions
+
+  const prefix =
+    typeof prefixOrOptions === "object" ? undefined : prefixOrOptions
+
+  const { length = 12, separator = "_" } = finalOptions
+  const id = customAlphabet(
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    length
+  )()
+
+  return prefix ? `${prefixes[prefix]}${separator}${id}` : id
+}
+
+export type KeysOfUnion<T> = T extends object
+  ? keyof T
+  : T extends string
+    ? T
+    : never
