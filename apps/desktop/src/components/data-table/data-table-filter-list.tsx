@@ -54,6 +54,7 @@ import type {
   JoinOperator
 } from "@/types/data-table"
 import { cn } from "@tablex/lib/utils"
+import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"
 import { Input } from "../ui/input"
@@ -154,38 +155,23 @@ export function DataTableFilterList<TData>({
     void onJoinOperatorChange("and")
   }, [onFilterChange, onJoinOperatorChange])
 
-  React.useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
+  useHotkeys(
+    `${OPEN_MENU_SHORTCUT},shift+${OPEN_MENU_SHORTCUT}`,
+    (event) => {
+      if (event.shiftKey && filters.length > 0) {
+        onFilterRemove(filters[filters.length - 1]?.filterId ?? "")
         return
       }
 
-      if (
-        event.key.toLowerCase() === OPEN_MENU_SHORTCUT &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.shiftKey
-      ) {
-        event.preventDefault()
-        setOpen(true)
-      }
-
-      if (
-        event.key.toLowerCase() === OPEN_MENU_SHORTCUT &&
-        event.shiftKey &&
-        filters.length > 0
-      ) {
-        event.preventDefault()
-        onFilterRemove(filters[filters.length - 1]?.filterId ?? "")
-      }
+      setOpen(true)
+    },
+    {
+      keydown: true,
+      ignoreEventWhen: (e) =>
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
     }
-
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [filters, onFilterRemove])
+  )
 
   const onTriggerKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLButtonElement>) => {
