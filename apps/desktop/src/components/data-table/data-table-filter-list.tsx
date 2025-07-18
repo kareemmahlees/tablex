@@ -97,25 +97,7 @@ export function DataTableFilterList<TData>({
     return table.getAllColumns().filter((column) => column.getCanFilter())
   }, [table])
 
-  // const [filters, setFilters] = useQueryState(
-  //   FILTERS_KEY,
-  //   getFiltersStateParser<TData>(columns.map((field) => field.id))
-  //     .withDefault([])
-  //     .withOptions({
-  //       clearOnDefault: true,
-  //       shallow,
-  //       throttleMs
-  //     })
-  // )
   const debouncedSetFilters = useDebounceCallback(onFilterChange, debounceMs)
-
-  // const [joinOperator, setJoinOperator] = useQueryState(
-  //   JOIN_OPERATOR_KEY,
-  //   parseAsStringEnum(["and", "or"]).withDefault("and").withOptions({
-  //     clearOnDefault: true,
-  //     shallow
-  //   })
-  // )
 
   const onFilterAdd = React.useCallback(() => {
     const column = columns[0]
@@ -433,8 +415,8 @@ function DataTableFilterItem<TData>({
               className="w-32 justify-between rounded font-normal"
             >
               <span className="truncate">
-                {columns.find((column) => column.id === filter.id)?.columnDef
-                  .meta?.label ?? "Select field"}
+                {columns.find((column) => column.id === filter.id)?.id ??
+                  "Select field"}
               </span>
               <ChevronsUpDown className="opacity-50" />
             </Button>
@@ -466,9 +448,7 @@ function DataTableFilterItem<TData>({
                         setShowFieldSelector(false)
                       }}
                     >
-                      <span className="truncate">
-                        {column.columnDef.meta?.label}
-                      </span>
+                      <span className="truncate">{column.id}</span>
                       <Check
                         className={cn(
                           "ml-auto",
