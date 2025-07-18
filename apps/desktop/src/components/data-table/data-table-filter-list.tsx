@@ -208,9 +208,14 @@ export function DataTableFilterList<TData>({
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" onKeyDown={onTriggerKeyDown}>
-            <ListFilter />
-            Filter
+          <Button
+            variant="outline"
+            size="sm"
+            onKeyDown={onTriggerKeyDown}
+            className="h-8 space-x-2"
+          >
+            <ListFilter className="size-4" />
+            <span>Filter</span>
             {filters.length > 0 && (
               <Badge
                 variant="secondary"
@@ -412,13 +417,13 @@ function DataTableFilterItem<TData>({
               aria-controls={fieldListboxId}
               variant="outline"
               size="sm"
-              className="w-32 justify-between rounded font-normal"
+              className="h-8 w-32 justify-between space-x-2 rounded font-normal"
             >
               <span className="truncate">
                 {columns.find((column) => column.id === filter.id)?.id ??
                   "Select field"}
               </span>
-              <ChevronsUpDown className="opacity-50" />
+              <ChevronsUpDown className="size-4 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent
@@ -517,11 +522,11 @@ function DataTableFilterItem<TData>({
           className="size-8 rounded"
           onClick={() => onFilterRemove(filter.filterId)}
         >
-          <Trash2 />
+          <Trash2 className="size-5" />
         </Button>
         <SortableItemHandle asChild>
           <Button variant="outline" size="icon" className="size-8 rounded">
-            <GripVertical />
+            <GripVertical className="size-5" />
           </Button>
         </SortableItemHandle>
       </li>
