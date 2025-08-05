@@ -2,7 +2,6 @@
 
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table"
 import {
-  CalendarIcon,
   Check,
   ChevronsUpDown,
   GripVertical,
@@ -14,7 +13,6 @@ import * as React from "react"
 import { dataTableConfig } from "@/components/data-table/data-table-config"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
   Command,
   CommandEmpty,
@@ -47,7 +45,7 @@ import {
   filterItemSchema
 } from "@/features/table-view/schemas"
 import { getDefaultFilterOperator, getFilterOperators } from "@/lib/data-table"
-import { formatDate, generateId } from "@/lib/utils"
+import { generateId } from "@/lib/utils"
 import type {
   ExtendedColumnFilter,
   FilterOperator,
@@ -57,6 +55,7 @@ import { cn } from "@tablex/lib/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"
+import { DateTimeInput } from "../custom/date-input"
 import { Input } from "../ui/input"
 import { DataTableRangeFilter } from "./data-table-range-filter"
 
@@ -705,89 +704,28 @@ function onFilterInputRender<TData>({
     // }
 
     // case "dateRange":
+    case "dateTime":
+    case "time":
     case "date": {
-      const inputListboxId = `${inputId}-listbox`
-
       const dateValue = Array.isArray(filter.value)
         ? filter.value.filter(Boolean)
         : [filter.value, filter.value].filter(Boolean)
 
-      const displayValue =
-        filter.operator === "between" && dateValue.length === 2
-          ? `${formatDate(new Date(Number(dateValue[0])))} - ${formatDate(
-              new Date(Number(dateValue[1]))
-            )}`
-          : dateValue[0]
-            ? formatDate(new Date(Number(dateValue[0])))
-            : "Pick a date"
-
       return (
-        <Popover open={showValueSelector} onOpenChange={setShowValueSelector}>
-          <PopoverTrigger asChild>
-            <Button
-              id={inputId}
-              aria-controls={inputListboxId}
-              aria-label={`${columnMeta?.label} date filter`}
-              variant="outline"
-              size="sm"
-              className={cn(
-                "w-full justify-start rounded text-left font-normal",
-                !filter.value && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon />
-              <span className="truncate">{displayValue}</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            id={inputListboxId}
-            align="start"
-            className="w-auto origin-[var(--radix-popover-content-transform-origin)] p-0"
-          >
-            {filter.operator === "between" ? (
-              <Calendar
-                aria-label={`Select ${columnMeta?.label} date range`}
-                mode="range"
-                autoFocus
-                selected={
-                  dateValue.length === 2
-                    ? {
-                        from: new Date(Number(dateValue[0])),
-                        to: new Date(Number(dateValue[1]))
-                      }
-                    : {
-                        from: new Date(),
-                        to: new Date()
-                      }
-                }
-                onSelect={(date) => {
-                  onFilterUpdate(filter.filterId, {
-                    value: date
-                      ? [
-                          (date.from?.getTime() ?? "").toString(),
-                          (date.to?.getTime() ?? "").toString()
-                        ]
-                      : []
-                  })
-                }}
-              />
-            ) : (
-              <Calendar
-                aria-label={`Select ${columnMeta?.label} date`}
-                mode="single"
-                autoFocus
-                selected={
-                  dateValue[0] ? new Date(Number(dateValue[0])) : undefined
-                }
-                onSelect={(date) => {
-                  onFilterUpdate(filter.filterId, {
-                    value: (date?.getTime() ?? "").toString()
-                  })
-                }}
-              />
-            )}
-          </PopoverContent>
-        </Popover>
+        <DateTimeInput
+          aria-label={`Select ${columnMeta?.label} date`}
+          autoFocus
+          className="bg-input/30 h-8 py-4"
+          dateSectionClassName="gap-x-0"
+          timeSectionClassName="gap-x-0"
+          value={dateValue[0] ? new Date(Number(dateValue[0])) : undefined}
+          type={filter.variant === "dateTime" ? "datetime" : filter.variant}
+          onChange={(date) => {
+            onFilterUpdate(filter.filterId, {
+              value: (date?.getTime() ?? "").toString()
+            })
+          }}
+        />
       )
     }
 

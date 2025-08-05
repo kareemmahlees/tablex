@@ -42,9 +42,15 @@ export function getFilterOperators(filterVariant: FilterVariant) {
     { label: string; value: FilterOperator }[]
   > = {
     text: dataTableConfig.textOperators,
-    number: dataTableConfig.numericOperators,
+    uuid: dataTableConfig.textOperators,
+    integer: dataTableConfig.numericOperators,
+    float: dataTableConfig.numericOperators,
+    positiveInteger: dataTableConfig.numericOperators,
     // range: dataTableConfig.numericOperators,
     date: dataTableConfig.dateOperators,
+    dateTime: dataTableConfig.dateOperators,
+    time: dataTableConfig.dateOperators,
+
     // dateRange: dataTableConfig.dateOperators,
     boolean: dataTableConfig.booleanOperators
     // select: dataTableConfig.selectOperators,
