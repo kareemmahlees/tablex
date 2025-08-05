@@ -152,7 +152,7 @@ export function DataTableFilterList<TData>({
 
   const onFiltersReset = React.useCallback(() => {
     onFilterChange([])
-    void onJoinOperatorChange("and")
+    onJoinOperatorChange("and")
   }, [onFilterChange, onJoinOperatorChange])
 
   useHotkeys(
@@ -591,7 +591,7 @@ function onFilterInputRender<TData>({
           }
           onChange={(event) =>
             onFilterUpdate(filter.filterId, {
-              value: event.target.value
+              value: isNumber ? Number(event.target.value) : event.target.value
             })
           }
         />
@@ -607,7 +607,7 @@ function onFilterInputRender<TData>({
         <Select
           open={showValueSelector}
           onOpenChange={setShowValueSelector}
-          value={filter.value}
+          value={String(filter.value)}
           onValueChange={(value) =>
             onFilterUpdate(filter.filterId, {
               value
@@ -748,7 +748,7 @@ function onFilterInputRender<TData>({
               <Calendar
                 aria-label={`Select ${columnMeta?.label} date range`}
                 mode="range"
-                initialFocus
+                autoFocus
                 selected={
                   dateValue.length === 2
                     ? {
@@ -775,7 +775,7 @@ function onFilterInputRender<TData>({
               <Calendar
                 aria-label={`Select ${columnMeta?.label} date`}
                 mode="single"
-                initialFocus
+                autoFocus
                 selected={
                   dateValue[0] ? new Date(Number(dateValue[0])) : undefined
                 }

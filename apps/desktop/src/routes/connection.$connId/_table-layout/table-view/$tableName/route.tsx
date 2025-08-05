@@ -62,12 +62,20 @@ function TableView() {
       tableName,
       pagination,
       sorting,
-      filtering: [
-        {
-          column: "",
-          filters: { gt: 1 }
+      filtering: filtering.map((f) => {
+        if (f.operator === "isEmpty" || f.operator === "isNotEmpty")
+          return {
+            column: f.column,
+            filters: f.operator
+          }
+
+        return {
+          column: f.column,
+          filters: {
+            [f.operator]: f.value
+          }
         }
-      ]
+      })
     })
   )
   const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
@@ -82,7 +90,7 @@ function TableView() {
         search: {
           sorting,
           pagination: updater(pagination),
-          filtering: [],
+          filtering,
           joinOperator
         }
       })
@@ -147,7 +155,7 @@ function TableView() {
           <DataTableFilterList
             table={table}
             filters={filtering}
-            onFilterChange={(data) =>
+            onFilterChange={(data) => {
               navigate({
                 to: ".",
                 search: {
@@ -157,7 +165,8 @@ function TableView() {
                   joinOperator
                 }
               })
-            }
+              console.log(data)
+            }}
             joinOperator={joinOperator}
             onJoinOperatorChange={(data) =>
               navigate({

@@ -10,16 +10,16 @@ type Operator = {
 
 export const dataTableConfig = {
   textOperators: [
-    { label: "Contains", value: "like" as const },
-    { label: "Does not contain", value: "notLike" as const },
-    { label: "Is", value: "eq" as const },
-    { label: "Is not", value: "ne" as const },
+    { label: "Like", value: "like" as const },
+    { label: "Not like", value: "notLike" as const },
+    { label: "Equals", value: "eq" as const },
+    { label: "Not Equals", value: "ne" as const },
     { label: "Is empty", value: "isEmpty" as const },
     { label: "Is not empty", value: "isNotEmpty" as const }
   ] satisfies Operator[],
   numericOperators: [
-    { label: "Is", value: "eq" as const },
-    { label: "Is not", value: "ne" as const },
+    { label: "Equals", value: "eq" as const },
+    { label: "Not equals", value: "ne" as const },
     { label: "Is less than", value: "lt" as const },
     { label: "Is less than or equal to", value: "lte" as const },
     { label: "Is greater than", value: "gt" as const },
@@ -29,8 +29,8 @@ export const dataTableConfig = {
     { label: "Is not empty", value: "isNotEmpty" as const }
   ] satisfies Operator[],
   dateOperators: [
-    { label: "Is", value: "eq" as const },
-    { label: "Is not", value: "ne" as const },
+    { label: "Equals", value: "eq" as const },
+    { label: "Not equals", value: "ne" as const },
     { label: "Is before", value: "lt" as const },
     { label: "Is after", value: "gt" as const },
     { label: "Is on or before", value: "lte" as const },

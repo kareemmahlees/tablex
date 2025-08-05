@@ -22,7 +22,7 @@ export const paginationSchema = z
 
 export const filterItemSchema = z.object({
   id: z.string(),
-  value: z.union([z.string(), z.array(z.string())]),
+  value: z.union([z.string(), z.number(), z.undefined(), z.array(z.string())]),
   column: z.string(),
   variant: z.enum(dataTableConfig.filterVariants),
   operator: z.enum(dataTableConfig.operators),

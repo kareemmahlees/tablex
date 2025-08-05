@@ -1,6 +1,5 @@
 use crate::AppState;
-use sea_query::extension::postgres::PgExpr;
-use sea_query::{Cond, Expr, Order};
+use sea_query::{Cond, Expr, Order, PostgresQueryBuilder};
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
 use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
@@ -71,14 +70,14 @@ enum ColumnOrdering {
     Desc,
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, Debug)]
 #[serde(rename_all = "camelCase")]
 struct FilteringData {
     column: String,
     filters: Filters,
 }
 
-#[derive(Serialize, Deserialize, Type)]
+#[derive(Serialize, Deserialize, Type, Debug)]
 #[serde(rename_all = "camelCase")]
 enum Filters {
     Gt(JsonValue),
@@ -92,6 +91,25 @@ enum Filters {
     NotLike(String),
     IsEmpty,
     IsNotEmpty,
+}
+
+fn json_to_sea_value(jv: &serde_json::Value) -> sea_query::Value {
+    match jv {
+        serde_json::Value::Bool(b) => sea_query::Value::Bool(Some(*b)),
+        serde_json::Value::Number(num) => {
+            if let Some(i) = num.as_i64() {
+                sea_query::Value::BigInt(Some(i))
+            } else if let Some(u) = num.as_u64() {
+                sea_query::Value::BigUnsigned(Some(u))
+            } else if let Some(f) = num.as_f64() {
+                sea_query::Value::Double(Some(f))
+            } else {
+                sea_query::Value::TinyInt(None)
+            }
+        }
+        serde_json::Value::String(s) => sea_query::Value::String(Some(Box::new(s.clone()))),
+        _ => sea_query::Value::String(None),
+    }
 }
 
 #[tauri::command]
@@ -121,13 +139,15 @@ pub async fn get_paginated_rows(
     payload.filtering.iter().for_each(|f| {
         let expression = Expr::col(PlainColumn(f.column.clone()));
         let simple_express = match &f.filters {
-            Filters::Gt(v) => expression.gt(v.clone()),
-            Filters::Gte(v) => expression.gte(v.clone()),
-            Filters::Lt(v) => expression.lt(v.clone()),
-            Filters::Lte(v) => expression.lte(v.clone()),
-            Filters::Between(a, b) => expression.between(a.clone(), b.clone()),
-            Filters::Eq(v) => expression.eq(v.clone()),
-            Filters::Ne(v) => expression.ne(v.clone()),
+            Filters::Gt(v) => expression.gt(json_to_sea_value(v)),
+            Filters::Gte(v) => expression.gte(json_to_sea_value(v)),
+            Filters::Lt(v) => expression.lt(json_to_sea_value(v)),
+            Filters::Lte(v) => expression.lte(json_to_sea_value(v)),
+            Filters::Between(a, b) => {
+                expression.between(json_to_sea_value(a), json_to_sea_value(b))
+            }
+            Filters::Eq(v) => expression.eq(json_to_sea_value(v)),
+            Filters::Ne(v) => expression.ne(json_to_sea_value(v)),
             Filters::Like(v) => expression.like(v),
             Filters::NotLike(v) => expression.not_like(v),
             Filters::IsEmpty => expression.is_null(),
@@ -136,7 +156,6 @@ pub async fn get_paginated_rows(
 
         query.and_where(simple_express);
     });
-
     let (stmt, values) = query.build_any_sqlx(conn.into_builder().as_ref());
 
     let rows = conn.fetch_all(&stmt, values).await?;
