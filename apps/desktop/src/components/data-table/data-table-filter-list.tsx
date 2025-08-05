@@ -151,7 +151,6 @@ export function DataTableFilterList<TData>({
 
   const onFiltersReset = React.useCallback(() => {
     onFilterChange([])
-    onJoinOperatorChange("and")
   }, [onFilterChange, onJoinOperatorChange])
 
   useHotkeys(
