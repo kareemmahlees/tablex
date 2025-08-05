@@ -7,9 +7,11 @@ import {
   getConnectionDetailsQueryOptions,
   getTablesQueryOptions
 } from "@/features/table-view/queries"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { PanelLeft, PanelLeftClose } from "lucide-react"
 import { Suspense } from "react"
+import { useLocalStorage } from "usehooks-ts"
 import { TableViewSidebar } from "../-components/table-layout-sidebar"
 
 export const Route = createFileRoute("/connection/$connId/_table-layout")({
@@ -22,9 +24,17 @@ export const Route = createFileRoute("/connection/$connId/_table-layout")({
 
 function TableViewLayout() {
   const { connId } = Route.useParams()
+  const [sidebarOpen, setSidebarOpen] = useLocalStorage(
+    LOCAL_STORAGE.SIDEBAR_OPEN,
+    true
+  )
 
   return (
-    <SidebarProvider className="overflow-hidden">
+    <SidebarProvider
+      className="overflow-hidden"
+      open={sidebarOpen}
+      onOpenChange={setSidebarOpen}
+    >
       <TableViewSidebar />
       <main className="flex h-full w-full min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-x-6 border-b px-4 py-1.5">
@@ -41,8 +51,6 @@ function TableViewLayout() {
 
 const SidebarToggleIcon = () => {
   const { state, toggleSidebar } = useSidebar()
-
-  console.log("state", state)
 
   const renderSidebarToggleIcon = () => {
     switch (state) {

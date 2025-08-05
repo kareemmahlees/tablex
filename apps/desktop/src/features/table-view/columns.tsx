@@ -1,4 +1,4 @@
-import type { ColumnInfo, TableInfo } from "@/bindings"
+import type { ColumnInfo, CustomColumnType, TableInfo } from "@/bindings"
 import MonacoEditor from "@/components/custom/monaco-editor"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Button } from "@/components/ui/button"
@@ -9,9 +9,16 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import "@tanstack/react-table"
-import type { ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef, RowData } from "@tanstack/react-table"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    type: CustomColumnType
+  }
+}
+
 export const generateColumnsDefs = (table: TableInfo) => {
   const columnsDefinitions = table.columns.map(({ name, type }) => {
     const columnDefinition: ColumnDef<ColumnInfo> = {
@@ -99,8 +106,17 @@ export const generateColumnsDefs = (table: TableInfo) => {
             {value}
           </span>
         )
+      },
+      enableColumnFilter:
+        type !== "json" &&
+        type !== "binary" &&
+        type !== "custom" &&
+        type !== "unSupported",
+      meta: {
+        type
       }
     }
+
     return columnDefinition
   })
 

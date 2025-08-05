@@ -83,8 +83,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
+export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
 
 /** user-defined types **/
 
@@ -131,7 +131,9 @@ vertical: Visibility;
 horizontal: Visibility }
 export type ExecResult = { rows_affected: number }
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
-export type GetRowsPayload = { tableName: string; pagination: PaginationData; sorting: SortingData[] }
+export type FilteringData = { column: string; filters: Filters }
+export type Filters = { gt: JsonValue } | { gte: JsonValue } | { lt: JsonValue } | { lte: JsonValue } | { eq: JsonValue } | { ne: JsonValue } | { between: [JsonValue, JsonValue] } | { like: string } | { notLike: string } | "isEmpty" | "isNotEmpty"
+export type GetRowsPayload = { tableName: string; pagination: PaginationData; sorting: SortingData[]; filtering: FilteringData[] }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
 /**
  * Represents a keybinding record in the keybindings json file.

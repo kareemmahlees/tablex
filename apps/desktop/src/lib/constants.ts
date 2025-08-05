@@ -8,5 +8,7 @@ export const QUERY_KEYS = {
 
 export const LOCAL_STORAGE = {
   LATEST_TABLE: (connectionId: string) => `${connectionId}_latest_table`,
-  PAGINATION_STATE: (connectionId: string) => `${connectionId}_pagination_state`
+  PAGINATION_STATE: (connectionId: string) =>
+    `${connectionId}_pagination_state`,
+  SIDEBAR_OPEN: "sidebar_open"
 }

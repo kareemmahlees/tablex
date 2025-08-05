@@ -1,6 +1,7 @@
 import { commands, RowRecord } from "@/bindings"
 import { TooltipButton } from "@/components/custom/tooltip-button"
 import { DataTable } from "@/components/data-table/data-table"
+import { DataTableFilterList } from "@/components/data-table/data-table-filter-list"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
@@ -11,6 +12,11 @@ import {
   discoverDBSchemaOptions,
   getPaginatedRowsOptions
 } from "@/features/table-view/queries"
+import {
+  filteringSchema,
+  paginationSchema,
+  sortingSchema
+} from "@/features/table-view/schemas"
 import { useSetupDataTable } from "@/hooks/use-setup-data-table"
 import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
 import { QUERY_KEYS } from "@/lib/constants"
@@ -27,26 +33,20 @@ export const Route = createFileRoute(
   "/connection/$connId/_table-layout/table-view/$tableName"
 )({
   validateSearch: z.object({
-    sorting: z
-      .array(
-        z.object({
-          column: z.string(),
-          ordering: z.enum(["asc", "desc"])
-        })
-      )
-      .default([]),
-    pagination: z.object({
-      pageIndex: z.number(),
-      pageSize: z.number()
-    })
+    sorting: sortingSchema,
+    pagination: paginationSchema,
+    filtering: filteringSchema,
+    joinOperator: z.enum(["and", "or"])
   }),
   component: TableView,
   pendingComponent: TableLoadingSkeleton
 })
 
+const FALLBACK_DATA = { pageCount: 0, data: [] }
+
 function TableView() {
   const { tableName, connId } = Route.useParams()
-  const { sorting, pagination } = Route.useSearch()
+  const { sorting, pagination, filtering, joinOperator } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const navigate = Route.useNavigate()
   const { data: tableSchema } = useSuspenseQuery(
@@ -61,22 +61,37 @@ function TableView() {
     getPaginatedRowsOptions({
       tableName,
       pagination,
-      sorting
+      sorting,
+      filtering: filtering.map((f) => {
+        if (f.operator === "isEmpty" || f.operator === "isNotEmpty")
+          return {
+            column: f.column,
+            filters: f.operator
+          }
+
+        return {
+          column: f.column,
+          filters: {
+            [f.operator]: f.value
+          }
+        }
+      })
     })
   )
   const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
   const { table } = useSetupDataTable({
     columns,
-    data: rows ?? { pageCount: 0, data: [] },
+    data: rows ?? FALLBACK_DATA,
     pagination,
     onPaginationChange: (updater) => {
       if (typeof updater !== "function") return
-      const newPagination = updater(pagination)
       navigate({
         to: ".",
         search: {
           sorting,
-          pagination: newPagination
+          pagination: updater(pagination),
+          filtering,
+          joinOperator
         }
       })
     }
@@ -130,7 +145,37 @@ function TableView() {
                 to: ".",
                 search: {
                   sorting: data,
-                  pagination
+                  pagination,
+                  filtering,
+                  joinOperator
+                }
+              })
+            }
+          />
+          <DataTableFilterList
+            table={table}
+            filters={filtering}
+            onFilterChange={(data) => {
+              navigate({
+                to: ".",
+                search: {
+                  sorting,
+                  pagination,
+                  filtering: data,
+                  joinOperator
+                }
+              })
+              console.log(data)
+            }}
+            joinOperator={joinOperator}
+            onJoinOperatorChange={(data) =>
+              navigate({
+                to: ".",
+                search: {
+                  sorting,
+                  pagination,
+                  filtering,
+                  joinOperator: data
                 }
               })
             }

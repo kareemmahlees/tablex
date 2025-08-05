@@ -1,18 +1,26 @@
+import { cn } from "@tablex/lib/utils"
+import { ComponentProps } from "react"
 import { useTimescape } from "timescape/react"
 
 type DateInputProps = {
-  value: Date
+  value?: Date
   onChange: (v?: Date) => void
   disabled?: boolean
   type?: "date" | "time" | "datetime"
+  dateSectionClassName?: string
+  timeSectionClassName?: string
 }
 
 export const DateTimeInput = ({
   value,
   onChange,
   disabled = false,
-  type = "datetime"
-}: DateInputProps) => {
+  type = "datetime",
+  className,
+  dateSectionClassName,
+  timeSectionClassName,
+  ...props
+}: ComponentProps<"div"> & DateInputProps) => {
   const { getRootProps, getInputProps } = useTimescape({
     date: value,
     onChangeDate: onChange
@@ -21,10 +29,19 @@ export const DateTimeInput = ({
   return (
     <div
       {...getRootProps()}
-      className="border-input flex h-10 w-full select-none items-center rounded-md border px-3 py-2 text-sm"
+      {...props}
+      className={cn(
+        "border-input flex h-10 w-full select-none items-center rounded-md border px-3 py-2 text-sm",
+        className
+      )}
     >
       {(type === "date" || type === "datetime") && (
-        <div className="inline-flex h-full w-full select-none items-center gap-x-1">
+        <div
+          className={cn(
+            "inline-flex h-full w-full select-none items-center gap-x-1",
+            dateSectionClassName
+          )}
+        >
           <input
             {...getInputProps("days")}
             disabled={disabled}
@@ -49,7 +66,12 @@ export const DateTimeInput = ({
       )}
 
       {(type === "time" || type === "datetime") && (
-        <div className="flex h-full w-full select-none items-center gap-x-1">
+        <div
+          className={cn(
+            "flex h-full w-full select-none items-center gap-x-1",
+            timeSectionClassName
+          )}
+        >
           <input
             {...getInputProps("hours")}
             disabled={disabled}

@@ -5,6 +5,7 @@ import { ArrowDownUp, ChevronsUpDown, GripVertical, Trash2 } from "lucide-react"
 import * as React from "react"
 
 import { SortingData } from "@/bindings"
+import { dataTableConfig } from "@/components/data-table/data-table-config"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,8 +35,8 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from "@/components/ui/sortable"
-import { dataTableConfig } from "@/config/data-table"
 import { cn } from "@tablex/lib/utils"
+import { useHotkeys } from "react-hotkeys-hook"
 
 const OPEN_MENU_SHORTCUT = "s"
 const REMOVE_SORT_SHORTCUTS = ["backspace", "delete"]
@@ -110,38 +111,23 @@ export function DataTableSortList<TData>({
     [onSortingChange, table.initialState.sorting]
   )
 
-  React.useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
+  useHotkeys(
+    `${OPEN_MENU_SHORTCUT},shift+${OPEN_MENU_SHORTCUT}`,
+    (event) => {
+      if (event.shiftKey && sorting.length > 0) {
+        onSortingReset()
         return
       }
 
-      if (
-        event.key.toLowerCase() === OPEN_MENU_SHORTCUT &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.shiftKey
-      ) {
-        event.preventDefault()
-        setOpen(true)
-      }
-
-      if (
-        event.key.toLowerCase() === OPEN_MENU_SHORTCUT &&
-        event.shiftKey &&
-        sorting.length > 0
-      ) {
-        event.preventDefault()
-        onSortingReset()
-      }
+      setOpen(true)
+    },
+    {
+      keydown: true,
+      ignoreEventWhen: (e) =>
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
     }
-
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [sorting.length, onSortingReset])
+  )
 
   const onTriggerKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -160,7 +146,6 @@ export function DataTableSortList<TData>({
     <Sortable
       value={sorting}
       onValueChange={(items) => {
-        // setSorting(items)
         onSortingChange(items)
       }}
       getItemValue={(item) => item.column}

@@ -27,6 +27,7 @@ import { useSuspenseQueries } from "@tanstack/react-query"
 import { AlertCircle, PlusCircle } from "lucide-react"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
+import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 import { z } from "zod"
 import DynamicFormInput from "./dynamic-input"
@@ -37,6 +38,14 @@ type AddRowSheetProps = {
 
 export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
   const [open, setOpen] = useState(false)
+
+  useHotkeys("n", () => setOpen(true), {
+    preventDefault: true,
+    ignoreEventWhen: (e) =>
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLTextAreaElement
+  })
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
@@ -106,7 +115,7 @@ const AddRowForm = ({
         setOpen(false)
         return "Successfully created row"
       },
-      error: (e) => console.log(e)
+      error: (e) => e
     })
   }
 
