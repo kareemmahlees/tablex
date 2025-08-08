@@ -28,7 +28,7 @@ pub struct ColumnInfo {
 #[derive(Serialize, Deserialize)]
 pub struct TablesNames(pub Vec<String>);
 
-#[derive(Serialize, Deserialize, Default, Clone, Copy, Type, Debug)]
+#[derive(Serialize, Deserialize, Default, Clone, Type, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 /// Acts as a unified interface for all databases' datatypes.
 /// Each database implements the conversion of it's datatypes to the

@@ -9,7 +9,7 @@ use serde_json::Value as JsonValue;
 use specta::Type;
 use tauri::AppHandle;
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult, RowRecord};
+use tx_handlers::{decode_raw_rows, CustomColumnType, DecodedRow, ExecResult, RowRecord};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
@@ -45,6 +45,7 @@ impl Iden for PlainColumn {
 #[serde(rename_all = "camelCase")]
 pub struct GetRowsPayload {
     table_name: String,
+    columns: Vec<ColumnForFor>,
     pagination: PaginationData,
     sorting: Vec<SortingData>,
     filtering: Vec<FilteringData>,
@@ -93,6 +94,13 @@ enum Filters {
     IsNotEmpty,
 }
 
+#[derive(Serialize, Deserialize, Type, Debug)]
+#[serde(rename_all = "camelCase")]
+struct ColumnForFor {
+    column_name: String,
+    column_type: CustomColumnType,
+}
+
 fn json_to_sea_value(jv: &serde_json::Value) -> sea_query::Value {
     match jv {
         serde_json::Value::Bool(b) => sea_query::Value::Bool(Some(*b)),
@@ -121,7 +129,20 @@ pub async fn get_paginated_rows(
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
     let mut query = Query::select()
-        .column(Asterisk)
+        .columns(
+            payload
+                .columns
+                .iter()
+                .filter(|c| c.column_type != CustomColumnType::Enum(Vec::new()))
+                .map(|c| PlainColumn(c.column_name.clone())),
+        )
+        .exprs(
+            payload
+                .columns
+                .iter()
+                .filter(|c| c.column_type == CustomColumnType::Enum(Vec::new()))
+                .map(|c| Expr::col(PlainColumn(c.column_name.clone())).as_enum("text")),
+        )
         .from(PlainTable(payload.table_name))
         .limit(payload.pagination.page_size)
         .offset(payload.pagination.page_index * payload.pagination.page_size)
@@ -157,6 +178,7 @@ pub async fn get_paginated_rows(
         query.and_where(simple_express);
     });
     let (stmt, values) = query.build_any_sqlx(conn.into_builder().as_ref());
+    dbg!(&stmt);
 
     let rows = conn.fetch_all(&stmt, values).await?;
 
