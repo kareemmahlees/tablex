@@ -104,7 +104,7 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::DateRange => CustomColumnType::UnSupported,
             SeaColumnType::PgLsn => CustomColumnType::UnSupported,
             SeaColumnType::Unknown(_) => CustomColumnType::UnSupported,
-            SeaColumnType::Enum(_) => CustomColumnType::UnSupported,
+            SeaColumnType::Enum(def) => CustomColumnType::Enum(def.values),
         }
     }
 }
