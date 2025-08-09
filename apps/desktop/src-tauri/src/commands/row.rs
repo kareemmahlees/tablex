@@ -9,7 +9,7 @@ use serde_json::Value as JsonValue;
 use specta::Type;
 use tauri::AppHandle;
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, DecodedRow, ExecResult, RowRecord};
+use tx_handlers::{decode_raw_rows, CustomColumnType, DecodedRow, ExecResult, RowRecord};
 use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
@@ -45,6 +45,7 @@ impl Iden for PlainColumn {
 #[serde(rename_all = "camelCase")]
 pub struct GetRowsPayload {
     table_name: String,
+    columns: Vec<ColumnForFor>,
     pagination: PaginationData,
     sorting: Vec<SortingData>,
     filtering: Vec<FilteringData>,
@@ -91,6 +92,15 @@ enum Filters {
     NotLike(String),
     IsEmpty,
     IsNotEmpty,
+    InArray(Vec<JsonValue>),
+    NotInArray(Vec<JsonValue>),
+}
+
+#[derive(Serialize, Deserialize, Type, Debug)]
+#[serde(rename_all = "camelCase")]
+struct ColumnForFor {
+    column_name: String,
+    column_type: CustomColumnType,
 }
 
 fn json_to_sea_value(jv: &serde_json::Value) -> sea_query::Value {
@@ -121,7 +131,20 @@ pub async fn get_paginated_rows(
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
     let mut query = Query::select()
-        .column(Asterisk)
+        .columns(
+            payload
+                .columns
+                .iter()
+                .filter(|c| c.column_type != CustomColumnType::Enum(Vec::new()))
+                .map(|c| PlainColumn(c.column_name.clone())),
+        )
+        .exprs(
+            payload
+                .columns
+                .iter()
+                .filter(|c| c.column_type == CustomColumnType::Enum(Vec::new()))
+                .map(|c| Expr::col(PlainColumn(c.column_name.clone())).as_enum("text")),
+        )
         .from(PlainTable(payload.table_name))
         .limit(payload.pagination.page_size)
         .offset(payload.pagination.page_index * payload.pagination.page_size)
@@ -137,7 +160,13 @@ pub async fn get_paginated_rows(
         .to_owned();
 
     payload.filtering.iter().for_each(|f| {
-        let expression = Expr::col(PlainColumn(f.column.clone()));
+        let mut expression = Expr::col(PlainColumn(f.column.clone()));
+        if let Some(col) = payload.columns.iter().find(|c| c.column_name == f.column)
+            && col.column_type == CustomColumnType::Enum(vec![])
+        {
+            expression = Expr::expr(expression.as_enum("text"));
+        }
+
         let simple_express = match &f.filters {
             Filters::Gt(v) => expression.gt(json_to_sea_value(v)),
             Filters::Gte(v) => expression.gte(json_to_sea_value(v)),
@@ -152,6 +181,8 @@ pub async fn get_paginated_rows(
             Filters::NotLike(v) => expression.not_like(v),
             Filters::IsEmpty => expression.is_null(),
             Filters::IsNotEmpty => expression.is_not_null(),
+            Filters::InArray(items) => expression.is_in(items.iter().map(json_to_sea_value)),
+            Filters::NotInArray(items) => expression.is_not_in(items.iter().map(json_to_sea_value)),
         };
 
         query.and_where(simple_express);

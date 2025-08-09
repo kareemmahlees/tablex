@@ -52,9 +52,9 @@ export function getFilterOperators(filterVariant: FilterVariant) {
     time: dataTableConfig.dateOperators,
 
     // dateRange: dataTableConfig.dateOperators,
-    boolean: dataTableConfig.booleanOperators
+    boolean: dataTableConfig.booleanOperators,
     // select: dataTableConfig.selectOperators,
-    // multiSelect: dataTableConfig.multiSelectOperators
+    enum: dataTableConfig.multiSelectOperators
   }
 
   return operatorMap[filterVariant] ?? dataTableConfig.textOperators

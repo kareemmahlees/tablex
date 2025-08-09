@@ -28,7 +28,7 @@ pub struct ColumnInfo {
 #[derive(Serialize, Deserialize)]
 pub struct TablesNames(pub Vec<String>);
 
-#[derive(Serialize, Deserialize, Default, Clone, Copy, Type, Debug)]
+#[derive(Serialize, Deserialize, Default, Clone, Type, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 /// Acts as a unified interface for all databases' datatypes.
 /// Each database implements the conversion of it's datatypes to the
@@ -47,6 +47,7 @@ pub enum CustomColumnType {
     Time,
     Year,
     Json,
+    Enum(Vec<String>),
     Binary,
     Custom,
     UnSupported,
@@ -66,9 +67,10 @@ impl From<RowRecord> for sea_query::Value {
     fn from(value: RowRecord) -> Self {
         match value.value {
             JsonValue::Null => match value.column_type {
-                CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
-                    sea_query::Value::String(None)
-                }
+                CustomColumnType::String
+                | CustomColumnType::Text
+                | CustomColumnType::Year
+                | CustomColumnType::Enum(_) => sea_query::Value::String(None),
                 CustomColumnType::Uuid => sea_query::Value::Uuid(None),
                 CustomColumnType::Float => sea_query::Value::Double(None),
                 CustomColumnType::PositiveInteger => sea_query::Value::BigInt(None),

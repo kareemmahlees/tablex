@@ -59,6 +59,10 @@ function TableView() {
     isPending: isRowsPending
   } = useQuery(
     getPaginatedRowsOptions({
+      columns: tableSchema.columns.map((c) => ({
+        columnName: c.name,
+        columnType: typeof c.type === "object" ? { enum: [] } : c.type
+      })),
       tableName,
       pagination,
       sorting,
@@ -165,7 +169,6 @@ function TableView() {
                   joinOperator
                 }
               })
-              console.log(data)
             }}
             joinOperator={joinOperator}
             onJoinOperatorChange={(data) =>

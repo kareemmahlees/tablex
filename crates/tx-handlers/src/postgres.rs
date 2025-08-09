@@ -104,7 +104,7 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::DateRange => CustomColumnType::UnSupported,
             SeaColumnType::PgLsn => CustomColumnType::UnSupported,
             SeaColumnType::Unknown(_) => CustomColumnType::UnSupported,
-            SeaColumnType::Enum(_) => CustomColumnType::UnSupported,
+            SeaColumnType::Enum(def) => CustomColumnType::Enum(def.values),
         }
     }
 }
@@ -163,7 +163,13 @@ impl From<PgRow> for DecodedRow {
                         .collect(),
                 ),
                 "VOID" => JsonValue::Null,
-                _ => JsonValue::Null,
+                other => {
+                    if other.starts_with("\"") & other.ends_with("\"") {
+                        JsonValue::String(v.decode::<String>())
+                    } else {
+                        JsonValue::Null
+                    }
+                }
             };
             row_data.insert(column.name().to_string(), decoded);
         }

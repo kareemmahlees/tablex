@@ -56,6 +56,17 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"
 import { DateTimeInput } from "../custom/date-input"
+import {
+  Faceted,
+  FacetedBadgeList,
+  FacetedContent,
+  FacetedEmpty,
+  FacetedGroup,
+  FacetedInput,
+  FacetedItem,
+  FacetedList,
+  FacetedTrigger
+} from "../ui/faceted"
 import { Input } from "../ui/input"
 import { DataTableRangeFilter } from "./data-table-range-filter"
 
@@ -110,7 +121,10 @@ export function DataTableFilterList<TData>({
         column: column.id,
         id: column.id as Extract<keyof TData, string>,
         value: "",
-        variant: column.columnDef.meta?.type ?? "text",
+        variant:
+          typeof column.columnDef.meta?.type === "object"
+            ? "enum"
+            : column.columnDef.meta?.type ?? "text",
         operator: getDefaultFilterOperator(
           column.columnDef.meta?.variant ?? "text"
         ),
@@ -427,10 +441,14 @@ function DataTableFilterItem<TData>({
                       onSelect={(value) => {
                         onFilterUpdate(filter.filterId, {
                           id: value as Extract<keyof TData, string>,
-                          variant: column.columnDef.meta?.type ?? "text",
+                          variant:
+                            typeof column.columnDef.meta?.type === "object"
+                              ? "enum"
+                              : column.columnDef.meta?.type ?? "text",
                           operator: getDefaultFilterOperator(
                             column.columnDef.meta?.variant ?? "text"
                           ),
+                          column: column.id,
                           value: ""
                         })
 
@@ -455,7 +473,7 @@ function DataTableFilterItem<TData>({
           open={showOperatorSelector}
           onOpenChange={setShowOperatorSelector}
           value={filter.operator}
-          onValueChange={(value: FilterOperator) =>
+          onValueChange={(value: FilterOperator) => {
             onFilterUpdate(filter.filterId, {
               operator: value,
               value:
@@ -463,7 +481,7 @@ function DataTableFilterItem<TData>({
                   ? ""
                   : filter.value
             })
-          }
+          }}
         >
           <SelectTrigger
             aria-controls={operatorListboxId}
@@ -629,78 +647,78 @@ function onFilterInputRender<TData>({
     }
 
     // case "select":
-    // case "multiSelect": {
-    //   const inputListboxId = `${inputId}-listbox`
+    case "enum": {
+      const inputListboxId = `${inputId}-listbox`
 
-    //   const multiple = filter.variant === "multiSelect"
-    //   const selectedValues = multiple
-    //     ? Array.isArray(filter.value)
-    //       ? filter.value
-    //       : []
-    //     : typeof filter.value === "string"
-    //       ? filter.value
-    //       : undefined
+      const multiple = filter.variant === "enum"
+      const selectedValues = multiple
+        ? Array.isArray(filter.value)
+          ? filter.value
+          : []
+        : typeof filter.value === "string"
+          ? filter.value
+          : undefined
 
-    //   return (
-    //     <Faceted
-    //       open={showValueSelector}
-    //       onOpenChange={setShowValueSelector}
-    //       value={selectedValues}
-    //       onValueChange={(value) => {
-    //         onFilterUpdate(filter.filterId, {
-    //           value
-    //         })
-    //       }}
-    //       multiple={multiple}
-    //     >
-    //       <FacetedTrigger asChild>
-    //         <Button
-    //           id={inputId}
-    //           aria-controls={inputListboxId}
-    //           aria-label={`${columnMeta?.label} filter value${
-    //             multiple ? "s" : ""
-    //           }`}
-    //           variant="outline"
-    //           size="sm"
-    //           className="w-full rounded font-normal"
-    //         >
-    //           <FacetedBadgeList
-    //             options={columnMeta?.options}
-    //             placeholder={
-    //               columnMeta?.placeholder ??
-    //               `Select option${multiple ? "s" : ""}...`
-    //             }
-    //           />
-    //         </Button>
-    //       </FacetedTrigger>
-    //       <FacetedContent
-    //         id={inputListboxId}
-    //         className="w-[200px] origin-[var(--radix-popover-content-transform-origin)]"
-    //       >
-    //         <FacetedInput
-    //           aria-label={`Search ${columnMeta?.label} options`}
-    //           placeholder={columnMeta?.placeholder ?? "Search options..."}
-    //         />
-    //         <FacetedList>
-    //           <FacetedEmpty>No options found.</FacetedEmpty>
-    //           <FacetedGroup>
-    //             {columnMeta?.options?.map((option) => (
-    //               <FacetedItem key={option.value} value={option.value}>
-    //                 {option.icon && <option.icon />}
-    //                 <span>{option.label}</span>
-    //                 {option.count && (
-    //                   <span className="ml-auto font-mono text-xs">
-    //                     {option.count}
-    //                   </span>
-    //                 )}
-    //               </FacetedItem>
-    //             ))}
-    //           </FacetedGroup>
-    //         </FacetedList>
-    //       </FacetedContent>
-    //     </Faceted>
-    //   )
-    // }
+      return (
+        <Faceted
+          open={showValueSelector}
+          onOpenChange={setShowValueSelector}
+          value={selectedValues}
+          onValueChange={(value) => {
+            onFilterUpdate(filter.filterId, {
+              value
+            })
+          }}
+          multiple={multiple}
+        >
+          <FacetedTrigger asChild>
+            <Button
+              id={inputId}
+              aria-controls={inputListboxId}
+              aria-label={`${columnMeta?.label} filter value${
+                multiple ? "s" : ""
+              }`}
+              variant="outline"
+              size="sm"
+              className="w-full rounded font-normal"
+            >
+              <FacetedBadgeList
+                options={columnMeta?.options}
+                placeholder={
+                  columnMeta?.placeholder ??
+                  `Select option${multiple ? "s" : ""}...`
+                }
+              />
+            </Button>
+          </FacetedTrigger>
+          <FacetedContent
+            id={inputListboxId}
+            className="w-[200px] origin-[var(--radix-popover-content-transform-origin)]"
+          >
+            <FacetedInput
+              aria-label={`Search ${columnMeta?.label} options`}
+              placeholder={columnMeta?.placeholder ?? "Search options..."}
+            />
+            <FacetedList>
+              <FacetedEmpty>No options found.</FacetedEmpty>
+              <FacetedGroup>
+                {columnMeta?.options?.map((option) => (
+                  <FacetedItem key={option.value} value={option.value}>
+                    {option.icon && <option.icon />}
+                    <span>{option.label}</span>
+                    {option.count && (
+                      <span className="ml-auto font-mono text-xs">
+                        {option.count}
+                      </span>
+                    )}
+                  </FacetedItem>
+                ))}
+              </FacetedGroup>
+            </FacetedList>
+          </FacetedContent>
+        </Faceted>
+      )
+    }
 
     // case "dateRange":
     case "dateTime":

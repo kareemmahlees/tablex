@@ -46,12 +46,12 @@ export const dataTableConfig = {
   //   { label: "Is empty", value: "isEmpty" as const },
   //   { label: "Is not empty", value: "isNotEmpty" as const }
   // ],
-  // multiSelectOperators: [
-  //   { label: "Has any of", value: "inArray" as const },
-  //   { label: "Has none of", value: "notInArray" as const },
-  //   { label: "Is empty", value: "isEmpty" as const },
-  //   { label: "Is not empty", value: "isNotEmpty" as const }
-  // ],
+  multiSelectOperators: [
+    { label: "Has any of", value: "inArray" as const },
+    { label: "Has none of", value: "notInArray" as const },
+    { label: "Is empty", value: "isEmpty" as const },
+    { label: "Is not empty", value: "isNotEmpty" as const }
+  ],
   booleanOperators: [
     { label: "Is", value: "eq" as const },
     { label: "Is not", value: "ne" as const }
@@ -74,9 +74,9 @@ export const dataTableConfig = {
     "year",
     "json",
     "binary",
+    "enum",
     "custom",
     "unSupported"
-
     // "text",
     // "number",
     // "range",
@@ -113,7 +113,9 @@ export const dataTableConfig = {
     "like",
     "notLike",
     "isEmpty",
-    "isNotEmpty"
+    "isNotEmpty",
+    "inArray",
+    "notInArray"
   ] as const,
   joinOperators: ["and", "or"] as const
 }

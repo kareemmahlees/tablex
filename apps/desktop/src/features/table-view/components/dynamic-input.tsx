@@ -2,6 +2,13 @@ import type { ColumnInfo } from "@/bindings"
 import { DateTimeInput } from "@/components/custom/date-input"
 import MonacoEditor from "@/components/custom/monaco-editor"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/text-area"
 import type { ControllerRenderProps, FieldValues } from "react-hook-form"
@@ -28,6 +35,21 @@ const DynamicFormInput = <T extends FieldValues>({
   defaultValue
 }: DynamicInputProps<T>) => {
   const disabled = false // TODO: fixme
+
+  if (typeof column.type === "object") {
+    return (
+      <Select>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select Variant" />
+        </SelectTrigger>
+        <SelectContent>
+          {column.type["enum"].map((variant) => (
+            <SelectItem value={variant}>{variant}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )
+  }
 
   switch (column.type) {
     // TODO: use a proper <TimePicker/> component instead.
