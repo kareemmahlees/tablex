@@ -92,6 +92,8 @@ enum Filters {
     NotLike(String),
     IsEmpty,
     IsNotEmpty,
+    InArray(Vec<JsonValue>),
+    NotInArray(Vec<JsonValue>),
 }
 
 #[derive(Serialize, Deserialize, Type, Debug)]
@@ -158,7 +160,13 @@ pub async fn get_paginated_rows(
         .to_owned();
 
     payload.filtering.iter().for_each(|f| {
-        let expression = Expr::col(PlainColumn(f.column.clone()));
+        let mut expression = Expr::col(PlainColumn(f.column.clone()));
+        if let Some(col) = payload.columns.iter().find(|c| c.column_name == f.column)
+            && col.column_type == CustomColumnType::Enum(vec![])
+        {
+            expression = Expr::expr(expression.as_enum("text"));
+        }
+
         let simple_express = match &f.filters {
             Filters::Gt(v) => expression.gt(json_to_sea_value(v)),
             Filters::Gte(v) => expression.gte(json_to_sea_value(v)),
@@ -173,12 +181,13 @@ pub async fn get_paginated_rows(
             Filters::NotLike(v) => expression.not_like(v),
             Filters::IsEmpty => expression.is_null(),
             Filters::IsNotEmpty => expression.is_not_null(),
+            Filters::InArray(items) => expression.is_in(items.iter().map(json_to_sea_value)),
+            Filters::NotInArray(items) => expression.is_not_in(items.iter().map(json_to_sea_value)),
         };
 
         query.and_where(simple_express);
     });
     let (stmt, values) = query.build_any_sqlx(conn.into_builder().as_ref());
-    dbg!(&stmt);
 
     let rows = conn.fetch_all(&stmt, values).await?;
 

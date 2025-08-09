@@ -117,6 +117,13 @@ export const generateColumnsDefs = (table: TableInfo) => {
       }
     }
 
+    if (typeof type === "object") {
+      columnDefinition.meta!.options = type["enum"].map((t) => ({
+        label: t,
+        value: t
+      }))
+    }
+
     return columnDefinition
   })
 

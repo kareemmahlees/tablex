@@ -169,7 +169,6 @@ function TableView() {
                   joinOperator
                 }
               })
-              console.log(data)
             }}
             joinOperator={joinOperator}
             onJoinOperatorChange={(data) =>
