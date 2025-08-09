@@ -8,10 +8,8 @@ import { DataTableViewOptions } from "@/components/data-table/data-table-view-op
 import { Skeleton } from "@/components/ui/skeleton"
 import { generateColumnsDefs } from "@/features/table-view/columns"
 import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
-import {
-  discoverDBSchemaOptions,
-  getPaginatedRowsOptions
-} from "@/features/table-view/queries"
+import { TableSchemaContext } from "@/features/table-view/context"
+import { getPaginatedRowsOptions } from "@/features/table-view/queries"
 import {
   filteringSchema,
   paginationSchema,
@@ -21,7 +19,7 @@ import { useSetupDataTable } from "@/hooks/use-setup-data-table"
 import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
 import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { RefreshCw } from "lucide-react"
 import { useMemo } from "react"
@@ -39,19 +37,22 @@ export const Route = createFileRoute(
     joinOperator: z.enum(["and", "or"])
   }),
   component: TableView,
-  pendingComponent: TableLoadingSkeleton
+  loader: async ({ params: { tableName } }) => {
+    const schema = await commands.discoverDbSchema()
+    return schema.find((t) => t.name === tableName)!
+  },
+  pendingComponent: TableLoadingSkeleton,
+  staleTime: 10 * 60 * 1000 // 1 hour
 })
 
 const FALLBACK_DATA = { pageCount: 0, data: [] }
 
 function TableView() {
+  const tableSchema = Route.useLoaderData()
   const { tableName, connId } = Route.useParams()
   const { sorting, pagination, filtering, joinOperator } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const navigate = Route.useNavigate()
-  const { data: tableSchema } = useSuspenseQuery(
-    discoverDBSchemaOptions(tableName)
-  )
   const {
     data: rows,
     refetch: refetchRows,
@@ -100,7 +101,6 @@ function TableView() {
       })
     }
   })
-
   useTauriEventListener(
     "tableContentsChanged",
     () =>
@@ -138,72 +138,74 @@ function TableView() {
   if (isRowsPending) return <TableLoadingSkeleton />
 
   return (
-    <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
-      <div className="flex items-center justify-between px-3 py-2.5">
-        <div className="flex items-center gap-x-3">
-          <DataTableSortList
-            table={table}
-            sorting={sorting}
-            onSortingChange={(data) =>
-              navigate({
-                to: ".",
-                search: {
-                  sorting: data,
-                  pagination,
-                  filtering,
-                  joinOperator
-                }
-              })
-            }
-          />
-          <DataTableFilterList
-            table={table}
-            filters={filtering}
-            onFilterChange={(data) => {
-              navigate({
-                to: ".",
-                search: {
-                  sorting,
-                  pagination,
-                  filtering: data,
-                  joinOperator
-                }
-              })
-            }}
-            joinOperator={joinOperator}
-            onJoinOperatorChange={(data) =>
-              navigate({
-                to: ".",
-                search: {
-                  sorting,
-                  pagination,
-                  filtering,
-                  joinOperator: data
-                }
-              })
-            }
-          />
+    <TableSchemaContext.Provider value={tableSchema}>
+      <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
+        <div className="flex items-center justify-between px-3 py-2.5">
+          <div className="flex items-center gap-x-3">
+            <DataTableSortList
+              table={table}
+              sorting={sorting}
+              onSortingChange={(data) =>
+                navigate({
+                  to: ".",
+                  search: {
+                    sorting: data,
+                    pagination,
+                    filtering,
+                    joinOperator
+                  }
+                })
+              }
+            />
+            <DataTableFilterList
+              table={table}
+              filters={filtering}
+              onFilterChange={(data) => {
+                navigate({
+                  to: ".",
+                  search: {
+                    sorting,
+                    pagination,
+                    filtering: data,
+                    joinOperator
+                  }
+                })
+              }}
+              joinOperator={joinOperator}
+              onJoinOperatorChange={(data) =>
+                navigate({
+                  to: ".",
+                  search: {
+                    sorting,
+                    pagination,
+                    filtering,
+                    joinOperator: data
+                  }
+                })
+              }
+            />
+          </div>
+          <DataTableViewOptions table={table} />
         </div>
-        <DataTableViewOptions table={table} />
-      </div>
-      <DataTable table={table} />
-      <div className="bg-sidebar flex items-center justify-between p-4">
-        <DataTablePagination table={table} connectionId={connId} />
-        <div className="space-x-4">
-          <TooltipButton
-            size={"icon"}
-            variant={"secondary"}
-            className={cn("h-8 w-8", isFetchingRows && "animate-spin")}
-            tooltipContent="Refresh"
-            disabled={isFetchingRows}
-            onClick={async () => await refetchRows()}
-          >
-            <RefreshCw className="size-4" />
-          </TooltipButton>
-          <AddRowSheet tableName={tableName} />
+        <DataTable table={table} />
+        <div className="bg-sidebar flex items-center justify-between p-4">
+          <DataTablePagination table={table} connectionId={connId} />
+          <div className="space-x-4">
+            <TooltipButton
+              size={"icon"}
+              variant={"secondary"}
+              className={cn("h-8 w-8", isFetchingRows && "animate-spin")}
+              tooltipContent="Refresh"
+              disabled={isFetchingRows}
+              onClick={async () => await refetchRows()}
+            >
+              <RefreshCw className="size-4" />
+            </TooltipButton>
+            <AddRowSheet />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </TableSchemaContext.Provider>
   )
 }
 

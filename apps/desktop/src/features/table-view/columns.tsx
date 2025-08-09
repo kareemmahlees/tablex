@@ -172,10 +172,10 @@ const appendCheckboxColumn = (columns: ColumnDef<ColumnInfo>[]) => {
   })
 }
 
-export const getZodSchemaFromCols = (table: TableInfo) => {
+export const getZodSchemaFromCols = (tableSchema: TableInfo) => {
   const schemaObject: z.ZodRawShape = {}
 
-  table.columns.forEach((colProps) => {
+  tableSchema.columns.forEach((colProps) => {
     let validationRule: z.ZodTypeAny
 
     switch (colProps.type) {
