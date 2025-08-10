@@ -1,16 +1,15 @@
 use crate::AppState;
-use sea_query::{Cond, Expr, Order, PostgresQueryBuilder};
+use sea_query::{Cond, Expr, ExprTrait, Order};
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
-use sea_schema::sea_query::{Alias, Asterisk, Iden, Query};
+use sea_schema::sea_query::{Alias, Iden, Query};
 use serde::{Deserialize, Serialize};
-use serde_json::Map;
 use serde_json::Value as JsonValue;
 use specta::Type;
 use tauri::AppHandle;
 use tauri_specta::Event;
-use tx_handlers::{decode_raw_rows, CustomColumnType, DecodedRow, ExecResult, RowRecord};
-use tx_lib::{events::TableContentsChanged, types::FKRows, Result};
+use tx_handlers::{CustomColumnType, DecodedRow, ExecResult, RowRecord, decode_raw_rows};
+use tx_lib::{Result, events::TableContentsChanged, types::FKRows};
 
 #[derive(Serialize, Deserialize, Default, Debug, Type)]
 #[serde(rename_all = "camelCase")]
@@ -130,21 +129,22 @@ pub async fn get_paginated_rows(
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
+    let mut columns = vec![];
+    let mut exprs = vec![];
+
+    payload
+        .columns
+        .iter()
+        .for_each(|col| match &col.column_type {
+            CustomColumnType::Enum(_) => {
+                exprs.push(Expr::col(PlainColumn(col.column_name.clone())).as_enum("text"))
+            }
+            _ => columns.push(PlainColumn(col.column_name.clone())),
+        });
+
     let mut query = Query::select()
-        .columns(
-            payload
-                .columns
-                .iter()
-                .filter(|c| c.column_type != CustomColumnType::Enum(Vec::new()))
-                .map(|c| PlainColumn(c.column_name.clone())),
-        )
-        .exprs(
-            payload
-                .columns
-                .iter()
-                .filter(|c| c.column_type == CustomColumnType::Enum(Vec::new()))
-                .map(|c| Expr::col(PlainColumn(c.column_name.clone())).as_enum("text")),
-        )
+        .columns(columns)
+        .exprs(exprs)
         .from(PlainTable(payload.table_name))
         .limit(payload.pagination.page_size)
         .offset(payload.pagination.page_index * payload.pagination.page_size)
@@ -162,7 +162,7 @@ pub async fn get_paginated_rows(
     payload.filtering.iter().for_each(|f| {
         let mut expression = Expr::col(PlainColumn(f.column.clone()));
         if let Some(col) = payload.columns.iter().find(|c| c.column_name == f.column)
-            && col.column_type == CustomColumnType::Enum(vec![])
+            && let CustomColumnType::Enum(_) = col.column_type
         {
             expression = Expr::expr(expression.as_enum("text"));
         }
@@ -265,38 +265,58 @@ pub async fn create_row(
     result
 }
 
+struct DynEnum(String);
+
+impl Iden for DynEnum {
+    fn unquoted(&self, s: &mut dyn std::fmt::Write) {
+        write!(s, "{}", self.0).unwrap();
+    }
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn update_row(
-    app: AppHandle,
+    app_handle: AppHandle,
     state: AppState<'_>,
+    pk_cols: Vec<RowRecord>,
     table_name: String,
-    pk_col_name: String,
-    pk_col_value: JsonValue,
-    data: Map<String, JsonValue>,
-) -> Result<String> {
+    data: Vec<RowRecord>,
+) -> Result<ExecResult> {
     let state = state.lock().await;
-    // let pool = &state.pool;
-    // let handler = &state.handler;
+    let conn = state.conn.as_ref().unwrap();
 
     if data.is_empty() {
-        return Ok(String::new());
+        return Ok(ExecResult::default());
     }
-    let mut set_condition: String = Default::default();
-    for (key, value) in data.iter() {
-        set_condition.push_str(format!("{key}={},", value.to_string().replace('\"', "'")).as_str())
-    }
-    set_condition.pop(); // to remove the trailing comma
 
-    // let result = handler
-    //     .update_row(pool, table_name, set_condition, pk_col_name, pk_col_value)
-    //     .await;
-    // if result.is_ok() {
-    //     TableContentsChanged.emit(&app).unwrap();
-    //     log::debug!("Event emitted: {:?}", TableContentsChanged);
-    // }
-    // result
-    Ok(String::default())
+    let mut update_condition = Cond::all();
+
+    for record in pk_cols {
+        update_condition =
+            update_condition.add(Expr::col(PlainColumn(record.column_name.clone())).eq(record));
+    }
+
+    let (stmt, values) = Query::update()
+        .table(PlainTable(table_name))
+        .values(data.iter().map(|r| {
+            let sea_query_val: sea_query::Value = r.clone().into();
+            let mut expr = sea_query::SimpleExpr::Value(sea_query_val);
+            if let CustomColumnType::Enum(def) = &r.column_type {
+                expr = expr.as_enum(DynEnum(def.name.clone()))
+            }
+            (PlainColumn(r.column_name.clone()), expr)
+        }))
+        .cond_where(update_condition)
+        .build_any_sqlx(conn.into_builder().as_ref());
+
+    let result = conn.execute_with(stmt.as_str(), values).await;
+
+    if result.is_ok() {
+        TableContentsChanged.emit(&app_handle).unwrap();
+        log::debug!("Event emitted: {:?}", TableContentsChanged);
+    }
+
+    result
 }
 
 #[tauri::command]

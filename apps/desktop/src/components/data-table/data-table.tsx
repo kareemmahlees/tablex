@@ -1,4 +1,8 @@
-import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
+import {
+  flexRender,
+  Row,
+  type Table as TanstackTable
+} from "@tanstack/react-table"
 import type * as React from "react"
 
 import {
@@ -15,9 +19,14 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>
+  onRowClick?: (row: Row<TData>) => void
 }
 
-export function DataTable<TData>({ table, className }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  table,
+  className,
+  onRowClick
+}: DataTableProps<TData>) {
   return (
     <ScrollArea
       className={cn("flex h-full w-full min-w-0 flex-1 flex-col", className)}
@@ -55,7 +64,11 @@ export function DataTable<TData>({ table, className }: DataTableProps<TData>) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-muted/70 data-[state=selected]:bg-muted/70"
+                className={cn(
+                  "hover:bg-muted/70 data-[state=selected]:bg-muted/70",
+                  onRowClick && "hover:cursor-pointer"
+                )}
+                onClick={() => onRowClick && onRowClick(row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell

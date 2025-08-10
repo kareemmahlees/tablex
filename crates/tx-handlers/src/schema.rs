@@ -30,6 +30,13 @@ pub struct TablesNames(pub Vec<String>);
 
 #[derive(Serialize, Deserialize, Default, Clone, Type, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+pub struct CustomEnumDef {
+    pub name: String,
+    pub variants: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone, Type, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 /// Acts as a unified interface for all databases' datatypes.
 /// Each database implements the conversion of it's datatypes to the
 /// corresponding `CustomColumnType`.
@@ -47,7 +54,7 @@ pub enum CustomColumnType {
     Time,
     Year,
     Json,
-    Enum(Vec<String>),
+    Enum(CustomEnumDef),
     Binary,
     Custom,
     UnSupported,
@@ -60,7 +67,7 @@ pub enum CustomColumnType {
 pub struct RowRecord {
     pub column_name: String,
     pub value: JsonValue,
-    column_type: CustomColumnType,
+    pub column_type: CustomColumnType,
 }
 
 impl From<RowRecord> for sea_query::Value {
@@ -97,9 +104,10 @@ impl From<RowRecord> for sea_query::Value {
                 }
             }
             JsonValue::String(v) => match value.column_type {
-                CustomColumnType::String | CustomColumnType::Text | CustomColumnType::Year => {
-                    sea_query::Value::String(Some(Box::new(v)))
-                }
+                CustomColumnType::String
+                | CustomColumnType::Text
+                | CustomColumnType::Year
+                | CustomColumnType::Enum(_) => sea_query::Value::String(Some(Box::new(v))),
                 CustomColumnType::Uuid => {
                     sea_query::Value::Uuid(Some(Box::new(Uuid::parse_str(v.as_str()).unwrap())))
                 }

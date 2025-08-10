@@ -1,13 +1,13 @@
 use crate::{
     query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
-    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
+    schema::{ColumnInfo, CustomColumnType, CustomEnumDef, Schema, TableInfo, TablesNames},
 };
 use sea_schema::postgres::def::Type as SeaColumnType;
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
+    Column, Row, Value, ValueRef,
     postgres::{PgQueryResult, PgRow},
     types::chrono::{NaiveDate, NaiveDateTime, NaiveTime},
-    Column, Row, Value, ValueRef,
 };
 
 #[derive(Debug)]
@@ -104,7 +104,10 @@ impl From<SeaColumnType> for CustomColumnType {
             SeaColumnType::DateRange => CustomColumnType::UnSupported,
             SeaColumnType::PgLsn => CustomColumnType::UnSupported,
             SeaColumnType::Unknown(_) => CustomColumnType::UnSupported,
-            SeaColumnType::Enum(def) => CustomColumnType::Enum(def.values),
+            SeaColumnType::Enum(def) => CustomColumnType::Enum(CustomEnumDef {
+                name: def.typename,
+                variants: def.values,
+            }),
         }
     }
 }
