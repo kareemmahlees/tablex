@@ -21,22 +21,17 @@ import {
 } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getZodSchemaFromCols } from "@/features/table-view/columns"
-import { discoverDBSchemaOptions } from "@/features/table-view/queries"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useSuspenseQueries } from "@tanstack/react-query"
 import { AlertCircle, PlusCircle } from "lucide-react"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 import { z } from "zod"
+import { useTableSchema } from "../context"
 import DynamicFormInput from "./dynamic-input"
 
-type AddRowSheetProps = {
-  tableName: string
-}
-
-export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
+export const AddRowSheet = () => {
   const [open, setOpen] = useState(false)
 
   useHotkeys("n", () => setOpen(true), {
@@ -50,9 +45,9 @@ export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
         <TooltipButton
-          size={"sm"}
+          size={"icon"}
           tooltipContent="Add Row"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8"
         >
           <PlusCircle className="size-4" />
         </TooltipButton>
@@ -65,7 +60,7 @@ export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
               Click Save to submit your changes.
             </SheetDescription>
           </SheetHeader>
-          <AddRowForm tableName={tableName} setOpen={setOpen} />
+          <AddRowForm setOpen={setOpen} />
         </ScrollArea>
       </SheetContent>
     </Sheet>
@@ -73,24 +68,15 @@ export const AddRowSheet = ({ tableName }: AddRowSheetProps) => {
 }
 
 const AddRowForm = ({
-  tableName,
   setOpen
 }: {
-  tableName: string
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
-  const {
-    "0": { data: tableSchema },
-    "1": { data: zodSchema }
-  } = useSuspenseQueries({
-    queries: [
-      discoverDBSchemaOptions(tableName),
-      {
-        ...discoverDBSchemaOptions(tableName),
-        select: getZodSchemaFromCols
-      }
-    ]
-  })
+  const tableSchema = useTableSchema()
+  const zodSchema = useMemo(
+    () => getZodSchemaFromCols(tableSchema),
+    [tableSchema]
+  )
   const form = useForm<z.infer<NonNullable<typeof zodSchema>>>({
     resolver: zodResolver(zodSchema)
   })
@@ -109,7 +95,7 @@ const AddRowForm = ({
       })
     }
 
-    toast.promise(commands.createRow(tableName, vals), {
+    toast.promise(commands.createRow(tableSchema.name, vals), {
       loading: "Creating row...",
       success: () => {
         setOpen(false)
