@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { generateColumnsDefs } from "@/features/table-view/columns"
 import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
 import { DeleteRowBtn } from "@/features/table-view/components/delete-row"
+import EditRowSheet from "@/features/table-view/components/edit-row-sheet"
 import { TableSchemaContext } from "@/features/table-view/context"
 import { getPaginatedRowsOptions } from "@/features/table-view/queries"
 import {
@@ -22,8 +23,9 @@ import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { Row } from "@tanstack/react-table"
 import { RefreshCw } from "lucide-react"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { z } from "zod"
 
 export const Route = createFileRoute(
@@ -50,6 +52,7 @@ function TableView() {
   const { sorting, pagination, filtering, joinOperator } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const navigate = Route.useNavigate()
+  const [rowToEdit, setRowToEdit] = useState<Row<any> | undefined>(undefined)
   const {
     data: rows,
     refetch: refetchRows,
@@ -58,7 +61,7 @@ function TableView() {
     getPaginatedRowsOptions({
       columns: tableSchema.columns.map((c) => ({
         columnName: c.name,
-        columnType: typeof c.type === "object" ? { enum: [] } : c.type
+        columnType: typeof c.type === "object" ? { enum: c.type.enum } : c.type
       })),
       tableName,
       pagination,
@@ -156,7 +159,7 @@ function TableView() {
           </div>
           <DataTableViewOptions table={table} />
         </div>
-        <DataTable table={table} />
+        <DataTable table={table} onRowClick={(row) => setRowToEdit(row)} />
         <div className="bg-sidebar flex items-center justify-between p-4">
           <DataTablePagination table={table} connectionId={connId} />
           <div className="space-x-4">
@@ -172,6 +175,7 @@ function TableView() {
               <RefreshCw className="size-4" />
             </TooltipButton>
             <AddRowSheet />
+            <EditRowSheet row={rowToEdit} setRow={setRowToEdit} />
           </div>
         </div>
       </section>

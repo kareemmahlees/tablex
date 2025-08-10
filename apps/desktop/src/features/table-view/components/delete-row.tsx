@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import { useTableSchema } from "../context"
 
 export const DeleteRowBtn = ({ table }: { table: Table<any> }) => {
-  const { pkCols, name: tableName } = useTableSchema()
+  const { pkCols, tableSchema } = useTableSchema()
   const rowsToDelete: RowRecord[][] = useMemo(
     () =>
       table.getSelectedRowModel().flatRows.map((r) =>
@@ -25,7 +25,7 @@ export const DeleteRowBtn = ({ table }: { table: Table<any> }) => {
     if (pkCols.length === 0)
       return toast.warning("No primary key defined for this table.")
 
-    toast.promise(commands.deleteRows(rowsToDelete, tableName), {
+    toast.promise(commands.deleteRows(rowsToDelete, tableSchema.name), {
       success: () => {
         table.toggleAllRowsSelected(false)
         return `Successfully deleted ${rowsToDelete.length} row(s).`

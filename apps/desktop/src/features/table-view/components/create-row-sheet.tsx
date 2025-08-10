@@ -20,10 +20,9 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { getZodSchemaFromCols } from "@/features/table-view/columns"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle, PlusCircle } from "lucide-react"
-import { Dispatch, SetStateAction, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
@@ -72,11 +71,7 @@ const AddRowForm = ({
 }: {
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
-  const tableSchema = useTableSchema()
-  const zodSchema = useMemo(
-    () => getZodSchemaFromCols(tableSchema),
-    [tableSchema]
-  )
+  const { tableSchema, zodSchema } = useTableSchema()
   const form = useForm<z.infer<NonNullable<typeof zodSchema>>>({
     resolver: zodResolver(zodSchema)
   })
@@ -136,7 +131,11 @@ const AddRowForm = ({
               <FormItem className="flex flex-col px-1">
                 <FormLabel>{column.name}</FormLabel>
                 <FormControl>
-                  <DynamicFormInput column={column} field={field} />
+                  <DynamicFormInput
+                    column={column}
+                    value={undefined}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
                 {renderInputDescription(column)}
                 <FormMessage />

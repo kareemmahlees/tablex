@@ -62,8 +62,8 @@ async deleteRows(pkCols: RowRecord[][], tableName: string) : Promise<ExecResult>
 async createRow(tableName: string, data: RowRecord[]) : Promise<ExecResult> {
     return await TAURI_INVOKE("create_row", { tableName, data });
 },
-async updateRow(tableName: string, pkColName: string, pkColValue: JsonValue, data: { [key in string]: JsonValue }) : Promise<string> {
-    return await TAURI_INVOKE("update_row", { tableName, pkColName, pkColValue, data });
+async updateRow(pkCols: RowRecord[], tableName: string, data: RowRecord[]) : Promise<ExecResult> {
+    return await TAURI_INVOKE("update_row", { pkCols, tableName, data });
 },
 async getFkRelations(tableName: string, columnName: string, cellValue: JsonValue) : Promise<FKRows[]> {
     return await TAURI_INVOKE("get_fk_relations", { tableName, columnName, cellValue });
@@ -106,7 +106,8 @@ export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "pha
  * Each database implements the conversion of it's datatypes to the
  * corresponding `CustomColumnType`.
  */
-export type CustomColumnType = "string" | "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "time" | "year" | "json" | { enum: string[] } | "binary" | "custom" | "unSupported"
+export type CustomColumnType = "string" | "text" | "uuid" | "float" | "positiveInteger" | "boolean" | "integer" | "date" | "dateTime" | "time" | "year" | "json" | { enum: CustomEnumDef } | "binary" | "custom" | "unSupported"
+export type CustomEnumDef = { name: string; variants: string[] }
 /**
  * Represents the transformation result of a series of database `ValueRef`
  * into a `JsonMap` that can be understood and serialized by the frontend.

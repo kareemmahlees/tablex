@@ -1,5 +1,6 @@
 import { TableInfo } from "@/bindings"
 import { createContext, useContext } from "react"
+import { getZodSchemaFromCols } from "./columns"
 
 export const TableSchemaContext = createContext<TableInfo | null>(null)
 
@@ -11,5 +12,9 @@ export const useTableSchema = () => {
       "useTableSchema must be used within TableSchemaContext provider."
     )
 
-  return { ...tableSchema, pkCols: tableSchema.columns.filter((c) => c.pk) }
+  return {
+    tableSchema,
+    pkCols: tableSchema.columns.filter((c) => c.pk),
+    zodSchema: getZodSchemaFromCols(tableSchema)
+  }
 }

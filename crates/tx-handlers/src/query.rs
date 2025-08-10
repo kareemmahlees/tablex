@@ -21,7 +21,7 @@ pub enum QueryResultRow {
 /// Result is a map whose key is the column name and value is the column value in the row.
 pub struct DecodedRow(pub(crate) JsonMap<String, JsonValue>);
 
-#[derive(Debug, Serialize, Deserialize, Type)]
+#[derive(Debug, Serialize, Deserialize, Type, Default)]
 pub struct ExecResult {
     pub(crate) rows_affected: u64,
 }
