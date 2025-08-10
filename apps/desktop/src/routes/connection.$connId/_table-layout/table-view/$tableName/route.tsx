@@ -1,4 +1,4 @@
-import { commands, RowRecord } from "@/bindings"
+import { commands } from "@/bindings"
 import { TooltipButton } from "@/components/custom/tooltip-button"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableFilterList } from "@/components/data-table/data-table-filter-list"
@@ -8,6 +8,7 @@ import { DataTableViewOptions } from "@/components/data-table/data-table-view-op
 import { Skeleton } from "@/components/ui/skeleton"
 import { generateColumnsDefs } from "@/features/table-view/columns"
 import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
+import { DeleteRowBtn } from "@/features/table-view/components/delete-row"
 import { TableSchemaContext } from "@/features/table-view/context"
 import { getPaginatedRowsOptions } from "@/features/table-view/queries"
 import {
@@ -19,12 +20,10 @@ import { useSetupDataTable } from "@/hooks/use-setup-data-table"
 import { useTauriEventListener } from "@/hooks/use-tauri-event-listener"
 import { QUERY_KEYS } from "@/lib/constants"
 import { cn } from "@tablex/lib/utils"
-import { useQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { RefreshCw } from "lucide-react"
 import { useMemo } from "react"
-import { useHotkeys } from "react-hotkeys-hook"
-import { toast } from "sonner"
 import { z } from "zod"
 
 export const Route = createFileRoute(
@@ -45,8 +44,6 @@ export const Route = createFileRoute(
   staleTime: 10 * 60 * 1000 // 1 hour
 })
 
-const FALLBACK_DATA = { pageCount: 0, data: [] }
-
 function TableView() {
   const tableSchema = Route.useLoaderData()
   const { tableName, connId } = Route.useParams()
@@ -56,9 +53,8 @@ function TableView() {
   const {
     data: rows,
     refetch: refetchRows,
-    isFetching: isFetchingRows,
-    isPending: isRowsPending
-  } = useQuery(
+    isFetching: isFetchingRows
+  } = useSuspenseQuery(
     getPaginatedRowsOptions({
       columns: tableSchema.columns.map((c) => ({
         columnName: c.name,
@@ -86,7 +82,7 @@ function TableView() {
   const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
   const { table } = useSetupDataTable({
     columns,
-    data: rows ?? FALLBACK_DATA,
+    data: rows,
     pagination,
     onPaginationChange: (updater) => {
       if (typeof updater !== "function") return
@@ -109,33 +105,6 @@ function TableView() {
       }),
     [queryClient]
   )
-
-  useHotkeys("delete", async () => {
-    const pkCols = tableSchema.columns.filter((c) => c.pk)
-    if (pkCols.length === 0)
-      return toast.warning("No primary key defined for this table.")
-
-    const rowsToDelete: RowRecord[][] = table
-      .getSelectedRowModel()
-      .flatRows.map((r) =>
-        pkCols.map((col) => ({
-          columnName: col.name,
-          value: r.getValue(col.name),
-          columnType: col.type
-        }))
-      )
-    toast.promise(commands.deleteRows(rowsToDelete, tableName), {
-      success: () => {
-        table.toggleAllRowsSelected(false)
-        return `Successfully deleted ${rowsToDelete.length} row(s).`
-      },
-      error: (err) => {
-        return "Something went wrong."
-      }
-    })
-  })
-
-  if (isRowsPending) return <TableLoadingSkeleton />
 
   return (
     <TableSchemaContext.Provider value={tableSchema}>
@@ -191,6 +160,7 @@ function TableView() {
         <div className="bg-sidebar flex items-center justify-between p-4">
           <DataTablePagination table={table} connectionId={connId} />
           <div className="space-x-4">
+            <DeleteRowBtn table={table} />
             <TooltipButton
               size={"icon"}
               variant={"secondary"}

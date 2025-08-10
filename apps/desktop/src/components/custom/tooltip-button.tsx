@@ -19,7 +19,7 @@ export const TooltipButton = ({
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button {...props}>{children}</Button>
         </TooltipTrigger>
         <TooltipContent>{tooltipContent}</TooltipContent>

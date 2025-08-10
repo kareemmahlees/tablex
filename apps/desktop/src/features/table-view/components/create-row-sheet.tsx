@@ -45,9 +45,9 @@ export const AddRowSheet = () => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
         <TooltipButton
-          size={"sm"}
+          size={"icon"}
           tooltipContent="Add Row"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8"
         >
           <PlusCircle className="size-4" />
         </TooltipButton>

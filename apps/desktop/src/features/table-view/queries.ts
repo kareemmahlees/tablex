@@ -14,16 +14,6 @@ export const getConnectionDetailsQueryOptions = (connectionId: string) =>
     queryFn: async () => await commands.getConnectionDetails(connectionId)
   })
 
-export const discoverDBSchemaOptions = (tableName: string) =>
-  queryOptions({
-    queryKey: [QUERY_KEYS.DB_SCHEMA, tableName],
-    queryFn: async () => {
-      const schema = await commands.discoverDbSchema()
-      return schema.find((t) => t.name === tableName)!
-    },
-    staleTime: 10 * 60 * 1000 // 1 hour
-  })
-
 export const getPaginatedRowsOptions = (data: GetRowsPayload) => {
   return queryOptions({
     queryKey: [QUERY_KEYS.TABLE_ROWS, data.tableName, { ...data }],
