@@ -1,6 +1,5 @@
 import type { ColumnInfo } from "@/bindings"
 import { DateTimeInput } from "@/components/custom/date-input"
-import MonacoEditor from "@/components/custom/monaco-editor"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -11,6 +10,9 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/text-area"
+import { json } from "@codemirror/lang-json"
+import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
+import CodeMirror from "@uiw/react-codemirror"
 
 /**
  * Remove the effect of timezone differences and return a new date
@@ -66,7 +68,14 @@ const DynamicFormInput = ({ column, ...props }: DynamicInputProps) => {
         />
       )
     case "json":
-      return <MonacoEditor {...props} />
+      return (
+        <CodeMirror
+          value={JSON.stringify(props.value, undefined, 2)}
+          onChange={props.onChange}
+          theme={tokyoNight}
+          extensions={[json()]}
+        />
+      )
     case "boolean":
       return (
         <Switch

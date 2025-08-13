@@ -123,7 +123,14 @@ impl From<RowRecord> for sea_query::Value {
                     let date = v.parse::<DateTime<Utc>>().unwrap();
                     sea_query::Value::ChronoTime(Some(Box::new(date.time())))
                 }
-                _ => unimplemented!(),
+                CustomColumnType::Json => sea_query::Value::Json(Some(Box::new(
+                    serde_json::from_str(v.as_str()).unwrap(),
+                ))),
+
+                t => {
+                    dbg!(&t);
+                    unimplemented!()
+                }
             },
             JsonValue::Array(_) => todo!(),
             JsonValue::Object(map) => {

@@ -68,7 +68,10 @@ export function DataTable<TData>({
                   "hover:bg-muted/70 data-[state=selected]:bg-muted/70",
                   onRowClick && "hover:cursor-pointer"
                 )}
-                onClick={() => onRowClick && onRowClick(row)}
+                onClick={() => {
+                  if (document.getElementById("editor")) return
+                  onRowClick && onRowClick(row)
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
