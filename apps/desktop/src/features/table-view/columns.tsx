@@ -1,5 +1,4 @@
 import type { ColumnInfo, CustomColumnType, TableInfo } from "@/bindings"
-import MonacoEditor from "@/components/custom/monaco-editor"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -8,8 +7,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { json } from "@codemirror/lang-json"
 import "@tanstack/react-table"
 import type { ColumnDef, RowData } from "@tanstack/react-table"
+import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
+import CodeMirror from "@uiw/react-codemirror"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
@@ -39,11 +41,12 @@ export const generateColumnsDefs = (table: TableInfo) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[300px]" align="end">
-                <MonacoEditor
-                  defaultValue={JSON.stringify(value, undefined, 2)}
-                  options={{
-                    readOnly: true
-                  }}
+                <CodeMirror
+                  id="editor"
+                  value={JSON.stringify(value, undefined, 2)}
+                  theme={tokyoNight}
+                  extensions={[json()]}
+                  readOnly
                 />
               </DropdownMenuContent>
             </DropdownMenu>
@@ -62,15 +65,11 @@ export const generateColumnsDefs = (table: TableInfo) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[300px]" align="end">
-                <MonacoEditor
-                  defaultLanguage="plaintext"
-                  defaultValue={value}
-                  options={{
-                    lineNumbers: "off",
-                    readOnly: true,
-                    wordWrap: "wordWrapColumn",
-                    wordWrapColumn: 50
-                  }}
+                <CodeMirror
+                  id="editor"
+                  value={value}
+                  theme={tokyoNight}
+                  readOnly
                 />
               </DropdownMenuContent>
             </DropdownMenu>
