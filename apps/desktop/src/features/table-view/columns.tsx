@@ -224,14 +224,21 @@ export const getZodSchemaFromCols = (tableSchema: TableInfo) => {
         validationRule = z.coerce.date()
         break
       case "json": {
-        const jsonSchema = z.string().transform((str, ctx) => {
-          try {
-            return JSON.parse(str)
-          } catch (e) {
-            ctx.addIssue({ code: "custom", message: "Invalid JSON" })
-            return z.NEVER
-          }
-        })
+        const jsonSchema = z
+          .custom<object | string>()
+          .superRefine((obj, ctx) => {
+            console.log(obj)
+            if (typeof obj === "string") {
+              try {
+                return JSON.parse(obj)
+              } catch (e) {
+                ctx.addIssue({ code: "custom", message: "Invalid JSON" })
+                return z.NEVER
+              }
+            } else if (typeof obj === "object") {
+              return obj
+            }
+          })
         validationRule = jsonSchema
         break
       }
