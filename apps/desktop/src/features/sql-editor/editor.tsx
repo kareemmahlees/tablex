@@ -14,58 +14,98 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useSettings } from "@/features/settings/manager"
 
 import CustomTooltip from "@/components/custom-tooltip"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Editor, type OnMount } from "@monaco-editor/react"
-import { useRef, useState, type Dispatch, type SetStateAction } from "react"
+import { sql } from "@codemirror/lang-sql"
+import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
+import { EditorState, EditorView, useCodeMirror } from "@uiw/react-codemirror"
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction
+} from "react"
+import { useSettings } from "../settings/manager"
 
 type RawQueryResult = Awaited<ReturnType<typeof commands.executeRawQuery>>
-type MonacoEditor = Parameters<OnMount>[0]
+
+const biggerFont = ({ fontSize }: { fontSize: number }) =>
+  EditorView.theme({
+    "&": {
+      fontSize: `${fontSize}px`,
+      lineHeight: "1.6",
+      height: "100%",
+      minHeight: "0"
+    },
+    ".editor-wrapper": {
+      height: "100%"
+    },
+
+    ".cm-editor": {
+      height: "100%"
+    },
+
+    ".cm-scroller": {
+      overflow: "auto",
+      scrollbarWidth: "none",
+      msOverflowStyle: "none"
+    },
+    ".cm-scroller::-webkit-scrollbar": {
+      display: "none"
+    }
+  })
 
 export const SQLEditor = () => {
-  const [queryResult, setQueryResult] = useState<RawQueryResult>()
-  const editorRef = useRef<MonacoEditor>()
   const { sqlEditor: editorSettings } = useSettings()
+  const extensions = useMemo(
+    () => [
+      sql({
+        upperCaseKeywords: true
+      }),
+      biggerFont({ fontSize: editorSettings.fontSize })
+    ],
+    []
+  )
+  const [queryResult, setQueryResult] = useState<RawQueryResult>()
+  const editor = useRef<HTMLDivElement | null>(null)
+  const { setContainer, state } = useCodeMirror({
+    container: editor.current,
+    extensions,
+    theme: tokyoNight
+  })
 
-  const handleEditorDidMount: OnMount = (editor) => (editorRef.current = editor)
+  useEffect(() => {
+    if (editor.current) {
+      setContainer(editor.current)
+    }
+  }, [editor.current])
 
   return (
     <div className="flex h-full flex-col overflow-auto">
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel className="relative">
-          <Editor
-            defaultLanguage="sql"
-            theme="vs-dark"
-            options={{
-              minimap: { enabled: editorSettings.minimap },
-              scrollbar: editorSettings.scrollbar,
-              padding: { top: 10 },
-              lineNumbersMinChars: 3,
-              lineDecorationsWidth: 3,
-              fontSize: editorSettings.fontSize,
-              overviewRulerBorder: false,
-              hideCursorInOverviewRuler: true,
-              cursorBlinking: editorSettings.cursorBlinking
+          <div
+            ref={editor}
+            style={{
+              height: "100%",
+              minHeight: 0
             }}
-            onMount={handleEditorDidMount}
           />
-          {editorRef.current && (
-            <RunBtn
-              editor={editorRef.current}
-              setQueryResult={setQueryResult}
-            />
+          {state && (
+            <RunBtn editorState={state} setQueryResult={setQueryResult} />
           )}
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>
-          {queryResult &&
+          {/* {queryResult &&
             (queryResult.status === "error" ? (
               <pre className="m-4">{`message: ${queryResult.error.message} details: ${queryResult.error.details}`}</pre>
             ) : (
               <ResultTable result={queryResult.data} />
-            ))}
+            ))} */}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
@@ -73,22 +113,24 @@ export const SQLEditor = () => {
 }
 
 type RunBtnProps = {
-  editor: MonacoEditor
+  editorState: EditorState
   setQueryResult: Dispatch<SetStateAction<RawQueryResult | undefined>>
 }
 
-const RunBtn = ({ editor, setQueryResult }: RunBtnProps) => {
+const RunBtn = ({ editorState, setQueryResult }: RunBtnProps) => {
   const runQuery = async () => {
-    let value: string
+    let query: string
 
-    const selection = editor.getSelection()
-    if (selection && !selection.isEmpty()) {
-      value = editor.getModel()!.getValueInRange(selection)
+    if (editorState.selection.main.empty) {
+      query = editorState.doc.toString()
     } else {
-      value = editor.getValue()
+      query = editorState.sliceDoc(
+        editorState.selection.main.from,
+        editorState.selection.main.to
+      )
     }
 
-    const result = await commands.executeRawQuery(value)
+    const result = await commands.executeRawQuery(query)
     setQueryResult(result)
   }
 
