@@ -17,10 +17,11 @@ import { TooltipButton } from "@/components/custom/tooltip-button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSetupCodeMirror } from "@/hooks/use-setup-code-mirror"
 import { sql } from "@codemirror/lang-sql"
+import sqlFormatter from "@sqltools/formatter"
 import { useMutation } from "@tanstack/react-query"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
-import { EditorView } from "@uiw/react-codemirror"
-import { AlertTriangle, Loader2 } from "lucide-react"
+import { EditorState, EditorView, keymap } from "@uiw/react-codemirror"
+import { AlertTriangle, Loader2, Play, Rainbow } from "lucide-react"
 import { useMemo } from "react"
 import { useSettings } from "../settings/manager"
 
@@ -50,46 +51,75 @@ const biggerFont = ({ fontSize }: { fontSize: number }) =>
     }
   })
 
+const formatDocument = (view?: EditorView) => {
+  view?.dispatch({
+    changes: {
+      from: 0,
+      to: view.state.doc.length,
+      insert: sqlFormatter.format(view.state.doc.toString(), {
+        reservedWordCase: "upper",
+        indent: "\t"
+      })
+    }
+  })
+}
+
 export const SQLEditor = () => {
   const { sqlEditor: editorSettings } = useSettings()
+  const {
+    mutate: runQuery,
+    data: result,
+    isError,
+    error,
+    isPending
+  } = useMutation<RawQueryResult, TxError, { editorState: EditorState }>({
+    mutationKey: ["run_query"],
+    mutationFn: async ({ editorState }) => {
+      let query: string
+
+      if (editorState.selection.main.empty) {
+        query = editorState.doc.toString()
+      } else {
+        query = editorState.sliceDoc(
+          editorState.selection.main.from,
+          editorState.selection.main.to
+        )
+      }
+      return await commands.executeRawQuery(query)
+    }
+  })
+
   const extensions = useMemo(
     () => [
       sql({
         upperCaseKeywords: true
       }),
-      biggerFont({ fontSize: editorSettings.fontSize })
+      biggerFont({ fontSize: editorSettings.fontSize }),
+      keymap.of([
+        {
+          key: "F5",
+          run: (view) => {
+            runQuery({ editorState: view.state })
+            return true
+          },
+          preventDefault: true
+        },
+        {
+          key: "F6",
+          run: (view) => {
+            formatDocument(view)
+            return true
+          },
+          preventDefault: true
+        }
+      ])
     ],
     [editorSettings]
   )
   const { editorRef, view } = useSetupCodeMirror({
     extensions,
-    theme: tokyoNight
-    // value: 'select * from "Customer" limit 10;'
-  })
-
-  const {
-    mutateAsync: runQuery,
-    data: result,
-    isError,
-    error,
-    isPending
-  } = useMutation<RawQueryResult, TxError>({
-    mutationKey: ["run_query"],
-    mutationFn: async () => {
-      let query: string
-      let editorState = view!.state
-
-      if (editorState!.selection.main.empty) {
-        query = editorState!.doc.toString()
-      } else {
-        query = editorState!.sliceDoc(
-          editorState!.selection.main.from,
-          editorState!.selection.main.to
-        )
-      }
-      const res = await commands.executeRawQuery(query)
-      return res
-    }
+    theme: tokyoNight,
+    value: 'select * from "Customer"'
   })
 
   const renderQueryResult = () => {
@@ -116,19 +146,47 @@ export const SQLEditor = () => {
               minHeight: 0
             }}
           />
-          <TooltipButton
-            tooltipContent="Shift + Enter"
-            className="absolute bottom-0 right-0 m-3 origin-bottom-right"
-            size={"sm"}
+          <EditorTools
             disabled={!view?.state}
-            onClick={async () => await runQuery()}
-          >
-            Run
-          </TooltipButton>
+            onRun={async () => runQuery({ editorState: view!.state })}
+            onFormat={() => formatDocument(view)}
+          />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel>{renderQueryResult()}</ResizablePanel>
       </ResizablePanelGroup>
+    </div>
+  )
+}
+
+type EditorToolsProps = {
+  disabled?: boolean
+  onRun: () => Promise<any>
+  onFormat: () => void
+}
+
+const EditorTools = ({ disabled, onRun, onFormat }: EditorToolsProps) => {
+  return (
+    <div className="absolute bottom-0 right-0 m-3 origin-bottom-right space-x-4">
+      <TooltipButton
+        tooltipContent="Format"
+        size={"sm"}
+        variant={"secondary"}
+        disabled={disabled}
+        onClick={onFormat}
+        className="px-3"
+      >
+        <Rainbow className="size-4" />
+      </TooltipButton>
+      <TooltipButton
+        tooltipContent="Run"
+        size={"sm"}
+        disabled={disabled}
+        onClick={onRun}
+        className="px-3"
+      >
+        <Play className="size-4" />
+      </TooltipButton>
     </div>
   )
 }
