@@ -1,10 +1,10 @@
 use serde::Serialize;
 use specta::{
-    datatype::{reference::reference, PrimitiveType},
-    internal::construct::{
-        data_type_reference, field, impl_location, named_data_type, r#struct, sid, struct_named,
-    },
     DataType, Generics, NamedType, SpectaID,
+    datatype::{PrimitiveType, reference::reference},
+    internal::construct::{
+        data_type_reference, field, impl_location, named_data_type, sid, r#struct, struct_named,
+    },
 };
 use thiserror::Error;
 
@@ -17,6 +17,9 @@ pub enum TxError {
     #[error(transparent)]
     /// Represents all sqlx related errors.
     Database(#[from] sqlx::Error),
+
+    #[error(transparent)]
+    SQLParse(#[from] sqlparser::parser::ParserError),
 
     #[error(transparent)]
     /// Represent all filesystem related errors.
@@ -136,6 +139,7 @@ impl specta::Type for TxError {
 #[serde(rename_all = "camelCase")]
 enum TxErrorKind {
     Database { message: String, details: String },
+    SQLParse { message: String, details: String },
     Io { message: String, details: String },
     TauriError { message: String, details: String },
     SerdeError { message: String, details: String },
@@ -157,6 +161,10 @@ impl Serialize for TxError {
         let error_kind = match self {
             Self::Database(_) => TxErrorKind::Database {
                 message: "Error from database".to_string(),
+                details: error_message,
+            },
+            Self::SQLParse(_) => TxErrorKind::SQLParse {
+                message: "Failed to parse SQL statement".to_string(),
                 details: error_message,
             },
             Self::Io(_) => TxErrorKind::Io {

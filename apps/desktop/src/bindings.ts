@@ -50,7 +50,7 @@ async getTables() : Promise<string[]> {
 async discoverDbSchema() : Promise<TableInfo[]> {
     return await TAURI_INVOKE("discover_db_schema");
 },
-async executeRawQuery(query: string) : Promise<{ [key in string]: JsonValue }> {
+async executeRawQuery(query: string) : Promise<RawQueryResult> {
     return await TAURI_INVOKE("execute_raw_query", { query });
 },
 async getPaginatedRows(payload: GetRowsPayload) : Promise<PaginatedRows> {
@@ -147,6 +147,7 @@ export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
 export type KeybindingCommand = Sidebar | Table
 export type PaginatedRows = { data: DecodedRow[]; pageCount: number }
 export type PaginationData = { pageIndex: number; pageSize: number }
+export type RawQueryResult = { Query: DecodedRow[] } | { Exec: ExecResult }
 /**
  * Represents a cell info in a row. Used primarily for when performing
  * operations on rows (`Insert`, `Update`, `Delete`)

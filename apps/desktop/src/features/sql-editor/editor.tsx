@@ -1,5 +1,4 @@
-import { commands, JsonValue } from "@/bindings"
-import { Button } from "@/components/ui/button"
+import { commands, DecodedRow, RawQueryResult, type TxError } from "@/bindings"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -13,24 +12,17 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import { TooltipProvider } from "@/components/ui/tooltip"
 
-import CustomTooltip from "@/components/custom-tooltip"
+import { TooltipButton } from "@/components/custom/tooltip-button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { useSetupCodeMirror } from "@/hooks/use-setup-code-mirror"
 import { sql } from "@codemirror/lang-sql"
+import { useMutation } from "@tanstack/react-query"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
-import { EditorState, EditorView, useCodeMirror } from "@uiw/react-codemirror"
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction
-} from "react"
+import { EditorView } from "@uiw/react-codemirror"
+import { AlertTriangle, Loader2 } from "lucide-react"
+import { useMemo } from "react"
 import { useSettings } from "../settings/manager"
-
-type RawQueryResult = Awaited<ReturnType<typeof commands.executeRawQuery>>
 
 const biggerFont = ({ fontSize }: { fontSize: number }) =>
   EditorView.theme({
@@ -67,105 +59,106 @@ export const SQLEditor = () => {
       }),
       biggerFont({ fontSize: editorSettings.fontSize })
     ],
-    []
+    [editorSettings]
   )
-  const [queryResult, setQueryResult] = useState<RawQueryResult>()
-  const editor = useRef<HTMLDivElement | null>(null)
-  const { setContainer, state } = useCodeMirror({
-    container: editor.current,
+  const { editorRef, view } = useSetupCodeMirror({
     extensions,
     theme: tokyoNight
+    // value: 'select * from "Customer" limit 10;'
   })
 
-  useEffect(() => {
-    if (editor.current) {
-      setContainer(editor.current)
+  const {
+    mutateAsync: runQuery,
+    data: result,
+    isError,
+    error,
+    isPending
+  } = useMutation<RawQueryResult, TxError>({
+    mutationKey: ["run_query"],
+    mutationFn: async () => {
+      let query: string
+      let editorState = view!.state
+
+      if (editorState!.selection.main.empty) {
+        query = editorState!.doc.toString()
+      } else {
+        query = editorState!.sliceDoc(
+          editorState!.selection.main.from,
+          editorState!.selection.main.to
+        )
+      }
+      const res = await commands.executeRawQuery(query)
+      return res
     }
-  }, [editor.current])
+  })
+
+  const renderQueryResult = () => {
+    if (isPending) return <QueryLoading />
+    if (isError) return <QueryError error={error} />
+
+    if (!result) return null
+
+    if ("Query" in result) {
+      return <QueryResultTable result={result} />
+    }
+    if ("Exec" in result)
+      return <code>{`Rows Affected: ${result.Exec.rows_affected}`} </code>
+  }
 
   return (
     <div className="flex h-full flex-col overflow-auto">
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel className="relative">
           <div
-            ref={editor}
+            ref={editorRef}
             style={{
               height: "100%",
               minHeight: 0
             }}
           />
-          {state && (
-            <RunBtn editorState={state} setQueryResult={setQueryResult} />
-          )}
+          <TooltipButton
+            tooltipContent="Shift + Enter"
+            className="absolute bottom-0 right-0 m-3 origin-bottom-right"
+            size={"sm"}
+            disabled={!view?.state}
+            onClick={async () => await runQuery()}
+          >
+            Run
+          </TooltipButton>
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel>
-          {/* {queryResult &&
-            (queryResult.status === "error" ? (
-              <pre className="m-4">{`message: ${queryResult.error.message} details: ${queryResult.error.details}`}</pre>
-            ) : (
-              <ResultTable result={queryResult.data} />
-            ))} */}
-        </ResizablePanel>
+        <ResizablePanel>{renderQueryResult()}</ResizablePanel>
       </ResizablePanelGroup>
     </div>
   )
 }
 
-type RunBtnProps = {
-  editorState: EditorState
-  setQueryResult: Dispatch<SetStateAction<RawQueryResult | undefined>>
-}
-
-const RunBtn = ({ editorState, setQueryResult }: RunBtnProps) => {
-  const runQuery = async () => {
-    let query: string
-
-    if (editorState.selection.main.empty) {
-      query = editorState.doc.toString()
-    } else {
-      query = editorState.sliceDoc(
-        editorState.selection.main.from,
-        editorState.selection.main.to
-      )
-    }
-
-    const result = await commands.executeRawQuery(query)
-    setQueryResult(result)
-  }
-
+const QueryLoading = () => {
   return (
-    <TooltipProvider>
-      <CustomTooltip side="top" content="Shift + Enter" asChild>
-        <Button
-          className="absolute bottom-0 right-0 m-3 origin-bottom-right"
-          size={"sm"}
-          onClick={runQuery}
-        >
-          Run
-        </Button>
-      </CustomTooltip>
-    </TooltipProvider>
+    <div className="flex h-full w-full flex-col items-center justify-center gap-y-4">
+      <Loader2 className="h-10 w-10 animate-spin" color="white" />
+      <span className="text-muted-foreground text-xl">Doing Science</span>
+    </div>
   )
 }
 
-type ResultTableProps = {
-  result: { [x: string]: JsonValue }[]
-}
-
-const ResultTable = ({ result }: ResultTableProps) => {
+const QueryResultTable = ({
+  result
+}: {
+  result: Extract<RawQueryResult, { Query: DecodedRow[] }>
+}) => {
   return (
-    <ScrollArea className="h-full overflow-auto">
+    <ScrollArea className="flex h-full w-full min-w-0 flex-1 flex-col">
       <Table>
-        <TableHeader className="bg-zinc-800">
-          <TableRow className="sticky -top-[1px] border-none backdrop-blur-lg">
-            {Object.keys(result[0]).map((header) => (
-              <TableHead>{header}</TableHead>
+        <TableHeader>
+          <TableRow className="bg-sidebar sticky top-0 z-50 backdrop-blur-lg">
+            {Object.keys(result.Query[0]).map((header) => (
+              <TableHead className="text-sm font-semibold">{header}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {result.map((row) => (
+          {result.Query.map((row) => (
             <TableRow>
               {Object.values(row).map((rowValue) => (
                 <TableCell>{rowValue?.toString()}</TableCell>
@@ -176,5 +169,19 @@ const ResultTable = ({ result }: ResultTableProps) => {
       </Table>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
+  )
+}
+
+const QueryError = ({ error }: { error: TxError }) => {
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-y-4">
+      <div className="flex items-center gap-x-4">
+        <AlertTriangle stroke="red" />
+        <span className="text-xl">An error occurred in your query</span>
+      </div>
+      <div className="border-muted-foreground rounded-lg border px-4 py-2">
+        {error.details}
+      </div>
+    </div>
   )
 }

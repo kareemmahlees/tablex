@@ -168,7 +168,7 @@ impl From<PgRow> for DecodedRow {
                 "VOID" => JsonValue::Null,
                 other => {
                     if other.starts_with("\"") & other.ends_with("\"") {
-                        JsonValue::String(v.decode::<String>())
+                        JsonValue::String(v.decode())
                     } else {
                         JsonValue::Null
                     }

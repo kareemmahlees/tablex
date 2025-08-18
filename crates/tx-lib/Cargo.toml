@@ -18,3 +18,4 @@ specta = { workspace = true }
 tauri-specta = { workspace = true }
 thiserror = "1.0.63"
 log = { workspace = true }
+sqlparser = { workspace = true }
