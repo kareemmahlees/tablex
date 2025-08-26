@@ -4,12 +4,12 @@ use serde_json::Value as JsonValue;
 use specta::Type;
 use uuid::Uuid;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Schema {
     pub tables: Vec<TableInfo>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Type)]
+#[derive(Debug, Serialize, Deserialize, Type, Clone)]
 pub struct TableInfo {
     pub name: String,
     pub columns: Vec<ColumnInfo>,

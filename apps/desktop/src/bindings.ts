@@ -44,9 +44,6 @@ async writeIntoSettingsFile(settings: JsonValue) : Promise<null> {
 async writeIntoKeybindingsFile(keybindings: Keybinding[]) : Promise<null> {
     return await TAURI_INVOKE("write_into_keybindings_file", { keybindings });
 },
-async getTables() : Promise<string[]> {
-    return await TAURI_INVOKE("get_tables");
-},
 async discoverDbSchema() : Promise<TableInfo[]> {
     return await TAURI_INVOKE("discover_db_schema");
 },
