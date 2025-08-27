@@ -5,8 +5,9 @@ use crate::{
 use sea_schema::postgres::def::Type as SeaColumnType;
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
-    Column, Row, Value, ValueRef,
-    postgres::{PgQueryResult, PgRow},
+    Column, Postgres, Row, Type, Value, ValueRef,
+    decode::Decode,
+    postgres::{PgQueryResult, PgRow, PgTypeInfo, PgTypeKind, PgValueRef},
     types::chrono::{NaiveDate, NaiveDateTime, NaiveTime},
 };
 
@@ -130,6 +131,32 @@ impl From<PgRow> for QueryResult {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct DynamicEnum(pub String);
+
+impl<'r> Decode<'r, Postgres> for DynamicEnum {
+    fn decode(value: PgValueRef<'r>) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+        let s: &str = <&str as Decode<Postgres>>::decode(value)?;
+        Ok(DynamicEnum(s.to_owned()))
+    }
+}
+
+impl Type<Postgres> for DynamicEnum {
+    fn type_info() -> PgTypeInfo {
+        <String as Type<Postgres>>::type_info()
+    }
+
+    fn compatible(ty: &PgTypeInfo) -> bool {
+        // Accept Postgres TEXT
+        if <String as Type<Postgres>>::compatible(ty) {
+            return true;
+        }
+
+        // Accept ANY user-defined enum
+        matches!(ty.kind(), PgTypeKind::Enum(_))
+    }
+}
+
 impl From<PgRow> for DecodedRow {
     fn from(value: PgRow) -> Self {
         let mut row_data = JsonMap::default();
@@ -166,9 +193,9 @@ impl From<PgRow> for DecodedRow {
                         .collect(),
                 ),
                 "VOID" => JsonValue::Null,
-                other => {
-                    if other.starts_with("\"") & other.ends_with("\"") {
-                        JsonValue::String(v.decode::<String>())
+                _ => {
+                    if let PgTypeKind::Enum(_) = v.type_info().as_ref().kind() {
+                        JsonValue::String(v.decode::<DynamicEnum>().0)
                     } else {
                         JsonValue::Null
                     }

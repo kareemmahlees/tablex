@@ -1,6 +1,6 @@
 use crate::{
     query::{ExecResult, QueryResult},
-    schema::{Schema, TablesNames},
+    schema::Schema,
 };
 use sea_query_binder::SqlxValues;
 use sea_schema::{
@@ -10,17 +10,17 @@ use sea_schema::{
     sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
 };
 use sqlx::{
+    Connection,
     mysql::{MySqlConnectOptions, MySqlPool},
     postgres::{PgConnectOptions, PgPool},
     sqlite::{SqliteConnectOptions, SqlitePool},
-    Connection,
 };
-use tx_lib::{types::Drivers, Result, TxError};
+use tx_lib::{Result, TxError, types::Drivers};
 
 pub enum DatabaseConnection {
-    Sqlite(SqlitePool, SqliteSchemaDiscovery),
-    Postgres(PgPool, PostgresSchemaDiscovery),
-    Mysql(MySqlPool),
+    Sqlite { pool: SqlitePool, schema: Schema },
+    Postgres { pool: PgPool, schema: Schema },
+    Mysql { pool: MySqlPool, schema: Schema },
 }
 
 impl DatabaseConnection {
@@ -29,18 +29,30 @@ impl DatabaseConnection {
         let con = match driver {
             Drivers::SQLite => {
                 let pool = SqlitePool::connect_with(url.parse::<SqliteConnectOptions>()?).await?;
-                DatabaseConnection::Sqlite(pool.clone(), SqliteSchemaDiscovery::new(pool))
+                let schema = SqliteSchemaDiscovery::new(pool.clone())
+                    .discover()
+                    .await
+                    .unwrap()
+                    .into();
+                DatabaseConnection::Sqlite { pool, schema }
             }
             Drivers::PostgreSQL => {
                 let pool = PgPool::connect_with(url.parse::<PgConnectOptions>()?).await?;
-                DatabaseConnection::Postgres(
-                    pool.clone(),
-                    PostgresSchemaDiscovery::new(pool, "public"),
-                )
+                let schema = PostgresSchemaDiscovery::new(pool.clone(), "public")
+                    .discover()
+                    .await
+                    .unwrap()
+                    .into();
+                DatabaseConnection::Postgres { pool, schema }
             }
             Drivers::MySQL => {
                 let pool = MySqlPool::connect_with(url.parse::<MySqlConnectOptions>()?).await?;
-                DatabaseConnection::Mysql(pool.clone())
+                let schema = MySQLSchemaDiscovery::new(pool.clone(), "public")
+                    .discover()
+                    .await
+                    .unwrap()
+                    .into();
+                DatabaseConnection::Mysql { pool, schema }
             }
         };
         Ok(con)
@@ -67,26 +79,26 @@ impl DatabaseConnection {
     }
     pub fn into_builder(&self) -> Box<dyn QueryBuilder> {
         match self {
-            DatabaseConnection::Sqlite(_, _) => Box::new(SqliteQueryBuilder),
-            DatabaseConnection::Postgres(_, _) => Box::new(PostgresQueryBuilder),
-            DatabaseConnection::Mysql(_) => Box::new(MysqlQueryBuilder),
+            DatabaseConnection::Sqlite { .. } => Box::new(SqliteQueryBuilder),
+            DatabaseConnection::Postgres { .. } => Box::new(PostgresQueryBuilder),
+            DatabaseConnection::Mysql { .. } => Box::new(MysqlQueryBuilder),
         }
     }
     pub async fn ping(&self) -> Result<()> {
         match self {
-            DatabaseConnection::Sqlite(pool, _) => pool
+            DatabaseConnection::Sqlite { pool, .. } => pool
                 .acquire()
                 .await?
                 .ping()
                 .await
                 .map_err(|_| TxError::PingError),
-            DatabaseConnection::Postgres(pool, _) => pool
+            DatabaseConnection::Postgres { pool, .. } => pool
                 .acquire()
                 .await?
                 .ping()
                 .await
                 .map_err(|_| TxError::PingError),
-            DatabaseConnection::Mysql(pool) => pool
+            DatabaseConnection::Mysql { pool, .. } => pool
                 .acquire()
                 .await?
                 .ping()
@@ -95,106 +107,84 @@ impl DatabaseConnection {
         }
     }
     pub async fn fetch_all(&self, stmt: &str, values: SqlxValues) -> Result<Vec<QueryResult>> {
-        match self {
-            DatabaseConnection::Sqlite(conn, _) => {
-                match sqlx::query_with(stmt, values).fetch_all(conn).await {
-                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                    Err(err) => Err(err.into()),
-                }
-            }
-            DatabaseConnection::Postgres(conn, _) => {
-                match sqlx::query_with(stmt, values).fetch_all(conn).await {
-                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                    Err(err) => Err(err.into()),
-                }
-            }
-            DatabaseConnection::Mysql(conn) => {
-                match sqlx::query_with(stmt, values).fetch_all(conn).await {
-                    Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                    Err(err) => Err(err.into()),
-                }
-            }
-        }
+        let res = match self {
+            DatabaseConnection::Sqlite { pool, .. } => sqlx::query_with(stmt, values)
+                .fetch_all(pool)
+                .await?
+                .into_iter()
+                .map(|r| r.into())
+                .collect(),
+            DatabaseConnection::Postgres { pool, .. } => sqlx::query_with(stmt, values)
+                .fetch_all(pool)
+                .await?
+                .into_iter()
+                .map(|r| r.into())
+                .collect(),
+            DatabaseConnection::Mysql { pool, .. } => sqlx::query_with(stmt, values)
+                .fetch_all(pool)
+                .await?
+                .into_iter()
+                .map(|r| r.into())
+                .collect(),
+        };
+        Ok(res)
     }
     pub async fn fetch_one(&self, stmt: &str) -> Result<QueryResult> {
-        match self {
-            DatabaseConnection::Sqlite(conn, _) => match sqlx::query(stmt).fetch_one(conn).await {
-                Ok(row) => Ok(row.into()),
-                Err(err) => Err(err.into()),
-            },
-            DatabaseConnection::Postgres(conn, _) => {
-                match sqlx::query(stmt).fetch_one(conn).await {
-                    Ok(row) => Ok(row.into()),
-                    Err(err) => Err(err.into()),
-                }
+        let res: QueryResult = match self {
+            DatabaseConnection::Sqlite { pool, .. } => {
+                sqlx::query(stmt).fetch_one(pool).await?.into()
             }
-            DatabaseConnection::Mysql(conn) => match sqlx::query(stmt).fetch_one(conn).await {
-                Ok(row) => Ok(row.into()),
-                Err(err) => Err(err.into()),
-            },
-        }
+            DatabaseConnection::Postgres { pool, .. } => {
+                sqlx::query(stmt).fetch_one(pool).await?.into()
+            }
+            DatabaseConnection::Mysql { pool, .. } => {
+                sqlx::query(stmt).fetch_one(pool).await?.into()
+            }
+        };
+
+        Ok(res)
     }
     pub async fn execute(&self, stmt: &str) -> Result<ExecResult> {
         let res: ExecResult = match self {
-            DatabaseConnection::Sqlite(conn, _) => sqlx::query(stmt).execute(conn).await?.into(),
-            DatabaseConnection::Postgres(conn, _) => sqlx::query(stmt).execute(conn).await?.into(),
-            DatabaseConnection::Mysql(conn) => sqlx::query(stmt).execute(conn).await?.into(),
+            DatabaseConnection::Sqlite { pool, .. } => {
+                sqlx::query(stmt).execute(pool).await?.into()
+            }
+            DatabaseConnection::Postgres { pool, .. } => {
+                sqlx::query(stmt).execute(pool).await?.into()
+            }
+            DatabaseConnection::Mysql { pool, .. } => sqlx::query(stmt).execute(pool).await?.into(),
         };
 
         Ok(res)
     }
     pub async fn execute_with(&self, stmt: &str, values: SqlxValues) -> Result<ExecResult> {
         let res: ExecResult = match self {
-            DatabaseConnection::Sqlite(conn, _) => {
-                sqlx::query_with(stmt, values).execute(conn).await?.into()
+            DatabaseConnection::Sqlite { pool, .. } => {
+                sqlx::query_with(stmt, values).execute(pool).await?.into()
             }
-            DatabaseConnection::Postgres(conn, _) => {
-                sqlx::query_with(stmt, values).execute(conn).await?.into()
+            DatabaseConnection::Postgres { pool, .. } => {
+                sqlx::query_with(stmt, values).execute(pool).await?.into()
             }
-            DatabaseConnection::Mysql(conn) => {
-                sqlx::query_with(stmt, values).execute(conn).await?.into()
+            DatabaseConnection::Mysql { pool, .. } => {
+                sqlx::query_with(stmt, values).execute(pool).await?.into()
             }
         };
 
         Ok(res)
     }
-    pub async fn discover(&self) -> Schema {
+    pub async fn get_schema(&self) -> Schema {
         match self {
-            DatabaseConnection::Sqlite(_, discoverer) => {
-                discoverer.discover().await.unwrap().into()
-            }
-            DatabaseConnection::Postgres(_, discoverer) => {
-                discoverer.discover().await.unwrap().into()
-            }
-            DatabaseConnection::Mysql(pool) => MySQLSchemaDiscovery::new(pool.clone(), "public")
-                .discover()
-                .await
-                .unwrap()
-                .into(),
-        }
-    }
-
-    pub async fn get_tables(&self) -> TablesNames {
-        match self {
-            DatabaseConnection::Sqlite(_, schema_discovery) => {
-                schema_discovery.discover().await.unwrap().tables.into()
-            }
-            DatabaseConnection::Postgres(_, schema_discovery) => {
-                schema_discovery.discover_tables().await.unwrap().into()
-            }
-            DatabaseConnection::Mysql(pool) => MySQLSchemaDiscovery::new(pool.clone(), "public")
-                .discover_tables()
-                .await
-                .unwrap()
-                .into(),
+            DatabaseConnection::Sqlite { schema, .. } => schema.clone(),
+            DatabaseConnection::Postgres { schema, .. } => schema.clone(),
+            DatabaseConnection::Mysql { schema, .. } => schema.clone(),
         }
     }
 
     pub async fn close(&self) {
         match self {
-            DatabaseConnection::Sqlite(pool, _) => pool.close().await,
-            DatabaseConnection::Postgres(pool, _) => pool.close().await,
-            DatabaseConnection::Mysql(pool) => pool.close().await,
+            DatabaseConnection::Sqlite { pool, .. } => pool.close().await,
+            DatabaseConnection::Postgres { pool, .. } => pool.close().await,
+            DatabaseConnection::Mysql { pool, .. } => pool.close().await,
         }
     }
 }

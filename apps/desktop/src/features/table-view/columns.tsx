@@ -7,11 +7,12 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { zodJsonValidation } from "@/lib/utils"
 import { json } from "@codemirror/lang-json"
 import "@tanstack/react-table"
 import type { ColumnDef, RowData } from "@tanstack/react-table"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
-import CodeMirror from "@uiw/react-codemirror"
+import CodeMirror, { EditorView } from "@uiw/react-codemirror"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
@@ -45,6 +46,7 @@ export const generateColumnsDefs = (table: TableInfo) => {
                   id="editor"
                   value={JSON.stringify(value, undefined, 2)}
                   theme={tokyoNight}
+                  basicSetup={false}
                   extensions={[json()]}
                   readOnly
                 />
@@ -69,6 +71,8 @@ export const generateColumnsDefs = (table: TableInfo) => {
                   id="editor"
                   value={value}
                   theme={tokyoNight}
+                  basicSetup={false}
+                  extensions={[EditorView.lineWrapping]}
                   readOnly
                 />
               </DropdownMenuContent>
@@ -224,22 +228,7 @@ export const getZodSchemaFromCols = (tableSchema: TableInfo) => {
         validationRule = z.coerce.date()
         break
       case "json": {
-        const jsonSchema = z
-          .custom<object | string>()
-          .superRefine((obj, ctx) => {
-            console.log(obj)
-            if (typeof obj === "string") {
-              try {
-                return JSON.parse(obj)
-              } catch (e) {
-                ctx.addIssue({ code: "custom", message: "Invalid JSON" })
-                return z.NEVER
-              }
-            } else if (typeof obj === "object") {
-              return obj
-            }
-          })
-        validationRule = jsonSchema
+        validationRule = zodJsonValidation()
         break
       }
       default:

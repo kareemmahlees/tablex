@@ -4,12 +4,12 @@ use serde_json::Value;
 use specta::Type;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_opener::OpenerExt;
-use tx_keybindings::{get_keybindings_file_path, Keybinding};
+use tx_keybindings::{Keybinding, get_keybindings_file_path};
 use tx_lib::{
-    fs::{read_from_json, write_into_json},
     TxError,
+    fs::{read_from_json, write_into_json},
 };
-use tx_settings::{get_settings_file_path, Settings};
+use tx_settings::{Settings, get_settings_file_path};
 
 #[derive(Serialize, Deserialize, Type)]
 #[serde(rename_all = "lowercase")]
@@ -40,10 +40,10 @@ pub fn open_in_external_editor(app: AppHandle, file: ConfigFile) -> Result<(), T
 #[tauri::command]
 #[specta::specta]
 pub fn load_settings_file(app: AppHandle) -> Result<Settings, TxError> {
-    let settings = read_from_json::<Value>(&get_settings_file_path(&app)?)?;
-    let mut default_settings = serde_json::to_value(Settings::default())?;
+    let mut settings = read_from_json::<Value>(&get_settings_file_path(&app)?)?;
+    let default_settings = serde_json::to_value(Settings::default())?;
 
-    merge(&mut default_settings, &settings);
+    merge(&mut settings, &default_settings);
 
     let settings = serde_json::from_value::<Settings>(settings)?;
 

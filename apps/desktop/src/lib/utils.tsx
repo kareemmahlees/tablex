@@ -5,6 +5,7 @@ import { cn } from "@tablex/lib/utils"
 import { error } from "@tauri-apps/plugin-log"
 import { customAlphabet } from "nanoid"
 import { toast } from "sonner"
+import { z } from "zod"
 import { ConnectionStringParams, Drivers } from "./types"
 
 /**
@@ -135,6 +136,28 @@ export function generateId(
   )()
 
   return prefix ? `${prefixes[prefix]}${separator}${id}` : id
+}
+
+export function zodJsonValidation() {
+  return z.custom<object | string>().superRefine((obj, ctx) => {
+    if (typeof obj === "string") {
+      try {
+        const parsed = JSON.parse(obj)
+        if (
+          typeof parsed !== "object" ||
+          parsed === null ||
+          Array.isArray(parsed)
+        ) {
+          ctx.addIssue({ code: "custom", message: "Invalid JSON" })
+        } else return parsed
+      } catch (e) {
+        ctx.addIssue({ code: "custom", message: "Invalid JSON" })
+        return z.NEVER
+      }
+    } else if (typeof obj === "object") {
+      return obj
+    }
+  })
 }
 
 export type KeysOfUnion<T> = T extends object

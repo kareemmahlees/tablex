@@ -1,4 +1,3 @@
-import { commands } from "@/bindings"
 import { TooltipButton } from "@/components/custom/tooltip-button"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableFilterList } from "@/components/data-table/data-table-filter-list"
@@ -6,6 +5,7 @@ import { DataTablePagination } from "@/components/data-table/data-table-paginati
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useDBSchema } from "@/features/common/db-context"
 import { generateColumnsDefs } from "@/features/table-view/columns"
 import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
 import { DeleteRowBtn } from "@/features/table-view/components/delete-row"
@@ -38,17 +38,16 @@ export const Route = createFileRoute(
     joinOperator: z.enum(["and", "or"])
   }),
   component: TableView,
-  loader: async ({ params: { tableName } }) => {
-    const schema = await commands.discoverDbSchema()
-    return schema.find((t) => t.name === tableName)!
-  },
-  pendingComponent: TableLoadingSkeleton,
-  staleTime: 10 * 60 * 1000 // 1 hour
+  pendingComponent: TableLoadingSkeleton
 })
 
 function TableView() {
-  const tableSchema = Route.useLoaderData()
   const { tableName, connId } = Route.useParams()
+  const dbSchema = useDBSchema()
+  const tableSchema = useMemo(
+    () => dbSchema.find((t) => t.name === tableName)!,
+    [dbSchema]
+  )
   const { sorting, pagination, filtering, joinOperator } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const navigate = Route.useNavigate()
@@ -59,10 +58,6 @@ function TableView() {
     isFetching: isFetchingRows
   } = useSuspenseQuery(
     getPaginatedRowsOptions({
-      columns: tableSchema.columns.map((c) => ({
-        columnName: c.name,
-        columnType: typeof c.type === "object" ? { enum: c.type.enum } : c.type
-      })),
       tableName,
       pagination,
       sorting,
@@ -110,7 +105,9 @@ function TableView() {
   )
 
   return (
-    <TableSchemaContext.Provider value={tableSchema}>
+    <TableSchemaContext.Provider
+      value={dbSchema.find((t) => t.name === tableName)!}
+    >
       <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
         <div className="flex items-center justify-between px-3 py-2.5">
           <div className="flex items-center gap-x-3">

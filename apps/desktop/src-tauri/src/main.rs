@@ -12,15 +12,14 @@ mod updater;
 use log::Level;
 
 use commands::{connection::*, fs::*, row::*, table::*};
-use specta_typescript::formatter::prettier;
 #[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
-use tauri::{async_runtime::Mutex, AppHandle, Manager, State, WindowEvent};
+use tauri::{AppHandle, Manager, State, WindowEvent, async_runtime::Mutex};
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
-use tauri_specta::{collect_commands, collect_events, Builder};
+use tauri_specta::{Builder, collect_commands, collect_events};
 use tx_keybindings::*;
-use tx_lib::{events::*, TxError};
+use tx_lib::{TxError, events::*};
 use tx_settings::*;
 
 fn ensure_config_files_exist(app: &AppHandle) -> Result<(), TxError> {
@@ -92,7 +91,6 @@ fn main() {
             write_into_settings_file,
             write_into_keybindings_file,
             // Table commands.
-            get_tables,
             discover_db_schema,
             execute_raw_query,
             // Row commands.

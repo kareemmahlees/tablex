@@ -2,12 +2,6 @@ import { commands, GetRowsPayload } from "@/bindings"
 import { QUERY_KEYS } from "@/lib/constants"
 import { keepPreviousData, queryOptions } from "@tanstack/react-query"
 
-export const getTablesQueryOptions = (connectionId: string) =>
-  queryOptions({
-    queryKey: [QUERY_KEYS.GET_TABLES, connectionId],
-    queryFn: async () => await commands.getTables()
-  })
-
 export const getConnectionDetailsQueryOptions = (connectionId: string) =>
   queryOptions({
     queryKey: [QUERY_KEYS.GET_CONNECTION_DETAILS, connectionId],
