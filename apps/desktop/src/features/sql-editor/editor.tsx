@@ -14,13 +14,24 @@ import {
 } from "@/components/ui/table"
 
 import { TooltipButton } from "@/components/custom/tooltip-button"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSetupCodeMirror } from "@/hooks/use-setup-code-mirror"
+import { zodJsonValidation } from "@/lib/utils"
 import { sql } from "@codemirror/lang-sql"
 import sqlFormatter from "@sqltools/formatter"
 import { useMutation } from "@tanstack/react-query"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
-import { EditorState, EditorView, keymap } from "@uiw/react-codemirror"
+import CodeMirror, {
+  EditorState,
+  EditorView,
+  keymap
+} from "@uiw/react-codemirror"
 import { AlertTriangle, Loader2, Play, Rainbow } from "lucide-react"
 import { useMemo } from "react"
 import { useSettings } from "../settings/manager"
@@ -119,7 +130,8 @@ export const SQLEditor = () => {
   const { editorRef, view } = useSetupCodeMirror({
     extensions,
     theme: tokyoNight,
-    value: 'select * from "Customer"'
+    value: 'select * from "SaleInvoice" limit 10',
+    autoFocus: true
   })
 
   const renderQueryResult = () => {
@@ -205,6 +217,62 @@ const QueryResultTable = ({
 }: {
   result: Extract<RawQueryResult, { Query: DecodedRow[] }>
 }) => {
+  const renderCell = (value: string) => {
+    if (zodJsonValidation().safeParse(value).success) {
+      console.log(value)
+      console.log(typeof value)
+      console.log(zodJsonValidation().safeParse(value))
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button
+              size={"sm"}
+              className="h-6 bg-gray-100 px-4 text-xs font-semibold"
+            >
+              JSON
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[300px]" align="end">
+            <CodeMirror
+              id="editor"
+              value={value}
+              theme={tokyoNight}
+              readOnly
+              basicSetup={false}
+              extensions={[EditorView.lineWrapping]}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    }
+
+    if (value.length > 50)
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button
+              size={"sm"}
+              className="h-6 bg-gray-100 px-4 text-xs font-semibold"
+            >
+              TEXT
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[300px]" align="end">
+            <CodeMirror
+              id="editor"
+              value={value}
+              theme={tokyoNight}
+              readOnly
+              basicSetup={false}
+              extensions={[EditorView.lineWrapping]}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+
+    return value
+  }
+
   return (
     <ScrollArea className="flex h-full w-full min-w-0 flex-1 flex-col">
       <Table>
@@ -219,7 +287,9 @@ const QueryResultTable = ({
           {result.Query.map((row) => (
             <TableRow>
               {Object.values(row).map((rowValue) => (
-                <TableCell>{rowValue?.toString()}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {rowValue && renderCell(rowValue.toString())}
+                </TableCell>
               ))}
             </TableRow>
           ))}
