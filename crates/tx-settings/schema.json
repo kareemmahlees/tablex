@@ -40,85 +40,21 @@
       "description": "Configuration for the SQL editor.",
       "type": "object",
       "required": [
-        "cursorBlinking",
         "fontSize",
-        "minimap",
-        "scrollbar"
+        "vimMode"
       ],
       "properties": {
-        "minimap": {
-          "description": "Visibility of the right-hand-side minimap.",
-          "type": "boolean"
-        },
-        "scrollbar": {
-          "description": "Vertical/Horizontal scrollbar visibility.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/EditorScrollBarVisibility"
-            }
-          ]
-        },
         "fontSize": {
           "description": "Editor font size.",
           "type": "integer",
           "format": "uint8",
           "minimum": 0.0
         },
-        "cursorBlinking": {
-          "description": "Behavior of the cursor blinking style.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/CursorBlinkingStyle"
-            }
-          ]
+        "vimMode": {
+          "description": "Enable vim keybindings in the editor",
+          "type": "boolean"
         }
       }
-    },
-    "EditorScrollBarVisibility": {
-      "description": "Vertical/Horizontal scrollbar visibility.",
-      "type": "object",
-      "required": [
-        "horizontal",
-        "vertical"
-      ],
-      "properties": {
-        "vertical": {
-          "description": "Toggle vertical scrollbar visibility.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/Visibility"
-            }
-          ]
-        },
-        "horizontal": {
-          "description": "Toggle horizontal scrollbar visibility.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/Visibility"
-            }
-          ]
-        }
-      }
-    },
-    "Visibility": {
-      "description": "General visibility settings.",
-      "type": "string",
-      "enum": [
-        "hidden",
-        "visible",
-        "auto"
-      ]
-    },
-    "CursorBlinkingStyle": {
-      "description": "Behavior of the cursor blinking style.",
-      "type": "string",
-      "enum": [
-        "blink",
-        "expand",
-        "smooth",
-        "solid",
-        "phase"
-      ]
     }
   }
 }
