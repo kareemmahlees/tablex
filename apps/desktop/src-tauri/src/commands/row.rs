@@ -1,5 +1,5 @@
 use crate::AppState;
-use sea_query::{Cond, Expr, ExprTrait, Order};
+use sea_query::{Asterisk, Cond, Expr, ExprTrait, Order};
 use sea_query_binder::SqlxBinder;
 use sea_schema::sea_query;
 use sea_schema::sea_query::{Alias, Iden, Query};
@@ -44,7 +44,6 @@ impl Iden for PlainColumn {
 #[serde(rename_all = "camelCase")]
 pub struct GetRowsPayload {
     table_name: String,
-    columns: Vec<ColumnForFor>,
     pagination: PaginationData,
     sorting: Vec<SortingData>,
     filtering: Vec<FilteringData>,
@@ -95,13 +94,6 @@ enum Filters {
     NotInArray(Vec<JsonValue>),
 }
 
-#[derive(Serialize, Deserialize, Type, Debug)]
-#[serde(rename_all = "camelCase")]
-struct ColumnForFor {
-    column_name: String,
-    column_type: CustomColumnType,
-}
-
 fn json_to_sea_value(jv: &serde_json::Value) -> sea_query::Value {
     match jv {
         serde_json::Value::Bool(b) => sea_query::Value::Bool(Some(*b)),
@@ -129,22 +121,9 @@ pub async fn get_paginated_rows(
 ) -> Result<PaginatedRows> {
     let state = state.lock().await;
     let conn = state.conn.as_ref().unwrap();
-    let mut columns = vec![];
-    let mut exprs = vec![];
-
-    payload
-        .columns
-        .iter()
-        .for_each(|col| match &col.column_type {
-            CustomColumnType::Enum(_) => {
-                exprs.push(Expr::col(PlainColumn(col.column_name.clone())).as_enum("text"))
-            }
-            _ => columns.push(PlainColumn(col.column_name.clone())),
-        });
 
     let mut query = Query::select()
-        .columns(columns)
-        .exprs(exprs)
+        .column(Asterisk)
         .from(PlainTable(payload.table_name))
         .limit(payload.pagination.page_size)
         .offset(payload.pagination.page_index * payload.pagination.page_size)
@@ -160,12 +139,7 @@ pub async fn get_paginated_rows(
         .to_owned();
 
     payload.filtering.iter().for_each(|f| {
-        let mut expression = Expr::col(PlainColumn(f.column.clone()));
-        if let Some(col) = payload.columns.iter().find(|c| c.column_name == f.column)
-            && let CustomColumnType::Enum(_) = col.column_type
-        {
-            expression = Expr::expr(expression.as_enum("text"));
-        }
+        let expression = Expr::col(PlainColumn(f.column.clone()));
 
         let simple_express = match &f.filters {
             Filters::Gt(v) => expression.gt(json_to_sea_value(v)),

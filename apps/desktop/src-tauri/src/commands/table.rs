@@ -49,35 +49,35 @@ pub async fn execute_raw_query(state: AppState<'_>, query: String) -> Result<Raw
                 if i != ast_len - 1 {
                     continue;
                 }
-                // It' the last query, execute it.
-                if let sqlparser::ast::SetExpr::Select(select) = &mut *q.body {
-                    for item in &mut select.projection {
-                        if let SelectItem::UnnamedExpr(expr) = item {
-                            let col_name = match expr {
-                                Expr::Identifier(ident) => ident.value.clone(),
-                                Expr::CompoundIdentifier(idents) => {
-                                    idents.last().unwrap().value.clone()
-                                }
-                                _ => unimplemented!(),
-                            };
-                            for table in conn.get_schema().await.tables {
-                                for column in table.columns {
-                                    if column.name == col_name
-                                        && let CustomColumnType::Enum(_) = column.r#type
-                                    {
-                                        *expr = Expr::Cast {
-                                            expr: Box::new(expr.clone()),
-                                            data_type: DataType::Text,
-                                            format: None,
-                                            kind: CastKind::DoubleColon,
-                                        };
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
+                // // It' the last query, execute it.
+                // if let sqlparser::ast::SetExpr::Select(select) = &mut *q.body {
+                //     for item in &mut select.projection {
+                //         if let SelectItem::UnnamedExpr(expr) = item {
+                //             let col_name = match expr {
+                //                 Expr::Identifier(ident) => ident.value.clone(),
+                //                 Expr::CompoundIdentifier(idents) => {
+                //                     idents.last().unwrap().value.clone()
+                //                 }
+                //                 _ => unimplemented!(),
+                //             };
+                //             for table in conn.get_schema().await.tables {
+                //                 for column in table.columns {
+                //                     if column.name == col_name
+                //                         && let CustomColumnType::Enum(_) = column.r#type
+                //                     {
+                //                         *expr = Expr::Cast {
+                //                             expr: Box::new(expr.clone()),
+                //                             data_type: DataType::Text,
+                //                             format: None,
+                //                             kind: CastKind::DoubleColon,
+                //                         };
+                //                         break;
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                // };
                 let rows = conn
                     .fetch_all(&q.to_string(), SqlxValues(sea_query::Values(vec![])))
                     .await?;

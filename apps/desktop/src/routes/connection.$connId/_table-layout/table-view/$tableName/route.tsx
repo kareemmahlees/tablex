@@ -48,7 +48,6 @@ function TableView() {
     () => dbSchema.find((t) => t.name === tableName)!,
     [dbSchema]
   )
-  console.log(tableSchema)
   const { sorting, pagination, filtering, joinOperator } = Route.useSearch()
   const { queryClient } = Route.useRouteContext()
   const navigate = Route.useNavigate()
@@ -59,10 +58,6 @@ function TableView() {
     isFetching: isFetchingRows
   } = useSuspenseQuery(
     getPaginatedRowsOptions({
-      columns: tableSchema.columns.map((c) => ({
-        columnName: c.name,
-        columnType: typeof c.type === "object" ? { enum: c.type.enum } : c.type
-      })),
       tableName,
       pagination,
       sorting,
