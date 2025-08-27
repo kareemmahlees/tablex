@@ -1,6 +1,6 @@
 use crate::{
     query::{ExecResult, QueryResult},
-    schema::{Schema, TablesNames},
+    schema::Schema,
 };
 use sea_query_binder::SqlxValues;
 use sea_schema::{
@@ -10,7 +10,7 @@ use sea_schema::{
     sqlite::discovery::SchemaDiscovery as SqliteSchemaDiscovery,
 };
 use sqlx::{
-    Connection, Database, Pool,
+    Connection,
     mysql::{MySqlConnectOptions, MySqlPool},
     postgres::{PgConnectOptions, PgPool},
     sqlite::{SqliteConnectOptions, SqlitePool},

@@ -24,6 +24,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSetupCodeMirror } from "@/hooks/use-setup-code-mirror"
 import { zodJsonValidation } from "@/lib/utils"
 import { sql } from "@codemirror/lang-sql"
+import { vim } from "@replit/codemirror-vim"
 import sqlFormatter from "@sqltools/formatter"
 import { useMutation } from "@tanstack/react-query"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
@@ -100,8 +101,8 @@ export const SQLEditor = () => {
     }
   })
 
-  const extensions = useMemo(
-    () => [
+  const extensions = useMemo(() => {
+    const exts = [
       sql({
         upperCaseKeywords: true
       }),
@@ -124,9 +125,12 @@ export const SQLEditor = () => {
           preventDefault: true
         }
       ])
-    ],
-    [editorSettings]
-  )
+    ]
+
+    if (editorSettings.vimMode) exts.push(vim())
+
+    return exts
+  }, [editorSettings])
   const { editorRef, view } = useSetupCodeMirror({
     extensions,
     theme: tokyoNight,

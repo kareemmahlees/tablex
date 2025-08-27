@@ -1,10 +1,8 @@
-use crate::commands::connection::{
-    connections_exist, create_connection_record, establish_connection,
-};
-use clap::{error::ErrorKind, Command, CommandFactory, Parser};
-use tauri::{AppHandle, Manager, WebviewWindow};
+use crate::commands::connection::{create_connection_record, establish_connection};
+use clap::{Command, CommandFactory, Parser, error::ErrorKind};
+use tauri::{AppHandle, Manager};
 use tx_lib::TxError;
-use tx_lib::{types::Drivers, Result};
+use tx_lib::{Result, types::Drivers};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -26,7 +24,7 @@ pub struct Args {
 /// Attaches the console so the user can see output in the terminal.
 #[cfg(all(windows, not(dev)))]
 fn attach_console() {
-    use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+    use windows::Win32::System::Console::{ATTACH_PARENT_PROCESS, AttachConsole};
     let _ = unsafe { AttachConsole(ATTACH_PARENT_PROCESS) };
 }
 

@@ -3,14 +3,11 @@ use sea_query_binder::SqlxValues;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use sqlparser::{
-    ast::{CastKind, DataType, Expr, SelectItem, Statement, TableFactor},
+    ast::Statement,
     dialect::{Dialect, MySqlDialect, PostgreSqlDialect, SQLiteDialect},
     parser::Parser,
 };
-use tx_handlers::{
-    CustomColumnType, CustomEnumDef, DatabaseConnection, DecodedRow, ExecResult, TableInfo,
-    decode_raw_rows,
-};
+use tx_handlers::{DatabaseConnection, DecodedRow, ExecResult, TableInfo, decode_raw_rows};
 use tx_lib::Result;
 
 #[tauri::command]

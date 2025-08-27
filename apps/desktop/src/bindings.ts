@@ -94,10 +94,6 @@ export type ConfigFile = "settings" | "keybindings" | "logs"
 export type ConnConfig = { driver: Drivers; connString: string; connName: string }
 export type ConnectionsChanged = null
 /**
- * Behavior of the cursor blinking style.
- */
-export type CursorBlinkingStyle = "blink" | "expand" | "smooth" | "solid" | "phase"
-/**
  * Acts as a unified interface for all databases' datatypes.
  * Each database implements the conversion of it's datatypes to the
  * corresponding `CustomColumnType`.
@@ -115,18 +111,6 @@ export type DecodedRow = { [key in string]: JsonValue }
  * Supported drivers, stored inside connection config in `connections.json`.
  */
 export type Drivers = "sqlite" | "postgresql" | "mysql"
-/**
- * Vertical/Horizontal scrollbar visibility.
- */
-export type EditorScrollBarVisibility = { 
-/**
- * Toggle vertical scrollbar visibility.
- */
-vertical: Visibility; 
-/**
- * Toggle horizontal scrollbar visibility.
- */
-horizontal: Visibility }
 export type ExecResult = { rows_affected: number }
 export type FKRows = { tableName: string; rows: { [key in string]: JsonValue }[] }
 export type FilteringData = { column: string; filters: Filters }
@@ -154,21 +138,13 @@ export type RowRecord = { columnName: string; value: JsonValue; columnType: Cust
  */
 export type SQLEditorSettings = { 
 /**
- * Visibility of the right-hand-side minimap.
- */
-minimap: boolean; 
-/**
- * Vertical/Horizontal scrollbar visibility.
- */
-scrollbar: EditorScrollBarVisibility; 
-/**
  * Editor font size.
  */
 fontSize: number; 
 /**
- * Behavior of the cursor blinking style.
+ * Enable vim keybindings in the editor
  */
-cursorBlinking: CursorBlinkingStyle }
+vimMode: boolean }
 /**
  * The configuration object for TableX's settings.
  */
@@ -206,10 +182,6 @@ message: string;
  * Detailed error message throwing by the low level api
  */
 details: string }
-/**
- * General visibility settings.
- */
-export type Visibility = "hidden" | "visible" | "auto"
 
 /** tauri-specta globals **/
 
