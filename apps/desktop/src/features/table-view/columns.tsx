@@ -12,7 +12,7 @@ import { json } from "@codemirror/lang-json"
 import "@tanstack/react-table"
 import type { ColumnDef, RowData } from "@tanstack/react-table"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
-import CodeMirror from "@uiw/react-codemirror"
+import CodeMirror, { EditorView } from "@uiw/react-codemirror"
 import { Check, Minus } from "lucide-react"
 import { z } from "zod"
 
@@ -46,6 +46,7 @@ export const generateColumnsDefs = (table: TableInfo) => {
                   id="editor"
                   value={JSON.stringify(value, undefined, 2)}
                   theme={tokyoNight}
+                  basicSetup={false}
                   extensions={[json()]}
                   readOnly
                 />
@@ -70,6 +71,8 @@ export const generateColumnsDefs = (table: TableInfo) => {
                   id="editor"
                   value={value}
                   theme={tokyoNight}
+                  basicSetup={false}
+                  extensions={[EditorView.lineWrapping]}
                   readOnly
                 />
               </DropdownMenuContent>
