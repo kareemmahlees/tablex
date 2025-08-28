@@ -2,7 +2,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
-const SCHEMA_URL: &str =
+pub const SCHEMA_URL: &str =
     "https://raw.githubusercontent.com/kareemmahlees/tablex/master/crates/tx-settings/schema.json";
 
 #[derive(Serialize, Deserialize, Type, JsonSchema)]
@@ -11,7 +11,7 @@ const SCHEMA_URL: &str =
 pub struct Settings {
     /// Remote schema url for autocompletion.
     #[serde(rename = "$schema")]
-    schema: Option<String>,
+    pub schema: String,
     /// Number of rows to be fetched per page.
     pub page_size: u32,
     /// Wether to automatically check for updates or not.
@@ -23,7 +23,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            schema: Some(SCHEMA_URL.to_string()),
+            schema: SCHEMA_URL.to_string(),
             page_size: 500,
             check_for_updates: true,
             sql_editor: SQLEditorSettings {

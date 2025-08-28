@@ -80,8 +80,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
+export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
 
 /** user-defined types **/
 
@@ -152,7 +152,7 @@ export type Settings = {
 /**
  * Remote schema url for autocompletion.
  */
-$schema: string | null; 
+$schema: string; 
 /**
  * Number of rows to be fetched per page.
  */

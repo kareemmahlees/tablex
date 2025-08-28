@@ -35,7 +35,7 @@ import CodeMirror, {
 } from "@uiw/react-codemirror"
 import { AlertTriangle, Loader2, Play, Rainbow } from "lucide-react"
 import { useMemo } from "react"
-import { useSettings } from "../settings/manager"
+import { useSettings } from "../settings/context"
 
 const biggerFont = ({ fontSize }: { fontSize: number }) =>
   EditorView.theme({

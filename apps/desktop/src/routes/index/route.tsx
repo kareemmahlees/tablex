@@ -1,7 +1,7 @@
 import { commands } from "@/bindings"
 import { ConnectionCard } from "@/features/connections/components/connection-card"
 import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
-import { useSettings } from "@/features/settings/manager"
+import { useSettings } from "@/features/settings/context"
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"

@@ -1,4 +1,4 @@
-import { useSettings } from "@/features/settings/manager"
+import { useSettings } from "@/features/settings/context"
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { PaginationState } from "@tanstack/react-table"
 import { useMemo, useState } from "react"

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDBSchema } from "@/features/common/db-context"
-import { useSettings } from "@/features/settings/manager"
+import { useSettings } from "@/features/settings/context"
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { useMatchRoute, useParams, useRouter } from "@tanstack/react-router"
 import { ChevronsUpDown } from "lucide-react"

@@ -4,6 +4,7 @@
   "description": "The configuration object for TableX's settings.",
   "type": "object",
   "required": [
+    "$schema",
     "checkForUpdates",
     "pageSize",
     "sqlEditor"
@@ -11,10 +12,7 @@
   "properties": {
     "$schema": {
       "description": "Remote schema url for autocompletion.",
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
     "pageSize": {
       "description": "Number of rows to be fetched per page.",

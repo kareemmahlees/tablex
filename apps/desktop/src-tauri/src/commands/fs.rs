@@ -9,7 +9,7 @@ use tx_lib::{
     TxError,
     fs::{read_from_json, write_into_json},
 };
-use tx_settings::{Settings, get_settings_file_path};
+use tx_settings::{SCHEMA_URL, Settings, get_settings_file_path, merge_add_missing};
 
 #[derive(Serialize, Deserialize, Type)]
 #[serde(rename_all = "lowercase")]
@@ -43,7 +43,7 @@ pub fn load_settings_file(app: AppHandle) -> Result<Settings, TxError> {
     let mut settings = read_from_json::<Value>(&get_settings_file_path(&app)?)?;
     let default_settings = serde_json::to_value(Settings::default())?;
 
-    merge(&mut settings, &default_settings);
+    merge_add_missing(&mut settings, &default_settings);
 
     let settings = serde_json::from_value::<Settings>(settings)?;
 
@@ -58,7 +58,11 @@ pub fn write_into_settings_file(app: AppHandle, settings: Value) -> Result<(), T
     let mut stored_settings = read_from_json::<Value>(&get_settings_file_path(&app)?)?;
     merge(&mut stored_settings, &settings);
 
-    let parsed_settings = serde_json::from_value::<Settings>(stored_settings)?;
+    let mut parsed_settings = serde_json::from_value::<Settings>(stored_settings)?;
+
+    if parsed_settings.schema != SCHEMA_URL {
+        parsed_settings.schema = SCHEMA_URL.to_string();
+    }
 
     if parsed_settings.page_size > 2000 {
         log::warn!(page_size = parsed_settings.page_size;"Setting page size to a high value can cause performance issues.");
