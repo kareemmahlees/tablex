@@ -48,11 +48,10 @@
     },
     {
       "identifier":"opener:allow-open-url",
-      "allow": [
-        {
-          "path": "http://localhost:5522/*"
-        }
-      ]
+      "allow": [{
+        "url": "http://localhost:*/*",
+        "app":true
+      }]
     },
     {
       "identifier": "fs:allow-read-file",

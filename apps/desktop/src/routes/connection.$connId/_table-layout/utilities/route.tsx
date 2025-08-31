@@ -223,9 +223,9 @@ function UtilitiesRoute() {
                                           size="sm"
                                           variant="ghost"
                                           className="h-fit w-fit p-1 text-slate-400 hover:text-slate-100"
-                                          onClick={(e) => {
+                                          onClick={async (e) => {
                                             e.stopPropagation()
-                                            openUrl(link.url)
+                                            await openUrl(link.url)
                                           }}
                                         >
                                           <ExternalLink className="h-3 w-3" />

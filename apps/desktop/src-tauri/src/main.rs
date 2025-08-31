@@ -115,7 +115,7 @@ fn main() {
 
     let (args, cmd) = cli::parse_cli_args();
 
-    let tauri_builder = tauri::Builder::default()
+    let mut tauri_builder = tauri::Builder::default()
         .manage(Mutex::new(SharedState::default()))
         .plugin(tauri_plugin_opener::init())
         .plugin(setup_logging_plugin().build())

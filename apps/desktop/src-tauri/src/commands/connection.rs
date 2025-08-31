@@ -1,17 +1,17 @@
-use crate::{state::SharedState, AppState};
+use crate::{AppState, state::SharedState};
 use std::path::PathBuf;
-use tauri::{async_runtime::Mutex, AppHandle, Manager, Runtime};
-#[cfg(feature = "metax")]
-use tauri_plugin_shell::process::CommandChild;
+use tauri::{AppHandle, Manager, Runtime, async_runtime::Mutex};
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
+#[cfg(feature = "metax")]
+use tauri_plugin_shell::process::CommandChild;
 use tauri_specta::Event;
 use tx_handlers::DatabaseConnection;
 use tx_lib::{
+    Result, TxError,
     events::ConnectionsChanged,
     fs::{create_json_file_recursively, read_from_json, write_into_json},
     types::{ConnConfig, ConnectionsFileSchema, Drivers},
-    Result, TxError,
 };
 use uuid::Uuid;
 
@@ -84,7 +84,7 @@ pub async fn establish_connection(
 ) -> Result<()> {
     let state = app.state::<Mutex<SharedState>>();
     let mut state = state.lock().await;
-    let conn = DatabaseConnection::connect(&conn_string, driver).await?;
+    let conn = DatabaseConnection::connect(&conn_string, driver.clone()).await?;
 
     state.conn = Some(conn);
 
@@ -150,6 +150,8 @@ fn spawn_sidecar(app: &AppHandle, driver: Drivers, conn_string: String) -> Comma
         .args(args)
         .spawn()
         .expect("failed to spawn sidecar");
+
+    log::debug!("MetaX started");
     child
 }
 
