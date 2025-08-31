@@ -5,7 +5,6 @@ use tx_handlers::DatabaseConnection;
 #[derive(Default)]
 pub struct SharedState {
     pub conn: Option<DatabaseConnection>,
-    /// `pool` is passed to the Handler
     #[cfg(feature = "metax")]
     pub metax: Option<CommandChild>,
 }
