@@ -1,3 +1,4 @@
+import { commands, MetaXStatus } from "@/bindings"
 import {
   Accordion,
   AccordionContent,
@@ -31,15 +32,24 @@ import {
 export const Route = createFileRoute(
   "/connection/$connId/_table-layout/utilities"
 )({
+  loader: async () => {
+    const [isMetaxBuild, metaxStatus] = await Promise.all([
+      commands.isMetaxBuild(),
+      commands.getMetaxStatus()
+    ])
+    return { isMetaxBuild, metaxStatus }
+  },
   component: UtilitiesRoute
 })
-const utilities = [
+
+const getUtilities = (metaxStatus: MetaXStatus, isMetaxBuild: boolean) => [
   {
     id: "api-server",
     title: "API Server",
     description: "Interact with the Database via HTTP",
-    status: "active",
+    status: metaxStatus,
     icon: <FileText className="h-5 w-5" />,
+    isIncludedInBuild: isMetaxBuild,
     details: {
       links: [
         {
@@ -102,9 +112,9 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case "active":
       return "bg-cyan-500 text-cyan-400"
-    case "ready":
-      return "bg-green-500 text-green-400"
-    case "inactive":
+    case "exited":
+      return "bg-red-500 text-red-400"
+    case "paused":
       return "bg-gray-500 text-gray-400"
     default:
       return "bg-gray-500 text-gray-400"
@@ -112,12 +122,16 @@ const getStatusColor = (status: string) => {
 }
 
 function UtilitiesRoute() {
+  const { isMetaxBuild, metaxStatus } = Route.useLoaderData()
+  console.log(isMetaxBuild)
+  console.log(metaxStatus)
+
   return (
     <ScrollArea className="h-full">
       <div className="mx-auto my-10 w-2/3 space-y-16 lg:w-4/6">
         <h1 className="text-3xl font-semibold">Utilities</h1>
         <Accordion type="multiple" className="space-y-4">
-          {utilities.map((utility) => (
+          {getUtilities(metaxStatus, isMetaxBuild).map((utility) => (
             <AccordionItem
               key={utility.id}
               value={utility.id}
@@ -187,92 +201,101 @@ function UtilitiesRoute() {
                 </AccordionTrigger>
 
                 <AccordionContent className="pb-0">
-                  <CardContent className="space-y-6 pt-0">
-                    <div>
-                      {utility.details.links && (
+                  {!utility.isIncludedInBuild ? (
+                    <CardContent>
+                      <p className="font-semibold">
+                        This utility is not included in this build. Please
+                        install another build that contains this feature.
+                      </p>
+                    </CardContent>
+                  ) : (
+                    <CardContent className="space-y-6 pt-0">
+                      <div>
+                        {utility.details.links && (
+                          <div className="space-y-3">
+                            <h4 className="flex items-center gap-2 text-sm font-semibold text-slate-200">
+                              <ExternalLink className="h-4 w-4 text-cyan-400" />
+                              Quick Links
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              {utility.details.links.map((link, index) => (
+                                <div
+                                  key={index}
+                                  className="flex h-full w-full items-center justify-between rounded-lg border border-slate-700/50 bg-slate-800/50 p-3 transition-colors hover:bg-slate-800"
+                                >
+                                  <div className="relative w-full space-y-3">
+                                    <div className="space-y-1">
+                                      <div className="flex items-start justify-between">
+                                        <div className="text-sm font-medium text-slate-200">
+                                          {link.label}
+                                        </div>
+                                        <div className="absolute right-0 top-0 ml-3 flex gap-1">
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-fit w-fit p-1 text-slate-400 hover:text-slate-100"
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              copyToClipboard(link.url)
+                                            }}
+                                          >
+                                            <Copy className="h-3 w-3" />
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-fit w-fit p-1 text-slate-400 hover:text-slate-100"
+                                            onClick={async (e) => {
+                                              e.stopPropagation()
+                                              await openUrl(link.url)
+                                            }}
+                                          >
+                                            <ExternalLink className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                      {link.description && (
+                                        <div className="text-xs text-slate-400">
+                                          {link.description}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="rounded bg-slate-900/50 px-2 py-1 font-mono text-xs text-cyan-400">
+                                      {link.url}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {utility.details.info && (
                         <div className="space-y-3">
                           <h4 className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-                            <ExternalLink className="h-4 w-4 text-cyan-400" />
-                            Quick Links
+                            <Activity className="h-4 w-4 text-cyan-400" />
+                            Service Details
                           </h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            {utility.details.links.map((link, index) => (
+                          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                            {utility.details.info.map((info, index) => (
                               <div
                                 key={index}
-                                className="flex h-full w-full items-center justify-between rounded-lg border border-slate-700/50 bg-slate-800/50 p-3 transition-colors hover:bg-slate-800"
+                                className="rounded-lg border border-slate-700/50 bg-slate-800/50 p-3"
                               >
-                                <div className="relative w-full space-y-3">
-                                  <div className="space-y-1">
-                                    <div className="flex items-start justify-between">
-                                      <div className="text-sm font-medium text-slate-200">
-                                        {link.label}
-                                      </div>
-                                      <div className="absolute right-0 top-0 ml-3 flex gap-1">
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          className="h-fit w-fit p-1 text-slate-400 hover:text-slate-100"
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            copyToClipboard(link.url)
-                                          }}
-                                        >
-                                          <Copy className="h-3 w-3" />
-                                        </Button>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          className="h-fit w-fit p-1 text-slate-400 hover:text-slate-100"
-                                          onClick={async (e) => {
-                                            e.stopPropagation()
-                                            await openUrl(link.url)
-                                          }}
-                                        >
-                                          <ExternalLink className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                    {link.description && (
-                                      <div className="text-xs text-slate-400">
-                                        {link.description}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="rounded bg-slate-900/50 px-2 py-1 font-mono text-xs text-cyan-400">
-                                    {link.url}
-                                  </div>
+                                <div className="mb-1 text-xs text-slate-400">
+                                  {info.label}
+                                </div>
+                                <div className="text-sm font-semibold text-cyan-400">
+                                  {info.value}
                                 </div>
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
-                    </div>
-
-                    {utility.details.info && (
-                      <div className="space-y-3">
-                        <h4 className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-                          <Activity className="h-4 w-4 text-cyan-400" />
-                          Service Details
-                        </h4>
-                        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                          {utility.details.info.map((info, index) => (
-                            <div
-                              key={index}
-                              className="rounded-lg border border-slate-700/50 bg-slate-800/50 p-3"
-                            >
-                              <div className="mb-1 text-xs text-slate-400">
-                                {info.label}
-                              </div>
-                              <div className="text-sm font-semibold text-cyan-400">
-                                {info.value}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
+                    </CardContent>
+                  )}
                 </AccordionContent>
               </Card>
             </AccordionItem>

@@ -8,13 +8,11 @@ mod state;
 #[cfg(feature = "updater")]
 mod updater;
 
-#[cfg(not(debug_assertions))]
-use log::Level;
-
 use commands::{connection::*, fs::*, row::*, table::*};
 #[cfg(debug_assertions)]
 use specta_typescript::{BigIntExportBehavior, Typescript};
 use state::SharedState;
+use std::sync::Arc;
 use tauri::{AppHandle, Manager, State, WindowEvent, async_runtime::Mutex};
 use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 use tauri_specta::{Builder, collect_commands, collect_events};
@@ -55,18 +53,22 @@ fn setup_logging_plugin() -> tauri_plugin_log::Builder {
     let builder = builder.target(Target::new(TargetKind::Stdout));
 
     #[cfg(not(debug_assertions))]
-    let builder = builder.target(Target::new(TargetKind::LogDir { file_name: None }).filter(
-        |metadata| {
-            metadata.level() != Level::Debug
-                && metadata.level() != Level::Trace
-                && !metadata.target().starts_with("tao")
-        },
-    ));
+    {
+        use log::Level;
+
+        let builder = builder.target(Target::new(TargetKind::LogDir { file_name: None }).filter(
+            |metadata| {
+                metadata.level() != Level::Debug
+                    && metadata.level() != Level::Trace
+                    && !metadata.target().starts_with("tao")
+            },
+        ));
+    }
 
     builder
 }
 
-type AppState<'a> = State<'a, Mutex<SharedState>>;
+type AppState<'a> = State<'a, Arc<Mutex<SharedState>>>;
 
 fn main() {
     let builder = Builder::<tauri::Wry>::new()
@@ -75,7 +77,9 @@ fn main() {
         .constant("SETTINGS_FILE_PATH", SETTINGS_FILE_PATH)
         .constant("KEYBINDINGS_FILE_NAME", KEYBINDINGS_FILE_PATH)
         .commands(collect_commands![
+            is_metax_build,
             kill_metax,
+            get_metax_status,
             // Connection commands.
             test_connection,
             create_connection_record,
@@ -116,7 +120,7 @@ fn main() {
     let (args, cmd) = cli::parse_cli_args();
 
     let mut tauri_builder = tauri::Builder::default()
-        .manage(Mutex::new(SharedState::default()))
+        .manage(Arc::new(Mutex::new(SharedState::default())))
         .plugin(tauri_plugin_opener::init())
         .plugin(setup_logging_plugin().build())
         .plugin(tauri_plugin_fs::init())
@@ -134,12 +138,12 @@ fn main() {
 
             builder.mount_events(app);
 
-            #[cfg(debug_assertions)]
-            {
-                let main_window = app.get_webview_window("main").unwrap();
-                main_window.open_devtools();
-                main_window.close_devtools();
-            }
+            // #[cfg(debug_assertions)]
+            // {
+            //     let main_window = app.get_webview_window("main").unwrap();
+            //     main_window.open_devtools();
+            //     main_window.close_devtools();
+            // }
 
             #[cfg(feature = "updater")]
             {
@@ -158,8 +162,7 @@ fn main() {
             if let WindowEvent::Destroyed = event {
                 let state = window.state::<Mutex<SharedState>>();
                 tauri::async_runtime::block_on(async move {
-                    let mut state = state.lock().await;
-                    state.cleanup().await
+                    state.lock().await.cleanup();
                 });
             }
         });
