@@ -8,6 +8,7 @@ use tx_lib::TxError;
 #[derive(Default)]
 pub struct SharedState {
     pub conn: Option<DatabaseConnection>,
+    pub conn_string: Option<String>,
     #[cfg(feature = "metax")]
     pub metax: MetaXState,
 }
@@ -21,7 +22,7 @@ impl SharedState {
     }
 }
 
-#[derive(Default, Clone, Type, Serialize, Deserialize)]
+#[derive(Default, Clone, Type, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub enum MetaXStatus {
     Active,
@@ -30,7 +31,7 @@ pub enum MetaXStatus {
     Paused,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 #[cfg(feature = "metax")]
 pub struct MetaXState {
     pub command_child: Option<CommandChild>,

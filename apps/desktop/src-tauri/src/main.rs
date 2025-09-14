@@ -79,6 +79,7 @@ fn main() {
         .commands(collect_commands![
             is_metax_build,
             kill_metax,
+            start_metax,
             get_metax_status,
             // Connection commands.
             test_connection,

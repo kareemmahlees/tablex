@@ -93,6 +93,7 @@ pub async fn establish_connection(
     let conn = DatabaseConnection::connect(&conn_string, driver.clone()).await?;
 
     state.conn = Some(conn);
+    state.conn_string = Some(conn_string.clone());
 
     #[cfg(feature = "metax")]
     {
@@ -107,6 +108,8 @@ pub async fn establish_connection(
                             CommandEvent::Error(_) | CommandEvent::Terminated(_) => {
                                 let mut shared = _shared.lock().await;
                                 shared.metax.status = MetaXStatus::Exited;
+                                shared.metax.command_child = None;
+                                break;
                             }
                             CommandEvent::Stderr(_) | CommandEvent::Stdout(_) => {}
                             _ => todo!(),
@@ -140,6 +143,49 @@ pub async fn kill_metax(_state: AppState<'_>) -> Result<()> {
 
 #[tauri::command]
 #[specta::specta]
+pub async fn start_metax(app: AppHandle, _state: AppState<'_>) -> Result<()> {
+    #[cfg(feature = "metax")]
+    {
+        use crate::state::MetaXState;
+
+        let shared = _state.inner().clone();
+        let mut state = _state.lock().await;
+        let conn = &state.conn;
+        let conn_string = state.conn_string.clone().unwrap();
+        let driver = match conn.as_ref().unwrap() {
+            DatabaseConnection::Sqlite { .. } => Drivers::SQLite,
+            DatabaseConnection::Postgres { .. } => Drivers::PostgreSQL,
+            DatabaseConnection::Mysql { .. } => Drivers::MySQL,
+        };
+
+        let (command_child, status) = match spawn_sidecar(&app, driver, conn_string) {
+            Err(_) => (None, MetaXStatus::Exited),
+            Ok((mut rx, child)) => {
+                tauri::async_runtime::spawn(async move {
+                    while let Some(event) = rx.recv().await {
+                        match event {
+                            CommandEvent::Error(_) | CommandEvent::Terminated(_) => {
+                                let mut shared = shared.lock().await;
+                                shared.metax.status = MetaXStatus::Exited;
+                                shared.metax.command_child = None;
+                                break;
+                            }
+                            CommandEvent::Stderr(_) | CommandEvent::Stdout(_) => {}
+                            _ => todo!(),
+                        }
+                    }
+                });
+                (Some(child), MetaXStatus::Active)
+            }
+        };
+
+        state.metax = MetaXState::new(command_child, status);
+    }
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn is_metax_build() -> bool {
     cfg!(feature = "metax")
 }
@@ -147,10 +193,13 @@ pub async fn is_metax_build() -> bool {
 #[tauri::command]
 #[specta::specta]
 pub async fn get_metax_status(_state: AppState<'_>) -> Result<MetaXStatus> {
-    #[cfg(feature = "metax")]
-    return Ok(_state.lock().await.metax.status.clone());
+    let status = if cfg!(feature = "metax") {
+        _state.lock().await.metax.status.clone()
+    } else {
+        MetaXStatus::Exited
+    };
 
-    Ok(MetaXStatus::Exited)
+    Ok(status)
 }
 
 #[cfg(feature = "metax")]

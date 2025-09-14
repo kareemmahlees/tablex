@@ -15,7 +15,7 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { openUrl } from "@tauri-apps/plugin-opener"
 import {
   Activity,
@@ -25,8 +25,7 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Server,
-  Settings
+  Server
 } from "lucide-react"
 
 export const Route = createFileRoute(
@@ -50,6 +49,12 @@ const getUtilities = (metaxStatus: MetaXStatus, isMetaxBuild: boolean) => [
     status: metaxStatus,
     icon: <FileText className="h-5 w-5" />,
     isIncludedInBuild: isMetaxBuild,
+    onStop: async () => await commands.killMetax(),
+    onStart: async () => await commands.startMetax(),
+    onRestart: async () => {
+      await commands.killMetax()
+      await commands.startMetax()
+    },
     details: {
       links: [
         {
@@ -111,20 +116,15 @@ const getUtilities = (metaxStatus: MetaXStatus, isMetaxBuild: boolean) => [
 const getStatusColor = (status: string) => {
   switch (status) {
     case "active":
-      return "bg-cyan-500 text-cyan-400"
+      return "bg-cyan-500"
     case "exited":
-      return "bg-red-500 text-red-400"
-    case "paused":
-      return "bg-gray-500 text-gray-400"
-    default:
-      return "bg-gray-500 text-gray-400"
+      return "bg-red-500"
   }
 }
 
 function UtilitiesRoute() {
   const { isMetaxBuild, metaxStatus } = Route.useLoaderData()
-  console.log(isMetaxBuild)
-  console.log(metaxStatus)
+  const router = useRouter()
 
   return (
     <ScrollArea className="h-full">
@@ -165,28 +165,40 @@ function UtilitiesRoute() {
                                   variant="ghost"
                                   className="h-8 w-8 p-0 text-slate-400 hover:text-slate-100"
                                   onClick={(e) => e.stopPropagation()}
+                                  disabled={!utility.isIncludedInBuild}
                                 >
                                   {utility.status === "active" ? (
-                                    <Pause className="size-4" />
+                                    <Pause
+                                      className="size-4"
+                                      onClick={async () => {
+                                        await utility.onStop()
+                                        await router.invalidate()
+                                      }}
+                                    />
                                   ) : (
-                                    <Play className="size-4" />
+                                    <Play
+                                      className="size-4"
+                                      onClick={async () => {
+                                        await utility.onStart()
+                                        await router.invalidate()
+                                      }}
+                                    />
                                   )}
                                 </Button>
                                 <Button
                                   size="sm"
                                   variant="ghost"
                                   className="h-8 w-8 p-0 text-slate-400 hover:text-slate-100"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={async (e) => e.stopPropagation()}
+                                  disabled={!utility.isIncludedInBuild}
                                 >
-                                  <RotateCcw className="size-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 text-slate-400 hover:text-slate-100"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Settings className="size-4" />
+                                  <RotateCcw
+                                    className="size-4"
+                                    onClick={async () => {
+                                      await utility.onRestart()
+                                      await router.invalidate()
+                                    }}
+                                  />
                                 </Button>
                               </div>
                             </div>

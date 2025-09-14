@@ -11,6 +11,9 @@ async isMetaxBuild() : Promise<boolean> {
 async killMetax() : Promise<null> {
     return await TAURI_INVOKE("kill_metax");
 },
+async startMetax() : Promise<null> {
+    return await TAURI_INVOKE("start_metax");
+},
 async getMetaxStatus() : Promise<MetaXStatus> {
     return await TAURI_INVOKE("get_metax_status");
 },
@@ -86,8 +89,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
 export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
+export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
 
 /** user-defined types **/
 
