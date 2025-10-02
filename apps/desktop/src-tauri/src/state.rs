@@ -1,8 +1,8 @@
-use sea_query::{Cond, Expr, Iden, Query, SqliteQueryBuilder};
+use sea_query::{Cond, Expr, Func, Iden, Query, SqliteQueryBuilder};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use sqlx::{SqlitePool, sqlite::SqliteConnectOptions};
+use sqlx::{SqlitePool, prelude::FromRow, sqlite::SqliteConnectOptions};
 use tauri::{AppHandle, Manager, Runtime};
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
@@ -134,5 +134,19 @@ impl Storage {
 
         sqlx::query_with(&query, values).execute(&self.pool).await?;
         Ok(())
+    }
+    pub async fn connections_count(&self) -> Result<i64, TxError> {
+        let (query, values) = Query::select()
+            .expr(Func::count(Expr::col(Connection::Id)))
+            .from(Connection::Table)
+            .build_sqlx(SqliteQueryBuilder);
+
+        #[derive(FromRow)]
+        struct ConnectionsCount(i64);
+
+        let res = sqlx::query_as_with::<_, ConnectionsCount, _>(&query, values)
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(res.0)
     }
 }

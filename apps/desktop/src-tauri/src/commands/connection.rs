@@ -243,10 +243,9 @@ fn spawn_sidecar(
 
 #[tauri::command]
 #[specta::specta]
-pub fn connections_exist(app: tauri::AppHandle) -> Result<bool> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
-    if connections.is_empty() {
+pub async fn connections_exist(storage: State<'_, Storage>) -> Result<bool> {
+    let connections_count = storage.connections_count().await?;
+    if connections_count == 0 {
         return Ok(false);
     }
     Ok(true)
