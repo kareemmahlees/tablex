@@ -1,13 +1,16 @@
-use sea_query::{Cond, Expr, Func, Iden, Query, SqliteQueryBuilder};
+use sea_query::{Expr, Func, Iden, Query, SqliteQueryBuilder};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use sqlx::{SqlitePool, prelude::FromRow, sqlite::SqliteConnectOptions};
-use tauri::{AppHandle, Manager, Runtime};
+use tauri::{Manager, Runtime};
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::process::CommandChild;
 use tx_handlers::DatabaseConnection;
-use tx_lib::{TxError, types::Drivers};
+use tx_lib::{
+    TxError,
+    types::{ConnConfig, Drivers},
+};
 
 #[derive(Default)]
 pub struct SharedState {
@@ -148,5 +151,29 @@ impl Storage {
             .fetch_one(&self.pool)
             .await?;
         Ok(res.0)
+    }
+
+    pub async fn get_all_connections(&self) -> Result<Vec<ConnConfig>, TxError> {
+        let (query, values) = Query::select()
+            .from(Connection::Table)
+            .build_sqlx(SqliteQueryBuilder);
+
+        let res = sqlx::query_as_with::<_, ConnConfig, _>(&query, values)
+            .fetch_all(&self.pool)
+            .await?;
+
+        Ok(res)
+    }
+
+    pub async fn get_connection_by_id(&self, conn_id: i64) -> Result<ConnConfig, TxError> {
+        let (query, values) = Query::select()
+            .from(Connection::Table)
+            .and_where(Expr::col(Connection::Id).eq(conn_id))
+            .build_sqlx(SqliteQueryBuilder);
+
+        let res = sqlx::query_as_with::<_, ConnConfig, _>(&query, values)
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(res)
     }
 }

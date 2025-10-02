@@ -25,7 +25,6 @@ use crate::state::Storage;
 fn ensure_config_files_exist(app: &AppHandle) -> Result<(), TxError> {
     ensure_settings_file_exist(&get_settings_file_path(app)?)?;
     ensure_keybindings_file_exist(&get_keybindings_file_path(app)?)?;
-    ensure_connections_file_exist(&get_connections_file_path(app)?)?;
     Ok(())
 }
 
