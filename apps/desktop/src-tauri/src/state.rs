@@ -1,4 +1,4 @@
-use sea_query::{Iden, Query, SqliteQueryBuilder};
+use sea_query::{Cond, Expr, Iden, Query, SqliteQueryBuilder};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -76,6 +76,7 @@ pub struct Storage {
 #[derive(Iden)]
 enum Connection {
     Table,
+    Id,
     Name,
     ConnectionString,
     Driver,
@@ -123,5 +124,15 @@ impl Storage {
             .build_sqlx(SqliteQueryBuilder);
         let res = sqlx::query_with(&query, values).execute(&self.pool).await?;
         Ok(res.last_insert_rowid())
+    }
+
+    pub async fn delete_connection(&self, conn_id: i64) -> Result<(), TxError> {
+        let (query, values) = Query::delete()
+            .from_table(Connection::Table)
+            .and_where(Expr::col(Connection::Id).eq(conn_id))
+            .build_sqlx(SqliteQueryBuilder);
+
+        sqlx::query_with(&query, values).execute(&self.pool).await?;
+        Ok(())
     }
 }

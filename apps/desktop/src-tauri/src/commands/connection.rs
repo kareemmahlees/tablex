@@ -55,16 +55,14 @@ pub async fn create_connection_record(
 
 #[tauri::command]
 #[specta::specta]
-pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
+pub async fn delete_connection_record(
+    storage: State<'_, Storage>,
+    app: tauri::AppHandle,
+    conn_id: i64,
+) -> Result<String> {
+    storage.delete_connection(conn_id).await?;
 
-    contents
-        .remove(&conn_id)
-        .ok_or(TxError::Io(std::io::ErrorKind::Other.into()))?;
-
-    write_into_json(&connections_file_path, contents)?;
-    log::info!(id = conn_id.as_str(); "Connection deleted");
+    log::info!(id = conn_id; "Connection deleted");
 
     ConnectionsChanged.emit(&app).unwrap();
     log::debug!("Event emitted: {:?}", ConnectionsChanged);
