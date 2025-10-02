@@ -1,4 +1,5 @@
 {
   "rust-analyzer.linkedProjects": ["apps/desktop/src-tauri/Cargo.toml"],
+  "rust-analyzer.cargo.features": ["metax", "updater"],
   "typescript.preferences.autoImportFileExcludePatterns": ["@radix-ui/**"]
 }

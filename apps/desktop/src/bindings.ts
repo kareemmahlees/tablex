@@ -5,8 +5,17 @@
 
 
 export const commands = {
+async isMetaxBuild() : Promise<boolean> {
+    return await TAURI_INVOKE("is_metax_build");
+},
 async killMetax() : Promise<null> {
     return await TAURI_INVOKE("kill_metax");
+},
+async startMetax() : Promise<null> {
+    return await TAURI_INVOKE("start_metax");
+},
+async getMetaxStatus() : Promise<MetaXStatus> {
+    return await TAURI_INVOKE("get_metax_status");
 },
 async testConnection(connString: string, driver: Drivers) : Promise<null> {
     return await TAURI_INVOKE("test_connection", { connString, driver });
@@ -80,8 +89,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
 export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
+export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
 
 /** user-defined types **/
 
@@ -125,6 +134,7 @@ export type JsonValue = null | boolean | number | string | JsonValue[] | { [key 
  */
 export type Keybinding = { shortcuts: string[]; command: KeybindingCommand }
 export type KeybindingCommand = Sidebar | Table
+export type MetaXStatus = "active" | "exited" | "paused"
 export type PaginatedRows = { data: DecodedRow[]; pageCount: number }
 export type PaginationData = { pageIndex: number; pageSize: number }
 export type RawQueryResult = { Query: DecodedRow[] } | { Exec: ExecResult }

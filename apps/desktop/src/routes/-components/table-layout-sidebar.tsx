@@ -53,8 +53,8 @@ const items: SidebarItem[] = [
   },
   {
     type: "single",
-    title: "API Docs",
-    url: `/connection/$connId/api-docs`,
+    title: "Utilities",
+    url: `/connection/$connId/utilities`,
     icon: StickyNote
   }
 ]
