@@ -87,10 +87,9 @@ pub async fn establish_connection(
     conn_string: String,
     driver: Drivers,
 ) -> Result<()> {
-    let state = app.state::<Arc<Mutex<SharedState>>>();
-    let _shared = state.inner().clone();
-    let mut state = state.lock().await;
     let conn = DatabaseConnection::connect(&conn_string, driver.clone()).await?;
+    let main_state = app.state::<Arc<Mutex<SharedState>>>();
+    let mut state = main_state.lock().await;
 
     state.conn = Some(conn);
     state.conn_string = Some(conn_string.clone());
@@ -102,11 +101,12 @@ pub async fn establish_connection(
         let (command_child, status) = match spawn_sidecar(&app, driver, conn_string) {
             Err(_) => (None, MetaXStatus::Exited),
             Ok((mut rx, child)) => {
+                let shared = main_state.inner().clone();
                 tauri::async_runtime::spawn(async move {
                     while let Some(event) = rx.recv().await {
                         match event {
                             CommandEvent::Error(_) | CommandEvent::Terminated(_) => {
-                                let mut shared = _shared.lock().await;
+                                let mut shared = shared.lock().await;
                                 shared.metax.status = MetaXStatus::Exited;
                                 shared.metax.command_child = None;
                                 break;
