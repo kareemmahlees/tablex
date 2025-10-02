@@ -1,11 +1,11 @@
 use crate::{
     AppState,
-    state::{MetaXStatus, SharedState},
+    state::{MetaXStatus, SharedState, Storage},
 };
 use std::{path::PathBuf, sync::Arc};
 #[cfg(feature = "metax")]
 use tauri::async_runtime::Receiver;
-use tauri::{AppHandle, Manager, Runtime, async_runtime::Mutex};
+use tauri::{AppHandle, Manager, Runtime, State, async_runtime::Mutex};
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
 #[cfg(feature = "metax")]
@@ -39,24 +39,16 @@ pub async fn test_connection(conn_string: String, driver: Drivers) -> Result<()>
 
 #[tauri::command]
 #[specta::specta]
-pub fn create_connection_record(
-    app: tauri::AppHandle,
+pub async fn create_connection_record(
+    storage: State<'_, Storage>,
     conn_string: String,
     conn_name: String,
     driver: Drivers,
 ) -> Result<String> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
-    let connection = ConnConfig {
-        driver,
-        conn_string,
-        conn_name,
-    };
-    let id = Uuid::new_v4().to_string();
-    contents.insert(id.clone(), connection);
-
-    write_into_json(&connections_file_path, contents)?;
-    log::info!(id = id.as_str() ;"New connection created");
+    let id = storage
+        .insert_connection(conn_string, conn_name, driver)
+        .await?;
+    log::info!(id = id ;"New connection created");
 
     Ok(String::from("Successfully created connection"))
 }

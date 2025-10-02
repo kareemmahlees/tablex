@@ -20,6 +20,8 @@ use tx_keybindings::*;
 use tx_lib::{TxError, events::*};
 use tx_settings::*;
 
+use crate::state::Storage;
+
 fn ensure_config_files_exist(app: &AppHandle) -> Result<(), TxError> {
     ensure_settings_file_exist(&get_settings_file_path(app)?)?;
     ensure_keybindings_file_exist(&get_keybindings_file_path(app)?)?;
@@ -131,20 +133,16 @@ fn main() {
         .setup(move |app| {
             let app_handle = app.app_handle();
 
-            tauri::async_runtime::block_on(async move {
+            let storage = tauri::async_runtime::block_on(async move {
                 cli::handle_cli_args(app_handle, args, cmd).await;
+                let storage = Storage::setup(app_handle).await;
+                storage
             });
+            app.manage(storage);
 
             ensure_config_files_exist(app_handle)?;
 
             builder.mount_events(app);
-
-            // #[cfg(debug_assertions)]
-            // {
-            //     let main_window = app.get_webview_window("main").unwrap();
-            //     main_window.open_devtools();
-            //     main_window.close_devtools();
-            // }
 
             #[cfg(feature = "updater")]
             {

@@ -17,6 +17,17 @@ pub enum Drivers {
     MySQL,
 }
 
+impl std::fmt::Display for Drivers {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::SQLite => "SQLite",
+            Self::PostgreSQL => "PostgreSQL",
+            Self::MySQL => "MySQL",
+        };
+        write!(f, "{s}")
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Type, Clone)]
 #[serde(rename_all = "camelCase")]
 /// Connection Config Stored inside `connections.json` file.
