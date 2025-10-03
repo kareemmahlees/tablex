@@ -6,7 +6,7 @@ use std::path::PathBuf;
 
 use crate::TxError;
 
-/// Write into _any_ json file (e.g `connections.json`, `keybindings.json`).
+/// Write into _any_ json file (e.g `keybindings.json`).
 pub fn write_into_json<S>(path: &PathBuf, contents: S) -> Result<(), TxError>
 where
     S: Serialize,
@@ -20,7 +20,7 @@ where
     Ok(())
 }
 
-/// Read from _any_ json file (e.g `connections.json`, `keybindings.json`).
+/// Read from _any_ json file (e.g `keybindings.json`).
 ///
 /// `D` represents the type to which the contents of the file will be deserialized into.
 pub fn read_from_json<D>(path: &PathBuf) -> Result<D, TxError>

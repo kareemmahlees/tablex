@@ -1,11 +1,11 @@
 use crate::{
     AppState,
-    state::{MetaXStatus, SharedState},
+    state::{MetaXStatus, SharedState, Storage},
 };
-use std::{path::PathBuf, sync::Arc};
+use std::sync::Arc;
 #[cfg(feature = "metax")]
 use tauri::async_runtime::Receiver;
-use tauri::{AppHandle, Manager, Runtime, async_runtime::Mutex};
+use tauri::{AppHandle, Manager, State, async_runtime::Mutex};
 #[cfg(feature = "metax")]
 use tauri_plugin_shell::ShellExt;
 #[cfg(feature = "metax")]
@@ -13,17 +13,9 @@ use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tauri_specta::Event;
 use tx_handlers::DatabaseConnection;
 use tx_lib::{
-    Result, TxError,
+    Result,
     events::ConnectionsChanged,
-    fs::{create_json_file_recursively, read_from_json, write_into_json},
-    types::{ConnConfig, ConnectionsFileSchema, Drivers},
-};
-use uuid::Uuid;
-
-const CONNECTIONS_FILE_PATH: &str = if cfg!(debug_assertions) {
-    "dev/connections.json"
-} else {
-    "connections.json"
+    types::{ConnConfig, Drivers},
 };
 
 #[tauri::command]
@@ -39,40 +31,30 @@ pub async fn test_connection(conn_string: String, driver: Drivers) -> Result<()>
 
 #[tauri::command]
 #[specta::specta]
-pub fn create_connection_record(
-    app: tauri::AppHandle,
+pub async fn create_connection_record(
+    storage: State<'_, Storage>,
     conn_string: String,
     conn_name: String,
     driver: Drivers,
 ) -> Result<String> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
-    let connection = ConnConfig {
-        driver,
-        conn_string,
-        conn_name,
-    };
-    let id = Uuid::new_v4().to_string();
-    contents.insert(id.clone(), connection);
-
-    write_into_json(&connections_file_path, contents)?;
-    log::info!(id = id.as_str() ;"New connection created");
+    let id = storage
+        .insert_connection(conn_string, conn_name, driver)
+        .await?;
+    log::info!(id = id ;"New connection created");
 
     Ok(String::from("Successfully created connection"))
 }
 
 #[tauri::command]
 #[specta::specta]
-pub fn delete_connection_record(app: tauri::AppHandle, conn_id: String) -> Result<String> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let mut contents = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
+pub async fn delete_connection_record(
+    storage: State<'_, Storage>,
+    app: tauri::AppHandle,
+    conn_id: i64,
+) -> Result<String> {
+    storage.delete_connection(conn_id).await?;
 
-    contents
-        .remove(&conn_id)
-        .ok_or(TxError::Io(std::io::ErrorKind::Other.into()))?;
-
-    write_into_json(&connections_file_path, contents)?;
-    log::info!(id = conn_id.as_str(); "Connection deleted");
+    log::info!(id = conn_id; "Connection deleted");
 
     ConnectionsChanged.emit(&app).unwrap();
     log::debug!("Event emitted: {:?}", ConnectionsChanged);
@@ -193,13 +175,11 @@ pub async fn is_metax_build() -> bool {
 #[tauri::command]
 #[specta::specta]
 pub async fn get_metax_status(_state: AppState<'_>) -> Result<MetaXStatus> {
-    let status = if cfg!(feature = "metax") {
-        _state.lock().await.metax.status.clone()
-    } else {
-        MetaXStatus::Exited
-    };
+    #[cfg(feature = "metax")]
+    return Ok(_state.lock().await.metax.status.clone());
 
-    Ok(status)
+    #[cfg(not(feature = "metax"))]
+    return Ok(MetaXStatus::Exited);
 }
 
 #[cfg(feature = "metax")]
@@ -253,10 +233,9 @@ fn spawn_sidecar(
 
 #[tauri::command]
 #[specta::specta]
-pub fn connections_exist(app: tauri::AppHandle) -> Result<bool> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
-    if connections.is_empty() {
+pub async fn connections_exist(storage: State<'_, Storage>) -> Result<bool> {
+    let connections_count = storage.connections_count().await?;
+    if connections_count == 0 {
         return Ok(false);
     }
     Ok(true)
@@ -264,39 +243,17 @@ pub fn connections_exist(app: tauri::AppHandle) -> Result<bool> {
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connections(app: tauri::AppHandle) -> Result<ConnectionsFileSchema> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
+pub async fn get_connections(storage: State<'_, Storage>) -> Result<Vec<ConnConfig>> {
+    let connections = storage.get_all_connections().await?;
     Ok(connections)
 }
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_connection_details(app: tauri::AppHandle, conn_id: String) -> Result<ConnConfig> {
-    let connections_file_path = get_connections_file_path(&app)?;
-    let connections = read_from_json::<ConnectionsFileSchema>(&connections_file_path)?;
-    let connection_details = connections
-        .get(&conn_id)
-        .ok_or(TxError::Io(std::io::ErrorKind::NotFound.into()))?;
-    Ok(connection_details.clone())
-}
-
-/// Make sure `connections.json` file exist, if not will create an empty json file for it.
-pub fn ensure_connections_file_exist(path: &PathBuf) -> Result<()> {
-    if path.exists() {
-        log::debug!("{} exists, skipping creation.", CONNECTIONS_FILE_PATH);
-        return Ok(());
-    }
-    create_json_file_recursively(path)?;
-    Ok(())
-}
-
-/// Get the file path to `connections.json`.
-///
-/// **Varies by platform**.
-pub(crate) fn get_connections_file_path<R: Runtime>(app: &tauri::AppHandle<R>) -> Result<PathBuf> {
-    let mut config_dir = app.path().app_config_dir()?;
-
-    config_dir.push(CONNECTIONS_FILE_PATH);
-    Ok(config_dir)
+pub async fn get_connection_details(
+    storage: State<'_, Storage>,
+    conn_id: i64,
+) -> Result<ConnConfig> {
+    let connection = storage.get_connection_by_id(conn_id).await?;
+    Ok(connection)
 }

@@ -1,4 +1,5 @@
 use crate::commands::connection::{create_connection_record, establish_connection};
+use crate::state::Storage;
 use clap::{Command, CommandFactory, Parser, error::ErrorKind};
 use tauri::{AppHandle, Manager};
 use tx_lib::TxError;
@@ -72,11 +73,12 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
 
         if args.save {
             let _ = create_connection_record(
-                app.clone(),
+                app.state::<Storage>(),
                 conn_string,
                 args.conn_name.clone().unwrap(),
                 driver,
             )
+            .await
             .map_err(|e| cmd.error(ErrorKind::Io, e).exit());
         }
 

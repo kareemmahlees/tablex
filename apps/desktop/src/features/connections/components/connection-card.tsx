@@ -18,19 +18,17 @@ const DRIVERS_ICONS: Record<(typeof Drivers)[keyof typeof Drivers], ReactNode> =
     mysql: <MySQL width={30} height={30} />
   }
 
-type ConnectionCardProps = {
-  config: ConnConfig
-}
-
-export const ConnectionCard = ({ config }: ConnectionCardProps) => {
+export const ConnectionCard = ({ connection }: { connection: ConnConfig }) => {
   return (
     <Card className="bg-sidebar transition-all hover:border hover:border-white">
       <CardHeader className="p-4">
         <CardTitle className="flex justify-between text-lg">
-          <span>{config.connName}</span>
-          {DRIVERS_ICONS[config.driver]}
+          <span>{connection.name}</span>
+          {DRIVERS_ICONS[connection.driver]}
         </CardTitle>
-        <CardDescription className="text-xs">{config.driver}</CardDescription>
+        <CardDescription className="text-xs">
+          {connection.driver}
+        </CardDescription>
       </CardHeader>
     </Card>
   )

@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::TxError;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map as JsonMap, Value as JsonValue};
@@ -7,9 +5,8 @@ use specta::Type;
 
 pub type Result<T> = std::result::Result<T, TxError>;
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone, Type)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone, Type, sqlx::Type)]
 #[serde(rename_all = "lowercase")]
-/// Supported drivers, stored inside connection config in `connections.json`.
 pub enum Drivers {
     #[default]
     SQLite,
@@ -17,16 +14,25 @@ pub enum Drivers {
     MySQL,
 }
 
-#[derive(Serialize, Deserialize, Debug, Type, Clone)]
-#[serde(rename_all = "camelCase")]
-/// Connection Config Stored inside `connections.json` file.
-pub struct ConnConfig {
-    pub driver: Drivers,
-    pub conn_string: String,
-    pub conn_name: String,
+impl std::fmt::Display for Drivers {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::SQLite => "SQLite",
+            Self::PostgreSQL => "PostgreSQL",
+            Self::MySQL => "MySQL",
+        };
+        write!(f, "{s}")
+    }
 }
 
-pub type ConnectionsFileSchema = HashMap<String, ConnConfig>;
+#[derive(Serialize, Deserialize, Debug, Type, Clone, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct ConnConfig {
+    pub id: i64,
+    pub driver: Drivers,
+    pub name: String,
+    pub connection_string: String,
+}
 
 #[derive(Serialize, Deserialize, Debug, sqlx::FromRow, Type)]
 pub struct FkRelation {
