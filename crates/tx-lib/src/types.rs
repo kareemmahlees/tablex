@@ -7,7 +7,6 @@ pub type Result<T> = std::result::Result<T, TxError>;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Type, sqlx::Type)]
 #[serde(rename_all = "lowercase")]
-/// Supported drivers, stored inside connection config in `connections.json`.
 pub enum Drivers {
     #[default]
     SQLite,
@@ -28,7 +27,6 @@ impl std::fmt::Display for Drivers {
 
 #[derive(Serialize, Deserialize, Debug, Type, Clone, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
-/// Connection Config Stored inside `connections.json` file.
 pub struct ConnConfig {
     pub id: i64,
     pub driver: Drivers,
