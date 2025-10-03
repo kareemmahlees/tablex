@@ -13,7 +13,7 @@ use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tauri_specta::Event;
 use tx_handlers::DatabaseConnection;
 use tx_lib::{
-    Result, TxError,
+    Result,
     events::ConnectionsChanged,
     types::{ConnConfig, Drivers},
 };
@@ -175,13 +175,11 @@ pub async fn is_metax_build() -> bool {
 #[tauri::command]
 #[specta::specta]
 pub async fn get_metax_status(_state: AppState<'_>) -> Result<MetaXStatus> {
-    let status = if cfg!(feature = "metax") {
-        _state.lock().await.metax.status.clone()
-    } else {
-        MetaXStatus::Exited
-    };
+    #[cfg(feature = "metax")]
+    return Ok(_state.lock().await.metax.status.clone());
 
-    Ok(status)
+    #[cfg(not(feature = "metax"))]
+    return Ok(MetaXStatus::Exited);
 }
 
 #[cfg(feature = "metax")]

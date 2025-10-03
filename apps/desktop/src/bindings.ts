@@ -23,7 +23,7 @@ async testConnection(connString: string, driver: Drivers) : Promise<null> {
 async createConnectionRecord(connString: string, connName: string, driver: Drivers) : Promise<string> {
     return await TAURI_INVOKE("create_connection_record", { connString, connName, driver });
 },
-async deleteConnectionRecord(connId: string) : Promise<string> {
+async deleteConnectionRecord(connId: number) : Promise<string> {
     return await TAURI_INVOKE("delete_connection_record", { connId });
 },
 async establishConnection(connString: string, driver: Drivers) : Promise<null> {
@@ -35,10 +35,10 @@ async dropConnection() : Promise<null> {
 async connectionsExist() : Promise<boolean> {
     return await TAURI_INVOKE("connections_exist");
 },
-async getConnections() : Promise<{ [key in string]: ConnConfig }> {
+async getConnections() : Promise<ConnConfig[]> {
     return await TAURI_INVOKE("get_connections");
 },
-async getConnectionDetails(connId: string) : Promise<ConnConfig> {
+async getConnectionDetails(connId: number) : Promise<ConnConfig> {
     return await TAURI_INVOKE("get_connection_details", { connId });
 },
 async openInExternalEditor(file: ConfigFile) : Promise<null> {
@@ -89,8 +89,8 @@ tableContentsChanged: "table-contents-changed"
 
 /** user-defined constants **/
 
-export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
 export const KEYBINDINGS_FILE_NAME = "dev/keybindings.json" as const;
+export const SETTINGS_FILE_PATH = "dev/settings.json" as const;
 
 /** user-defined types **/
 
@@ -100,7 +100,7 @@ export type ConfigFile = "settings" | "keybindings" | "logs"
 /**
  * Connection Config Stored inside `connections.json` file.
  */
-export type ConnConfig = { driver: Drivers; connString: string; connName: string }
+export type ConnConfig = { id: number; driver: Drivers; name: string; connectionString: string }
 export type ConnectionsChanged = null
 /**
  * Acts as a unified interface for all databases' datatypes.

@@ -18,7 +18,7 @@ export const TableSelectionBreadCrumb = ({
   connId
 }: {
   connName: string
-  connId: string
+  connId: number
 }) => {
   const settings = useSettings()
   const dbSchema = useDBSchema()

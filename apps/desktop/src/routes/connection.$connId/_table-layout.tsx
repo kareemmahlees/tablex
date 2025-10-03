@@ -13,12 +13,17 @@ import { useLocalStorage } from "usehooks-ts"
 import { TableViewSidebar } from "../-components/table-layout-sidebar"
 
 export const Route = createFileRoute("/connection/$connId/_table-layout")({
+  params: {
+    parse: (params) => ({
+      connId: Number(params.connId)
+    })
+  },
   loader: async ({ params: { connId } }) => {
     const [dbSchema, connDetails] = await Promise.all([
       commands.discoverDbSchema(),
       commands.getConnectionDetails(connId)
     ])
-    return { dbSchema, connName: connDetails.connName }
+    return { dbSchema, connName: connDetails.name }
   },
   component: TableViewLayout,
   staleTime: 10 * 60 * 1000 // 1 hour

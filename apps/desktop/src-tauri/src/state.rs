@@ -1,4 +1,4 @@
-use sea_query::{Expr, Func, Iden, Query, SqliteQueryBuilder};
+use sea_query::{Asterisk, Expr, Func, Iden, Query, SqliteQueryBuilder};
 use sea_query_binder::SqlxBinder;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -77,10 +77,12 @@ pub struct Storage {
 }
 
 #[derive(Iden)]
+#[allow(dead_code)]
 enum Connection {
     Table,
     Id,
     Name,
+    #[allow(clippy::enum_variant_names)]
     ConnectionString,
     Driver,
     CreatedAt,
@@ -156,6 +158,7 @@ impl Storage {
     pub async fn get_all_connections(&self) -> Result<Vec<ConnConfig>, TxError> {
         let (query, values) = Query::select()
             .from(Connection::Table)
+            .column(Asterisk)
             .build_sqlx(SqliteQueryBuilder);
 
         let res = sqlx::query_as_with::<_, ConnConfig, _>(&query, values)
@@ -168,6 +171,7 @@ impl Storage {
     pub async fn get_connection_by_id(&self, conn_id: i64) -> Result<ConnConfig, TxError> {
         let (query, values) = Query::select()
             .from(Connection::Table)
+            .column(Asterisk)
             .and_where(Expr::col(Connection::Id).eq(conn_id))
             .build_sqlx(SqliteQueryBuilder);
 

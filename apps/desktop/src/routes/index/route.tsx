@@ -16,12 +16,12 @@ function Index() {
   const connections = Route.useLoaderData()
   const settings = useSettings()
 
-  const onClickConnect = async (connId: string) => {
+  const onClickConnect = async (connId: number) => {
     const connectionDetails = await commands.getConnectionDetails(connId)
 
     try {
       await commands.establishConnection(
-        connectionDetails.connString,
+        connectionDetails.connectionString,
         connectionDetails.driver
       )
     } catch (error) {
@@ -61,14 +61,14 @@ function Index() {
           <NewConnectionBtn />
         </div>
         <ul className="grid h-full w-full grid-cols-3 gap-5 overflow-y-auto">
-          {Object.entries(connections).map(([id, config]) => {
+          {connections.map((connection) => {
             return (
               <li
-                key={id}
-                onClick={() => onClickConnect(id)}
+                key={connection.id}
+                onClick={() => onClickConnect(connection.id)}
                 className="hover:cursor-pointer"
               >
-                <ConnectionCard config={config} />
+                <ConnectionCard connection={connection} />
               </li>
             )
           })}
