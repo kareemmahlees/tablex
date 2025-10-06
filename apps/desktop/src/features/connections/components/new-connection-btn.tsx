@@ -1,5 +1,7 @@
 import { commands } from "@/bindings"
-import { SearchableInput } from "@/components/custom/searchable-input"
+import MySQL from "@/components/icons/mysql"
+import PostgreSQL from "@/components/icons/postgres"
+import SQLite from "@/components/icons/sqlite"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,20 +11,15 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Drivers, MappedDrivers } from "@/lib/types"
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Drivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@tablex/lib/utils"
 import { useRouter } from "@tanstack/react-router"
-import { PlusCircle } from "lucide-react"
+import { CheckCircle2, PlusCircle } from "lucide-react"
 import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
@@ -80,7 +77,12 @@ const NewConnectionForm = ({
 }) => {
   const router = useRouter()
   const form = useForm<z.infer<typeof newConnectionFormSchema>>({
-    resolver: zodResolver(newConnectionFormSchema)
+    resolver: zodResolver(newConnectionFormSchema),
+    defaultValues: {
+      connectionOpts: {
+        driver: Drivers.SQLite
+      }
+    }
   })
 
   const driver = useWatch({
@@ -144,7 +146,9 @@ const NewConnectionForm = ({
           driver === "sqlite" && "gap-y-9"
         )}
       >
-        <div className="flex w-full items-end gap-x-4">
+        <DriverSelector />
+
+        {/* <div className="flex w-full items-end gap-x-4">
           <FormField
             control={form.control}
             name="name"
@@ -179,7 +183,7 @@ const NewConnectionForm = ({
               Test
             </Button>
           </div>
-        )}
+        )} */}
       </form>
     </Form>
   )
@@ -193,19 +197,61 @@ const DriverSelector = () => {
       control={form.control}
       name="connectionOpts.driver"
       render={({ field }) => (
-        <FormItem className="flex flex-col">
-          <FormLabel>Driver</FormLabel>
-          <SearchableInput
-            items={MappedDrivers.map((driver) => ({
-              value: driver.value,
-              label: driver.label
-            }))}
-            placeholder="Select a Database Driver"
-            emptyMsg="No drivers found."
-            onValueChange={field.onChange}
-            preventUnselect
-          />
-          <FormMessage />
+        <FormItem className="w-full">
+          <FormControl>
+            <RadioGroup
+              className="w-full grid-cols-3"
+              defaultValue={field.value}
+              onValueChange={field.onChange}
+            >
+              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+                <RadioGroupItem
+                  id={`sqlite`}
+                  value={Drivers.SQLite}
+                  className="sr-only"
+                />
+                <SQLite className="size-10" />
+                <Label
+                  htmlFor={`sqlite`}
+                  className="text-foreground cursor-pointer text-xs font-medium leading-none after:absolute after:inset-0"
+                >
+                  SQLite
+                </Label>
+                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+              </div>
+              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+                <RadioGroupItem
+                  id={`postgres`}
+                  value={Drivers.PostgreSQL}
+                  className="sr-only"
+                />
+                <PostgreSQL className="size-10" />
+                <Label
+                  htmlFor={`postgres`}
+                  className="text-foreground cursor-pointer text-xs font-medium leading-none after:absolute after:inset-0"
+                >
+                  PostgreSQL
+                </Label>
+
+                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+              </div>
+              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+                <RadioGroupItem
+                  id={`mysql`}
+                  value={Drivers.MySQL}
+                  className="sr-only"
+                />
+                <MySQL className="size-10" />
+                <Label
+                  htmlFor={`mysql`}
+                  className="text-foreground cursor-pointer text-xs font-medium leading-none after:absolute after:inset-0"
+                >
+                  MySQL
+                </Label>
+                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+              </div>
+            </RadioGroup>
+          </FormControl>
         </FormItem>
       )}
     />
