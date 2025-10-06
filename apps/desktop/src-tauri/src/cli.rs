@@ -96,10 +96,8 @@ pub async fn handle_cli_args(app: &AppHandle, args: Args, mut cmd: Command) {
 }
 
 /// If the app is ran with CLI args
-async fn establish_on_the_fly_connection(app: &AppHandle, conn_string: &String) -> Result<Drivers> {
-    let (prefix, _) = conn_string
-        .split_once(':')
-        .ok_or(TxError::InvalidConnectionString)?;
+async fn establish_on_the_fly_connection(app: &AppHandle, conn_id: &String) -> Result<Drivers> {
+    let (prefix, _) = "".split_once(':').ok_or(TxError::InvalidConnectionString)?;
 
     let driver = match prefix {
         "sqlite" | "sqlite3" => Ok(Drivers::SQLite),
@@ -107,7 +105,7 @@ async fn establish_on_the_fly_connection(app: &AppHandle, conn_string: &String) 
         "mysql" => Ok(Drivers::MySQL),
         _ => Err(TxError::UnsupportedDriver(prefix.to_string())),
     }?;
-    establish_connection(app.to_owned(), conn_string.into(), driver.clone()).await?;
+    // establish_connection(app.to_owned(), conn_string.into(), driver.clone()).await?;
 
     Ok(driver)
 }

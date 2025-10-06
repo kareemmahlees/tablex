@@ -26,13 +26,8 @@ function Index() {
   const settings = useSettings()
 
   const onClickConnect = async (connId: number) => {
-    const connectionDetails = await commands.getConnectionDetails(connId)
-
     try {
-      await commands.establishConnection(
-        connectionDetails.connectionString,
-        connectionDetails.driver
-      )
+      await commands.establishConnection(connId)
     } catch (error) {
       return toast.error("Something went wrong.", {
         description: error as string

@@ -24,7 +24,7 @@ pub enum DatabaseConnection {
 }
 
 impl DatabaseConnection {
-    pub async fn connect(url: &str, driver: Drivers) -> Result<Self> {
+    pub async fn connect(url: &str, driver: &Drivers) -> Result<Self> {
         // TODO: use match statement once if_let_guard feature is stable.
         let con = match driver {
             Drivers::SQLite => {

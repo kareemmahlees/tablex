@@ -80,23 +80,6 @@ const NewConnectionForm = ({
     }
   }
 
-  const onConnect = async (data: z.infer<typeof NewConnectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    toast.promise(
-      commands.establishConnection(connString, data.connectionOpts.driver),
-      {
-        id: "establish_connection",
-        success: () => {
-          router.navigate({ to: "/dashboard/table-view/empty" })
-          return null
-        },
-        error: "Failed to establish connection"
-      }
-    )
-  }
-
   const onSave = async (data: z.infer<typeof NewConnectionFormSchema>) => {
     const connString = constructConnectionString({
       ...data.connectionOpts
@@ -159,28 +142,20 @@ const NewConnectionForm = ({
         {renderDriverInputFields()}
 
         {driver && (
-          <div className="col-span-full mt-4 flex items-center justify-center gap-x-4">
+          <div className="mt-10 flex w-full items-center justify-center gap-x-4">
             <Button
               type="button"
-              variant={"secondary"}
               size={"sm"}
-              className="w-[100px]"
-              onClick={form.handleSubmit(onConnect)}
-            >
-              Connect
-            </Button>
-            <Button
-              type="button"
-              className="w-[100px]"
-              size={"sm"}
+              className="w-full"
               onClick={form.handleSubmit(onSave)}
             >
               Save
             </Button>
             <Button
               type="button"
-              className="w-[100px] bg-green-500 hover:bg-green-700"
               size={"sm"}
+              variant={"secondary"}
+              className="w-full"
               onClick={form.handleSubmit(onTest)}
             >
               Test
