@@ -17,7 +17,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { MappedDrivers } from "@/lib/types"
+import { Drivers, MappedDrivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@tablex/lib/utils"
@@ -26,10 +26,28 @@ import { PlusCircle } from "lucide-react"
 import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
-import type { z } from "zod"
-import { NewConnectionFormSchema } from "../schema"
+import { z } from "zod"
 import { PgMySQLConnectionForm } from "./pg-mysql-connection"
 import { SQLiteConnectionForm } from "./sqlite-connection-form"
+
+const connectionOptsSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  host: z.union([z.string().ip({ version: "v4" }), z.literal("localhost")]),
+  port: z.coerce.number({
+    invalid_type_error: "Field is not a valid port"
+  }),
+  db: z.string()
+})
+
+export const newConnectionFormSchema = z.object({
+  name: z.string().max(256),
+  connectionOpts: z.discriminatedUnion("driver", [
+    z.object({ driver: z.literal(Drivers.SQLite), filePath: z.string() }),
+    connectionOptsSchema.extend({ driver: z.literal(Drivers.PostgreSQL) }),
+    connectionOptsSchema.extend({ driver: z.literal(Drivers.MySQL) })
+  ])
+})
 
 export const NewConnectionBtn = () => {
   const [open, setOpen] = useState(false)
@@ -39,7 +57,7 @@ export const NewConnectionBtn = () => {
       <DialogTrigger>
         <Button size={"sm"} className="space-x-2">
           <PlusCircle className="size-4" />
-          <span>New</span>
+          <span>New Connection</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-sidebar">
@@ -61,8 +79,8 @@ const NewConnectionForm = ({
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const router = useRouter()
-  const form = useForm<z.infer<typeof NewConnectionFormSchema>>({
-    resolver: zodResolver(NewConnectionFormSchema)
+  const form = useForm<z.infer<typeof newConnectionFormSchema>>({
+    resolver: zodResolver(newConnectionFormSchema)
   })
 
   const driver = useWatch({
@@ -80,24 +98,7 @@ const NewConnectionForm = ({
     }
   }
 
-  const onConnect = async (data: z.infer<typeof NewConnectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    toast.promise(
-      commands.establishConnection(connString, data.connectionOpts.driver),
-      {
-        id: "establish_connection",
-        success: () => {
-          router.navigate({ to: "/dashboard/table-view/empty" })
-          return null
-        },
-        error: "Failed to establish connection"
-      }
-    )
-  }
-
-  const onSave = async (data: z.infer<typeof NewConnectionFormSchema>) => {
+  const onSave = async (data: z.infer<typeof newConnectionFormSchema>) => {
     const connString = constructConnectionString({
       ...data.connectionOpts
     })
@@ -120,7 +121,7 @@ const NewConnectionForm = ({
     )
   }
 
-  const onTest = async (data: z.infer<typeof NewConnectionFormSchema>) => {
+  const onTest = async (data: z.infer<typeof newConnectionFormSchema>) => {
     const connString = constructConnectionString({
       ...data.connectionOpts
     })
@@ -159,28 +160,20 @@ const NewConnectionForm = ({
         {renderDriverInputFields()}
 
         {driver && (
-          <div className="col-span-full mt-4 flex items-center justify-center gap-x-4">
+          <div className="mt-10 flex w-full items-center justify-center gap-x-4">
             <Button
               type="button"
-              variant={"secondary"}
               size={"sm"}
-              className="w-[100px]"
-              onClick={form.handleSubmit(onConnect)}
-            >
-              Connect
-            </Button>
-            <Button
-              type="button"
-              className="w-[100px]"
-              size={"sm"}
+              className="w-full"
               onClick={form.handleSubmit(onSave)}
             >
               Save
             </Button>
             <Button
               type="button"
-              className="w-[100px] bg-green-500 hover:bg-green-700"
               size={"sm"}
+              variant={"secondary"}
+              className="w-full"
               onClick={form.handleSubmit(onTest)}
             >
               Test
@@ -193,7 +186,7 @@ const NewConnectionForm = ({
 }
 
 const DriverSelector = () => {
-  const form = useFormContext<z.infer<typeof NewConnectionFormSchema>>()
+  const form = useFormContext<z.infer<typeof newConnectionFormSchema>>()
 
   return (
     <FormField

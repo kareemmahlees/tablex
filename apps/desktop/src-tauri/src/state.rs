@@ -15,7 +15,6 @@ use tx_lib::{
 #[derive(Default)]
 pub struct SharedState {
     pub conn: Option<DatabaseConnection>,
-    pub conn_string: Option<String>,
     #[cfg(feature = "metax")]
     pub metax: MetaXState,
 }

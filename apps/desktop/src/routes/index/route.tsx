@@ -1,9 +1,18 @@
 import { commands } from "@/bindings"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
 import { ConnectionCard } from "@/features/connections/components/connection-card"
 import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
 import { useSettings } from "@/features/settings/context"
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute } from "@tanstack/react-router"
+import { Database } from "lucide-react"
 import { toast } from "sonner"
 
 export const Route = createFileRoute("/")({
@@ -17,13 +26,8 @@ function Index() {
   const settings = useSettings()
 
   const onClickConnect = async (connId: number) => {
-    const connectionDetails = await commands.getConnectionDetails(connId)
-
     try {
-      await commands.establishConnection(
-        connectionDetails.connectionString,
-        connectionDetails.driver
-      )
+      await commands.establishConnection(connId)
     } catch (error) {
       return toast.error("Something went wrong.", {
         description: error as string
@@ -51,6 +55,30 @@ function Index() {
       to: "/connection/$connId/table-view/empty",
       params: { connId }
     })
+  }
+
+  if (connections.length === 0) {
+    return (
+      <main className="flex h-full flex-col items-center justify-center">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant={"icon"}>
+              <Database />
+            </EmptyMedia>
+          </EmptyHeader>
+          <div className="max-w-lg space-y-3">
+            <EmptyTitle>No Connections</EmptyTitle>
+            <EmptyDescription>
+              You haven't created any connections yet. Get started by creating
+              your first connection
+            </EmptyDescription>
+          </div>
+          <EmptyContent>
+            <NewConnectionBtn />
+          </EmptyContent>
+        </Empty>
+      </main>
+    )
   }
 
   return (
