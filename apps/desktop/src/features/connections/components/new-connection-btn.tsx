@@ -11,7 +11,15 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Drivers } from "@/lib/types"
@@ -24,27 +32,9 @@ import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
+import { newConnectionFormSchema } from "../schema"
 import { PgMySQLConnectionForm } from "./pg-mysql-connection"
 import { SQLiteConnectionForm } from "./sqlite-connection-form"
-
-const connectionOptsSchema = z.object({
-  username: z.string(),
-  password: z.string(),
-  host: z.union([z.string().ip({ version: "v4" }), z.literal("localhost")]),
-  port: z.coerce.number({
-    invalid_type_error: "Field is not a valid port"
-  }),
-  db: z.string()
-})
-
-export const newConnectionFormSchema = z.object({
-  name: z.string().max(256),
-  connectionOpts: z.discriminatedUnion("driver", [
-    z.object({ driver: z.literal(Drivers.SQLite), filePath: z.string() }),
-    connectionOptsSchema.extend({ driver: z.literal(Drivers.PostgreSQL) }),
-    connectionOptsSchema.extend({ driver: z.literal(Drivers.MySQL) })
-  ])
-})
 
 export const NewConnectionBtn = () => {
   const [open, setOpen] = useState(false)
@@ -142,24 +132,22 @@ const NewConnectionForm = ({
     <Form {...form}>
       <form
         className={cn(
-          "flex h-full flex-col items-center justify-center overflow-hidden",
-          driver === "sqlite" && "gap-y-9"
+          "flex h-full flex-col items-center justify-center gap-y-7 overflow-hidden"
         )}
       >
-        <DriverSelector />
-
-        {/* <div className="flex w-full items-end gap-x-4">
+        <div className="w-full space-y-5">
+          <DriverSelector />
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="w-full flex-1">
                 <FormLabel>Name</FormLabel>
                 <Input {...field} placeholder="Connection Name" />
+                <FormMessage />
               </FormItem>
             )}
           />
-          <DriverSelector />
         </div>
         {renderDriverInputFields()}
 
@@ -183,7 +171,7 @@ const NewConnectionForm = ({
               Test
             </Button>
           </div>
-        )} */}
+        )}
       </form>
     </Form>
   )
