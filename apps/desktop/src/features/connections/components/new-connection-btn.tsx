@@ -17,7 +17,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { MappedDrivers } from "@/lib/types"
+import { Drivers, MappedDrivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@tablex/lib/utils"
@@ -26,10 +26,28 @@ import { PlusCircle } from "lucide-react"
 import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
-import type { z } from "zod"
-import { NewConnectionFormSchema } from "../schema"
+import { z } from "zod"
 import { PgMySQLConnectionForm } from "./pg-mysql-connection"
 import { SQLiteConnectionForm } from "./sqlite-connection-form"
+
+const connectionOptsSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  host: z.union([z.string().ip({ version: "v4" }), z.literal("localhost")]),
+  port: z.coerce.number({
+    invalid_type_error: "Field is not a valid port"
+  }),
+  db: z.string()
+})
+
+export const newConnectionFormSchema = z.object({
+  name: z.string().max(256),
+  connectionOpts: z.discriminatedUnion("driver", [
+    z.object({ driver: z.literal(Drivers.SQLite), filePath: z.string() }),
+    connectionOptsSchema.extend({ driver: z.literal(Drivers.PostgreSQL) }),
+    connectionOptsSchema.extend({ driver: z.literal(Drivers.MySQL) })
+  ])
+})
 
 export const NewConnectionBtn = () => {
   const [open, setOpen] = useState(false)
@@ -61,8 +79,8 @@ const NewConnectionForm = ({
   setOpen: Dispatch<SetStateAction<boolean>>
 }) => {
   const router = useRouter()
-  const form = useForm<z.infer<typeof NewConnectionFormSchema>>({
-    resolver: zodResolver(NewConnectionFormSchema)
+  const form = useForm<z.infer<typeof newConnectionFormSchema>>({
+    resolver: zodResolver(newConnectionFormSchema)
   })
 
   const driver = useWatch({
@@ -80,7 +98,7 @@ const NewConnectionForm = ({
     }
   }
 
-  const onSave = async (data: z.infer<typeof NewConnectionFormSchema>) => {
+  const onSave = async (data: z.infer<typeof newConnectionFormSchema>) => {
     const connString = constructConnectionString({
       ...data.connectionOpts
     })
@@ -103,7 +121,7 @@ const NewConnectionForm = ({
     )
   }
 
-  const onTest = async (data: z.infer<typeof NewConnectionFormSchema>) => {
+  const onTest = async (data: z.infer<typeof newConnectionFormSchema>) => {
     const connString = constructConnectionString({
       ...data.connectionOpts
     })
@@ -168,7 +186,7 @@ const NewConnectionForm = ({
 }
 
 const DriverSelector = () => {
-  const form = useFormContext<z.infer<typeof NewConnectionFormSchema>>()
+  const form = useFormContext<z.infer<typeof newConnectionFormSchema>>()
 
   return (
     <FormField
