@@ -39,7 +39,7 @@ export const NewConnectionBtn = () => {
       <DialogTrigger>
         <Button size={"sm"} className="space-x-2">
           <PlusCircle className="size-4" />
-          <span>New</span>
+          <span>New Connection</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-sidebar">
