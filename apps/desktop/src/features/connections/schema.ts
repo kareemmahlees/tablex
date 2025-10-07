@@ -15,7 +15,10 @@ export const newConnectionFormSchema = z.object({
   name: z.string().max(256),
   connectionOpts: z.discriminatedUnion("driver", [
     z.object({ driver: z.literal(Drivers.SQLite), filePath: z.string() }),
-    connectionOptsSchema.extend({ driver: z.literal(Drivers.PostgreSQL) }),
+    connectionOptsSchema.extend({
+      driver: z.literal(Drivers.PostgreSQL),
+      sslMode: z.boolean().default(false)
+    }),
     connectionOptsSchema.extend({ driver: z.literal(Drivers.MySQL) })
   ])
 })

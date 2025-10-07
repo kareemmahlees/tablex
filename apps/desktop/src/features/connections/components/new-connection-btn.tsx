@@ -3,6 +3,7 @@ import MySQL from "@/components/icons/mysql"
 import PostgreSQL from "@/components/icons/postgres"
 import SQLite from "@/components/icons/sqlite"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,12 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput
+} from "@/components/ui/input-group"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Drivers } from "@/lib/types"
@@ -27,14 +34,14 @@ import { constructConnectionString } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@tablex/lib/utils"
 import { useRouter } from "@tanstack/react-router"
+import { open as openDialog } from "@tauri-apps/plugin-dialog"
 import { CheckCircle2, PlusCircle } from "lucide-react"
 import { type Dispatch, type SetStateAction, useState } from "react"
 import { useForm, useFormContext, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
 import { newConnectionFormSchema } from "../schema"
-import { PgMySQLConnectionForm } from "./pg-mysql-connection"
-import { SQLiteConnectionForm } from "./sqlite-connection-form"
+import { CommonConnectionOpts } from "./common-connection-opts"
 
 export const NewConnectionBtn = () => {
   const [open, setOpen] = useState(false)
@@ -85,8 +92,9 @@ const NewConnectionForm = ({
       case "sqlite":
         return <SQLiteConnectionForm />
       case "postgresql":
+        return <PostgresConnectionForm />
       case "mysql":
-        return <PgMySQLConnectionForm />
+        return <MySQLConnectionForm />
     }
   }
 
@@ -108,7 +116,8 @@ const NewConnectionForm = ({
           setOpen(false)
           return "Successfully saved connection"
         },
-        error: "Couldn't save connection"
+        error: "Couldn't save connection",
+        position: "bottom-left"
       }
     )
   }
@@ -123,7 +132,8 @@ const NewConnectionForm = ({
         id: "test_connection",
         loading: "Testing connection...",
         success: "Connection is healthy",
-        error: "Connection is unhealthy"
+        error: "Connection is unhealthy",
+        position: "bottom-left"
       }
     )
   }
@@ -151,27 +161,25 @@ const NewConnectionForm = ({
         </div>
         {renderDriverInputFields()}
 
-        {driver && (
-          <div className="mt-10 flex w-full items-center justify-center gap-x-4">
-            <Button
-              type="button"
-              size={"sm"}
-              className="w-full"
-              onClick={form.handleSubmit(onSave)}
-            >
-              Save
-            </Button>
-            <Button
-              type="button"
-              size={"sm"}
-              variant={"secondary"}
-              className="w-full"
-              onClick={form.handleSubmit(onTest)}
-            >
-              Test
-            </Button>
-          </div>
-        )}
+        <div className="mt-10 flex w-full items-center justify-center gap-x-4">
+          <Button
+            type="button"
+            size={"sm"}
+            className="w-full"
+            onClick={form.handleSubmit(onSave)}
+          >
+            Save
+          </Button>
+          <Button
+            type="button"
+            size={"sm"}
+            variant={"secondary"}
+            className="w-full"
+            onClick={form.handleSubmit(onTest)}
+          >
+            Test
+          </Button>
+        </div>
       </form>
     </Form>
   )
@@ -243,5 +251,90 @@ const DriverSelector = () => {
         </FormItem>
       )}
     />
+  )
+}
+
+const SQLiteConnectionForm = () => {
+  const form = useFormContext<z.infer<typeof newConnectionFormSchema>>()
+
+  return (
+    <FormField
+      control={form.control}
+      name="connectionOpts.filePath"
+      render={({ field }) => (
+        <FormItem className="w-full">
+          <FormLabel>File Path</FormLabel>
+          <FormControl>
+            <InputGroup>
+              <InputGroupInput {...field} placeholder="./test/dev.db" />
+              <InputGroupAddon align={"inline-end"}>
+                <InputGroupButton
+                  variant={"secondary"}
+                  onClick={async () => {
+                    const file = await openDialog({
+                      multiple: false,
+                      filters: [
+                        {
+                          name: "DB File",
+                          extensions: [
+                            "db",
+                            "db3",
+                            "s3db",
+                            "sl3",
+                            "sqlite",
+                            "sqlite3"
+                          ]
+                        }
+                      ]
+                    })
+                    field.onChange(file)
+                  }}
+                >
+                  Pick
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
+}
+
+const PostgresConnectionForm = () => {
+  const form = useFormContext<z.infer<typeof newConnectionFormSchema>>()
+
+  return (
+    <div className="grid w-full grid-cols-2 gap-4">
+      <CommonConnectionOpts />
+      <FormField
+        control={form.control}
+        name="connectionOpts.sslMode"
+        render={({ field }) => {
+          return (
+            <FormItem className="mt-2 flex flex-row items-center gap-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel className="text-sm font-normal">
+                Enable SSL Mode
+              </FormLabel>
+            </FormItem>
+          )
+        }}
+      />
+    </div>
+  )
+}
+
+const MySQLConnectionForm = () => {
+  return (
+    <div className="grid w-full grid-cols-2 gap-4">
+      <CommonConnectionOpts />
+    </div>
   )
 }
