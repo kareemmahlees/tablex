@@ -111,8 +111,8 @@ const NewConnectionForm = ({
       {
         id: "save_connection",
         loading: "Saving connection...",
-        success: () => {
-          router.invalidate({ filter: (d) => d.fullPath === "/" })
+        success: async () => {
+          await router.invalidate({ filter: (d) => d.fullPath === "/" })
           setOpen(false)
           return "Successfully saved connection"
         },
