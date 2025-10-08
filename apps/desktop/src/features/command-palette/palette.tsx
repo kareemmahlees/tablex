@@ -7,6 +7,7 @@ import {
   CommandInput,
   CommandItem
 } from "@/components/ui/command"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
@@ -25,10 +26,15 @@ const CommandPalette = () => {
         onClick={() => toggleDialog(true)}
         variant="outline"
         className={cn(
-          "bg-muted/50 text-muted-foreground relative h-8 w-full justify-start rounded-[0.5rem] text-sm font-normal shadow-none"
+          "flex items-center justify-between px-2.5",
+          "bg-muted/50 text-muted-foreground relative h-8 w-full rounded-[0.5rem] text-sm font-normal shadow-none"
         )}
       >
-        Search...
+        <span>Search...</span>
+        <KbdGroup>
+          <Kbd>Ctrl</Kbd>
+          <Kbd>K</Kbd>
+        </KbdGroup>
       </Button>
       <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
         <CommandInput placeholder="Type a command or search..." />
@@ -54,7 +60,7 @@ const GeneralGroup = () => {
     <CommandGroup heading="General">
       <CommandItem
         onSelect={() => {
-          navigate({ to: "/dashboard/settings/preferences" })
+          navigate({ to: "/settings/preferences" })
           toggleDialog()
         }}
       >
@@ -92,7 +98,7 @@ const UtilitiesGroup = () => {
       <CommandItem
         onSelect={() => {
           toggleDialog()
-          navigate({ to: "/dashboard/api-docs" })
+          navigate({ to: "/connection/$connId/utilities" })
         }}
       >
         <FileText className="h-4 w-4" />
@@ -101,7 +107,7 @@ const UtilitiesGroup = () => {
       <CommandItem
         onSelect={() => {
           toggleDialog()
-          navigate({ to: "/dashboard/sql-editor" })
+          navigate({ to: "/connection/$connId/sql-editor" })
         }}
       >
         <Terminal className="h-4 w-4" />
