@@ -8,10 +8,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
-import { newConnectionFormSchema } from "../schema"
+import { connectionFormSchema } from "../schema"
 
 export const CommonConnectionOpts = () => {
-  const form = useFormContext<z.infer<typeof newConnectionFormSchema>>()
+  const form = useFormContext<z.infer<typeof connectionFormSchema>>()
   return (
     <>
       <FormField

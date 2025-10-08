@@ -11,7 +11,7 @@ const connectionOptsSchema = z.object({
   db: z.string()
 })
 
-export const newConnectionFormSchema = z.object({
+export const connectionFormSchema = z.object({
   name: z.string().max(256),
   connectionOpts: z.discriminatedUnion("driver", [
     z.object({ driver: z.literal(Drivers.SQLite), filePath: z.string() }),

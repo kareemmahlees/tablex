@@ -32,7 +32,7 @@ export const ConnectionCard = ({ connection }: { connection: ConnConfig }) => {
       <CardHeader className="p-4">
         <CardTitle className="flex justify-between text-lg">
           <span>{connection.name}</span>
-          <ConnectionOptions connId={connection.id} />
+          <ConnectionOptions connection={connection} />
         </CardTitle>
         <CardDescription className="text-xs">
           {connection.driver}
@@ -42,7 +42,7 @@ export const ConnectionCard = ({ connection }: { connection: ConnConfig }) => {
   )
 }
 
-const ConnectionOptions = ({ connId }: { connId: number }) => {
+const ConnectionOptions = ({ connection }: { connection: ConnConfig }) => {
   const router = useRouter()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   return (
@@ -83,7 +83,7 @@ const ConnectionOptions = ({ connId }: { connId: number }) => {
             <AlertDialogAction
               className={buttonVariants({ variant: "destructive" })}
               onClick={async () => {
-                await commands.deleteConnectionRecord(connId)
+                await commands.deleteConnectionRecord(connection.id)
                 await router.invalidate({ filter: (d) => d.fullPath === "/" })
                 setIsDeleteDialogOpen(false)
               }}
