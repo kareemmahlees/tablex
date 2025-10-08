@@ -1,22 +1,30 @@
-import type { ConnConfig } from "@/bindings"
-import MySQL from "@/components/icons/mysql"
-import PostgreSQL from "@/components/icons/postgres"
-import SQLite from "@/components/icons/sqlite"
+import { commands, type ConnConfig } from "@/bindings"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import type { Drivers } from "@/lib/types"
-import type { ReactNode } from "react"
-
-const DRIVERS_ICONS: Record<(typeof Drivers)[keyof typeof Drivers], ReactNode> =
-  {
-    sqlite: <SQLite width={30} height={30} />,
-    postgresql: <PostgreSQL width={25} height={25} />,
-    mysql: <MySQL width={30} height={30} />
-  }
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { useRouter } from "@tanstack/react-router"
+import { MoreHorizontal, Trash2 } from "lucide-react"
+import { useState } from "react"
 
 export const ConnectionCard = ({ connection }: { connection: ConnConfig }) => {
   return (
@@ -24,12 +32,67 @@ export const ConnectionCard = ({ connection }: { connection: ConnConfig }) => {
       <CardHeader className="p-4">
         <CardTitle className="flex justify-between text-lg">
           <span>{connection.name}</span>
-          {DRIVERS_ICONS[connection.driver]}
+          <ConnectionOptions connection={connection} />
         </CardTitle>
         <CardDescription className="text-xs">
           {connection.driver}
         </CardDescription>
       </CardHeader>
     </Card>
+  )
+}
+
+const ConnectionOptions = ({ connection }: { connection: ConnConfig }) => {
+  const router = useRouter()
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={"ghost"} size={"icon"} className="h-7 w-8">
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation()
+              setIsDeleteDialogOpen(true)
+            }}
+          >
+            <Trash2 />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent className="pointer-events-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              connection
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={buttonVariants({ variant: "destructive" })}
+              onClick={async () => {
+                await commands.deleteConnectionRecord(connection.id)
+                await router.invalidate({ filter: (d) => d.fullPath === "/" })
+                setIsDeleteDialogOpen(false)
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

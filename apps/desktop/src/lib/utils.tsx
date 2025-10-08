@@ -19,7 +19,11 @@ export function constructConnectionString(params: ConnectionStringParams) {
       connString = `${params.driver}:${params.filePath}`
       break
     case Drivers.PostgreSQL:
-      connString = `${params.driver}://${params.username}:${params.password}@${params.host}:${params.port}/${params.db}?sslmode=disable`
+      connString = `${params.driver}://${params.username}:${params.password}@${
+        params.host
+      }:${params.port}/${params.db}?sslmode=${
+        params.sslMode ? "require" : "disable"
+      }`
       break
     case Drivers.MySQL:
       connString = `${params.driver}://${params.username}:${params.password}@${params.host}:${params.port}/${params.db}`

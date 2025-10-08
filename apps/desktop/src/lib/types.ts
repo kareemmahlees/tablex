@@ -25,16 +25,24 @@ export const MappedDrivers = Object.entries(Drivers).map(([key, value]) => {
   }
 })
 
+type CommonConnectionParams = {
+  username: string
+  password: string
+  host: string
+  port: number
+  db: string
+}
+
 export type ConnectionStringParams =
   | {
       driver: typeof Drivers.SQLite
       filePath: string
     }
-  | {
-      driver: typeof Drivers.PostgreSQL | typeof Drivers.MySQL
-      username: string
-      password: string
-      host: string
-      port: number
-      db: string
-    }
+  | ({
+      driver: typeof Drivers.PostgreSQL
+    } & CommonConnectionParams & {
+        sslMode: boolean
+      })
+  | ({
+      driver: typeof Drivers.MySQL
+    } & CommonConnectionParams)

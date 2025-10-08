@@ -1,5 +1,3 @@
-import { commands } from "@/bindings"
-import { SearchableInput } from "@/components/custom/searchable-input"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,48 +7,26 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Drivers, MappedDrivers } from "@/lib/types"
-import { constructConnectionString } from "@/lib/utils"
+import { Form } from "@/components/ui/form"
+import { Drivers } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { cn } from "@tablex/lib/utils"
-import { useRouter } from "@tanstack/react-router"
 import { PlusCircle } from "lucide-react"
-import { type Dispatch, type SetStateAction, useState } from "react"
-import { useForm, useFormContext, useWatch } from "react-hook-form"
-import { toast } from "sonner"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
-import { PgMySQLConnectionForm } from "./pg-mysql-connection"
-import { SQLiteConnectionForm } from "./sqlite-connection-form"
-
-const connectionOptsSchema = z.object({
-  username: z.string(),
-  password: z.string(),
-  host: z.union([z.string().ip({ version: "v4" }), z.literal("localhost")]),
-  port: z.coerce.number({
-    invalid_type_error: "Field is not a valid port"
-  }),
-  db: z.string()
-})
-
-export const newConnectionFormSchema = z.object({
-  name: z.string().max(256),
-  connectionOpts: z.discriminatedUnion("driver", [
-    z.object({ driver: z.literal(Drivers.SQLite), filePath: z.string() }),
-    connectionOptsSchema.extend({ driver: z.literal(Drivers.PostgreSQL) }),
-    connectionOptsSchema.extend({ driver: z.literal(Drivers.MySQL) })
-  ])
-})
+import { connectionFormSchema } from "../schema"
+import { ConnectionForm } from "./connection-form"
 
 export const NewConnectionBtn = () => {
   const [open, setOpen] = useState(false)
+  const form = useForm<z.infer<typeof connectionFormSchema>>({
+    resolver: zodResolver(connectionFormSchema),
+    defaultValues: {
+      connectionOpts: {
+        driver: Drivers.SQLite
+      }
+    }
+  })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -67,147 +43,10 @@ export const NewConnectionBtn = () => {
             Add a new connection to the list
           </DialogDescription>
         </DialogHeader>
-        <NewConnectionForm setOpen={setOpen} />
+        <Form {...form}>
+          <ConnectionForm onSuccess={() => setOpen(false)} />
+        </Form>
       </DialogContent>
     </Dialog>
-  )
-}
-
-const NewConnectionForm = ({
-  setOpen
-}: {
-  setOpen: Dispatch<SetStateAction<boolean>>
-}) => {
-  const router = useRouter()
-  const form = useForm<z.infer<typeof newConnectionFormSchema>>({
-    resolver: zodResolver(newConnectionFormSchema)
-  })
-
-  const driver = useWatch({
-    control: form.control,
-    name: "connectionOpts.driver"
-  })
-
-  const renderDriverInputFields = () => {
-    switch (driver) {
-      case "sqlite":
-        return <SQLiteConnectionForm />
-      case "postgresql":
-      case "mysql":
-        return <PgMySQLConnectionForm />
-    }
-  }
-
-  const onSave = async (data: z.infer<typeof newConnectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    return toast.promise(
-      commands.createConnectionRecord(
-        connString,
-        data.name,
-        data.connectionOpts.driver
-      ),
-      {
-        id: "save_connection",
-        loading: "Saving connection...",
-        success: () => {
-          router.invalidate({ filter: (d) => d.fullPath === "/" })
-          setOpen(false)
-          return "Successfully saved connection"
-        },
-        error: "Couldn't save connection"
-      }
-    )
-  }
-
-  const onTest = async (data: z.infer<typeof newConnectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    return toast.promise(
-      commands.testConnection(connString, data.connectionOpts.driver),
-      {
-        id: "test_connection",
-        loading: "Testing connection...",
-        success: "Connection is healthy",
-        error: "Connection is unhealthy"
-      }
-    )
-  }
-
-  return (
-    <Form {...form}>
-      <form
-        className={cn(
-          "flex h-full flex-col items-center justify-center overflow-hidden",
-          driver === "sqlite" && "gap-y-9"
-        )}
-      >
-        <div className="flex w-full items-end gap-x-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormLabel>Name</FormLabel>
-                <Input {...field} placeholder="Connection Name" />
-              </FormItem>
-            )}
-          />
-          <DriverSelector />
-        </div>
-        {renderDriverInputFields()}
-
-        {driver && (
-          <div className="mt-10 flex w-full items-center justify-center gap-x-4">
-            <Button
-              type="button"
-              size={"sm"}
-              className="w-full"
-              onClick={form.handleSubmit(onSave)}
-            >
-              Save
-            </Button>
-            <Button
-              type="button"
-              size={"sm"}
-              variant={"secondary"}
-              className="w-full"
-              onClick={form.handleSubmit(onTest)}
-            >
-              Test
-            </Button>
-          </div>
-        )}
-      </form>
-    </Form>
-  )
-}
-
-const DriverSelector = () => {
-  const form = useFormContext<z.infer<typeof newConnectionFormSchema>>()
-
-  return (
-    <FormField
-      control={form.control}
-      name="connectionOpts.driver"
-      render={({ field }) => (
-        <FormItem className="flex flex-col">
-          <FormLabel>Driver</FormLabel>
-          <SearchableInput
-            items={MappedDrivers.map((driver) => ({
-              value: driver.value,
-              label: driver.label
-            }))}
-            placeholder="Select a Database Driver"
-            emptyMsg="No drivers found."
-            onValueChange={field.onChange}
-            preventUnselect
-          />
-          <FormMessage />
-        </FormItem>
-      )}
-    />
   )
 }

@@ -1,4 +1,4 @@
-import { commands } from "@/bindings"
+import { commands, TxError } from "@/bindings"
 import {
   Empty,
   EmptyContent,
@@ -30,7 +30,7 @@ function Index() {
       await commands.establishConnection(connId)
     } catch (error) {
       return toast.error("Something went wrong.", {
-        description: error as string
+        description: (error as TxError).details
       })
     }
     const latestTable = localStorage.getItem(LOCAL_STORAGE.LATEST_TABLE(connId))
@@ -93,7 +93,12 @@ function Index() {
             return (
               <li
                 key={connection.id}
-                onClick={() => onClickConnect(connection.id)}
+                onClick={() => {
+                  if (document.querySelector('[data-state="open"]')) {
+                    return
+                  }
+                  onClickConnect(connection.id)
+                }}
                 className="hover:cursor-pointer"
               >
                 <ConnectionCard connection={connection} />
