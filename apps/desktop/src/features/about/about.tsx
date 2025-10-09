@@ -26,7 +26,7 @@ export const About = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <SidebarMenuButton className="w-fit lg:h-9">
+        <SidebarMenuButton className="w-fit">
           <Info />
         </SidebarMenuButton>
       </DialogTrigger>
