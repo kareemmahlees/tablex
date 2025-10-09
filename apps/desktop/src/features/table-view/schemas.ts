@@ -29,4 +29,4 @@ export const filterItemSchema = z.object({
   filterId: z.string()
 })
 
-export const filteringSchema = filterItemSchema.array()
+export const filteringSchema = filterItemSchema.array().default([])

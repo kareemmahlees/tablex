@@ -1,12 +1,13 @@
 use crate::{
-    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
     DecodedRow, ExecResult, QueryResult, QueryResultRow,
+    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
 };
+use sea_query::MysqlQueryBuilder;
 use sea_schema::mysql::def::{ColumnKey, Type as SeaColumnType};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
-    mysql::{MySqlQueryResult, MySqlRow},
     Column, Row, Value, ValueRef,
+    mysql::{MySqlQueryResult, MySqlRow},
 };
 
 #[derive(Debug)]
@@ -41,6 +42,7 @@ impl From<&sea_schema::mysql::def::TableDef> for TableInfo {
                     r#type: c.col_type.clone().into(),
                 })
                 .collect(),
+            create_statement: value.write().to_string(MysqlQueryBuilder),
         }
     }
 }

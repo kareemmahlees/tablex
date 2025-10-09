@@ -1,5 +1,4 @@
 import { commands, type Keybinding } from "@/bindings"
-import Kbd from "@/components/kbd"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,6 +9,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Kbd } from "@/components/ui/kbd"
 import {
   Table,
   TableBody,

@@ -34,10 +34,11 @@ sqlx = { version = "0.8", features = [
     "mysql",
     "chrono",
 ] }
-sea-schema = { version = "0.16.0", features = [
+sea-schema = { version = "0.16.2", features = [
     "sqlx-all",
     "with-serde",
     "discovery",
+    "writer",
     "runtime-tokio-native-tls",
 ], default-features = false }
 sea-query-binder = { version = "0.7.0", features = [

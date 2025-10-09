@@ -2,7 +2,9 @@ use crate::{
     query::{DecodedRow, ExecResult, QueryResult, QueryResultRow},
     schema::{ColumnInfo, CustomColumnType, CustomEnumDef, Schema, TableInfo, TablesNames},
 };
+use sea_query::PostgresQueryBuilder;
 use sea_schema::postgres::def::Type as SeaColumnType;
+use sea_schema::postgres::writer;
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
     Column, Postgres, Row, Type, Value, ValueRef,
@@ -50,6 +52,7 @@ impl From<&sea_schema::postgres::def::TableDef> for TableInfo {
                     r#type: c.col_type.clone().into(),
                 })
                 .collect(),
+            create_statement: value.write().to_string(PostgresQueryBuilder),
         }
     }
 }
