@@ -5,6 +5,28 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/router-devtools"
 
+const Devtools = () => {
+  if (import.meta.env.PROD) return
+
+  return (
+    <TanStackDevtools
+      config={{
+        hideUntilHover: true
+      }}
+      plugins={[
+        {
+          name: "Tanstack Query",
+          render: <ReactQueryDevtoolsPanel />
+        },
+        {
+          name: "Tanstack Router",
+          render: <TanStackRouterDevtoolsPanel />
+        }
+      ]}
+    />
+  )
+}
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
     component: () => {
@@ -23,21 +45,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             }}
           />
           <Outlet />
-          <TanStackDevtools
-            config={{
-              hideUntilHover: true
-            }}
-            plugins={[
-              {
-                name: "Tanstack Query",
-                render: <ReactQueryDevtoolsPanel />
-              },
-              {
-                name: "Tanstack Router",
-                render: <TanStackRouterDevtoolsPanel />
-              }
-            ]}
-          />
+          <Devtools />
         </main>
       )
     }
