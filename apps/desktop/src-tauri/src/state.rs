@@ -92,6 +92,10 @@ impl Storage {
         }
         if !data_dir.exists() {
             std::fs::create_dir_all(&data_dir).expect("Failed to recursively create app data dir");
+            log::info!(
+                "Recursively created app data dir: {}",
+                data_dir.to_string_lossy()
+            );
         }
         data_dir.push(STORAGE_FILE_NAME);
 
