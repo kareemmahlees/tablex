@@ -50,11 +50,8 @@ pub fn create_json_file_recursively(path: &PathBuf) -> Result<File, TxError> {
         log::info!("Created {} recursively.", parent.to_str().unwrap());
     }
 
-    let mut file = File::create_new(path)?;
+    let file = File::create_new(path)?;
     log::info!("Created {}.", path.to_str().unwrap());
-
-    write!(file, "{{}}")?;
-    log::info!("Wrote initial content to {}.", path.to_str().unwrap());
 
     Ok(file)
 }

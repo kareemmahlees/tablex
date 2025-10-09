@@ -65,11 +65,7 @@ impl MetaXState {
     }
 }
 
-const STORAGE_FILE_PATH: &str = if cfg!(debug_assertions) {
-    "dev/data.db"
-} else {
-    "data.db"
-};
+const STORAGE_FILE_NAME: &str = "data.db";
 
 pub struct Storage {
     pool: SqlitePool,
@@ -91,7 +87,17 @@ enum Connection {
 impl Storage {
     pub async fn setup<R: Runtime>(app: &tauri::AppHandle<R>) -> Self {
         let mut data_dir = app.path().app_data_dir().unwrap();
-        data_dir.push(STORAGE_FILE_PATH);
+        if cfg!(debug_assertions) {
+            data_dir.push("dev");
+        }
+        if !data_dir.exists() {
+            std::fs::create_dir_all(&data_dir).expect("Failed to recursively create app data dir");
+            log::info!(
+                "Recursively created app data dir: {}",
+                data_dir.to_string_lossy()
+            );
+        }
+        data_dir.push(STORAGE_FILE_NAME);
 
         let pool = SqlitePool::connect_with(
             SqliteConnectOptions::new()
