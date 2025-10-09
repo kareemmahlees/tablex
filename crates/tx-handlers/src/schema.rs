@@ -13,6 +13,7 @@ pub struct Schema {
 pub struct TableInfo {
     pub name: String,
     pub columns: Vec<ColumnInfo>,
+    pub create_statement: String,
 }
 
 #[derive(Serialize, Deserialize, Type, Clone, Debug)]

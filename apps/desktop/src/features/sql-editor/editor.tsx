@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useSetupCodeMirror } from "@/hooks/use-setup-code-mirror"
+import { betterStyling } from "@/lib/editor-ext"
 import { zodJsonValidation } from "@/lib/utils"
 import { sql } from "@codemirror/lang-sql"
 import { vim } from "@replit/codemirror-vim"
@@ -36,32 +37,6 @@ import CodeMirror, {
 import { AlertTriangle, Loader2, Play, Rainbow } from "lucide-react"
 import { useMemo } from "react"
 import { useSettings } from "../settings/context"
-
-const biggerFont = ({ fontSize }: { fontSize: number }) =>
-  EditorView.theme({
-    "&": {
-      fontSize: `${fontSize}px`,
-      lineHeight: "1.6",
-      height: "100%",
-      minHeight: "0"
-    },
-    ".editor-wrapper": {
-      height: "100%"
-    },
-
-    ".cm-editor": {
-      height: "100%"
-    },
-
-    ".cm-scroller": {
-      overflow: "auto",
-      scrollbarWidth: "none",
-      msOverflowStyle: "none"
-    },
-    ".cm-scroller::-webkit-scrollbar": {
-      display: "none"
-    }
-  })
 
 const formatDocument = (view?: EditorView) => {
   view?.dispatch({
@@ -106,7 +81,7 @@ export const SQLEditor = () => {
       sql({
         upperCaseKeywords: true
       }),
-      biggerFont({ fontSize: editorSettings.fontSize }),
+      betterStyling({ fontSize: editorSettings.fontSize }),
       keymap.of([
         {
           key: "F5",
@@ -134,7 +109,6 @@ export const SQLEditor = () => {
   const { editorRef, view } = useSetupCodeMirror({
     extensions,
     theme: tokyoNight,
-    value: 'select * from "SaleInvoice" limit 10',
     autoFocus: true
   })
 

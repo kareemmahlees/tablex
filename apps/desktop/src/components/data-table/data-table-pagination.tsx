@@ -22,7 +22,7 @@ import { useLocalStorage } from "usehooks-ts"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
-  connectionId: string
+  connectionId: number
   className?: string
 }
 

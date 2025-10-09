@@ -43,10 +43,7 @@ function Index() {
           tableName: latestTable
         },
         search: {
-          sorting: [],
-          pagination: { pageIndex: 0, pageSize: settings.pageSize },
-          filtering: [],
-          joinOperator: "and"
+          pagination: { pageIndex: 0, pageSize: settings.pageSize }
         }
       })
     }

@@ -1,12 +1,13 @@
 use crate::{
-    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
     DecodedRow, ExecResult, QueryResult, QueryResultRow,
+    schema::{ColumnInfo, CustomColumnType, Schema, TableInfo, TablesNames},
 };
+use sea_query::SqliteQueryBuilder;
 use sea_schema::{sea_query::ColumnType as SeaColumnType, sqlite::def::TableDef};
 use serde_json::{Map as JsonMap, Value as JsonValue};
 use sqlx::{
-    sqlite::{SqliteQueryResult, SqliteRow},
     Column, Row, Value, ValueRef,
+    sqlite::{SqliteQueryResult, SqliteRow},
 };
 
 #[derive(Debug)]
@@ -41,6 +42,7 @@ impl From<&sea_schema::sqlite::def::TableDef> for TableInfo {
                     r#type: c.r#type.clone().into(),
                 })
                 .collect(),
+            create_statement:value.write().to_string(SqliteQueryBuilder)
         }
     }
 }

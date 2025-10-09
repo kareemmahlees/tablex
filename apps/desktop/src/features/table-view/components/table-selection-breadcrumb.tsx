@@ -57,12 +57,10 @@ export const TableSelectionBreadCrumb = ({
                     connId,
                     tableName: v
                   },
-                  search: {
-                    sorting: [],
+                  search: (prev) => ({
                     pagination: { pageIndex: 0, pageSize: settings.pageSize },
-                    filtering: [],
-                    joinOperator: "and"
-                  },
+                    view: prev.view
+                  }),
                   replace: true
                 })
                 router.invalidate()

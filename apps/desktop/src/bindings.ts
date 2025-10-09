@@ -173,7 +173,7 @@ export type Sidebar = "focusSearch"
 export type SortingData = { column: string; ordering: ColumnOrdering }
 export type Table = "deleteRow" | "copyRow" | "selectAll"
 export type TableContentsChanged = null
-export type TableInfo = { name: string; columns: ColumnInfo[] }
+export type TableInfo = { name: string; columns: ColumnInfo[]; create_statement: string }
 /**
  * Global error object returned by all commands
  */
