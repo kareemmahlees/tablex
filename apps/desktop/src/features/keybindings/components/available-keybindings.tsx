@@ -6,7 +6,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from "@/components/ui/input-group"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SidebarMenuButton } from "@/components/ui/sidebar"
 import {
   Table,
@@ -16,7 +22,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import { Keyboard } from "lucide-react"
+import { Keyboard, SearchIcon } from "lucide-react"
 
 const SHORTCUTS: { action: string; shortcut: string[] }[] = [
   {
@@ -82,28 +88,38 @@ export const AvailableKeybindings = () => {
             A list of the currently registered keyboard shortcuts
           </DialogDescription>
         </DialogHeader>
-        <Table className="w-full overflow-hidden rounded-lg">
-          <TableHeader className="bg-sidebar">
-            <TableRow>
-              <TableHead>Action</TableHead>
-              <TableHead>Shortcut</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {SHORTCUTS.map((s) => (
-              <TableRow>
-                <TableCell>{s.action}</TableCell>
-                <TableCell>
-                  <KbdGroup>
-                    {s.shortcut.map((ss) => (
-                      <Kbd>{ss}</Kbd>
-                    ))}
-                  </KbdGroup>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <InputGroup>
+          <InputGroupInput placeholder="Search for shortcut..." />
+          <InputGroupAddon align={"inline-end"}>
+            <SearchIcon />
+          </InputGroupAddon>
+        </InputGroup>
+        <ScrollArea className="h-72 w-full" type="always">
+          <div className="[&>div]:overflow-visible">
+            <Table className="w-full overflow-hidden rounded-lg">
+              <TableHeader className="bg-sidebar">
+                <TableRow>
+                  <TableHead>Action</TableHead>
+                  <TableHead>Shortcut</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {SHORTCUTS.map((s) => (
+                  <TableRow>
+                    <TableCell>{s.action}</TableCell>
+                    <TableCell>
+                      <KbdGroup>
+                        {s.shortcut.map((ss) => (
+                          <Kbd>{ss}</Kbd>
+                        ))}
+                      </KbdGroup>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )
