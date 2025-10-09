@@ -22,7 +22,9 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
+import Fuse from "fuse.js"
 import { Keyboard, SearchIcon } from "lucide-react"
+import { useState } from "react"
 
 const SHORTCUTS: { action: string; shortcut: string[] }[] = [
   {
@@ -72,7 +74,14 @@ const SHORTCUTS: { action: string; shortcut: string[] }[] = [
   }
 ]
 
+const fuse = new Fuse(SHORTCUTS, {
+  keys: ["action"],
+  threshold: 0.2
+})
+
 export const AvailableKeybindings = () => {
+  const [shortcuts, setShortcuts] = useState(SHORTCUTS)
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -89,7 +98,16 @@ export const AvailableKeybindings = () => {
           </DialogDescription>
         </DialogHeader>
         <InputGroup>
-          <InputGroupInput placeholder="Search for shortcut..." />
+          <InputGroupInput
+            placeholder="Search for shortcut..."
+            onChange={(e) => {
+              if (e.target.value === "") {
+                setShortcuts(SHORTCUTS)
+              } else {
+                setShortcuts(fuse.search(e.target.value).map((res) => res.item))
+              }
+            }}
+          />
           <InputGroupAddon align={"inline-end"}>
             <SearchIcon />
           </InputGroupAddon>
@@ -104,18 +122,30 @@ export const AvailableKeybindings = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {SHORTCUTS.map((s) => (
+                {shortcuts.length === 0 ? (
                   <TableRow>
-                    <TableCell>{s.action}</TableCell>
-                    <TableCell>
-                      <KbdGroup>
-                        {s.shortcut.map((ss) => (
-                          <Kbd>{ss}</Kbd>
-                        ))}
-                      </KbdGroup>
+                    <TableCell
+                      colSpan={2}
+                      rowSpan={10}
+                      className="text-muted-foreground text-center"
+                    >
+                      No Matches Found
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  shortcuts.map((s) => (
+                    <TableRow>
+                      <TableCell>{s.action}</TableCell>
+                      <TableCell>
+                        <KbdGroup>
+                          {s.shortcut.map((ss) => (
+                            <Kbd>{ss}</Kbd>
+                          ))}
+                        </KbdGroup>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
