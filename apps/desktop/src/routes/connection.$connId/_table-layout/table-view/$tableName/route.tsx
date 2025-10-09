@@ -29,12 +29,13 @@ import { betterStyling } from "@/lib/editor-ext"
 import { sql } from "@codemirror/lang-sql"
 import sqlFormatter from "@sqltools/formatter"
 import { cn } from "@tablex/lib/utils"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { Row } from "@tanstack/react-table"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
 import { RefreshCw } from "lucide-react"
 import { useMemo, useState } from "react"
+import { createPortal } from "react-dom"
 import { z } from "zod"
 
 export const Route = createFileRoute(
@@ -52,140 +53,21 @@ export const Route = createFileRoute(
 })
 
 function TableView() {
-  const { tableName, connId } = Route.useParams()
+  const { tableName } = Route.useParams()
   const dbSchema = useDBSchema()
-  const tableSchema = useMemo(
-    () => dbSchema.find((t) => t.name === tableName)!,
-    [dbSchema]
-  )
-  const { sorting, pagination, filtering, view, joinOperator } =
-    Route.useSearch()
-  const { queryClient } = Route.useRouteContext()
+  const { view } = Route.useSearch()
   const navigate = Route.useNavigate()
-  const [rowToEdit, setRowToEdit] = useState<Row<any> | undefined>(undefined)
-  const {
-    data: rows,
-    refetch: refetchRows,
-    isFetching: isFetchingRows
-  } = useSuspenseQuery(
-    getPaginatedRowsOptions({
-      tableName,
-      pagination,
-      sorting,
-      filtering: filtering.map((f) => {
-        if (f.operator === "isEmpty" || f.operator === "isNotEmpty")
-          return {
-            column: f.column,
-            filters: f.operator
-          }
-
-        return {
-          column: f.column,
-          filters: {
-            [f.operator]: f.value
-          }
-        }
-      })
-    })
-  )
-  const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
-  const { table } = useSetupDataTable({
-    columns,
-    data: rows,
-    pagination,
-    onPaginationChange: (updater) => {
-      if (typeof updater !== "function") return
-      navigate({
-        to: ".",
-        search: {
-          sorting,
-          pagination: updater(pagination),
-          filtering,
-          view,
-          joinOperator
-        }
-      })
-    }
-  })
-  useTauriEventListener(
-    "tableContentsChanged",
-    () =>
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.TABLE_ROWS, tableName]
-      }),
-    [queryClient]
-  )
 
   return (
     <TableSchemaContext.Provider
       value={dbSchema.find((t) => t.name === tableName)!}
     >
       <section className="flex h-full w-full flex-col overflow-auto will-change-scroll">
-        {view === "data" ? (
-          <>
-            <div className="flex items-center justify-between px-3 py-2.5">
-              <div className="flex items-center gap-x-3">
-                <DataTableSortList
-                  table={table}
-                  sorting={sorting}
-                  onSortingChange={(data) =>
-                    navigate({
-                      to: ".",
-                      search: (prev) => ({
-                        ...prev,
-                        sorting: data
-                      })
-                    })
-                  }
-                />
-                <DataTableFilterList
-                  table={table}
-                  filters={filtering}
-                  onFilterChange={(data) => {
-                    navigate({
-                      to: ".",
-                      search: (prev) => ({
-                        ...prev,
-                        filtering: data
-                      })
-                    })
-                  }}
-                  joinOperator={joinOperator}
-                  onJoinOperatorChange={(data) =>
-                    navigate({
-                      to: ".",
-                      search: (prev) => ({
-                        ...prev,
-                        joinOperator: data
-                      })
-                    })
-                  }
-                />
-                <DataTableViewOptions table={table} />
-              </div>
-              <div className="space-x-4">
-                <DeleteRowBtn table={table} />
-                <TooltipButton
-                  size={"icon"}
-                  variant={"secondary"}
-                  className={cn("h-8 w-8", isFetchingRows && "animate-spin")}
-                  tooltipContent="Refresh"
-                  disabled={isFetchingRows}
-                  onClick={async () => await refetchRows()}
-                >
-                  <RefreshCw className="size-4" />
-                </TooltipButton>
-                <AddRowSheet />
-                <EditRowSheet row={rowToEdit} setRow={setRowToEdit} />
-              </div>
-            </div>
-            <DataTable table={table} onRowClick={(row) => setRowToEdit(row)} />
-          </>
-        ) : (
-          <TableDefinition />
-        )}
-        <div className="bg-sidebar flex items-center justify-between p-4">
-          <DataTablePagination table={table} connectionId={connId} />
+        {view === "data" ? <TableEditor /> : <TableDefinition />}
+        <div
+          className="bg-sidebar flex flex-row-reverse items-center justify-between p-4"
+          id="table-footer"
+        >
           <Tabs
             value={view}
             onValueChange={(value) =>
@@ -214,10 +96,6 @@ function TableLoadingSkeleton() {
     <div className="flex h-full flex-col space-y-5 p-4">
       <Skeleton className="h-10 w-full" />
       <Skeleton className="h-full" />
-      <div className="flex justify-between">
-        <Skeleton className="h-10 w-[200px]" />
-        <Skeleton className="h-10 w-[200px]" />
-      </div>
     </div>
   )
 }
@@ -249,5 +127,151 @@ const TableDefinition = () => {
         minHeight: 0
       }}
     />
+  )
+}
+
+const TableEditor = () => {
+  const { tableSchema } = useTableSchema()
+  const [rowToEdit, setRowToEdit] = useState<Row<any> | undefined>(undefined)
+  const { sorting, filtering, joinOperator, pagination, view } =
+    Route.useSearch()
+  const { tableName, connId } = Route.useParams()
+  const { queryClient } = Route.useRouteContext()
+  const navigate = Route.useNavigate()
+
+  const {
+    data: rows,
+    refetch: refetchRows,
+    isFetching: isFetchingRows,
+    isPending: isPendingRows,
+    isError
+  } = useQuery(
+    getPaginatedRowsOptions({
+      tableName,
+      pagination,
+      sorting,
+      filtering: filtering.map((f) => {
+        if (f.operator === "isEmpty" || f.operator === "isNotEmpty")
+          return {
+            column: f.column,
+            filters: f.operator
+          }
+
+        return {
+          column: f.column,
+          filters: {
+            [f.operator]: f.value
+          }
+        }
+      })
+    })
+  )
+
+  useTauriEventListener(
+    "tableContentsChanged",
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.TABLE_ROWS, tableName]
+      }),
+    [queryClient]
+  )
+
+  const columns = useMemo(() => generateColumnsDefs(tableSchema), [tableSchema])
+  const { table } = useSetupDataTable({
+    columns,
+    data: rows ?? { data: [], pageCount: 0 },
+    pagination,
+    onPaginationChange: (updater) => {
+      if (typeof updater !== "function") return
+      navigate({
+        to: ".",
+        search: {
+          sorting,
+          pagination: updater(pagination),
+          filtering,
+          view,
+          joinOperator
+        }
+      })
+    }
+  })
+
+  if (isError) return <p>Something went wrong</p>
+
+  return (
+    <>
+      {isPendingRows ? (
+        <TableLoadingSkeleton />
+      ) : (
+        <>
+          <div className="flex items-center justify-between px-3 py-2.5">
+            <div className="flex items-center gap-x-3">
+              <DataTableSortList
+                table={table}
+                sorting={sorting}
+                onSortingChange={(data) =>
+                  navigate({
+                    to: ".",
+                    search: (prev) => ({
+                      ...prev,
+                      sorting: data
+                    })
+                  })
+                }
+              />
+              <DataTableFilterList
+                table={table}
+                filters={filtering}
+                onFilterChange={(data) => {
+                  navigate({
+                    to: ".",
+                    search: (prev) => ({
+                      ...prev,
+                      filtering: data
+                    })
+                  })
+                }}
+                joinOperator={joinOperator}
+                onJoinOperatorChange={(data) =>
+                  navigate({
+                    to: ".",
+                    search: (prev) => ({
+                      ...prev,
+                      joinOperator: data
+                    })
+                  })
+                }
+              />
+              <DataTableViewOptions table={table} />
+            </div>
+            <div className="space-x-4">
+              <DeleteRowBtn table={table} />
+              <TooltipButton
+                size={"icon"}
+                variant={"secondary"}
+                className={cn("h-8 w-8", isFetchingRows && "animate-spin")}
+                tooltipContent="Refresh"
+                disabled={isFetchingRows}
+                onClick={async () => await refetchRows()}
+              >
+                <RefreshCw className="size-4" />
+              </TooltipButton>
+              <AddRowSheet />
+              <EditRowSheet row={rowToEdit} setRow={setRowToEdit} />
+            </div>
+          </div>
+          <DataTable table={table} onRowClick={(row) => setRowToEdit(row)} />
+        </>
+      )}
+      {document.getElementById("table-footer") &&
+        createPortal(
+          isPendingRows ? (
+            <Skeleton className="h-full w-1/3" />
+          ) : (
+            <DataTablePagination table={table} connectionId={connId} />
+          ),
+          document.getElementById("table-footer")!
+        )}
+    </>
   )
 }
