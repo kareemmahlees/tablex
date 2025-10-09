@@ -1,17 +1,9 @@
 import { Toaster } from "@/components/ui/sonner"
+import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
-import { Suspense } from "react"
-
-// const TanStackRouterDevtools =
-//   process.env.NODE_ENV === "production"
-//     ? () => null // Render nothing in production
-//     : React.lazy(() =>
-//         // Lazy load in development
-//         import("@tanstack/router-devtools").then((res) => ({
-//           default: res.TanStackRouterDevtools
-//         }))
-//       )
+import { TanStackRouterDevtoolsPanel } from "@tanstack/router-devtools"
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -31,15 +23,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             }}
           />
           <Outlet />
-          <Suspense>
-            {/* <TanStackRouterDevtools
-              position="bottom-left"
-              toggleButtonProps={{
-                className: "ml-[70px] mb-[100px]"
-              }}
-            /> */}
-            {/* <ReactQueryDevtools buttonPosition="bottom-left" /> */}
-          </Suspense>
+          <TanStackDevtools
+            config={{
+              hideUntilHover: true
+            }}
+            plugins={[
+              {
+                name: "Tanstack Query",
+                render: <ReactQueryDevtoolsPanel />
+              },
+              {
+                name: "Tanstack Router",
+                render: <TanStackRouterDevtoolsPanel />
+              }
+            ]}
+          />
         </main>
       )
     }
