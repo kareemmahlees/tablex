@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import { About } from "@/features/about/about"
 import CommandPalette from "@/features/command-palette/palette"
+import { AvailableKeybindings } from "@/features/keybindings/components/available-keybindings"
 import { SidebarItem } from "@/types"
 import {
   Link,
@@ -168,7 +169,10 @@ export const TableViewSidebar = () => {
             <Settings />
           </Link>
         </SidebarMenuButton>
-        <About />
+        <div className="flex">
+          <AvailableKeybindings />
+          <About />
+        </div>
       </SidebarFooter>
     </Sidebar>
   )

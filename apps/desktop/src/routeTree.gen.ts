@@ -17,7 +17,6 @@ import { Route as SettingsLayoutImport } from './routes/_settings-layout'
 import { Route as IndexRouteImport } from './routes/index/route'
 import { Route as ConnectionConnIdTableLayoutImport } from './routes/connection.$connId/_table-layout'
 import { Route as SettingsLayoutSettingsPreferencesRouteImport } from './routes/_settings-layout.settings/preferences/route'
-import { Route as SettingsLayoutSettingsKeybindingsRouteImport } from './routes/_settings-layout.settings/keybindings/route'
 import { Route as ConnectionConnIdTableLayoutUtilitiesRouteImport } from './routes/connection.$connId/_table-layout/utilities/route'
 import { Route as ConnectionConnIdTableLayoutSqlEditorRouteImport } from './routes/connection.$connId/_table-layout/sql-editor/route'
 import { Route as ConnectionConnIdTableLayoutTableViewEmptyRouteImport } from './routes/connection.$connId/_table-layout/table-view/empty/route'
@@ -53,12 +52,6 @@ const ConnectionConnIdTableLayoutRoute =
 const SettingsLayoutSettingsPreferencesRouteRoute =
   SettingsLayoutSettingsPreferencesRouteImport.update({
     path: '/settings/preferences',
-    getParentRoute: () => SettingsLayoutRoute,
-  } as any)
-
-const SettingsLayoutSettingsKeybindingsRouteRoute =
-  SettingsLayoutSettingsKeybindingsRouteImport.update({
-    path: '/settings/keybindings',
     getParentRoute: () => SettingsLayoutRoute,
   } as any)
 
@@ -103,13 +96,6 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof SettingsLayoutImport
       parentRoute: typeof rootRoute
-    }
-    '/_settings-layout/settings/keybindings': {
-      id: '/_settings-layout/settings/keybindings'
-      path: '/settings/keybindings'
-      fullPath: '/settings/keybindings'
-      preLoaderRoute: typeof SettingsLayoutSettingsKeybindingsRouteImport
-      parentRoute: typeof SettingsLayoutImport
     }
     '/_settings-layout/settings/preferences': {
       id: '/_settings-layout/settings/preferences'
@@ -168,7 +154,6 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRouteRoute,
   SettingsLayoutRoute: SettingsLayoutRoute.addChildren({
-    SettingsLayoutSettingsKeybindingsRouteRoute,
     SettingsLayoutSettingsPreferencesRouteRoute,
   }),
   ConnectionConnIdRoute: ConnectionConnIdRoute.addChildren({
@@ -201,13 +186,8 @@ export const routeTree = rootRoute.addChildren({
     "/_settings-layout": {
       "filePath": "_settings-layout.tsx",
       "children": [
-        "/_settings-layout/settings/keybindings",
         "/_settings-layout/settings/preferences"
       ]
-    },
-    "/_settings-layout/settings/keybindings": {
-      "filePath": "_settings-layout.settings/keybindings/route.tsx",
-      "parent": "/_settings-layout"
     },
     "/_settings-layout/settings/preferences": {
       "filePath": "_settings-layout.settings/preferences/route.tsx",
