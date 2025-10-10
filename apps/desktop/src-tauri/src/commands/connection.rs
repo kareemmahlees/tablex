@@ -21,12 +21,7 @@ use tx_lib::{
 #[tauri::command]
 #[specta::specta]
 pub async fn test_connection(conn_string: String, driver: Drivers) -> Result<()> {
-    let con = DatabaseConnection::connect(conn_string.as_str(), &driver).await?;
-    con.ping().await?;
-
-    con.close().await;
-
-    Ok(())
+    DatabaseConnection::ping(conn_string.as_str(), &driver).await
 }
 
 #[tauri::command]

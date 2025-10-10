@@ -84,26 +84,50 @@ impl DatabaseConnection {
             DatabaseConnection::Mysql { .. } => Box::new(MysqlQueryBuilder),
         }
     }
-    pub async fn ping(&self) -> Result<()> {
-        match self {
-            DatabaseConnection::Sqlite { pool, .. } => pool
-                .acquire()
-                .await?
-                .ping()
-                .await
-                .map_err(|_| TxError::PingError),
-            DatabaseConnection::Postgres { pool, .. } => pool
-                .acquire()
-                .await?
-                .ping()
-                .await
-                .map_err(|_| TxError::PingError),
-            DatabaseConnection::Mysql { pool, .. } => pool
-                .acquire()
-                .await?
-                .ping()
-                .await
-                .map_err(|_| TxError::PingError),
+    pub async fn ping(url: &str, driver: &Drivers) -> Result<()> {
+        match driver {
+            Drivers::SQLite => {
+                let pool = SqlitePool::connect_with(url.parse::<SqliteConnectOptions>()?).await?;
+
+                let ping_result = pool
+                    .acquire()
+                    .await?
+                    .ping()
+                    .await
+                    .map_err(|_| TxError::PingError);
+
+                pool.close().await;
+
+                ping_result
+            }
+            Drivers::PostgreSQL => {
+                let pool = PgPool::connect_with(url.parse::<PgConnectOptions>()?).await?;
+
+                let ping_result = pool
+                    .acquire()
+                    .await?
+                    .ping()
+                    .await
+                    .map_err(|_| TxError::PingError);
+
+                pool.close().await;
+
+                ping_result
+            }
+            Drivers::MySQL => {
+                let pool = MySqlPool::connect_with(url.parse::<MySqlConnectOptions>()?).await?;
+
+                let ping_result = pool
+                    .acquire()
+                    .await?
+                    .ping()
+                    .await
+                    .map_err(|_| TxError::PingError);
+
+                pool.close().await;
+
+                ping_result
+            }
         }
     }
     pub async fn fetch_all(&self, stmt: &str, values: SqlxValues) -> Result<Vec<QueryResult>> {
