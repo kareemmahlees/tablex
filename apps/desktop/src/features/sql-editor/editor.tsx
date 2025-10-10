@@ -197,9 +197,6 @@ const QueryResultTable = ({
 }) => {
   const renderCell = (value: string) => {
     if (zodJsonValidation().safeParse(value).success) {
-      console.log(value)
-      console.log(typeof value)
-      console.log(zodJsonValidation().safeParse(value))
       return (
         <DropdownMenu>
           <DropdownMenuTrigger>
