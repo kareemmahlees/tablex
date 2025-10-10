@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/plugin-clipboard-manager"
+import { asString, generateCsv, mkConfig } from "export-to-csv"
 import { ChevronDownIcon } from "lucide-react"
 import { toast } from "sonner"
 import { useTableSchema } from "../context"
@@ -64,20 +65,36 @@ const DeleteRowsBtn = ({ table }: { table: Table<any> }) => {
 }
 
 const CopyRowsBtn = ({ table }: { table: Table<any> }) => {
-  const copyRowsAsJson = () => {
+  const getRowsAsJson = () => {
     const objs: Record<string, any>[] = []
     const columns = table.getAllColumns()
     const rows = table.getSelectedRowModel().rows
     for (const row of rows) {
       const obj = {}
       for (const col of columns) {
+        // Remove the select checkbox column
+        if (col.id === "select") continue
         obj[col.id] = row.getValue(col.id)
       }
       objs.push(obj)
     }
+    return objs
+  }
 
-    toast.promise(writeText(JSON.stringify(objs, undefined, 2)), {
-      success: "Successfully copied rows as json"
+  const copyRowsAsJson = () => {
+    toast.promise(writeText(JSON.stringify(getRowsAsJson(), undefined, 2)), {
+      success: "Successfully copied rows as JSON"
+    })
+  }
+
+  const copyRowsAsCSV = () => {
+    const csvConfig = mkConfig({ useKeysAsHeaders: true })
+
+    const csv = generateCsv(csvConfig)(getRowsAsJson())
+    const csvString = asString(csv)
+
+    toast.promise(writeText(csvString), {
+      success: "Successfully copied rows as CSV"
     })
   }
 
@@ -100,7 +117,9 @@ const CopyRowsBtn = ({ table }: { table: Table<any> }) => {
         <DropdownMenuItem onSelect={copyRowsAsJson}>
           Copy as JSON
         </DropdownMenuItem>
-        <DropdownMenuItem>Copy as CSV</DropdownMenuItem>
+        <DropdownMenuItem onSelect={copyRowsAsCSV}>
+          Copy as CSV
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
