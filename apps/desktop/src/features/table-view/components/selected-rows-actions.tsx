@@ -1,6 +1,14 @@
 import { commands, RowRecord } from "@/bindings"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { Table } from "@tanstack/react-table"
+import { writeText } from "@tauri-apps/plugin-clipboard-manager"
+import { ChevronDownIcon } from "lucide-react"
 import { toast } from "sonner"
 import { useTableSchema } from "../context"
 
@@ -10,9 +18,7 @@ export const SelectedRowsActions = ({ table }: { table: Table<any> }) => {
   return (
     <div className="space-x-3">
       <DeleteRowsBtn table={table} />
-      <Button variant="outline" size="sm" className="h-8 space-x-2">
-        <span>Copy As</span>
-      </Button>
+      <CopyRowsBtn table={table} />
     </div>
   )
 }
@@ -54,5 +60,48 @@ const DeleteRowsBtn = ({ table }: { table: Table<any> }) => {
     >
       Delete {table.getSelectedRowModel().rows.length} row(s)
     </Button>
+  )
+}
+
+const CopyRowsBtn = ({ table }: { table: Table<any> }) => {
+  const copyRowsAsJson = () => {
+    const objs: Record<string, any>[] = []
+    const columns = table.getAllColumns()
+    const rows = table.getSelectedRowModel().rows
+    for (const row of rows) {
+      const obj = {}
+      for (const col of columns) {
+        obj[col.id] = row.getValue(col.id)
+      }
+      objs.push(obj)
+    }
+
+    toast.promise(writeText(JSON.stringify(objs, undefined, 2)), {
+      success: "Successfully copied rows as json"
+    })
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-8">
+          Copy As
+          <ChevronDownIcon
+            className="opacity-60"
+            size={16}
+            aria-hidden="true"
+          />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="min-w-(--radix-dropdown-menu-trigger-width)"
+        align="start"
+      >
+        <DropdownMenuItem onSelect={copyRowsAsJson}>
+          Copy as JSON
+        </DropdownMenuItem>
+        <DropdownMenuItem>Copy as CSV</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
