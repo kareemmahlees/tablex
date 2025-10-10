@@ -9,8 +9,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useDBSchema } from "@/features/common/db-context"
 import { generateColumnsDefs } from "@/features/table-view/columns"
 import { AddRowSheet } from "@/features/table-view/components/create-row-sheet"
-import { DeleteRowBtn } from "@/features/table-view/components/delete-row"
 import EditRowSheet from "@/features/table-view/components/edit-row-sheet"
+import { SelectedRowsActions } from "@/features/table-view/components/selected-rows-actions"
 import {
   TableSchemaContext,
   useTableSchema
@@ -31,7 +31,7 @@ import sqlFormatter from "@sqltools/formatter"
 import { cn } from "@tablex/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { Row } from "@tanstack/react-table"
+import { Row, Table } from "@tanstack/react-table"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
 import { RefreshCw } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -205,47 +205,12 @@ const TableEditor = () => {
       ) : (
         <>
           <div className="flex items-center justify-between px-3 py-2.5">
-            <div className="flex items-center gap-x-3">
-              <DataTableSortList
-                table={table}
-                sorting={sorting}
-                onSortingChange={(data) =>
-                  navigate({
-                    to: ".",
-                    search: (prev) => ({
-                      ...prev,
-                      sorting: data
-                    })
-                  })
-                }
-              />
-              <DataTableFilterList
-                table={table}
-                filters={filtering}
-                onFilterChange={(data) => {
-                  navigate({
-                    to: ".",
-                    search: (prev) => ({
-                      ...prev,
-                      filtering: data
-                    })
-                  })
-                }}
-                joinOperator={joinOperator}
-                onJoinOperatorChange={(data) =>
-                  navigate({
-                    to: ".",
-                    search: (prev) => ({
-                      ...prev,
-                      joinOperator: data
-                    })
-                  })
-                }
-              />
-              <DataTableViewOptions table={table} />
-            </div>
+            {table.getSelectedRowModel().rows.length === 0 ? (
+              <TableActions table={table} />
+            ) : (
+              <SelectedRowsActions table={table} />
+            )}
             <div className="space-x-4">
-              <DeleteRowBtn table={table} />
               <TooltipButton
                 size={"icon"}
                 variant={"secondary"}
@@ -260,7 +225,8 @@ const TableEditor = () => {
               <EditRowSheet row={rowToEdit} setRow={setRowToEdit} />
             </div>
           </div>
-          <DataTable table={table} onRowClick={(row) => setRowToEdit(row)} />
+          {/* <DataTable table={table} onRowClick={(row) => setRowToEdit(row)} /> */}
+          <DataTable table={table} />
         </>
       )}
       {document.getElementById("table-footer") &&
@@ -273,5 +239,51 @@ const TableEditor = () => {
           document.getElementById("table-footer")!
         )}
     </>
+  )
+}
+
+const TableActions = ({ table }: { table: Table<any> }) => {
+  const { sorting, filtering, joinOperator } = Route.useSearch()
+  const navigate = Route.useNavigate()
+  return (
+    <div className="flex items-center gap-x-3">
+      <DataTableSortList
+        table={table}
+        sorting={sorting}
+        onSortingChange={(data) =>
+          navigate({
+            to: ".",
+            search: (prev) => ({
+              ...prev,
+              sorting: data
+            })
+          })
+        }
+      />
+      <DataTableFilterList
+        table={table}
+        filters={filtering}
+        onFilterChange={(data) => {
+          navigate({
+            to: ".",
+            search: (prev) => ({
+              ...prev,
+              filtering: data
+            })
+          })
+        }}
+        joinOperator={joinOperator}
+        onJoinOperatorChange={(data) =>
+          navigate({
+            to: ".",
+            search: (prev) => ({
+              ...prev,
+              joinOperator: data
+            })
+          })
+        }
+      />
+      <DataTableViewOptions table={table} />
+    </div>
   )
 }

@@ -40,10 +40,6 @@ const SHORTCUTS: { action: string; shortcut: string[] }[] = [
     shortcut: ["n"]
   },
   {
-    action: "Delete Selected Rows",
-    shortcut: ["Delete"]
-  },
-  {
     action: "Open Sort Menu",
     shortcut: ["s"]
   },
