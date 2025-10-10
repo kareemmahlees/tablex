@@ -176,7 +176,7 @@ const appendCheckboxColumn = (columns: ColumnDef<ColumnInfo>[]) => {
 }
 
 export const getZodSchemaFromCols = (tableSchema: TableInfo) => {
-  const schemaObject: z.ZodRawShape = {}
+  const schemaObject = z.object()
 
   tableSchema.columns.forEach((colProps) => {
     let validationRule: z.ZodTypeAny
@@ -185,14 +185,14 @@ export const getZodSchemaFromCols = (tableSchema: TableInfo) => {
       case "positiveInteger":
         validationRule = z.coerce
           .number({
-            invalid_type_error: "Field must be a valid integer"
+            error: "Field must be a valid integer"
           })
           .positive({ message: "Field must be a positive integer" })
         break
 
       case "integer":
         validationRule = z.coerce.number({
-          invalid_type_error: "Field must be a valid integer"
+          error: "Field must be a valid integer"
         })
         break
 
@@ -203,22 +203,13 @@ export const getZodSchemaFromCols = (tableSchema: TableInfo) => {
         break
 
       case "text":
-        validationRule = z.string().refine(
-          (val) => {
-            // this is done because IPs fall into the isNaN check
-            if (z.string().ip().safeParse(val).success) {
-              return true
-            }
-            return isNaN(parseInt(val))
-          },
-          {
-            message: "Field must be a valid string"
-          }
-        )
+        validationRule = z.union([z.ipv4(), z.ipv6(), z.string()], {
+          error: "Field must be a valid string"
+        })
         break
 
       case "uuid":
-        validationRule = z.string().uuid()
+        validationRule = z.uuid()
         break
       case "boolean":
         validationRule = z.boolean()
