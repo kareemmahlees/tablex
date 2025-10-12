@@ -4,6 +4,7 @@ import {
   type Table as TanstackTable
 } from "@tanstack/react-table"
 import type * as React from "react"
+import { useMemo } from "react"
 
 import {
   Table,
@@ -27,11 +28,29 @@ export function DataTable<TData>({
   className,
   onRowClick
 }: DataTableProps<TData>) {
+  const columnSizeVars = useMemo(() => {
+    const headers = table.getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]!
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+    }
+    return colSizes
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
+
   return (
     <ScrollArea
       className={cn("flex h-full w-full min-w-0 flex-1 flex-col", className)}
     >
-      <Table>
+      <Table
+        {...{
+          style: {
+            ...columnSizeVars, //Define column sizes on the <table> element
+            width: table.getTotalSize()
+          }
+        }}
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
@@ -43,7 +62,8 @@ export function DataTable<TData>({
                   key={header.id}
                   colSpan={header.colSpan}
                   style={{
-                    ...getCommonPinningStyles({ column: header.column })
+                    ...getCommonPinningStyles({ column: header.column }),
+                    width: `calc(var(--header-${header.id}-size) * 1px)`
                   }}
                   className="text-sm font-bold lg:text-base"
                 >
@@ -53,6 +73,16 @@ export function DataTable<TData>({
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                  <div
+                    {...{
+                      onDoubleClick: () => header.column.resetSize(),
+                      onMouseDown: header.getResizeHandler(),
+                      onTouchStart: header.getResizeHandler(),
+                      className: `absolute w-1 cursor-col-resize top-0 right-0 h-full rounded-md select-none touch-none hover:bg-muted ${
+                        header.column.getIsResizing() ? "bg-blue-500" : ""
+                      }`
+                    }}
+                  />
                 </TableHead>
               ))}
             </TableRow>

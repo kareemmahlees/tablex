@@ -36,6 +36,13 @@ export const useSetupDataTable = <TData, TValue>({
   const table = useReactTable({
     data: (data?.data as TData[]) ?? FALLBACK_DATA,
     columns,
+    defaultColumn: {
+      size: 100,
+      minSize: 20,
+      maxSize: 1000
+    },
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     pageCount: data?.pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
