@@ -26,11 +26,11 @@
     "fmt:fix": "pnpm oxfmt ."
   },
   "devDependencies": {
+    "@j178/prek": "^0.3.10",
     "@types/node": "^20.17.19",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "autoprefixer": "^10.4.20",
-    "husky": "^8.0.3",
     "oxfmt": "^0.46.0",
     "oxlint": "^1.61.0",
     "postcss": "^8.5.3",
@@ -38,7 +38,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3"
   },
-  "packageManager": "pnpm",
+  "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
