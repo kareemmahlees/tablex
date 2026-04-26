@@ -1,0 +1,10 @@
+{
+  "languages": {
+    "TypeScript": {
+          "language_servers": ["vtsls","!eslint","oxc"]
+    },
+    "TSX": {
+      "language_servers": ["vtsls","!eslint","oxc"]
+    },
+  }
+}

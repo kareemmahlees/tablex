@@ -4,10 +4,9 @@
   "version": "0.3.9",
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vite",
-    "build": "bunx --bun vite build",
-    "lint": "bunx eslint . ",
-    "preview": "bunx --bun vite preview"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
