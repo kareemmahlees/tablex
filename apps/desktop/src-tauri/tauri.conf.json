@@ -1,18 +1,18 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "build": {
-    "beforeBuildCommand": "bun run build",
-    "beforeDevCommand":{
+    "beforeBuildCommand": "pnpm build",
+    "beforeDevCommand": {
       "cwd": ".",
-      "script": "bun run dev"
+      "script": "pnpm dev"
     },
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173"
   },
   "bundle": {
     "active": true,
-    "publisher":"Kareem Ebrahim",
-    "licenseFile":"../../../LICENSE",
+    "publisher": "Kareem Ebrahim",
+    "licenseFile": "../../../LICENSE",
     "category": "DeveloperTool",
     "copyright": "",
     "targets": "all",
@@ -48,11 +48,12 @@
         "fullscreen": false,
         "resizable": true,
         "title": "TableX",
-      "width": 1400,
-      "height": 750,
-      "minWidth": 768,
-      "minHeight": 500,
-        "center": true      }
+        "width": 1400,
+        "height": 750,
+        "minWidth": 768,
+        "minHeight": 500,
+        "center": true
+      }
     ],
     "security": {
       "csp": null,
@@ -60,4 +61,3 @@
     }
   }
 }
-

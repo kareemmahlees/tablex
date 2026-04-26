@@ -22,7 +22,7 @@ During release builds, we bundle [MetaX](https://github.com/kareemmahlees/meta-x
 - `apps/desktop`: containing the desktop application core logic.
 - `apps/web`: landing page for TableX.
 - `crates`: some of TableX's logic splitted into small crates for better organization.
-- `packages`: shared package between `core` and `web`.
+- `packages`: shared package between `desktop` and `web`.
 - `scripts`: some useful scripts for setting up some things in github actions, **your probably won't need to touch this**.
 
 Inside the [package.json](../../../../../../package.json) file, you will find all the scripts you need regarding linting, starting dev servers, building, etc.
@@ -34,7 +34,7 @@ Let's get you started playing around with TableX locally.
 ### Prerequisites
 
 - Cargo 1.81.0 or later
-- Bun 1.1.27 or later
+- Pnpm 10.33.0 or later
 
 :::caution
 some previous versions of the previously mentioned requirements may still work fine, but no guarantee.
@@ -50,11 +50,11 @@ some previous versions of the previously mentioned requirements may still work f
    ```
 2. Install necessary frontend dependencies:
    ```sh frame="none"
-   bun install
+   pnpm install
    ```
-3. Install husky git hooks:
+3. Install pre-commit git hooks:
    ```sh frame="none"
-   bunx husky install
+   pnpm prek install
    ```
    This runs some checks and linting before you commit to ensure good code quality.
 
@@ -63,7 +63,7 @@ some previous versions of the previously mentioned requirements may still work f
 and you are good to go 💫, you can start your development server by running:
 
 ```sh frame="none"
-bun tauri:dev
+pnpm tauri:dev
 ```
 
 :::caution
@@ -76,7 +76,7 @@ instructions will vary by platform.
 Want to test how your modification will look like at the final executable? run this:
 
 ```sh frame="none"
-bun tauri:debug
+pnpm tauri:debug
 ```
 
 this will create a debug build/executable, which you don't have to install in
@@ -86,7 +86,7 @@ order to see your changes, just run the file located under
 If you want to create a release build, run the following:
 
 ```sh frame="none"
-bun tauri:build
+pnpm tauri:build
 ```
 
 The same steps are applied as the debug build if you want to run the release
@@ -96,7 +96,7 @@ build without installing it, just make sure to replace `target\debug` with
 If you are interested in playing around with the website, run the following:
 
 ```sh frame="none"
-bun astro:dev
+pnpm astro:dev
 ```
 
 ### Developing the CLI
@@ -114,7 +114,7 @@ $ ./target/{release,debug}/tablex {{ARGS_OR_FLAGS_HERE}}
 If you wish to run in dev mode, make sure to run the following command with the exact formula:
 
 ```sh frame="none"
-$ bun tauri:dev -- -- -- [CONN_NAME] [FLAGS]
+$ pnpm tauri:dev -- -- -- [CONN_NAME] [FLAGS]
 ```
 
 ## Guidelines
@@ -154,7 +154,7 @@ We use [Changesets Bot](https://github.com/changesets/bot) to check for changese
 Generally after making changes you'll run
 
 ```sh frame="none"
-bunx changeset add
+pnpm changeset add
 ```
 
 and fill in the blanks to create a temporary changeset file with metadata about
@@ -167,7 +167,7 @@ If your changes don't affect any major component of the repo (such as changes in
 changeset to make the bot happy:
 
 ```sh frame="none"
-bunx changeset add --empty
+pnpm changeset add --empty
 ```
 
 Please refer to [changesets](https://github.com/changesets/changesets) documentation for more info.

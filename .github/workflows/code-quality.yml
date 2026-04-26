@@ -10,44 +10,44 @@ on:
   workflow_dispatch:
 
 env:
-  HUSKY: 0
   RUST_BACKTRACE: 1
   CARGO_PROFILE_DEV_DEBUG: 0 # This would add unnecessary bloat to the target folder, decreasing cache efficiency.
 
 jobs:
-  eslint:
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v6
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
         with:
-          bun-version: latest
+          node-version: lts/*
+          cache: pnpm
 
       - name: Install dependencies
-        run: bun install --frozen-lock
+        run: pnpm install --frozen-lock --workspace-root
 
       - name: Run Lint
-        run: bun ts:lint
-
-  prettier:
+        run: pnpm lint -- --format=github
+  format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v6
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
         with:
-          bun-version: latest
+          node-version: lts/*
+          cache: pnpm
 
       - name: Install dependencies
-        run: bun install --frozen-lock
+        run: pnpm install --frozen-lock --workspace-root
 
-      - name: Run Prettier
-        run: bun format:check
+      - name: Check formatting issues
+        run: pnpm fmt -- --format=github
   clippy:
     runs-on: ubuntu-22.04
     steps:
@@ -72,22 +72,3 @@ jobs:
 
       - name: Run Clippy
         run: cargo clippy
-  astro-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            apps/web
-            apps/desktop/package.json
-            packages
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install --frozen-lock
-
-      - name: Run Astro check
-        run: bun astro:check

@@ -65,12 +65,15 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
         with:
-          bun-version: latest
+          node-version: lts/*
+          cache: pnpm
 
       - name: Install dependencies
-        run: bun install --frozen-lock
+        run: pnpm install --frozen-lock
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -101,5 +104,5 @@ jobs:
           releaseId: ${{ github.event.release.id || github.event.inputs.release-id }}
           includeUpdaterJson: true
           projectPath: ./apps/desktop
-          tauriScript: bunx tauri
+          tauriScript: pnpm tauri
           args: --ci --config src-tauri/tauri.conf.prod.json --target ${{matrix.target}} ${{ matrix.target == 'aarch64-pc-windows-msvc' && '--bundles nsis' || ''}}

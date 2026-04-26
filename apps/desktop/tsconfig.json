@@ -1,4 +1,5 @@
 {
+  "extends": ["@tablex/typescript-config"],
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -21,9 +22,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+    },
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
 }

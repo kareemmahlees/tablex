@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "semi": false,
+  "sortTailwindcss": {},
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "node_modules",
+    "out",
+    "public",
+    "src-tauri",
+    "pnpm-lock.yaml",
+    "/**/dist",
+    ".pnpm-store",
+    "**/components/ui",
+    "routeTree.gen.ts",
+    ".all-contributorsrc",
+    ".astro",
+    "env.d.ts",
+    "bindings.ts",
+    "crates/settings/schema.json"
+  ]
+}
