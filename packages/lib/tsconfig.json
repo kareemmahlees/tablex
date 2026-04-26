@@ -1,4 +1,4 @@
 {
-  "extends": ["../../tsconfig.base.json"],
-  "include": ["**/*.ts", "../../apps/desktop/src/lib/types.ts"]
+  "extends": ["@tablex/typescript-config"],
+  "include": ["**/*.ts", "../../apps/desktop/src/lib/types.ts"],
 }
