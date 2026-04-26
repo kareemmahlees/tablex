@@ -19,9 +19,9 @@
     "@tablex/core": "workspace:^",
     "@tablex/lib": "workspace:^",
     "astro": "^6.1.9",
-    "cmdk": "1.0.0",
+    "cmdk": "1.1.1",
     "cobe": "^0.6.3",
-    "framer-motion": "^10.18.0",
+    "framer-motion": "^12.38.0",
     "highlight.js": "^11.10.0",
     "lucide-react": "^0.436.0",
     "marked": "^14.1.0",
@@ -29,7 +29,7 @@
     "react": "catalog:react",
     "react-dom": "catalog:react",
     "sharp": "^0.33.5",
-    "vaul": "^0.8.9"
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@tablex/typescript-config": "workspace:*",
