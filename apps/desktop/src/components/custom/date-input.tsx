@@ -45,21 +45,21 @@ export const DateTimeInput = ({
           <input
             {...getInputProps("days")}
             disabled={disabled}
-            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-hidden focus-within:rounded-sm"
             placeholder="DD"
           />
           <span>/</span>
           <input
             {...getInputProps("months")}
             disabled={disabled}
-            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-hidden focus-within:rounded-sm"
             placeholder="MM"
           />
           <span>/</span>
           <input
             {...getInputProps("years")}
             disabled={disabled}
-            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-hidden focus-within:rounded-sm"
             placeholder="YYYY"
           />
         </div>
@@ -75,21 +75,21 @@ export const DateTimeInput = ({
           <input
             {...getInputProps("hours")}
             disabled={disabled}
-            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-hidden focus-within:rounded-sm"
             placeholder="HH"
           />
           <span>:</span>
           <input
             {...getInputProps("minutes")}
             disabled={disabled}
-            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-hidden focus-within:rounded-sm"
             placeholder="MM"
           />
           <span>:</span>
           <input
             {...getInputProps("seconds")}
             disabled={disabled}
-            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-none focus-within:rounded-sm"
+            className="focus-within:bg-muted-foreground/40 box-content h-fit cursor-pointer select-none border-none bg-transparent px-1 tabular-nums outline-hidden focus-within:rounded-sm"
             placeholder="SS"
           />
         </div>

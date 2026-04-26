@@ -173,7 +173,7 @@ export function DataTableSortList<TData>({
         <PopoverContent
           aria-labelledby={labelId}
           aria-describedby={descriptionId}
-          className="flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]"
+          className="flex w-full max-w-(--radix-popover-content-available-width) origin-(--radix-popover-content-transform-origin) flex-col gap-3.5 p-4 sm:min-w-[380px]"
           {...props}
         >
           <div className="flex flex-col gap-1">
@@ -313,7 +313,7 @@ function DataTableSortItem({
           </PopoverTrigger>
           <PopoverContent
             id={fieldListboxId}
-            className="w-[var(--radix-popover-trigger-width)] origin-[var(--radix-popover-content-transform-origin)] p-0"
+            className="w-(--radix-popover-trigger-width) origin-(--radix-popover-content-transform-origin) p-0"
           >
             <Command>
               <CommandInput placeholder="Search fields..." />
@@ -346,13 +346,13 @@ function DataTableSortItem({
         >
           <SelectTrigger
             aria-controls={directionListboxId}
-            className="h-9 w-24 rounded [&[data-size]]:h-8"
+            className="h-9 w-24 rounded data-size:h-8"
           >
             <SelectValue />
           </SelectTrigger>
           <SelectContent
             id={directionListboxId}
-            className="min-w-[var(--radix-select-trigger-width)] origin-[var(--radix-select-content-transform-origin)]"
+            className="min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin)"
           >
             {dataTableConfig.sortOrders.map((order) => (
               <SelectItem key={order.value} value={order.value}>

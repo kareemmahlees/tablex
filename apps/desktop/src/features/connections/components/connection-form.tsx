@@ -155,7 +155,7 @@ const DriverSelector = () => {
               defaultValue={field.value}
               onValueChange={field.onChange}
             >
-              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-hidden transition-[color,box-shadow] has-focus-visible:ring-[3px]">
                 <RadioGroupItem
                   id={`sqlite`}
                   value={Drivers.SQLite}
@@ -168,9 +168,9 @@ const DriverSelector = () => {
                 >
                   SQLite
                 </Label>
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-checked:visible" />
               </div>
-              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-hidden transition-[color,box-shadow] has-focus-visible:ring-[3px]">
                 <RadioGroupItem
                   id={`postgres`}
                   value={Drivers.PostgreSQL}
@@ -184,9 +184,9 @@ const DriverSelector = () => {
                   PostgreSQL
                 </Label>
 
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-checked:visible" />
               </div>
-              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-hidden transition-[color,box-shadow] has-focus-visible:ring-[3px]">
                 <RadioGroupItem
                   id={`mysql`}
                   value={Drivers.MySQL}
@@ -199,7 +199,7 @@ const DriverSelector = () => {
                 >
                   MySQL
                 </Label>
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-checked:visible" />
               </div>
             </RadioGroup>
           </FormControl>
