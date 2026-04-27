@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@tablex/ui/components/sidebar"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { SettingsSideBar } from "./-components/settings-layout-sidebar"
 

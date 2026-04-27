@@ -1,5 +1,9 @@
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
+import { Button, buttonVariants } from "@tablex/ui/components/button"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger
+} from "@tablex/ui/components/drawer"
 import { Menu } from "lucide-react"
 import { useState } from "react"
 import {
@@ -8,7 +12,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle
-} from "../../components/ui/dialog"
+} from "@tablex/ui/components/dialog"
 
 const MobileNav = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)

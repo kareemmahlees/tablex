@@ -4,8 +4,8 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbSeparator
-} from "@/components/ui/breadcrumb"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@tablex/ui/components/breadcrumb"
+import { Skeleton } from "@tablex/ui/components/skeleton"
 import { useDBSchema } from "@/features/common/db-context"
 import { useSettings } from "@/features/settings/context"
 import { LOCAL_STORAGE } from "@/lib/constants"

@@ -5,7 +5,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 
 const Keybindings = () => {
   return (

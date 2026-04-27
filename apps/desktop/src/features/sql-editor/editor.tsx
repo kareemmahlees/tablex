@@ -3,7 +3,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup
-} from "@/components/ui/resizable"
+} from "@tablex/ui/components/resizable"
 import {
   Table,
   TableBody,
@@ -11,16 +11,16 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 
 import { TooltipButton } from "@/components/custom/tooltip-button"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+} from "@tablex/ui/components/dropdown-menu"
+import { ScrollArea, ScrollBar } from "@tablex/ui/components/scroll-area"
 import { useSetupCodeMirror } from "@/hooks/use-setup-code-mirror"
 import { betterStyling } from "@/lib/editor-ext"
 import { zodJsonValidation } from "@/lib/utils"

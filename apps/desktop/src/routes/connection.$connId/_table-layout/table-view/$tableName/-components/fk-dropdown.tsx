@@ -3,8 +3,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+} from "@tablex/ui/components/dropdown-menu"
+import { ScrollArea, ScrollBar } from "@tablex/ui/components/scroll-area"
 import {
   Table,
   TableBody,
@@ -12,8 +12,13 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@tablex/ui/components/table"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@tablex/ui/components/tabs"
 
 import { useGetFKRelations } from "@/hooks/row"
 import { Link } from "lucide-react"
@@ -65,7 +70,7 @@ const ForeignKeyDropdown = ({
                     <Table>
                       <TableHeader className="bg-white/5">
                         <TableRow>
-                          {/* A quick trick to get column headings without the need to 
+                          {/* A quick trick to get column headings without the need to
                           make an extra call to the backend
                        */}
                           {Object.keys(fkRow.rows[0]).map((head) => (

@@ -5,11 +5,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger
-} from "@/components/ui/sheet"
+} from "@tablex/ui/components/sheet"
 
 import { type ColumnInfo, commands, type RowRecord } from "@/bindings"
 import { TooltipButton } from "@/components/custom/tooltip-button"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Form,
   FormControl,
@@ -18,8 +18,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@tablex/ui/components/form"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle, PlusCircle } from "lucide-react"
 import { Dispatch, SetStateAction, useState } from "react"

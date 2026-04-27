@@ -3,7 +3,7 @@ import {
   FormDescription,
   FormItem,
   FormLabel
-} from "@/components/ui/form"
+} from "@tablex/ui/components/form"
 import { cn } from "@tablex/lib/utils"
 import { type PropsWithChildren } from "react"
 

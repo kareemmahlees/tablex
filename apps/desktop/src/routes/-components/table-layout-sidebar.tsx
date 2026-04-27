@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger
-} from "@/components/ui/collapsible"
+} from "@tablex/ui/components/collapsible"
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +17,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem
-} from "@/components/ui/sidebar"
+} from "@tablex/ui/components/sidebar"
 import { About } from "@/features/about/about"
 import CommandPalette from "@/features/command-palette/palette"
 import { AvailableKeybindings } from "@/features/keybindings/components/available-keybindings"

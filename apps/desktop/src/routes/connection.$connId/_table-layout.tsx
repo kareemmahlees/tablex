@@ -1,5 +1,5 @@
 import { commands } from "@/bindings"
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar"
+import { SidebarProvider, useSidebar } from "@tablex/ui/components/sidebar"
 import { DBSchemaContext } from "@/features/common/db-context"
 import {
   TableSelectionBreadCrumb,

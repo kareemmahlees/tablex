@@ -2,8 +2,8 @@ import { commands } from "@/bindings"
 import MySQL from "@/components/icons/mysql"
 import PostgreSQL from "@/components/icons/postgres"
 import SQLite from "@/components/icons/sqlite"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@tablex/ui/components/button"
+import { Checkbox } from "@tablex/ui/components/checkbox"
 import {
   Form,
   FormControl,
@@ -11,16 +11,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@tablex/ui/components/form"
+import { Input } from "@tablex/ui/components/input"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput
-} from "@/components/ui/input-group"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+} from "@tablex/ui/components/input-group"
+import { Label } from "@tablex/ui/components/label"
+import { RadioGroup, RadioGroupItem } from "@tablex/ui/components/radio-group"
 import { Drivers } from "@/lib/types"
 import { constructConnectionString } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
@@ -155,7 +155,7 @@ const DriverSelector = () => {
               defaultValue={field.value}
               onValueChange={field.onChange}
             >
-              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-hidden transition-[color,box-shadow] has-focus-visible:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs outline-hidden has-focus-visible:ring-[3px] group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center transition-[color,box-shadow]">
                 <RadioGroupItem
                   id={`sqlite`}
                   value={Drivers.SQLite}
@@ -168,9 +168,9 @@ const DriverSelector = () => {
                 >
                   SQLite
                 </Label>
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-checked:visible" />
+                <CheckCircle2 className="text-muted-foreground group-has-checked:visible invisible absolute right-0 top-0 m-2 size-4" />
               </div>
-              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-hidden transition-[color,box-shadow] has-focus-visible:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs outline-hidden has-focus-visible:ring-[3px] group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center transition-[color,box-shadow]">
                 <RadioGroupItem
                   id={`postgres`}
                   value={Drivers.PostgreSQL}
@@ -184,9 +184,9 @@ const DriverSelector = () => {
                   PostgreSQL
                 </Label>
 
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-checked:visible" />
+                <CheckCircle2 className="text-muted-foreground group-has-checked:visible invisible absolute right-0 top-0 m-2 size-4" />
               </div>
-              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-hidden transition-[color,box-shadow] has-focus-visible:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs outline-hidden has-focus-visible:ring-[3px] group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center transition-[color,box-shadow]">
                 <RadioGroupItem
                   id={`mysql`}
                   value={Drivers.MySQL}
@@ -199,7 +199,7 @@ const DriverSelector = () => {
                 >
                   MySQL
                 </Label>
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-checked:visible" />
+                <CheckCircle2 className="text-muted-foreground group-has-checked:visible invisible absolute right-0 top-0 m-2 size-4" />
               </div>
             </RadioGroup>
           </FormControl>

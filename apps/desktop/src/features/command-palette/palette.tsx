@@ -1,14 +1,14 @@
 import { commands } from "@/bindings"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem
-} from "@/components/ui/command"
-import { Kbd, KbdGroup } from "@/components/ui/kbd"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@tablex/ui/components/command"
+import { Kbd, KbdGroup } from "@tablex/ui/components/kbd"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import { cn } from "@tablex/lib/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"

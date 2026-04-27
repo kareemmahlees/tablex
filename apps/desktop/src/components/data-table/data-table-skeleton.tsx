@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@tablex/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 import { cn } from "@tablex/lib/utils"
 
 interface DataTableSkeletonProps extends React.ComponentProps<"div"> {
@@ -44,12 +44,12 @@ export function DataTableSkeleton({
         <div className="flex flex-1 items-center gap-2">
           {filterCount > 0
             ? Array.from({ length: filterCount }).map((_, i) => (
-                <Skeleton key={i} className="h-7 w-18 border-dashed" />
+                <Skeleton key={i} className="w-18 h-7 border-dashed" />
               ))
             : null}
         </div>
         {withViewOptions ? (
-          <Skeleton className="ml-auto hidden h-7 w-18 lg:flex" />
+          <Skeleton className="w-18 ml-auto hidden h-7 lg:flex" />
         ) : null}
       </div>
       <div className="rounded-md border">
@@ -96,7 +96,7 @@ export function DataTableSkeleton({
           <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
             <div className="flex items-center gap-2">
               <Skeleton className="h-7 w-24" />
-              <Skeleton className="h-7 w-18" />
+              <Skeleton className="w-18 h-7" />
             </div>
             <div className="flex items-center justify-center text-sm font-medium">
               <Skeleton className="h-7 w-20" />

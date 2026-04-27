@@ -4,8 +4,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@tablex/ui/components/form"
+import { Input } from "@tablex/ui/components/input"
 import { useFormContext } from "react-hook-form"
 import { z } from "zod"
 import { connectionFormSchema } from "../schema"

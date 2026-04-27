@@ -1,11 +1,11 @@
 import { commands, RowRecord } from "@/bindings"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+} from "@tablex/ui/components/dropdown-menu"
 import { Table } from "@tanstack/react-table"
 import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 import { asString, generateCsv, mkConfig } from "export-to-csv"

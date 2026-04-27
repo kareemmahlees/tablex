@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 import { getCommonPinningStyles } from "@/lib/data-table"
 import { cn } from "@tablex/lib/utils"
 import { ScrollArea, ScrollBar } from "../ui/scroll-area"

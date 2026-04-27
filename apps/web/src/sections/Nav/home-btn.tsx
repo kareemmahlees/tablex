@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import logo from "../../assets/logo.svg"
 
 const HomeBtn = () => {

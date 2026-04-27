@@ -1,6 +1,6 @@
 import type { TxError } from "@/bindings"
 import ErrorDialog from "@/components/dialogs/error-dialog"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import { cn } from "@tablex/lib/utils"
 import { error } from "@tauri-apps/plugin-log"
 import { customAlphabet } from "nanoid"

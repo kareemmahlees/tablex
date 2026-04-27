@@ -8,20 +8,20 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle
-} from "@/components/ui/alert-dialog"
-import { Button, buttonVariants } from "@/components/ui/button"
+} from "@tablex/ui/components/alert-dialog"
+import { Button, buttonVariants } from "@tablex/ui/components/button"
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle
-} from "@/components/ui/card"
+} from "@tablex/ui/components/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+} from "@tablex/ui/components/dropdown-menu"
 import { useRouter } from "@tanstack/react-router"
 import { MoreHorizontal, Trash2 } from "lucide-react"
 import { useState } from "react"

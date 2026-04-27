@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -6,8 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from "@/components/ui/dialog"
-import { Form } from "@/components/ui/form"
+} from "@tablex/ui/components/dialog"
+import { Form } from "@tablex/ui/components/form"
 import { Drivers } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PlusCircle } from "lucide-react"

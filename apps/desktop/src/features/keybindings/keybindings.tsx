@@ -1,5 +1,5 @@
 import { commands, type Keybinding } from "@/bindings"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Dialog,
   DialogClose,
@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Kbd } from "@/components/ui/kbd"
+} from "@tablex/ui/components/dialog"
+import { Input } from "@tablex/ui/components/input"
+import { Kbd } from "@tablex/ui/components/kbd"
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 import { useKeybindings, type EditedBinding } from "@/features/keybindings"
 import { Edit2, FileJson2 } from "lucide-react"
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react"

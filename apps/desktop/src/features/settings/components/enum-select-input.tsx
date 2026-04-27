@@ -1,11 +1,11 @@
-import { FormControl } from "@/components/ui/form"
+import { FormControl } from "@tablex/ui/components/form"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select"
+} from "@tablex/ui/components/select"
 import type { SelectProps } from "@radix-ui/react-select"
 
 type EnumSelectInputProps = {

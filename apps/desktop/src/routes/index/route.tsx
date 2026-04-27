@@ -6,7 +6,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle
-} from "@/components/ui/empty"
+} from "@tablex/ui/components/empty"
 import { ConnectionCard } from "@/features/connections/components/connection-card"
 import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
 import { useSettings } from "@/features/settings/context"

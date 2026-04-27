@@ -5,15 +5,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from "@/components/ui/dialog"
+} from "@tablex/ui/components/dialog"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput
-} from "@/components/ui/input-group"
-import { Kbd, KbdGroup } from "@/components/ui/kbd"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { SidebarMenuButton } from "@/components/ui/sidebar"
+} from "@tablex/ui/components/input-group"
+import { Kbd, KbdGroup } from "@tablex/ui/components/kbd"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
+import { SidebarMenuButton } from "@tablex/ui/components/sidebar"
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 import Fuse from "fuse.js"
 import { Keyboard, SearchIcon } from "lucide-react"
 import { useState } from "react"
