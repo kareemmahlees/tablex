@@ -19,7 +19,6 @@
     "@tablex/core": "workspace:^",
     "@tablex/lib": "workspace:^",
     "astro": "^6.1.9",
-    "cmdk": "1.1.1",
     "cobe": "^0.6.3",
     "framer-motion": "^12.38.0",
     "highlight.js": "^11.10.0",
@@ -28,8 +27,7 @@
     "mini-svg-data-uri": "^1.4.4",
     "react": "catalog:react",
     "react-dom": "catalog:react",
-    "sharp": "^0.33.5",
-    "vaul": "^1.1.2"
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@tablex/typescript-config": "workspace:*",
