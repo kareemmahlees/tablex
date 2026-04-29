@@ -1,10 +1,13 @@
 packages:
   - apps/**
   - packages/**
+allowBuilds:
+  esbuild: true
+  sharp: true
 
 catalogs:
   react:
-    react: ^19.2.5
-    react-dom: ^19.2.5
     "@types/react": ^19.2.5
     "@types/react-dom": ^19.2.3
+    react: ^19.2.5
+    react-dom: ^19.2.5

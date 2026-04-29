@@ -111,7 +111,7 @@ export function formatDate(
       year: opts.year ?? "numeric",
       ...opts
     }).format(new Date(date))
-  } catch () {
+  } catch {
     return ""
   }
 }
@@ -154,7 +154,7 @@ export function zodJsonValidation() {
         ) {
           ctx.addIssue({ code: "custom", message: "Invalid JSON" })
         } else return parsed
-      } catch () {
+      } catch {
         ctx.addIssue({ code: "custom", message: "Invalid JSON" })
         return z.NEVER
       }
