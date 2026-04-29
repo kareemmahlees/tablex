@@ -3,7 +3,7 @@ import {
   Row,
   type Table as TanstackTable
 } from "@tanstack/react-table"
-import type * as React from "react"
+import React, { useMemo } from "react"
 
 import {
   Table,
@@ -27,11 +27,30 @@ export function DataTable<TData>({
   className,
   onRowClick
 }: DataTableProps<TData>) {
+  const columnSizeVars = useMemo(() => {
+    const headers = table.getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]!
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+    }
+    return colSizes
+  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
+
   return (
-    <ScrollArea
-      className={cn("flex h-full w-full min-w-0 flex-1 flex-col", className)}
+    <div
+      className={cn(
+        "flex h-full w-full min-w-0 flex-1 flex-col overflow-x-auto overflow-ellipsis",
+        className
+      )}
     >
-      <Table>
+      <Table
+        style={{
+          ...columnSizeVars,
+          width: table.getTotalSize()
+        }}
+      >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
@@ -43,9 +62,10 @@ export function DataTable<TData>({
                   key={header.id}
                   colSpan={header.colSpan}
                   style={{
-                    ...getCommonPinningStyles({ column: header.column })
+                    ...getCommonPinningStyles({ column: header.column }),
+                    width: `calc(var(--header-${header.id}-size) * 1px)`
                   }}
-                  className="text-sm font-bold lg:text-base"
+                  className="group relative overflow-hidden truncate whitespace-nowrap text-sm font-bold lg:text-base"
                 >
                   {header.isPlaceholder
                     ? null
@@ -53,6 +73,20 @@ export function DataTable<TData>({
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                  <div
+                    onDoubleClick={() => header.column.resetSize()}
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                    className={cn(
+                      "absolute right-0 top-1/2 h-4/5 w-2 -translate-y-1/2 cursor-col-resize touch-none select-none rounded-sm transition-colors",
+                      header.column.getIsResizing()
+                        ? "bg-primary"
+                        : "group-hover:bg-muted-foreground/30 bg-transparent"
+                    )}
+                    aria-label="Resize column"
+                    role="separator"
+                    data-resizer="true"
+                  />
                 </TableHead>
               ))}
             </TableRow>
@@ -77,9 +111,10 @@ export function DataTable<TData>({
                   <TableCell
                     key={cell.id}
                     style={{
-                      ...getCommonPinningStyles({ column: cell.column })
+                      ...getCommonPinningStyles({ column: cell.column }),
+                      width: `calc(var(--col-${cell.column.id}-size) * 1px)`
                     }}
-                    className="w-1"
+                    className="w-1 overflow-hidden truncate whitespace-nowrap"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -90,7 +125,7 @@ export function DataTable<TData>({
             <TableRow>
               <TableCell
                 colSpan={table.getAllColumns().length}
-                className="h-24 text-center"
+                className="h-24 truncate text-center"
               >
                 No results.
               </TableCell>
@@ -98,7 +133,6 @@ export function DataTable<TData>({
           )}
         </TableBody>
       </Table>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    </div>
   )
 }
