@@ -34,7 +34,6 @@
     "oxfmt": "^0.46.0",
     "oxlint": "^1.61.0",
     "postcss": "^8.5.3",
-    "react-scan": "^0.3.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3"
   },
