@@ -87,7 +87,6 @@ export const Preferences = () => {
                     description="TableX will check for updates on each startup."
                   >
                     <Switch
-                      className="data-[state=unchecked]:bg-zinc-700"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />

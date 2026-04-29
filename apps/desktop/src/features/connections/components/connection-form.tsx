@@ -1,11 +1,8 @@
-import { commands } from "@/bindings"
 import MySQL from "@/components/icons/mysql"
 import PostgreSQL from "@/components/icons/postgres"
 import SQLite from "@/components/icons/sqlite"
-import { Button } from "@tablex/ui/components/button"
 import { Checkbox } from "@tablex/ui/components/checkbox"
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -22,21 +19,16 @@ import {
 import { Label } from "@tablex/ui/components/label"
 import { RadioGroup, RadioGroupItem } from "@tablex/ui/components/radio-group"
 import { Drivers } from "@/lib/types"
-import { constructConnectionString } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
-import { useRouter } from "@tanstack/react-router"
 import { open as openDialog } from "@tauri-apps/plugin-dialog"
 import { CheckCircle2 } from "lucide-react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { toast } from "sonner"
 import { z } from "zod"
 import { connectionFormSchema } from "../schema"
 import { CommonConnectionOpts } from "./common-connection-opts"
-import { DialogFooter } from "@tablex/ui/components/dialog"
 
-export const ConnectionForm = ({ onSuccess }: { onSuccess: () => void }) => {
+export const ConnectionForm = () => {
   const form = useFormContext<z.infer<typeof connectionFormSchema>>()
-  const router = useRouter()
 
   const driver = useWatch({
     control: form.control,

@@ -70,7 +70,7 @@ export function DataTable<TData>({
                 )}
                 onClick={() => {
                   if (document.getElementById("editor")) return
-                  onRowClick && onRowClick(row)
+                  onRowClick?.(row)
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
