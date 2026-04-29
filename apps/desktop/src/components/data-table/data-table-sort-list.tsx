@@ -6,8 +6,8 @@ import * as React from "react"
 
 import { SortingData } from "@/bindings"
 import { dataTableConfig } from "@/components/data-table/data-table-config"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@tablex/ui/components/badge"
+import { Button } from "@tablex/ui/components/button"
 import {
   Command,
   CommandEmpty,
@@ -15,34 +15,35 @@ import {
   CommandInput,
   CommandItem,
   CommandList
-} from "@/components/ui/command"
+} from "@tablex/ui/components/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@/components/ui/popover"
+} from "@tablex/ui/components/popover"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select"
+} from "@tablex/ui/components/select"
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
   SortableOverlay
-} from "@/components/ui/sortable"
+} from "@tablex/ui/components/sortable"
 import { cn } from "@tablex/lib/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 
 const OPEN_MENU_SHORTCUT = "s"
 const REMOVE_SORT_SHORTCUTS = ["backspace", "delete"]
 
-interface DataTableSortListProps<TData>
-  extends React.ComponentProps<typeof PopoverContent> {
+interface DataTableSortListProps<TData> extends React.ComponentProps<
+  typeof PopoverContent
+> {
   table: Table<TData>
   initialSorting?: SortingData[]
   sorting: SortingData[]
@@ -173,7 +174,7 @@ export function DataTableSortList<TData>({
         <PopoverContent
           aria-labelledby={labelId}
           aria-describedby={descriptionId}
-          className="flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]"
+          className="max-w-(--radix-popover-content-available-width) origin-(--radix-popover-content-transform-origin) flex w-full flex-col gap-3.5 p-4 sm:min-w-[380px]"
           {...props}
         >
           <div className="flex flex-col gap-1">
@@ -313,7 +314,7 @@ function DataTableSortItem({
           </PopoverTrigger>
           <PopoverContent
             id={fieldListboxId}
-            className="w-[var(--radix-popover-trigger-width)] origin-[var(--radix-popover-content-transform-origin)] p-0"
+            className="w-(--radix-popover-trigger-width) origin-(--radix-popover-content-transform-origin) p-0"
           >
             <Command>
               <CommandInput placeholder="Search fields..." />
@@ -346,13 +347,13 @@ function DataTableSortItem({
         >
           <SelectTrigger
             aria-controls={directionListboxId}
-            className="h-9 w-24 rounded [&[data-size]]:h-8"
+            className="data-size:h-8 h-9 w-24 rounded"
           >
             <SelectValue />
           </SelectTrigger>
           <SelectContent
             id={directionListboxId}
-            className="min-w-[var(--radix-select-trigger-width)] origin-[var(--radix-select-content-transform-origin)]"
+            className="min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin)"
           >
             {dataTableConfig.sortOrders.map((order) => (
               <SelectItem key={order.value} value={order.value}>

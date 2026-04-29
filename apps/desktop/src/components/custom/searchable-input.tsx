@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Command,
   CommandEmpty,
@@ -8,16 +8,16 @@ import {
   CommandInput,
   CommandItem,
   CommandList
-} from "@/components/ui/command"
+} from "@tablex/ui/components/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@/components/ui/popover"
+} from "@tablex/ui/components/popover"
 import { cn } from "@tablex/lib/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
 import * as React from "react"
-import { ScrollArea } from "../ui/scroll-area"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 
 type SearchableInputProps = {
   onValueChange: (v: string) => void

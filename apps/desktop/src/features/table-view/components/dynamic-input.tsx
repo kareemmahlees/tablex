@@ -1,15 +1,15 @@
 import type { ColumnInfo } from "@/bindings"
 import { DateTimeInput } from "@/components/custom/date-input"
-import { Input } from "@/components/ui/input"
+import { Input } from "@tablex/ui/components/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/text-area"
+} from "@tablex/ui/components/select"
+import { Switch } from "@tablex/ui/components/switch"
+import { Textarea } from "@tablex/ui/components/textarea"
 import { json } from "@codemirror/lang-json"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
 import CodeMirror from "@uiw/react-codemirror"

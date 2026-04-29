@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 
 const DownloadBtn = () => {
   const userAgent = window.navigator.userAgent

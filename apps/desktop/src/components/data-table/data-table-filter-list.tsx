@@ -11,8 +11,8 @@ import {
 import * as React from "react"
 
 import { dataTableConfig } from "@/components/data-table/data-table-config"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@tablex/ui/components/badge"
+import { Button } from "@tablex/ui/components/button"
 import {
   Command,
   CommandEmpty,
@@ -20,26 +20,26 @@ import {
   CommandInput,
   CommandItem,
   CommandList
-} from "@/components/ui/command"
+} from "@tablex/ui/components/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from "@/components/ui/popover"
+} from "@tablex/ui/components/popover"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select"
+} from "@tablex/ui/components/select"
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
   SortableOverlay
-} from "@/components/ui/sortable"
+} from "@tablex/ui/components/sortable"
 import {
   filteringSchema,
   filterItemSchema
@@ -66,8 +66,8 @@ import {
   FacetedItem,
   FacetedList,
   FacetedTrigger
-} from "../ui/faceted"
-import { Input } from "../ui/input"
+} from "@tablex/ui/components/faceted"
+import { Input } from "@tablex/ui/components/input"
 import { DataTableRangeFilter } from "./data-table-range-filter"
 
 const DEBOUNCE_MS = 300
@@ -75,8 +75,9 @@ const THROTTLE_MS = 50
 const OPEN_MENU_SHORTCUT = "f"
 const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"]
 
-interface DataTableFilterListProps<TData>
-  extends React.ComponentProps<typeof PopoverContent> {
+interface DataTableFilterListProps<TData> extends React.ComponentProps<
+  typeof PopoverContent
+> {
   table: Table<TData>
   filters: z.infer<typeof filteringSchema>
   onFilterChange: (data: z.infer<typeof filteringSchema>) => void
@@ -124,7 +125,7 @@ export function DataTableFilterList<TData>({
         variant:
           typeof column.columnDef.meta?.type === "object"
             ? "enum"
-            : column.columnDef.meta?.type ?? "text",
+            : (column.columnDef.meta?.type ?? "text"),
         operator: getDefaultFilterOperator(
           column.columnDef.meta?.variant ?? "text"
         ),
@@ -227,7 +228,7 @@ export function DataTableFilterList<TData>({
         <PopoverContent
           aria-describedby={descriptionId}
           aria-labelledby={labelId}
-          className="flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]"
+          className="max-w-(--radix-popover-content-available-width) origin-(--radix-popover-content-transform-origin) flex w-full flex-col gap-3.5 p-4 sm:min-w-[380px]"
           {...props}
         >
           <div className="flex flex-col gap-1">
@@ -387,7 +388,7 @@ function DataTableFilterItem<TData>({
               <SelectTrigger
                 aria-label="Select join operator"
                 aria-controls={joinOperatorListboxId}
-                className="h-8 rounded lowercase [&[data-size]]:h-8"
+                className="data-size:h-8 h-8 rounded lowercase"
               >
                 <SelectValue placeholder={joinOperator} />
               </SelectTrigger>
@@ -427,7 +428,7 @@ function DataTableFilterItem<TData>({
           <PopoverContent
             id={fieldListboxId}
             align="start"
-            className="w-40 origin-[var(--radix-popover-content-transform-origin)] p-0"
+            className="origin-(--radix-popover-content-transform-origin) w-40 p-0"
           >
             <Command>
               <CommandInput placeholder="Search fields..." />
@@ -444,7 +445,7 @@ function DataTableFilterItem<TData>({
                           variant:
                             typeof column.columnDef.meta?.type === "object"
                               ? "enum"
-                              : column.columnDef.meta?.type ?? "text",
+                              : (column.columnDef.meta?.type ?? "text"),
                           operator: getDefaultFilterOperator(
                             column.columnDef.meta?.variant ?? "text"
                           ),
@@ -485,7 +486,7 @@ function DataTableFilterItem<TData>({
         >
           <SelectTrigger
             aria-controls={operatorListboxId}
-            className="h-8 w-32 rounded lowercase [&[data-size]]:h-8"
+            className="data-size:h-8 h-8 w-32 rounded lowercase"
           >
             <div className="truncate">
               <SelectValue placeholder={filter.operator} />
@@ -493,7 +494,7 @@ function DataTableFilterItem<TData>({
           </SelectTrigger>
           <SelectContent
             id={operatorListboxId}
-            className="origin-[var(--radix-select-content-transform-origin)]"
+            className="origin-(--radix-select-content-transform-origin)"
           >
             {filterOperators.map((operator) => (
               <SelectItem
@@ -634,7 +635,7 @@ function onFilterInputRender<TData>({
             id={inputId}
             aria-controls={inputListboxId}
             aria-label={`${columnMeta?.label} boolean filter`}
-            className="h-8 w-full rounded [&[data-size]]:h-8"
+            className="data-size:h-8 h-8 w-full rounded"
           >
             <SelectValue placeholder={filter.value ? "True" : "False"} />
           </SelectTrigger>
@@ -693,7 +694,7 @@ function onFilterInputRender<TData>({
           </FacetedTrigger>
           <FacetedContent
             id={inputListboxId}
-            className="w-[200px] origin-[var(--radix-popover-content-transform-origin)]"
+            className="origin-(--radix-popover-content-transform-origin) w-[200px]"
           >
             <FacetedInput
               aria-label={`Search ${columnMeta?.label} options`}

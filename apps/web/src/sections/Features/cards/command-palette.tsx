@@ -6,7 +6,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator
-} from "@/components/ui/command"
+} from "@tablex/ui/components/command"
 import { File, FileJson2, Settings2, Terminal } from "lucide-react"
 
 const CommandPalette = () => {

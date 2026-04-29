@@ -1,6 +1,6 @@
 import type { TxError } from "@/bindings"
 import ErrorDialog from "@/components/dialogs/error-dialog"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import { cn } from "@tablex/lib/utils"
 import { error } from "@tauri-apps/plugin-log"
 import { customAlphabet } from "nanoid"
@@ -111,7 +111,7 @@ export function formatDate(
       year: opts.year ?? "numeric",
       ...opts
     }).format(new Date(date))
-  } catch (_err) {
+  } catch () {
     return ""
   }
 }
@@ -154,7 +154,7 @@ export function zodJsonValidation() {
         ) {
           ctx.addIssue({ code: "custom", message: "Invalid JSON" })
         } else return parsed
-      } catch (e) {
+      } catch () {
         ctx.addIssue({ code: "custom", message: "Invalid JSON" })
         return z.NEVER
       }

@@ -1,11 +1,11 @@
 import { PropsWithChildren, ReactNode } from "react"
-import { Button, type ButtonProps } from "../ui/button"
+import { Button, type ButtonProps } from "@tablex/ui/components/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
-} from "../ui/tooltip"
+} from "@tablex/ui/components/tooltip"
 
 type TooltipButtonProps = {
   tooltipContent: ReactNode

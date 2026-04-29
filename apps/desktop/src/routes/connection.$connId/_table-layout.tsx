@@ -1,5 +1,5 @@
 import { commands } from "@/bindings"
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar"
+import { SidebarProvider, useSidebar } from "@tablex/ui/components/sidebar"
 import { DBSchemaContext } from "@/features/common/db-context"
 import {
   TableSelectionBreadCrumb,
@@ -45,7 +45,7 @@ function TableViewLayout() {
     >
       <TableViewSidebar />
       <DBSchemaContext.Provider value={dbSchema}>
-        <main className="flex h-full w-full min-w-0 flex-1 flex-col">
+        <main className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col">
           <div className="flex items-center gap-x-6 border-b px-4 py-1.5">
             <SidebarToggleIcon />
             <Suspense fallback={<TableSelectionSkeleton />}>

@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger
-} from "@/components/ui/collapsible"
+} from "@tablex/ui/components/collapsible"
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +17,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem
-} from "@/components/ui/sidebar"
+} from "@tablex/ui/components/sidebar"
 import { About } from "@/features/about/about"
 import CommandPalette from "@/features/command-palette/palette"
 import { AvailableKeybindings } from "@/features/keybindings/components/available-keybindings"
@@ -71,7 +71,7 @@ export const TableViewSidebar = () => {
           <div>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               className={
                 "hover:bg-muted-foreground/20 -mb-2 h-6 w-fit px-1 py-2"
               }
@@ -81,7 +81,7 @@ export const TableViewSidebar = () => {
             </Button>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               className={
                 "hover:bg-muted-foreground/20 -mb-2 h-6 w-fit px-1 py-2"
               }
@@ -104,16 +104,12 @@ export const TableViewSidebar = () => {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="gap-y-2">
               {items.map((item, index) => {
                 if (item.type === "single") {
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        className="lg:h-9"
-                        isActive={matchRoute({ to: item.url }) !== false}
-                        asChild
-                      >
+                      <SidebarMenuButton className="lg:h-9" asChild>
                         <Link to={item.url} params={{ connId }}>
                           {item.icon && <item.icon />}
                           <span className="lg:text-base">{item.title}</span>
@@ -143,7 +139,7 @@ export const TableViewSidebar = () => {
                                 <SidebarMenuSubButton
                                   asChild
                                   isActive={
-                                    matchRoute({ to: item.url }) !== false
+                                    matchRoute({ to: item.url }) === true
                                   }
                                 >
                                   <Link to={item.url} params={{ connId }}>
@@ -164,12 +160,12 @@ export const TableViewSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="flex flex-row items-center justify-between">
-        <SidebarMenuButton asChild className="w-fit">
+        <SidebarMenuButton variant={"outline"} asChild className="w-fit">
           <Link to="/settings/preferences">
             <Settings />
           </Link>
         </SidebarMenuButton>
-        <div className="flex">
+        <div className="flex gap-x-2">
           <AvailableKeybindings />
           <About />
         </div>

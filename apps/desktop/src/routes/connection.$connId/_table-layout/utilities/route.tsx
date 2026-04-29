@@ -4,17 +4,17 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from "@/components/ui/accordion"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+} from "@tablex/ui/components/accordion"
+import { Badge } from "@tablex/ui/components/badge"
+import { Button } from "@tablex/ui/components/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle
-} from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@tablex/ui/components/card"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { openUrl } from "@tauri-apps/plugin-opener"
 import {

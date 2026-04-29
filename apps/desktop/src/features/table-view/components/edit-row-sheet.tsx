@@ -1,5 +1,5 @@
 import { commands, RowRecord } from "@/bindings"
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Form,
   FormControl,
@@ -7,15 +7,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@tablex/ui/components/form"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle
-} from "@/components/ui/sheet"
+} from "@tablex/ui/components/sheet"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type Row } from "@tanstack/react-table"
 import { Dispatch, SetStateAction, useEffect } from "react"

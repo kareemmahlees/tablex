@@ -5,7 +5,7 @@ import { createRouter, RouterProvider } from "@tanstack/react-router"
 import ReactDOM from "react-dom/client"
 import { scan } from "react-scan"
 import { commands } from "./bindings"
-import "./index.css"
+import "@tablex/ui/design-system.css"
 import { routeTree } from "./routeTree.gen"
 
 const client = new QueryClient()

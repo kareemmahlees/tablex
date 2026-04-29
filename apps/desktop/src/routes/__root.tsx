@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@tablex/ui/components/sonner"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import type { QueryClient } from "@tanstack/react-query"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
@@ -11,7 +11,8 @@ const Devtools = () => {
   return (
     <TanStackDevtools
       config={{
-        hideUntilHover: true
+        openHotkey: ["Alt", "d"],
+        triggerHidden: true
       }}
       plugins={[
         {

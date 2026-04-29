@@ -1,12 +1,12 @@
 import type { ColumnInfo, CustomColumnType, TableInfo } from "@/bindings"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@tablex/ui/components/button"
+import { Checkbox } from "@tablex/ui/components/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+} from "@tablex/ui/components/dropdown-menu"
 import { zodJsonValidation } from "@/lib/utils"
 import { json } from "@codemirror/lang-json"
 import "@tanstack/react-table"

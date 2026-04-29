@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@tablex/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from "@/components/ui/dialog"
+} from "@tablex/ui/components/dialog"
 import { cn } from "@tablex/lib/utils"
 
 const DesktopNav = () => {

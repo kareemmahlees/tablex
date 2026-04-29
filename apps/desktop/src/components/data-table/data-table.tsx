@@ -12,10 +12,10 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@/components/ui/table"
+} from "@tablex/ui/components/table"
 import { getCommonPinningStyles } from "@/lib/data-table"
 import { cn } from "@tablex/lib/utils"
-import { ScrollArea, ScrollBar } from "../ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@tablex/ui/components/scroll-area"
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>
@@ -70,7 +70,7 @@ export function DataTable<TData>({
                 )}
                 onClick={() => {
                   if (document.getElementById("editor")) return
-                  onRowClick && onRowClick(row)
+                  onRowClick?.(row)
                 }}
               >
                 {row.getVisibleCells().map((cell) => (

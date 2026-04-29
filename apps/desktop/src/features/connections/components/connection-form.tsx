@@ -1,41 +1,34 @@
-import { commands } from "@/bindings"
 import MySQL from "@/components/icons/mysql"
 import PostgreSQL from "@/components/icons/postgres"
 import SQLite from "@/components/icons/sqlite"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@tablex/ui/components/checkbox"
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@tablex/ui/components/form"
+import { Input } from "@tablex/ui/components/input"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput
-} from "@/components/ui/input-group"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+} from "@tablex/ui/components/input-group"
+import { Label } from "@tablex/ui/components/label"
+import { RadioGroup, RadioGroupItem } from "@tablex/ui/components/radio-group"
 import { Drivers } from "@/lib/types"
-import { constructConnectionString } from "@/lib/utils"
 import { cn } from "@tablex/lib/utils"
-import { useRouter } from "@tanstack/react-router"
 import { open as openDialog } from "@tauri-apps/plugin-dialog"
 import { CheckCircle2 } from "lucide-react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { toast } from "sonner"
 import { z } from "zod"
 import { connectionFormSchema } from "../schema"
 import { CommonConnectionOpts } from "./common-connection-opts"
 
-export const ConnectionForm = ({ onSuccess }: { onSuccess: () => void }) => {
+export const ConnectionForm = () => {
   const form = useFormContext<z.infer<typeof connectionFormSchema>>()
-  const router = useRouter()
 
   const driver = useWatch({
     control: form.control,
@@ -53,90 +46,26 @@ export const ConnectionForm = ({ onSuccess }: { onSuccess: () => void }) => {
     }
   }
 
-  const onSave = async (data: z.infer<typeof connectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    return toast.promise(
-      commands.createConnectionRecord(
-        connString,
-        data.name,
-        data.connectionOpts.driver
-      ),
-      {
-        id: "save_connection",
-        loading: "Saving connection...",
-        success: async () => {
-          await router.invalidate({ filter: (d) => d.fullPath === "/" })
-          onSuccess()
-          return "Successfully saved connection"
-        },
-        error: "Couldn't save connection",
-        position: "bottom-left"
-      }
-    )
-  }
-
-  const onTest = async (data: z.infer<typeof connectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    return toast.promise(
-      commands.testConnection(connString, data.connectionOpts.driver),
-      {
-        id: "test_connection",
-        loading: "Testing connection...",
-        success: "Connection is healthy",
-        error: "Connection is unhealthy",
-        position: "bottom-left"
-      }
-    )
-  }
-
   return (
-    <Form {...form}>
-      <form
-        className={cn(
-          "flex h-full flex-col items-center justify-center gap-y-7 overflow-hidden"
-        )}
-      >
-        <div className="w-full space-y-5">
-          <DriverSelector />
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="w-full flex-1">
-                <FormLabel>Name</FormLabel>
-                <Input {...field} placeholder="Connection Name" />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        {renderDriverFormFields()}
-
-        <div className="mt-10 flex w-full items-center justify-center gap-x-4">
-          <Button
-            type="button"
-            size={"sm"}
-            className="w-full"
-            onClick={form.handleSubmit(onSave)}
-          >
-            Save
-          </Button>
-          <Button
-            type="button"
-            size={"sm"}
-            variant={"secondary"}
-            className="w-full"
-            onClick={form.handleSubmit(onTest)}
-          >
-            Test
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <form
+      className={cn("flex h-full flex-col items-center justify-center gap-y-7")}
+    >
+      <div className="w-full space-y-5">
+        <DriverSelector />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="w-full flex-1">
+              <FormLabel>Name</FormLabel>
+              <Input {...field} placeholder="Connection Name" />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+      {renderDriverFormFields()}
+    </form>
   )
 }
 
@@ -155,7 +84,7 @@ const DriverSelector = () => {
               defaultValue={field.value}
               onValueChange={field.onChange}
             >
-              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs outline-hidden has-focus-visible:ring-[3px] group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center transition-[color,box-shadow]">
                 <RadioGroupItem
                   id={`sqlite`}
                   value={Drivers.SQLite}
@@ -168,9 +97,9 @@ const DriverSelector = () => {
                 >
                   SQLite
                 </Label>
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+                <CheckCircle2 className="text-muted-foreground group-has-checked:visible invisible absolute right-0 top-0 m-2 size-4" />
               </div>
-              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs outline-hidden has-focus-visible:ring-[3px] group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center transition-[color,box-shadow]">
                 <RadioGroupItem
                   id={`postgres`}
                   value={Drivers.PostgreSQL}
@@ -184,9 +113,9 @@ const DriverSelector = () => {
                   PostgreSQL
                 </Label>
 
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+                <CheckCircle2 className="text-muted-foreground group-has-checked:visible invisible absolute right-0 top-0 m-2 size-4" />
               </div>
-              <div className="border-input has-[:checked]:border-primary/50 has-[:focus-visible]:border-ring has-[:focus-visible]:ring-ring/50 shadow-xs group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center outline-none transition-[color,box-shadow] has-[:focus-visible]:ring-[3px]">
+              <div className="border-input has-checked:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 shadow-2xs outline-hidden has-focus-visible:ring-[3px] group relative flex cursor-pointer flex-col items-center gap-3 rounded-md border px-2 py-3 text-center transition-[color,box-shadow]">
                 <RadioGroupItem
                   id={`mysql`}
                   value={Drivers.MySQL}
@@ -199,7 +128,7 @@ const DriverSelector = () => {
                 >
                   MySQL
                 </Label>
-                <CheckCircle2 className="text-muted-foreground invisible absolute right-0 top-0 m-2 size-4 group-has-[:checked]:visible" />
+                <CheckCircle2 className="text-muted-foreground group-has-checked:visible invisible absolute right-0 top-0 m-2 size-4" />
               </div>
             </RadioGroup>
           </FormControl>

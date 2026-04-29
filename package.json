@@ -11,10 +11,10 @@
   },
   "private": true,
   "scripts": {
-    "desktop:dev": "pnpm tauri dev",
-    "desktop:debug": "pnpm tauri build --debug",
-    "desktop:build": "pnpm tauri build",
-    "desktop:info": "pnpm tauri info",
+    "desktop:dev": "pnpm -F @tablex/desktop exec tauri dev",
+    "desktop:debug": "pnpm -F @tablex/desktop exec tauri build --debug",
+    "desktop:build": "pnpm -F @tablex/desktop exec tauri build",
+    "desktop:info": "pnpm -F @tablex/desktop exec tauri info",
     "web:dev": "pnpm -F @tablex/web dev",
     "web:check": "pnpm -F @tablex/web check",
     "web:build": "pnpm -F @tablex/web build",
@@ -40,12 +40,10 @@
   },
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
-    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.292.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "timescape": "^0.7.1"
   }

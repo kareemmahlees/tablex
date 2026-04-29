@@ -13,6 +13,7 @@
     "public",
     "src-tauri",
     "pnpm-lock.yaml",
+    "*.astro",
     "/**/dist",
     ".pnpm-store",
     "**/components/ui",

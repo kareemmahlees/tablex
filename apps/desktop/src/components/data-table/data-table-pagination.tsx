@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -6,7 +6,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+} from "@tablex/ui/components/dropdown-menu"
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { TableLocalStorage } from "@/types"
 import { cn } from "@tablex/lib/utils"

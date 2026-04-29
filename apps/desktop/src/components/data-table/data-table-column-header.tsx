@@ -1,17 +1,19 @@
 import type { Column } from "@tanstack/react-table"
 import { ArrowDown, ArrowUp, EyeOff, Pin } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+} from "@tablex/ui/components/dropdown-menu"
 import { cn } from "@tablex/lib/utils"
 
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<
+  TData,
+  TValue
+> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>
   title: string
 }

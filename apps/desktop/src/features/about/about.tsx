@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@tablex/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -6,9 +6,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from "@/components/ui/dialog"
-import { LoadingButton } from "@/components/ui/loading-button"
-import { SidebarMenuButton } from "@/components/ui/sidebar"
+} from "@tablex/ui/components/dialog"
+import { LoadingButton } from "@tablex/ui/components/loading-button"
+import { SidebarMenuButton } from "@tablex/ui/components/sidebar"
 import { QUERY_KEYS } from "@/lib/constants"
 import { useQuery } from "@tanstack/react-query"
 import { getVersion } from "@tauri-apps/api/app"
