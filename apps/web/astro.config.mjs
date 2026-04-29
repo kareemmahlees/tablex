@@ -1,14 +1,11 @@
 import react from "@astrojs/react"
 import starlight from "@astrojs/starlight"
-import tailwind from "@tailwindcss/vite"
+import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "astro/config"
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [
-    tailwind({
-      applyBaseStyles: false
-    }),
     react(),
     starlight({
       title: "Docs",
@@ -29,14 +26,18 @@ export default defineConfig({
         }
       ],
       customCss: ["./src/styles/docs.css"],
-      social: {
-        github: "https://github.com/kareemmahlees/tablex"
-      },
+      social: [
+        {
+          icon: "github",
+          label: "Github",
+          href: "https://github.com/kareemmahlees/tablex"
+        }
+      ],
       editLink: {
         baseUrl: "https://github.com/kareemmahlees/tablex/edit/main/docs/"
       },
       sidebar: [
-        { label: "Overview", slug: "overview" },
+        { slug: "overview" },
         {
           label: "Features",
           items: [
@@ -56,9 +57,17 @@ export default defineConfig({
           ],
           collapsed: true
         },
-        { label: "Contributing", slug: "contributing" },
-        { label: "Changelog", slug: "changelog" }
+        { slug: "contributing" },
+        { slug: "changelog" }
       ]
     })
-  ]
+  ],
+
+  image: {
+    domains: ["cdn.simpleicons.org"]
+  },
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 })
