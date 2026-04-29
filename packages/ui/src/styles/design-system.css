@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@source "../../../../packages/ui/src/components";
+
 :root {
   --background: hsl(0 0% 100%);
   --foreground: hsl(240 10% 3.9%);
