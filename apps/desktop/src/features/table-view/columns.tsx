@@ -24,9 +24,41 @@ declare module "@tanstack/react-table" {
 
 export const generateColumnsDefs = (table: TableInfo) => {
   const columnsDefinitions = table.columns.map(({ name, type }) => {
+    const getColumnSize = () => {
+      const typeStr = typeof type === "string" ? type : "custom"
+
+      // Type-based defaults
+      switch (typeStr) {
+        case "boolean":
+          return { size: 80, minSize: 60, maxSize: 120 }
+        case "integer":
+        case "positiveInteger":
+        case "float":
+          return { size: 100, minSize: 70, maxSize: 500 }
+        case "date":
+        case "dateTime":
+          return { size: 180, minSize: 120, maxSize: 250 }
+        case "time":
+          return { size: 180, minSize: 120, maxSize: 250 }
+        case "year":
+          return { size: 180, minSize: 120, maxSize: 250 }
+        case "json":
+        case "text":
+          return { size: 200, minSize: 80, maxSize: 1000 }
+        case "uuid":
+          return { size: 250, minSize: 200, maxSize: 300 }
+        case "binary":
+        case "unSupported":
+          return { size: 120, minSize: 100, maxSize: 1000 }
+        default:
+          return { size: 250, minSize: 80, maxSize: 1000 }
+      }
+    }
+
     const columnDefinition: ColumnDef<ColumnInfo> = {
       accessorKey: name,
       id: name,
+      ...getColumnSize(),
       header: ({ column }) => {
         return <DataTableColumnHeader column={column} title={name} />
       },
@@ -139,6 +171,9 @@ export const generateColumnsDefs = (table: TableInfo) => {
 const appendCheckboxColumn = (columns: ColumnDef<ColumnInfo>[]) => {
   columns.unshift({
     id: "select",
+    size: 50,
+    minSize: 40,
+    maxSize: 60,
     header: ({ table }) => (
       <Checkbox
         checked={

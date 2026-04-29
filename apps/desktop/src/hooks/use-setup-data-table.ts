@@ -37,8 +37,8 @@ export const useSetupDataTable = <TData, TValue>({
     data: (data?.data as TData[]) ?? FALLBACK_DATA,
     columns,
     defaultColumn: {
-      size: 100,
-      minSize: 20,
+      size: 200,
+      minSize: 40,
       maxSize: 1000
     },
     enableColumnResizing: true,
