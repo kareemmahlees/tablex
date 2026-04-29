@@ -9,7 +9,7 @@ import {
   SelectValue
 } from "@tablex/ui/components/select"
 import { Switch } from "@tablex/ui/components/switch"
-import { Textarea } from "@tablex/ui/components/text-area"
+import { Textarea } from "@tablex/ui/components/textarea"
 import { json } from "@codemirror/lang-json"
 import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night"
 import CodeMirror from "@uiw/react-codemirror"

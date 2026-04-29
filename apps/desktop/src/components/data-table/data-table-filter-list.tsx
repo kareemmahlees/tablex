@@ -66,8 +66,8 @@ import {
   FacetedItem,
   FacetedList,
   FacetedTrigger
-} from "../ui/faceted"
-import { Input } from "../ui/input"
+} from "@tablex/ui/components/faceted"
+import { Input } from "@tablex/ui/components/input"
 import { DataTableRangeFilter } from "./data-table-range-filter"
 
 const DEBOUNCE_MS = 300

@@ -17,7 +17,7 @@ import {
 import { cn } from "@tablex/lib/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
 import * as React from "react"
-import { ScrollArea } from "../ui/scroll-area"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 
 type SearchableInputProps = {
   onValueChange: (v: string) => void

@@ -14,7 +14,7 @@
     "@astrojs/check": "^0.9.8",
     "@astrojs/react": "^5.0.4",
     "@astrojs/starlight": "^0.38.3",
-    "@tablex/core": "workspace:^",
+    "@tablex/desktop": "workspace:^",
     "@tablex/lib": "workspace:^",
     "@tablex/ui": "workspace:*",
     "@tailwindcss/vite": "^4.2.4",

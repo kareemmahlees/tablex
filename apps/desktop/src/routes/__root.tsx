@@ -11,7 +11,8 @@ const Devtools = () => {
   return (
     <TanStackDevtools
       config={{
-        hideUntilHover: true
+        openHotkey: ["Alt", "d"],
+        triggerHidden: true
       }}
       plugins={[
         {

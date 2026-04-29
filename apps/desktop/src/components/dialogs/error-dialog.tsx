@@ -1,7 +1,11 @@
 import { commands } from "@/bindings"
 import { PropsWithChildren } from "react"
-import { Button } from "../ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog"
+import { Button } from "@tablex/ui/components/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger
+} from "@tablex/ui/components/dialog"
 
 type ErrorDialogProps = PropsWithChildren & {
   error: string

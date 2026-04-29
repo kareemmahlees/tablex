@@ -1,6 +1,7 @@
 import { commands } from "@/bindings"
 import { Button } from "@tablex/ui/components/button"
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -37,14 +38,16 @@ const CommandPalette = () => {
         </KbdGroup>
       </Button>
       <CommandDialog open={isOpen} onOpenChange={toggleDialog}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandEmpty>No results found.</CommandEmpty>
-        <ScrollArea className="max-h-[300px] overflow-auto">
-          <GeneralGroup />
-          <ConnectionsGroup />
-          <UtilitiesGroup />
-          <ConfigurationGroup />
-        </ScrollArea>
+        <Command>
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandEmpty>No results found.</CommandEmpty>
+          <ScrollArea className="max-h-[300px] overflow-auto">
+            <GeneralGroup />
+            <ConnectionsGroup />
+            <UtilitiesGroup />
+            <ConfigurationGroup />
+          </ScrollArea>
+        </Command>
       </CommandDialog>
     </>
   )

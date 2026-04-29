@@ -32,6 +32,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { connectionFormSchema } from "../schema"
 import { CommonConnectionOpts } from "./common-connection-opts"
+import { DialogFooter } from "@tablex/ui/components/dialog"
 
 export const ConnectionForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const form = useFormContext<z.infer<typeof connectionFormSchema>>()
@@ -53,90 +54,26 @@ export const ConnectionForm = ({ onSuccess }: { onSuccess: () => void }) => {
     }
   }
 
-  const onSave = async (data: z.infer<typeof connectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    return toast.promise(
-      commands.createConnectionRecord(
-        connString,
-        data.name,
-        data.connectionOpts.driver
-      ),
-      {
-        id: "save_connection",
-        loading: "Saving connection...",
-        success: async () => {
-          await router.invalidate({ filter: (d) => d.fullPath === "/" })
-          onSuccess()
-          return "Successfully saved connection"
-        },
-        error: "Couldn't save connection",
-        position: "bottom-left"
-      }
-    )
-  }
-
-  const onTest = async (data: z.infer<typeof connectionFormSchema>) => {
-    const connString = constructConnectionString({
-      ...data.connectionOpts
-    })
-    return toast.promise(
-      commands.testConnection(connString, data.connectionOpts.driver),
-      {
-        id: "test_connection",
-        loading: "Testing connection...",
-        success: "Connection is healthy",
-        error: "Connection is unhealthy",
-        position: "bottom-left"
-      }
-    )
-  }
-
   return (
-    <Form {...form}>
-      <form
-        className={cn(
-          "flex h-full flex-col items-center justify-center gap-y-7 overflow-hidden"
-        )}
-      >
-        <div className="w-full space-y-5">
-          <DriverSelector />
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="w-full flex-1">
-                <FormLabel>Name</FormLabel>
-                <Input {...field} placeholder="Connection Name" />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        {renderDriverFormFields()}
-
-        <div className="mt-10 flex w-full items-center justify-center gap-x-4">
-          <Button
-            type="button"
-            size={"sm"}
-            className="w-full"
-            onClick={form.handleSubmit(onSave)}
-          >
-            Save
-          </Button>
-          <Button
-            type="button"
-            size={"sm"}
-            variant={"secondary"}
-            className="w-full"
-            onClick={form.handleSubmit(onTest)}
-          >
-            Test
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <form
+      className={cn("flex h-full flex-col items-center justify-center gap-y-7")}
+    >
+      <div className="w-full space-y-5">
+        <DriverSelector />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="w-full flex-1">
+              <FormLabel>Name</FormLabel>
+              <Input {...field} placeholder="Connection Name" />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+      {renderDriverFormFields()}
+    </form>
   )
 }
 

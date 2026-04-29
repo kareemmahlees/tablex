@@ -6,7 +6,7 @@ import { PanelLeftIcon } from "lucide-react"
 import { Slot } from "radix-ui"
 
 import { cn } from "@tablex/lib/utils"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useIsMobile } from "../hooks/use-mobile"
 import { Button } from "./button"
 import { Input } from "./input"
 import { Separator } from "./separator"
