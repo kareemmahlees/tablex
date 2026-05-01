@@ -17,7 +17,12 @@ import {
   Outlet,
   useMatchRoute
 } from "@tanstack/react-router"
-import { Keyboard, Settings, TablePropertiesIcon } from "lucide-react"
+import {
+  LifeBuoy,
+  Settings,
+  TablePropertiesIcon,
+  TextCursor
+} from "lucide-react"
 
 export const Route = createFileRoute("/connection/$connId")({
   component: RouteComponent
@@ -34,7 +39,13 @@ const items: SidebarItem[] = [
     type: "single",
     title: "SQL Editor",
     url: "/connection/$connId/sql",
-    icon: Keyboard
+    icon: TextCursor
+  },
+  {
+    type: "single",
+    title: "Utilities",
+    url: "/connection/$connId/utilities",
+    icon: LifeBuoy
   },
   {
     type: "single",
@@ -63,7 +74,9 @@ function RouteComponent() {
                           children: item.title,
                           hidden: false
                         }}
-                        isActive={matchRoute({ to: item.url, fuzzy: true }) !== false}
+                        isActive={
+                          matchRoute({ to: item.url, fuzzy: true }) !== false
+                        }
                         asChild
                       >
                         <Link to={item.url}>
@@ -79,7 +92,9 @@ function RouteComponent() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <Outlet />
+      <main className="flex-1">
+        <Outlet />
+      </main>
     </SidebarProvider>
   )
 }

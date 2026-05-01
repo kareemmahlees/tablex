@@ -9,6 +9,7 @@ import {
 
 import { type ColumnInfo, commands, type RowRecord } from "@/bindings"
 import { TooltipButton } from "@/components/custom/tooltip-button"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@tablex/ui/components/button"
 import {
   Form,
@@ -20,14 +21,13 @@ import {
   FormMessage
 } from "@tablex/ui/components/form"
 import { ScrollArea } from "@tablex/ui/components/scroll-area"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { AlertCircle, PlusCircle } from "lucide-react"
 import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 import { z } from "zod"
-import { useTableSchema } from "../context"
+import { useTableSchema } from "../hooks"
 import DynamicFormInput from "./dynamic-input"
 
 export const AddRowSheet = () => {
