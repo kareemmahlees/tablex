@@ -13,9 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConnectionConnIdRouteRouteImport } from './routes/connection.$connId/route'
 import { Route as ConnectionConnIdSqlRouteImport } from './routes/connection.$connId/sql'
 import { Route as ConnectionConnIdEditorRouteImport } from './routes/connection.$connId/editor'
+import { Route as ConnectionConnIdSettingsRouteRouteImport } from './routes/connection.$connId/settings/route'
 import { Route as ConnectionConnIdSettingsIndexRouteImport } from './routes/connection.$connId/settings/index'
-import { Route as ConnectionConnIdSettingsPreferencesRouteImport } from './routes/connection.$connId/settings/preferences'
-import { Route as ConnectionConnIdSettingsKeybindingsRouteImport } from './routes/connection.$connId/settings/keybindings'
 import { Route as ConnectionConnIdTableLayoutUtilitiesRouteRouteImport } from './routes/connection.$connId/_table-layout/utilities/route'
 import { Route as ConnectionConnIdTableLayoutSqlEditorRouteRouteImport } from './routes/connection.$connId/_table-layout/sql-editor/route'
 import { Route as ConnectionConnIdTableLayoutTableViewEmptyRouteRouteImport } from './routes/connection.$connId/_table-layout/table-view/empty/route'
@@ -41,23 +40,17 @@ const ConnectionConnIdEditorRoute = ConnectionConnIdEditorRouteImport.update({
   path: '/editor',
   getParentRoute: () => ConnectionConnIdRouteRoute,
 } as any)
+const ConnectionConnIdSettingsRouteRoute =
+  ConnectionConnIdSettingsRouteRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => ConnectionConnIdRouteRoute,
+  } as any)
 const ConnectionConnIdSettingsIndexRoute =
   ConnectionConnIdSettingsIndexRouteImport.update({
-    id: '/settings/',
-    path: '/settings/',
-    getParentRoute: () => ConnectionConnIdRouteRoute,
-  } as any)
-const ConnectionConnIdSettingsPreferencesRoute =
-  ConnectionConnIdSettingsPreferencesRouteImport.update({
-    id: '/settings/preferences',
-    path: '/settings/preferences',
-    getParentRoute: () => ConnectionConnIdRouteRoute,
-  } as any)
-const ConnectionConnIdSettingsKeybindingsRoute =
-  ConnectionConnIdSettingsKeybindingsRouteImport.update({
-    id: '/settings/keybindings',
-    path: '/settings/keybindings',
-    getParentRoute: () => ConnectionConnIdRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => ConnectionConnIdSettingsRouteRoute,
   } as any)
 const ConnectionConnIdTableLayoutUtilitiesRouteRoute =
   ConnectionConnIdTableLayoutUtilitiesRouteRouteImport.update({
@@ -87,12 +80,11 @@ const ConnectionConnIdTableLayoutTableViewTableNameRouteRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/connection/$connId': typeof ConnectionConnIdRouteRouteWithChildren
+  '/connection/$connId/settings': typeof ConnectionConnIdSettingsRouteRouteWithChildren
   '/connection/$connId/editor': typeof ConnectionConnIdEditorRoute
   '/connection/$connId/sql': typeof ConnectionConnIdSqlRoute
   '/connection/$connId/sql-editor': typeof ConnectionConnIdTableLayoutSqlEditorRouteRoute
   '/connection/$connId/utilities': typeof ConnectionConnIdTableLayoutUtilitiesRouteRoute
-  '/connection/$connId/settings/keybindings': typeof ConnectionConnIdSettingsKeybindingsRoute
-  '/connection/$connId/settings/preferences': typeof ConnectionConnIdSettingsPreferencesRoute
   '/connection/$connId/settings/': typeof ConnectionConnIdSettingsIndexRoute
   '/connection/$connId/table-view/$tableName': typeof ConnectionConnIdTableLayoutTableViewTableNameRouteRoute
   '/connection/$connId/table-view/empty': typeof ConnectionConnIdTableLayoutTableViewEmptyRouteRoute
@@ -104,8 +96,6 @@ export interface FileRoutesByTo {
   '/connection/$connId/sql': typeof ConnectionConnIdSqlRoute
   '/connection/$connId/sql-editor': typeof ConnectionConnIdTableLayoutSqlEditorRouteRoute
   '/connection/$connId/utilities': typeof ConnectionConnIdTableLayoutUtilitiesRouteRoute
-  '/connection/$connId/settings/keybindings': typeof ConnectionConnIdSettingsKeybindingsRoute
-  '/connection/$connId/settings/preferences': typeof ConnectionConnIdSettingsPreferencesRoute
   '/connection/$connId/settings': typeof ConnectionConnIdSettingsIndexRoute
   '/connection/$connId/table-view/$tableName': typeof ConnectionConnIdTableLayoutTableViewTableNameRouteRoute
   '/connection/$connId/table-view/empty': typeof ConnectionConnIdTableLayoutTableViewEmptyRouteRoute
@@ -114,12 +104,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/connection/$connId': typeof ConnectionConnIdRouteRouteWithChildren
+  '/connection/$connId/settings': typeof ConnectionConnIdSettingsRouteRouteWithChildren
   '/connection/$connId/editor': typeof ConnectionConnIdEditorRoute
   '/connection/$connId/sql': typeof ConnectionConnIdSqlRoute
   '/connection/$connId/_table-layout/sql-editor': typeof ConnectionConnIdTableLayoutSqlEditorRouteRoute
   '/connection/$connId/_table-layout/utilities': typeof ConnectionConnIdTableLayoutUtilitiesRouteRoute
-  '/connection/$connId/settings/keybindings': typeof ConnectionConnIdSettingsKeybindingsRoute
-  '/connection/$connId/settings/preferences': typeof ConnectionConnIdSettingsPreferencesRoute
   '/connection/$connId/settings/': typeof ConnectionConnIdSettingsIndexRoute
   '/connection/$connId/_table-layout/table-view/$tableName': typeof ConnectionConnIdTableLayoutTableViewTableNameRouteRoute
   '/connection/$connId/_table-layout/table-view/empty': typeof ConnectionConnIdTableLayoutTableViewEmptyRouteRoute
@@ -129,12 +118,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/connection/$connId'
+    | '/connection/$connId/settings'
     | '/connection/$connId/editor'
     | '/connection/$connId/sql'
     | '/connection/$connId/sql-editor'
     | '/connection/$connId/utilities'
-    | '/connection/$connId/settings/keybindings'
-    | '/connection/$connId/settings/preferences'
     | '/connection/$connId/settings/'
     | '/connection/$connId/table-view/$tableName'
     | '/connection/$connId/table-view/empty'
@@ -146,8 +134,6 @@ export interface FileRouteTypes {
     | '/connection/$connId/sql'
     | '/connection/$connId/sql-editor'
     | '/connection/$connId/utilities'
-    | '/connection/$connId/settings/keybindings'
-    | '/connection/$connId/settings/preferences'
     | '/connection/$connId/settings'
     | '/connection/$connId/table-view/$tableName'
     | '/connection/$connId/table-view/empty'
@@ -155,12 +141,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/connection/$connId'
+    | '/connection/$connId/settings'
     | '/connection/$connId/editor'
     | '/connection/$connId/sql'
     | '/connection/$connId/_table-layout/sql-editor'
     | '/connection/$connId/_table-layout/utilities'
-    | '/connection/$connId/settings/keybindings'
-    | '/connection/$connId/settings/preferences'
     | '/connection/$connId/settings/'
     | '/connection/$connId/_table-layout/table-view/$tableName'
     | '/connection/$connId/_table-layout/table-view/empty'
@@ -201,26 +186,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectionConnIdEditorRouteImport
       parentRoute: typeof ConnectionConnIdRouteRoute
     }
+    '/connection/$connId/settings': {
+      id: '/connection/$connId/settings'
+      path: '/settings'
+      fullPath: '/connection/$connId/settings'
+      preLoaderRoute: typeof ConnectionConnIdSettingsRouteRouteImport
+      parentRoute: typeof ConnectionConnIdRouteRoute
+    }
     '/connection/$connId/settings/': {
       id: '/connection/$connId/settings/'
-      path: '/settings'
+      path: '/'
       fullPath: '/connection/$connId/settings/'
       preLoaderRoute: typeof ConnectionConnIdSettingsIndexRouteImport
-      parentRoute: typeof ConnectionConnIdRouteRoute
-    }
-    '/connection/$connId/settings/preferences': {
-      id: '/connection/$connId/settings/preferences'
-      path: '/settings/preferences'
-      fullPath: '/connection/$connId/settings/preferences'
-      preLoaderRoute: typeof ConnectionConnIdSettingsPreferencesRouteImport
-      parentRoute: typeof ConnectionConnIdRouteRoute
-    }
-    '/connection/$connId/settings/keybindings': {
-      id: '/connection/$connId/settings/keybindings'
-      path: '/settings/keybindings'
-      fullPath: '/connection/$connId/settings/keybindings'
-      preLoaderRoute: typeof ConnectionConnIdSettingsKeybindingsRouteImport
-      parentRoute: typeof ConnectionConnIdRouteRoute
+      parentRoute: typeof ConnectionConnIdSettingsRouteRoute
     }
     '/connection/$connId/_table-layout/utilities': {
       id: '/connection/$connId/_table-layout/utilities'
@@ -253,30 +231,39 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ConnectionConnIdSettingsRouteRouteChildren {
+  ConnectionConnIdSettingsIndexRoute: typeof ConnectionConnIdSettingsIndexRoute
+}
+
+const ConnectionConnIdSettingsRouteRouteChildren: ConnectionConnIdSettingsRouteRouteChildren =
+  {
+    ConnectionConnIdSettingsIndexRoute: ConnectionConnIdSettingsIndexRoute,
+  }
+
+const ConnectionConnIdSettingsRouteRouteWithChildren =
+  ConnectionConnIdSettingsRouteRoute._addFileChildren(
+    ConnectionConnIdSettingsRouteRouteChildren,
+  )
+
 interface ConnectionConnIdRouteRouteChildren {
+  ConnectionConnIdSettingsRouteRoute: typeof ConnectionConnIdSettingsRouteRouteWithChildren
   ConnectionConnIdEditorRoute: typeof ConnectionConnIdEditorRoute
   ConnectionConnIdSqlRoute: typeof ConnectionConnIdSqlRoute
   ConnectionConnIdTableLayoutSqlEditorRouteRoute: typeof ConnectionConnIdTableLayoutSqlEditorRouteRoute
   ConnectionConnIdTableLayoutUtilitiesRouteRoute: typeof ConnectionConnIdTableLayoutUtilitiesRouteRoute
-  ConnectionConnIdSettingsKeybindingsRoute: typeof ConnectionConnIdSettingsKeybindingsRoute
-  ConnectionConnIdSettingsPreferencesRoute: typeof ConnectionConnIdSettingsPreferencesRoute
-  ConnectionConnIdSettingsIndexRoute: typeof ConnectionConnIdSettingsIndexRoute
   ConnectionConnIdTableLayoutTableViewTableNameRouteRoute: typeof ConnectionConnIdTableLayoutTableViewTableNameRouteRoute
   ConnectionConnIdTableLayoutTableViewEmptyRouteRoute: typeof ConnectionConnIdTableLayoutTableViewEmptyRouteRoute
 }
 
 const ConnectionConnIdRouteRouteChildren: ConnectionConnIdRouteRouteChildren = {
+  ConnectionConnIdSettingsRouteRoute:
+    ConnectionConnIdSettingsRouteRouteWithChildren,
   ConnectionConnIdEditorRoute: ConnectionConnIdEditorRoute,
   ConnectionConnIdSqlRoute: ConnectionConnIdSqlRoute,
   ConnectionConnIdTableLayoutSqlEditorRouteRoute:
     ConnectionConnIdTableLayoutSqlEditorRouteRoute,
   ConnectionConnIdTableLayoutUtilitiesRouteRoute:
     ConnectionConnIdTableLayoutUtilitiesRouteRoute,
-  ConnectionConnIdSettingsKeybindingsRoute:
-    ConnectionConnIdSettingsKeybindingsRoute,
-  ConnectionConnIdSettingsPreferencesRoute:
-    ConnectionConnIdSettingsPreferencesRoute,
-  ConnectionConnIdSettingsIndexRoute: ConnectionConnIdSettingsIndexRoute,
   ConnectionConnIdTableLayoutTableViewTableNameRouteRoute:
     ConnectionConnIdTableLayoutTableViewTableNameRouteRoute,
   ConnectionConnIdTableLayoutTableViewEmptyRouteRoute:

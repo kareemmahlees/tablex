@@ -1,5 +1,4 @@
 import { SidebarItem } from "@/types"
-
 import {
   Sidebar,
   SidebarContent,
@@ -10,46 +9,33 @@ import {
   SidebarMenuItem,
   SidebarProvider
 } from "@tablex/ui/components/sidebar"
-
 import {
   createFileRoute,
   Link,
   Outlet,
   useMatchRoute
 } from "@tanstack/react-router"
-import { Keyboard, Settings, TablePropertiesIcon } from "lucide-react"
+import { Settings2 } from "lucide-react"
 
-export const Route = createFileRoute("/connection/$connId")({
+export const Route = createFileRoute("/connection/$connId/settings")({
   component: RouteComponent
 })
 
 const items: SidebarItem[] = [
   {
     type: "single",
-    title: "Table Editor",
-    icon: TablePropertiesIcon,
-    url: "/connection/$connId/editor"
+    title: "Preferences",
+    icon: Settings2,
+    url: "/connection/$connId/settings/"
   },
-  {
-    type: "single",
-    title: "SQL Editor",
-    url: "/connection/$connId/sql",
-    icon: Keyboard
-  },
-  {
-    type: "single",
-    title: "Settings",
-    url: "/connection/$connId/settings",
-    icon: Settings
-  }
 ]
 
 function RouteComponent() {
   const matchRoute = useMatchRoute()
   return (
-    <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon">
-        <SidebarContent>
+    <SidebarProvider>
+      <Sidebar className="relative w-[calc(var(--sidebar-width)-30px)]">
+        <SidebarContent >
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">
@@ -59,11 +45,7 @@ function RouteComponent() {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         className="lg:h-9"
-                        tooltip={{
-                          children: item.title,
-                          hidden: false
-                        }}
-                        isActive={matchRoute({ to: item.url, fuzzy: true }) !== false}
+                        isActive={matchRoute({ to: item.url }) !== false}
                         asChild
                       >
                         <Link to={item.url}>
@@ -79,7 +61,9 @@ function RouteComponent() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <Outlet />
+      <main className="flex-1">
+        <Outlet />
+      </main>
     </SidebarProvider>
   )
 }
