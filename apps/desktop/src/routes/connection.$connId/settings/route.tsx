@@ -27,7 +27,7 @@ const items: SidebarItem[] = [
     title: "Preferences",
     icon: Settings2,
     url: "/connection/$connId/settings/"
-  },
+  }
 ]
 
 function RouteComponent() {
@@ -35,7 +35,7 @@ function RouteComponent() {
   return (
     <SidebarProvider>
       <Sidebar className="relative w-[calc(var(--sidebar-width)-30px)]">
-        <SidebarContent >
+        <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">
