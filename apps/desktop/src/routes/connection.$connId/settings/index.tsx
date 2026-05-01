@@ -1,55 +1,47 @@
+import { Preferences } from "@/features/settings/preferences"
 import { SidebarItem } from "@/types"
-
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider
 } from "@tablex/ui/components/sidebar"
-
 import {
   createFileRoute,
   Link,
   Outlet,
   useMatchRoute
 } from "@tanstack/react-router"
-import { Keyboard, Settings, TablePropertiesIcon } from "lucide-react"
+import { Keyboard, Settings2 } from "lucide-react"
 
-export const Route = createFileRoute("/connection/$connId")({
+export const Route = createFileRoute("/connection/$connId/settings/")({
   component: RouteComponent
 })
 
 const items: SidebarItem[] = [
   {
     type: "single",
-    title: "Table Editor",
-    icon: TablePropertiesIcon,
-    url: "/connection/$connId/editor"
+    title: "Preferences",
+    icon: Settings2,
+    url: "/connection/$connId/settings/preferences"
   },
   {
     type: "single",
-    title: "SQL Editor",
-    url: "/connection/$connId/sql",
+    title: "Keybindings",
+    url: "/connection/$connId/settings/keybindings",
     icon: Keyboard
-  },
-  {
-    type: "single",
-    title: "Settings",
-    url: "/connection/$connId/settings/preferences",
-    icon: Settings
   }
 ]
 
 function RouteComponent() {
   const matchRoute = useMatchRoute()
   return (
-    <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon">
+    <>
+      <Sidebar>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
@@ -80,9 +72,7 @@ function RouteComponent() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
-        <Outlet />
-      </SidebarInset>
-    </SidebarProvider>
+      <Outlet />
+    </>
   )
 }
