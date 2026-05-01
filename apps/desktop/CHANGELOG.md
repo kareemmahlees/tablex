@@ -33,7 +33,6 @@
 ### Patch Changes
 
 - [#68](https://github.com/kareemmahlees/tablex/pull/68) [`755ac00`](https://github.com/kareemmahlees/tablex/commit/755ac00db527e0f6d7b431409f5fdbd0fb30d46c) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Use bun for everything:
-
   - For running package scripts
   - For bundling
   - In CI
@@ -58,22 +57,18 @@
 - [#59](https://github.com/kareemmahlees/tablex/pull/59) [`cae2fbe`](https://github.com/kareemmahlees/tablex/commit/cae2fbe86124fd076c692b191c5fc2045eec7ab9) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - ## Backend Changes
 
   ### New
-
   - `ColumnProps` returns a new prop `has_fk_relations`.
   - A new Tauri command `fk_relations`.
 
   ### Refactor
-
   - gather all enums and structs into `types.rs`.
 
   ## Frontend Changes
 
   ### New
-
   - Dropdown menu with tabs for table names and a Table for related rows.
 
   ### Refactor
-
   - Split `useQuery` hooks into custom hooks.
 
 ## 0.3.5
@@ -83,11 +78,9 @@
 - [`2a591c3`](https://github.com/kareemmahlees/tablex/commit/2a591c3e912a0f77a0aa709aec8064ed8ee6cccb) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - ## Fixes
 
   ### Compile
-
   - Sync `tauri.conf.sidecar.json` with `tauri.conf.json`
 
   ### UI
-
   - Overflow the tables sidebar in table view
   - Prevent Command Palette auto focus behavior
 
@@ -98,7 +91,6 @@
 - [#53](https://github.com/kareemmahlees/tablex/pull/53) [`9256473`](https://github.com/kareemmahlees/tablex/commit/9256473f7e9b69634b3900ca43104412b4014ca2) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - Connection to Databases Via the CLI 🚀
 
   ## New Features
-
   - specify a connection string when you run TableX from the terminal like so:
 
   ```shell
@@ -154,12 +146,10 @@
 - [#29](https://github.com/kareemmahlees/tablex/pull/29) [`6806384`](https://github.com/kareemmahlees/tablex/commit/6806384861018d57358797280b22a52e4174bfd6) Thanks [@kareemmahlees](https://github.com/kareemmahlees)! - ## Modifications
 
   ### Backend
-
   - Fix a bug while creating the connections file, previously it didn't create the parent directories before creating the file.
   - Return empty Vector if there are not tables in the database
 
   ### Frontend
-
   - Make creating a connection more verbose with toast info
 
 ## 0.2.3

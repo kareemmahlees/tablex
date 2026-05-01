@@ -28,9 +28,7 @@ import {
   Server
 } from "lucide-react"
 
-export const Route = createFileRoute(
-  "/connection/$connId/utilities"
-)({
+export const Route = createFileRoute("/connection/$connId/utilities")({
   loader: async () => {
     const [isMetaxBuild, metaxStatus] = await Promise.all([
       commands.isMetaxBuild(),
