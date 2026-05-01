@@ -1,4 +1,4 @@
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 
 export const BentoGrid = ({
   className,

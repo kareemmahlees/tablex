@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@tablex/ui/components/popover"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import type { Table } from "@tanstack/react-table"
 import { Check, Settings2 } from "lucide-react"
 import * as React from "react"

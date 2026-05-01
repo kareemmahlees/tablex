@@ -4,7 +4,7 @@ import {
   FormItem,
   FormLabel
 } from "@tablex/ui/components/form"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import { type PropsWithChildren } from "react"
 
 export const SettingsSection = ({

@@ -1,4 +1,8 @@
 import { commands, TxError } from "@/bindings"
+import { ConnectionCard } from "@/features/connections/components/connection-card"
+import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
+import { useSettings } from "@/features/settings/context"
+import { LOCAL_STORAGE } from "@/lib/constants"
 import {
   Empty,
   EmptyContent,
@@ -7,10 +11,6 @@ import {
   EmptyMedia,
   EmptyTitle
 } from "@tablex/ui/components/empty"
-import { ConnectionCard } from "@/features/connections/components/connection-card"
-import { NewConnectionBtn } from "@/features/connections/components/new-connection-btn"
-import { useSettings } from "@/features/settings/context"
-import { LOCAL_STORAGE } from "@/lib/constants"
 import { createFileRoute } from "@tanstack/react-router"
 import { Database } from "lucide-react"
 import { toast } from "sonner"
@@ -35,22 +35,16 @@ function Index() {
     }
     const latestTable = localStorage.getItem(LOCAL_STORAGE.LATEST_TABLE(connId))
 
-    if (latestTable) {
-      return navigate({
-        to: "/connection/$connId/table-view/$tableName",
-        params: {
-          connId,
-          tableName: latestTable
-        },
-        search: {
-          pagination: { pageIndex: 0, pageSize: settings.pageSize }
-        }
-      })
-    }
-
-    navigate({
-      to: "/connection/$connId/table-view/empty",
-      params: { connId }
+    return navigate({
+      to: "/connection/$connId/editor",
+      params: {
+        connId,
+        tableName: latestTable
+      },
+      search: {
+        table: latestTable ?? undefined,
+        pagination: { pageIndex: 0, pageSize: settings.pageSize }
+      }
     })
   }
 

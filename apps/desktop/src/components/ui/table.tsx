@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import { Virtualizer } from "@tanstack/react-virtual"
 
 interface TableProps extends   React.HTMLAttributes<HTMLTableElement>   {
@@ -124,12 +124,13 @@ const TableCaption = React.forwardRef<
 TableCaption.displayName = "TableCaption"
 
 export {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow, VirtualTable
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow, VirtualTable
 }
+

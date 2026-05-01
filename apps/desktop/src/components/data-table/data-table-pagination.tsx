@@ -1,3 +1,5 @@
+import { LOCAL_STORAGE } from "@/lib/constants"
+import { TableLocalStorage } from "@/types"
 import { Button } from "@tablex/ui/components/button"
 import {
   DropdownMenu,
@@ -7,9 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@tablex/ui/components/dropdown-menu"
-import { LOCAL_STORAGE } from "@/lib/constants"
-import { TableLocalStorage } from "@/types"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import type { Table } from "@tanstack/react-table"
 import {
   ArrowLeft,
@@ -117,10 +117,12 @@ export function DataTablePagination<TData>({
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>
+  disabled?: boolean
 }
 
 export function DataTableViewOptions<TData>({
-  table
+  table,
+  disabled = false
 }: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>
@@ -129,6 +131,7 @@ export function DataTableViewOptions<TData>({
           variant="outline"
           size="sm"
           className="bg-muted/50 ml-auto hidden h-8 lg:flex"
+          disabled={disabled}
         >
           <Settings2 className="mr-2 h-4 w-4" />
           View

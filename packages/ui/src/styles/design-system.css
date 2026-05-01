@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./dotmatrix-loader.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&: is(.dark *));
 
 @source "../../../../packages/ui/src/components";
 

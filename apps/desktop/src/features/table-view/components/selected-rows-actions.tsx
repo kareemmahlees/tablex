@@ -11,7 +11,7 @@ import { writeText } from "@tauri-apps/plugin-clipboard-manager"
 import { asString, generateCsv, mkConfig } from "export-to-csv"
 import { ChevronDownIcon } from "lucide-react"
 import { toast } from "sonner"
-import { useTableSchema } from "../context"
+import { useTableSchema } from "../hooks"
 
 export const SelectedRowsActions = ({ table }: { table: Table<any> }) => {
   if (table.getSelectedRowModel().rows.length === 0) return null

@@ -14,10 +14,10 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@tablex/ui/components/popover"
-import { cn } from "@tablex/lib/utils"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
+import { cn } from "@tablex/ui/utils"
 import { Check, ChevronsUpDown } from "lucide-react"
 import * as React from "react"
-import { ScrollArea } from "@tablex/ui/components/scroll-area"
 
 type SearchableInputProps = {
   onValueChange: (v: string) => void

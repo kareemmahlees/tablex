@@ -12,6 +12,6 @@
   },
   "aliases": {
     "components": "@/components",
-    "utils": "@tablex/lib/utils"
+    "utils": "@tablex/ui/utils"
   }
 }

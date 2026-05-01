@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@tablex/lib/utils"
+import { cn } from "../lib/utils"
 
 function Card({
   className,
@@ -94,10 +94,10 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 export {
   Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
   CardAction,
+  CardContent,
   CardDescription,
-  CardContent
+  CardFooter,
+  CardHeader,
+  CardTitle
 }

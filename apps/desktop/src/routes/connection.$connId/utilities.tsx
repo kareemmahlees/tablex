@@ -29,7 +29,7 @@ import {
 } from "lucide-react"
 
 export const Route = createFileRoute(
-  "/connection/$connId/_table-layout/utilities"
+  "/connection/$connId/utilities"
 )({
   loader: async () => {
     const [isMetaxBuild, metaxStatus] = await Promise.all([

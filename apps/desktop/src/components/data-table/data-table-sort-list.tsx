@@ -35,7 +35,7 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from "@tablex/ui/components/sortable"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 
 const OPEN_MENU_SHORTCUT = "s"
@@ -48,6 +48,7 @@ interface DataTableSortListProps<TData> extends React.ComponentProps<
   initialSorting?: SortingData[]
   sorting: SortingData[]
   onSortingChange: (data: SortingData[]) => void
+  disabled?: boolean
 }
 
 export function DataTableSortList<TData>({
@@ -55,6 +56,7 @@ export function DataTableSortList<TData>({
   initialSorting,
   sorting,
   onSortingChange,
+  disabled = false,
   ...props
 }: DataTableSortListProps<TData>) {
   const id = React.useId()
@@ -158,6 +160,7 @@ export function DataTableSortList<TData>({
             size="sm"
             onKeyDown={onTriggerKeyDown}
             className="h-8 space-x-2"
+            disabled={disabled}
           >
             <ArrowDownUp className="size-4" />
             <span>Sort</span>

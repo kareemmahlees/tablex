@@ -7,6 +7,8 @@ import { scan } from "react-scan"
 import { commands } from "./bindings"
 import "@tablex/ui/design-system.css"
 import { routeTree } from "./routeTree.gen"
+import { Toaster } from "@tablex/ui/components/sonner"
+import { TooltipProvider } from "@tablex/ui/components/tooltip"
 
 const client = new QueryClient()
 scan({ enabled: import.meta.env.DEV })
@@ -39,7 +41,21 @@ if (!rootElement.innerHTML) {
     <QueryClientProvider client={client}>
       <SettingsProvider value={settings}>
         <KeybindingsContext.Provider value={keybindingsManager}>
-          <RouterProvider router={router} />
+          <TooltipProvider>
+            <RouterProvider router={router} />
+            <Toaster
+              closeButton
+              richColors
+              position="bottom-center"
+              pauseWhenPageIsHidden
+              toastOptions={{
+                classNames: {
+                  toast:
+                    "group toast group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:pointer-events-auto "
+                }
+              }}
+            />
+          </TooltipProvider>
         </KeybindingsContext.Provider>
       </SettingsProvider>
     </QueryClientProvider>

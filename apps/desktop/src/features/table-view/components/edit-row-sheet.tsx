@@ -1,4 +1,5 @@
 import { commands, RowRecord } from "@/bindings"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@tablex/ui/components/button"
 import {
   Form,
@@ -16,13 +17,12 @@ import {
   SheetHeader,
   SheetTitle
 } from "@tablex/ui/components/sheet"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { type Row } from "@tanstack/react-table"
 import { Dispatch, SetStateAction, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { useTableSchema } from "../context"
+import { useTableSchema } from "../hooks"
 import DynamicFormInput from "./dynamic-input"
 
 interface EditRowSheetProps {
