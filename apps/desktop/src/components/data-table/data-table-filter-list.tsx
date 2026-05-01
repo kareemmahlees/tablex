@@ -11,6 +11,18 @@ import {
 import * as React from "react"
 
 import { dataTableConfig } from "@/components/data-table/data-table-config"
+import {
+  filteringSchema,
+  filterItemSchema
+} from "@/features/table-view/schemas"
+import { getDefaultFilterOperator, getFilterOperators } from "@/lib/data-table"
+import { generateId } from "@/lib/utils"
+import type {
+  ExtendedColumnFilter,
+  FilterOperator,
+  JoinOperator
+} from "@/types/data-table"
+import { cn } from "@tablex/lib/utils"
 import { Badge } from "@tablex/ui/components/badge"
 import { Button } from "@tablex/ui/components/button"
 import {
@@ -21,6 +33,18 @@ import {
   CommandItem,
   CommandList
 } from "@tablex/ui/components/command"
+import {
+  Faceted,
+  FacetedBadgeList,
+  FacetedContent,
+  FacetedEmpty,
+  FacetedGroup,
+  FacetedInput,
+  FacetedItem,
+  FacetedList,
+  FacetedTrigger
+} from "@tablex/ui/components/faceted"
+import { Input } from "@tablex/ui/components/input"
 import {
   Popover,
   PopoverContent,
@@ -40,34 +64,10 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from "@tablex/ui/components/sortable"
-import {
-  filteringSchema,
-  filterItemSchema
-} from "@/features/table-view/schemas"
-import { getDefaultFilterOperator, getFilterOperators } from "@/lib/data-table"
-import { generateId } from "@/lib/utils"
-import type {
-  ExtendedColumnFilter,
-  FilterOperator,
-  JoinOperator
-} from "@/types/data-table"
-import { cn } from "@tablex/lib/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"
 import { DateTimeInput } from "../custom/date-input"
-import {
-  Faceted,
-  FacetedBadgeList,
-  FacetedContent,
-  FacetedEmpty,
-  FacetedGroup,
-  FacetedInput,
-  FacetedItem,
-  FacetedList,
-  FacetedTrigger
-} from "@tablex/ui/components/faceted"
-import { Input } from "@tablex/ui/components/input"
 import { DataTableRangeFilter } from "./data-table-range-filter"
 
 const DEBOUNCE_MS = 300
@@ -86,6 +86,7 @@ interface DataTableFilterListProps<TData> extends React.ComponentProps<
   debounceMs?: number
   throttleMs?: number
   shallow?: boolean
+  disabled?: boolean
 }
 
 export function DataTableFilterList<TData>({
@@ -97,6 +98,7 @@ export function DataTableFilterList<TData>({
   debounceMs = DEBOUNCE_MS,
   throttleMs = THROTTLE_MS,
   shallow = true,
+  disabled = false,
   ...props
 }: DataTableFilterListProps<TData>) {
   const id = React.useId()
@@ -211,6 +213,7 @@ export function DataTableFilterList<TData>({
             variant="outline"
             size="sm"
             onKeyDown={onTriggerKeyDown}
+            disabled={disabled}
             className="h-8 space-x-2"
           >
             <ListFilter className="size-4" />

@@ -7,6 +7,7 @@ import React, { useMemo } from "react"
 
 import { getCommonPinningStyles } from "@/lib/data-table"
 import { cn } from "@tablex/lib/utils"
+import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import {
   Table,
   TableBody,
@@ -38,16 +39,12 @@ export function DataTable<TData>({
   }, [table.getState().columnSizingInfo, table.getState().columnSizing])
 
   return (
-    <div
-      className={cn(
-        "flex h-full w-full min-w-0 flex-1 flex-col overflow-x-auto overflow-ellipsis",
-        className
-      )}
+    <ScrollArea
+      className={cn("flex h-full w-full min-w-0 flex-1 flex-col", className)}
     >
       <Table
         style={{
-          ...columnSizeVars,
-          width: table.getTotalSize()
+          ...columnSizeVars
         }}
       >
         <TableHeader>
@@ -132,6 +129,6 @@ export function DataTable<TData>({
           )}
         </TableBody>
       </Table>
-    </div>
+    </ScrollArea>
   )
 }

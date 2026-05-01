@@ -26,6 +26,7 @@ import { betterStyling } from "@/lib/editor-ext"
 import { sql } from "@codemirror/lang-sql"
 import sqlFormatter from "@sqltools/formatter"
 import { cn } from "@tablex/lib/utils"
+import { DotmTriangle5 } from "@tablex/ui/components/dotm-triangle-5"
 import { Input } from "@tablex/ui/components/input"
 import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import {
@@ -80,7 +81,7 @@ function RouteComponent() {
   const table = Route.useSearch({ select: (s) => s.table })
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="min-w-0">
       <Sidebar className="relative">
         <SidebarContent className="flex h-full flex-col">
           <SidebarGroup className="space-y-3">
@@ -114,7 +115,9 @@ function RouteComponent() {
           </ScrollArea>
         </SidebarContent>
       </Sidebar>
-      {!table ? <NoTableSelected /> : <TableView />}
+      <main className="min-h-0 min-w-0 flex-1">
+        {!table ? <NoTableSelected /> : <TableView />}
+      </main>
     </SidebarProvider>
   )
 }
@@ -134,12 +137,15 @@ function TableView() {
   return (
     <Tabs
       defaultValue="data"
-      className="flex h-full min-h-0 w-full flex-col overflow-auto will-change-scroll"
+      className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-auto will-change-scroll"
     >
       <TabsContent value="data" className="w-full flex-1">
         <TableEditor />
       </TabsContent>
-      <TabsContent value="definition" className="flex-1">
+      <TabsContent
+        value="definition"
+        className="w-full min-w-0 flex-1 overflow-hidden"
+      >
         <TableDefinition />
       </TabsContent>
       <div
@@ -179,18 +185,11 @@ const TableDefinition = () => {
       ref={editorRef}
       style={{
         height: "100%",
-        minHeight: 0
+        minHeight: 0,
+        minWidth: 0,
+        overflow: "auto"
       }}
     />
-  )
-}
-
-function TableLoadingSkeleton() {
-  return (
-    <div className="flex h-full flex-col space-y-5 p-4">
-      <Skeleton className="h-10 w-full" />
-      <Skeleton className="h-full" />
-    </div>
   )
 }
 
@@ -263,36 +262,36 @@ const TableEditor = () => {
 
   return (
     <>
-      {isPendingRows ? (
-        <TableLoadingSkeleton />
-      ) : (
-        <div className="w-full">
-          <div className="flex items-center justify-between px-3 py-2.5">
-            {reactTable.getSelectedRowModel().rows.length === 0 ? (
-              <TableActions table={reactTable} />
-            ) : (
-              <SelectedRowsActions table={reactTable} />
-            )}
-            <div className="space-x-4">
-              <TooltipButton
-                size={"icon"}
-                variant={"secondary"}
-                className={cn("h-8 w-8", isFetchingRows && "animate-spin")}
-                tooltipContent="Refresh"
-                disabled={isFetchingRows}
-                onClick={async () => await refetchRows()}
-              >
-                <RefreshCw className="size-4" />
-              </TooltipButton>
-              <AddRowSheet />
-              <EditRowSheet row={rowToEdit} setRow={setRowToEdit} />
-            </div>
-          </div>
-          <DataTable
-            table={reactTable}
-            onRowClick={(row) => setRowToEdit(row)}
-          />
+      <div className="flex items-center justify-between px-3 py-2.5">
+        {reactTable.getSelectedRowModel().rows.length === 0 ? (
+          <TableActions table={reactTable} disabled={isPendingRows} />
+        ) : (
+          <SelectedRowsActions table={reactTable} />
+        )}
+        <div className="space-x-4">
+          <TooltipButton
+            size={"icon"}
+            variant={"secondary"}
+            className={cn("h-8 w-8")}
+            tooltipContent="Refresh"
+            disabled={isFetchingRows}
+            onClick={async () => await refetchRows()}
+          >
+            <RefreshCw
+              className={cn("size-4", isFetchingRows && "animate-spin")}
+            />
+          </TooltipButton>
+          <AddRowSheet />
+          <EditRowSheet row={rowToEdit} setRow={setRowToEdit} />
         </div>
+      </div>
+
+      {isPendingRows ? (
+        <div className="flex h-full w-full items-center justify-center">
+          <DotmTriangle5 size={80} dotSize={10} />
+        </div>
+      ) : (
+        <DataTable table={reactTable} onRowClick={(row) => setRowToEdit(row)} />
       )}
       {document.getElementById("table-footer") &&
         createPortal(
@@ -307,7 +306,13 @@ const TableEditor = () => {
   )
 }
 
-const TableActions = ({ table }: { table: Table<any> }) => {
+const TableActions = ({
+  table,
+  disabled
+}: {
+  table: Table<any>
+  disabled?: boolean
+}) => {
   const { sorting, filtering, joinOperator } = Route.useSearch()
   const navigate = Route.useNavigate()
   return (
@@ -315,6 +320,7 @@ const TableActions = ({ table }: { table: Table<any> }) => {
       <DataTableSortList
         table={table}
         sorting={sorting}
+        disabled={disabled}
         onSortingChange={(data) =>
           navigate({
             to: ".",
@@ -328,6 +334,7 @@ const TableActions = ({ table }: { table: Table<any> }) => {
       <DataTableFilterList
         table={table}
         filters={filtering}
+        disabled={disabled}
         onFilterChange={(data) => {
           navigate({
             to: ".",
@@ -348,7 +355,7 @@ const TableActions = ({ table }: { table: Table<any> }) => {
           })
         }
       />
-      <DataTableViewOptions table={table} />
+      <DataTableViewOptions table={table} disabled={disabled} />
     </div>
   )
 }
