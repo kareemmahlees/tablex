@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@tablex/ui/components/dropdown-menu"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 
 interface DataTableColumnHeaderProps<
   TData,

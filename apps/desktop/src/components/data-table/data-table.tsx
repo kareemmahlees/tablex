@@ -6,7 +6,6 @@ import {
 import React, { useMemo } from "react"
 
 import { getCommonPinningStyles } from "@/lib/data-table"
-import { cn } from "@tablex/lib/utils"
 import { ScrollArea } from "@tablex/ui/components/scroll-area"
 import {
   Table,
@@ -16,6 +15,7 @@ import {
   TableHeader,
   TableRow
 } from "@tablex/ui/components/table"
+import { cn } from "@tablex/ui/utils"
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>

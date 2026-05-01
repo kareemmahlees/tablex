@@ -1,6 +1,5 @@
 import { LOCAL_STORAGE } from "@/lib/constants"
 import { TableLocalStorage } from "@/types"
-import { cn } from "@tablex/lib/utils"
 import { Button } from "@tablex/ui/components/button"
 import {
   DropdownMenu,
@@ -10,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@tablex/ui/components/dropdown-menu"
+import { cn } from "@tablex/ui/utils"
 import type { Table } from "@tanstack/react-table"
 import {
   ArrowLeft,

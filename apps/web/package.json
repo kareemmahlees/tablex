@@ -15,7 +15,6 @@
     "@astrojs/react": "^5.0.4",
     "@astrojs/starlight": "^0.38.3",
     "@tablex/desktop": "workspace:^",
-    "@tablex/lib": "workspace:^",
     "@tablex/ui": "workspace:*",
     "@tailwindcss/vite": "^4.2.4",
     "astro": "^6.1.9",

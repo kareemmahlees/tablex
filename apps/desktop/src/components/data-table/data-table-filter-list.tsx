@@ -22,7 +22,6 @@ import type {
   FilterOperator,
   JoinOperator
 } from "@/types/data-table"
-import { cn } from "@tablex/lib/utils"
 import { Badge } from "@tablex/ui/components/badge"
 import { Button } from "@tablex/ui/components/button"
 import {
@@ -64,6 +63,7 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from "@tablex/ui/components/sortable"
+import { cn } from "@tablex/ui/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounceCallback } from "usehooks-ts"
 import { z } from "zod"

@@ -10,7 +10,7 @@ import {
 } from "@tablex/ui/components/command"
 import { Kbd, KbdGroup } from "@tablex/ui/components/kbd"
 import { ScrollArea } from "@tablex/ui/components/scroll-area"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import { useNavigate } from "@tanstack/react-router"
 import hotkeys from "hotkeys-js"
 import { FileJson2, FileText, Globe2, Settings2, Terminal } from "lucide-react"

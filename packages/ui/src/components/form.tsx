@@ -1,6 +1,6 @@
 "use client"
 
-import { Slot, Label as LabelPrimitive } from "radix-ui"
+import { Label as LabelPrimitive, Slot } from "radix-ui"
 import * as React from "react"
 import {
   Controller,
@@ -12,8 +12,8 @@ import {
   type FieldValues
 } from "react-hook-form"
 
+import { cn } from "../lib/utils"
 import { Label } from "./label"
-import { cn } from "@tablex/lib/utils"
 
 const Form = FormProvider
 

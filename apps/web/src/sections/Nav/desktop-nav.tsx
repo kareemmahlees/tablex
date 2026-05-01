@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@tablex/ui/components/dialog"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 
 const DesktopNav = () => {
   return (

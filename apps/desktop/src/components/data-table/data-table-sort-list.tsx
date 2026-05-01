@@ -6,7 +6,6 @@ import * as React from "react"
 
 import { SortingData } from "@/bindings"
 import { dataTableConfig } from "@/components/data-table/data-table-config"
-import { cn } from "@tablex/lib/utils"
 import { Badge } from "@tablex/ui/components/badge"
 import { Button } from "@tablex/ui/components/button"
 import {
@@ -36,6 +35,7 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from "@tablex/ui/components/sortable"
+import { cn } from "@tablex/ui/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 
 const OPEN_MENU_SHORTCUT = "s"

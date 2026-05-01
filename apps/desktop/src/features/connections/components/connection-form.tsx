@@ -1,6 +1,7 @@
 import MySQL from "@/components/icons/mysql"
 import PostgreSQL from "@/components/icons/postgres"
 import SQLite from "@/components/icons/sqlite"
+import { Drivers } from "@/lib/types"
 import { Checkbox } from "@tablex/ui/components/checkbox"
 import {
   FormControl,
@@ -18,8 +19,7 @@ import {
 } from "@tablex/ui/components/input-group"
 import { Label } from "@tablex/ui/components/label"
 import { RadioGroup, RadioGroupItem } from "@tablex/ui/components/radio-group"
-import { Drivers } from "@/lib/types"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "@tablex/ui/utils"
 import { open as openDialog } from "@tauri-apps/plugin-dialog"
 import { CheckCircle2 } from "lucide-react"
 import { useFormContext, useWatch } from "react-hook-form"

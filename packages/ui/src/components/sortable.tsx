@@ -41,7 +41,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 
 import { useComposedRefs } from "@/hooks/use-composed-refs"
-import { cn } from "@tablex/lib/utils"
+import { cn } from "../lib/utils"
 
 const orientationConfig = {
   vertical: {

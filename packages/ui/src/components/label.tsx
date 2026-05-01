@@ -1,9 +1,9 @@
 "use client"
 
-import * as React from "react"
 import { Label as LabelPrimitive } from "radix-ui"
+import * as React from "react"
 
-import { cn } from "@tablex/lib/utils"
+import { cn } from "../lib/utils"
 
 function Label({
   className,

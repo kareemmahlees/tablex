@@ -25,7 +25,6 @@ import { QUERY_KEYS } from "@/lib/constants"
 import { betterStyling } from "@/lib/editor-ext"
 import { sql } from "@codemirror/lang-sql"
 import sqlFormatter from "@sqltools/formatter"
-import { cn } from "@tablex/lib/utils"
 import { DotmTriangle5 } from "@tablex/ui/components/dotm-triangle-5"
 import { Input } from "@tablex/ui/components/input"
 import { ScrollArea } from "@tablex/ui/components/scroll-area"
@@ -51,6 +50,7 @@ import {
   TabsList,
   TabsTrigger
 } from "@tablex/ui/components/tabs"
+import { cn } from "@tablex/ui/utils"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Table } from "@tanstack/react-table"
